@@ -20,7 +20,7 @@
 
 ## Скачать Windows-сборку
 
-Для проверенного среза **`2cb0ceb`** откройте [успешный Windows CI](https://github.com/wuller1/gigacode-workbench/actions/runs/37964308116) и скачайте архив из раздела **Artifacts**: `gigacode-workbench-windows-x64-…`. В нём находятся NSIS installer, portable и SHA-256 суммы. Это CI-артефакты, не опубликованный GitHub Release; для скачивания GitHub может запросить вход. Сборки не подписаны, ручная установка на рабочем Windows ещё не проверена. Последующие изменения оценивайте по своему commit и CI run.
+Скачайте [preview.1 для Windows x64](https://github.com/wuller1/gigacode-workbench/releases/tag/v0.1.0-preview.1). Архив `gigacode-workbench-windows-full.zip` содержит portable-приложение, NSIS-установщик, полный исходный код, профили и инструкции; начните с `START-HERE.txt` внутри. Отдельный `gigacode-workbench-full-source.zip` содержит исходники без готовых приложений. Сборка кода **`de0b6df`** прошла [Windows CI](https://github.com/wuller1/gigacode-workbench/actions/runs/37965731926), включая 10 проверок диалогов Electron. Сборки не подписаны; ручная установка на рабочем Windows ещё не проверена. Контрольные суммы опубликованы рядом с архивами.
 
 [Снимок настоящего приложения с работающим исполнителем](docs/images/live-workers.jpg) · [Отчёт проверок и оставшиеся ограничения](docs/LIVE_TEST_REPORT.md).
 
