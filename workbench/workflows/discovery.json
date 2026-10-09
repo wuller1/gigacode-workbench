@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "id": "discovery",
+  "title": "Исследование задачи",
+  "description": "Преобразовать идею или запрос без готового ТЗ в проверяемые требования и решения.",
+  "stages": [
+    {
+      "id": "context",
+      "profile": "analyst",
+      "title": "Изучить исходную систему",
+      "instructions": [
+        "Прочитать запрос, доступный код и переданные документы; пометить источники и дату их актуальности.",
+        "Отделить наблюдаемые факты от гипотез, ограничений и неизвестного.",
+        "Если отсутствующее бизнес-решение влияет на корректность или внешнее поведение, зафиксировать конкретный вопрос и перейти в waiting_input; продолжать только независимую работу, не подменяя неизвестное заглушкой."
+      ],
+      "required_artifacts": [
+        "discovery-context"
+      ],
+      "checks": [
+        {
+          "id": "sources",
+          "description": "У существенных фактов указаны проверяемые источники.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": []
+    },
+    {
+      "id": "problem",
+      "profile": "analyst",
+      "title": "Определить проблему и границы",
+      "instructions": [
+        "Описать пользователей, текущую проблему и ожидаемый измеримый результат.",
+        "Зафиксировать включённые и исключённые сценарии; не выбирать техническое решение до определения цели."
+      ],
+      "required_artifacts": [
+        "discovery-problem"
+      ],
+      "checks": [
+        {
+          "id": "goal",
+          "description": "Проблема, участники, результат и границы согласуются с запросом.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "context"
+      ]
+    },
+    {
+      "id": "scenarios",
+      "profile": "analyst",
+      "title": "Проработать сценарии",
+      "instructions": [
+        "Описать основной путь, альтернативы, ошибки, роли и бизнес-ограничения.",
+        "Для каждого сценария записать пример входа и наблюдаемый результат; отметить информационные пробелы."
+      ],
+      "required_artifacts": [
+        "discovery-scenarios"
+      ],
+      "checks": [
+        {
+          "id": "coverage",
+          "description": "Сценарии покрывают заявленные границы и содержат проверяемые результаты.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "problem"
+      ]
+    },
+    {
+      "id": "options",
+      "profile": "analyst",
+      "title": "Выбрать подход",
+      "instructions": [
+        "Сравнить реализуемые варианты по ценности, сложности, рискам и зависимостям.",
+        "Получить необходимые бизнес-решения; обратимые технические решения принять с обоснованием в пределах полномочий."
+      ],
+      "required_artifacts": [
+        "discovery-decisions"
+      ],
+      "checks": [
+        {
+          "id": "decision",
+          "description": "Выбранный подход обоснован; нерешённые вопросы имеют владельца и влияние.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "problem",
+        "scenarios"
+      ]
+    },
+    {
+      "id": "requirements-check",
+      "profile": "reviewer",
+      "title": "Проверить требования",
+      "instructions": [
+        "Независимо проверить противоречия, непроверяемые формулировки и пропущенные сценарии.",
+        "Подготовить требования с идентификаторами, критериями приёмки и открытыми вопросами для SDD либо сокращённого маршрута."
+      ],
+      "required_artifacts": [
+        "discovery-requirements",
+        "discovery-open-questions"
+      ],
+      "checks": [
+        {
+          "id": "traceability",
+          "description": "Каждое требование связано со сценарием и критерием приёмки.",
+          "kind": "artifact",
+          "allow_na": false
+        },
+        {
+          "id": "readiness",
+          "description": "Нет скрытых вопросов, блокирующих выбранную следующую часть работы.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "context",
+        "scenarios",
+        "options"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "id": "behavior-change",
+  "title": "Изменение существующего поведения",
+  "description": "Внести согласованную дельту в действующую функцию с анализом потребителей и совместимости.",
+  "stages": [
+    {
+      "id": "baseline",
+      "profile": "analyst",
+      "title": "Зафиксировать текущее поведение",
+      "instructions": [
+        "Прочитать действующий код, требования и пользовательский запрос.",
+        "Описать текущие сценарии, потребителей, контракты и известные отклонения без смешения с желаемым состоянием.",
+        "Если отсутствующее бизнес-решение меняет корректность или внешнее поведение, перейти в waiting_input с конкретным вопросом; продолжать только независимую работу, не изобретая заглушек."
+      ],
+      "required_artifacts": [
+        "behavior-baseline"
+      ],
+      "checks": [
+        {
+          "id": "baseline-known",
+          "description": "Текущее поведение и его источники описаны.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": []
+    },
+    {
+      "id": "delta",
+      "profile": "spec",
+      "title": "Определить изменение требований",
+      "instructions": [
+        "Составить сравнение до и после: что меняется, что должно сохраниться и какие критерии приёмки это подтверждают.",
+        "Для небольшой правки оформить краткую дельту вместо полного SDD; выделить нерешённые бизнес-вопросы."
+      ],
+      "required_artifacts": [
+        "behavior-delta"
+      ],
+      "checks": [
+        {
+          "id": "delta-unambiguous",
+          "description": "Изменение и сохраняемые контракты однозначны для выбранного объёма.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "baseline"
+      ]
+    },
+    {
+      "id": "impact",
+      "profile": "backend",
+      "title": "Проверить влияние и совместимость",
+      "instructions": [
+        "Найти потребителей, форматы данных, зависимости и затронутые UI-сценарии.",
+        "Определить порядок совместимого изменения; при необходимости связать отдельные frontend-feature и data-migration."
+      ],
+      "required_artifacts": [
+        "behavior-impact-plan"
+      ],
+      "checks": [
+        {
+          "id": "consumers",
+          "description": "Затронутые потребители и способ перехода перечислены.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "baseline",
+        "delta"
+      ]
+    },
+    {
+      "id": "implement",
+      "profile": "backend",
+      "title": "Реализовать согласованную дельту",
+      "instructions": [
+        "Внести изменения в код, сохраняя явно указанные прежние гарантии.",
+        "Не подменять недоступные зависимости фиктивным успехом; записать связанные изменения других компонентов."
+      ],
+      "required_artifacts": [
+        "behavior-change"
+      ],
+      "checks": [
+        {
+          "id": "diff",
+          "description": "Изменения реально внесены и доступны в diff.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "repo.write",
+        "git.read"
+      ],
+      "rework_targets": [
+        "impact"
+      ]
+    },
+    {
+      "id": "validate",
+      "profile": "qa",
+      "title": "Проверить новое и сохранённое поведение",
+      "instructions": [
+        "Выполнить проверки новых критериев приёмки и регрессию сохраняемых сценариев.",
+        "Проверить предусмотренную совместимость между версиями или зафиксировать отсутствие такой гарантии в согласованной дельте."
+      ],
+      "required_artifacts": [
+        "behavior-validation"
+      ],
+      "checks": [
+        {
+          "id": "checks-ran",
+          "description": "Проверки нового поведения, регрессии и применимой совместимости фактически выполнены.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "test.run"
+      ],
+      "rework_targets": [
+        "implement"
+      ]
+    },
+    {
+      "id": "review",
+      "profile": "reviewer",
+      "title": "Оценить соответствие дельте",
+      "instructions": [
+        "Сопоставить требования до и после, diff и результаты проверки.",
+        "Убедиться, что изменения вне согласованной дельты объяснены и нет блокирующих замечаний."
+      ],
+      "required_artifacts": [
+        "behavior-conclusion"
+      ],
+      "checks": [
+        {
+          "id": "ready",
+          "description": "Реализация соответствует согласованной дельте и не скрывает изменения контрактов.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "git.read"
+      ],
+      "rework_targets": [
+        "delta",
+        "impact",
+        "implement",
+        "validate"
+      ]
+    }
+  ]
+}

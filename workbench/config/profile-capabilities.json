@@ -1,0 +1,416 @@
+{
+  "schema_version": 1,
+  "kind": "declarative_profile_capability_policy",
+  "status": "requires_target_discovery",
+  "enforced_by_workbench_controller": false,
+  "notes": "Capability names are Workbench concepts, not actual MCP tool names or granted permissions. A verified binding, applicable stage requirement, resource scope and existing task authorization are all required.",
+  "selection_rule": "profile.allowed_potential intersect (applicable_stage_capabilities union needed_verified_context_read_capabilities) intersect verified_bindings intersect existing_host_permissions_and_task_scope",
+  "defaults": {
+    "mode": "verified_read_only",
+    "allow_unlisted_capabilities": false,
+    "allow_unknown_tool_effects": false,
+    "inherit_all_tools_if_mapping_missing": false,
+    "mutating_actions": "require_existing_applicable_task_authorization",
+    "missing_required_capability": "block_only_the_affected_required_action",
+    "unsupported_isolated_mode": "disable_native_delegation_and_use_interactive_mode_with_explicit_limits",
+    "repository_setup": "only_when_user_explicitly_requests_new_project_setup"
+  },
+  "provider_hints": {
+    "Git": [
+      "git.read",
+      "git.branch",
+      "git.commit",
+      "git.push",
+      "git.pr.read",
+      "git.pr.write",
+      "git.merge"
+    ],
+    "Jenkins": [
+      "ci.read",
+      "ci.run"
+    ],
+    "OpenShift": [
+      "cluster.read",
+      "cluster.apply"
+    ],
+    "Confluence": [
+      "knowledge.read",
+      "knowledge.write"
+    ],
+    "Sprut": [
+      "security.scan.read",
+      "security.scan.run"
+    ]
+  },
+  "provider_notes": {
+    "Sprut": "User-confirmed purpose: software composition analysis of dependency/library versions and vulnerabilities. Do not bind Sprut to tracker or SAST without separate evidence.",
+    "all": "Provider names are discovery hints. Exact server identity, tool names, schemas, effects and resource permissions must come from the target session. A hint does not establish that a provider offers every listed action."
+  },
+  "read_only_candidates": [
+    "repo.read",
+    "git.read",
+    "git.pr.read",
+    "knowledge.read",
+    "ci.read",
+    "cluster.read",
+    "browser.inspect",
+    "data.read",
+    "metrics.read",
+    "tracker.read",
+    "security.scan.read"
+  ],
+  "potentially_mutating_capabilities": [
+    "repo.write",
+    "git.branch",
+    "git.commit",
+    "git.push",
+    "git.pr.write",
+    "git.merge",
+    "knowledge.write",
+    "ci.run",
+    "cluster.apply",
+    "test.run",
+    "data.migrate",
+    "tracker.write",
+    "security.scan.run"
+  ],
+  "classification_notes": {
+    "read_only_candidates": "Only verified read-only tool operations are enabled by default. Capability spelling and MCP readOnly annotations alone do not prove actual effects. A broad tool that can read and write is not a read-only allowlist entry unless the host also constrains its input operations.",
+    "test.run": "Tests can write local files, start services or contact shared environments. A task authorizing implementation and suitable local tests normally supplies the necessary scope; reuse that authorization without asking again.",
+    "security.scan.run": "Starting SCA analysis is distinct from reading an existing report. Check whether it uploads source/manifests, creates a scan, consumes service resources or changes server state."
+  },
+  "profiles": {
+    "analyst": {
+      "allowed_potential": [
+        "repo.read",
+        "repo.write",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "ci.read",
+        "cluster.read",
+        "data.read",
+        "metrics.read",
+        "tracker.read",
+        "security.scan.read",
+        "test.run"
+      ],
+      "read_only_default": [
+        "repo.read",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "ci.read",
+        "cluster.read",
+        "data.read",
+        "metrics.read",
+        "tracker.read",
+        "security.scan.read"
+      ]
+    },
+    "spec": {
+      "allowed_potential": [
+        "repo.read",
+        "repo.write",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "knowledge.write",
+        "data.read",
+        "tracker.read",
+        "security.scan.read",
+        "test.run"
+      ],
+      "read_only_default": [
+        "repo.read",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "data.read",
+        "tracker.read",
+        "security.scan.read"
+      ]
+    },
+    "backend": {
+      "allowed_potential": [
+        "repo.read",
+        "repo.write",
+        "git.read",
+        "git.branch",
+        "git.commit",
+        "git.push",
+        "git.pr.read",
+        "git.pr.write",
+        "knowledge.read",
+        "ci.read",
+        "ci.run",
+        "data.read",
+        "metrics.read",
+        "tracker.read",
+        "security.scan.read",
+        "security.scan.run",
+        "test.run"
+      ],
+      "read_only_default": [
+        "repo.read",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "ci.read",
+        "data.read",
+        "metrics.read",
+        "tracker.read",
+        "security.scan.read"
+      ]
+    },
+    "frontend": {
+      "allowed_potential": [
+        "repo.read",
+        "repo.write",
+        "git.read",
+        "git.branch",
+        "git.commit",
+        "git.push",
+        "git.pr.read",
+        "git.pr.write",
+        "knowledge.read",
+        "ci.read",
+        "ci.run",
+        "browser.inspect",
+        "tracker.read",
+        "security.scan.read",
+        "security.scan.run",
+        "test.run"
+      ],
+      "read_only_default": [
+        "repo.read",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "ci.read",
+        "browser.inspect",
+        "tracker.read",
+        "security.scan.read"
+      ]
+    },
+    "devops": {
+      "allowed_potential": [
+        "repo.read",
+        "repo.write",
+        "git.read",
+        "git.branch",
+        "git.commit",
+        "git.push",
+        "git.pr.read",
+        "git.pr.write",
+        "git.merge",
+        "knowledge.read",
+        "ci.read",
+        "ci.run",
+        "cluster.read",
+        "cluster.apply",
+        "data.read",
+        "data.migrate",
+        "metrics.read",
+        "tracker.read",
+        "security.scan.read",
+        "security.scan.run",
+        "test.run"
+      ],
+      "read_only_default": [
+        "repo.read",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "ci.read",
+        "cluster.read",
+        "data.read",
+        "metrics.read",
+        "tracker.read",
+        "security.scan.read"
+      ]
+    },
+    "qa": {
+      "allowed_potential": [
+        "repo.read",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "ci.read",
+        "ci.run",
+        "cluster.read",
+        "browser.inspect",
+        "data.read",
+        "data.migrate",
+        "metrics.read",
+        "tracker.read",
+        "security.scan.read",
+        "security.scan.run",
+        "test.run"
+      ],
+      "read_only_default": [
+        "repo.read",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "ci.read",
+        "cluster.read",
+        "browser.inspect",
+        "data.read",
+        "metrics.read",
+        "tracker.read",
+        "security.scan.read"
+      ]
+    },
+    "reviewer": {
+      "allowed_potential": [
+        "repo.read",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "ci.read",
+        "cluster.read",
+        "browser.inspect",
+        "data.read",
+        "metrics.read",
+        "tracker.read",
+        "security.scan.read",
+        "test.run",
+        "security.scan.run"
+      ],
+      "read_only_default": [
+        "repo.read",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "ci.read",
+        "cluster.read",
+        "browser.inspect",
+        "data.read",
+        "metrics.read",
+        "tracker.read",
+        "security.scan.read"
+      ]
+    },
+    "diagnostics": {
+      "allowed_potential": [
+        "repo.read",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "ci.read",
+        "cluster.read",
+        "browser.inspect",
+        "data.read",
+        "metrics.read",
+        "tracker.read",
+        "security.scan.read",
+        "test.run"
+      ],
+      "read_only_default": [
+        "repo.read",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "ci.read",
+        "cluster.read",
+        "browser.inspect",
+        "data.read",
+        "metrics.read",
+        "tracker.read",
+        "security.scan.read"
+      ]
+    },
+    "gigacode-ui": {
+      "allowed_potential": [
+        "repo.read",
+        "repo.write",
+        "git.read",
+        "git.branch",
+        "git.commit",
+        "git.push",
+        "git.pr.read",
+        "git.pr.write",
+        "knowledge.read",
+        "ci.read",
+        "ci.run",
+        "browser.inspect",
+        "test.run",
+        "metrics.read",
+        "security.scan.read",
+        "security.scan.run"
+      ],
+      "read_only_default": [
+        "repo.read",
+        "git.read",
+        "git.pr.read",
+        "knowledge.read",
+        "ci.read",
+        "browser.inspect",
+        "metrics.read",
+        "security.scan.read"
+      ]
+    }
+  },
+  "inventory_cache": {
+    "suggested_local_path": "<TargetRoot>/workbench-memory/mcp/tool-inventory.local.json",
+    "reuse": "Reuse verified inventory while build, server identity, available-tool schemas, relevant permissions and resource scope match its fingerprint.",
+    "refresh_triggers": [
+      "runtime_or_server_changed",
+      "tool_schema_changed",
+      "permissions_or_scope_changed",
+      "tool_missing_or_denied",
+      "explicit_refresh"
+    ],
+    "secrets": "Never persist credentials or hash raw secret-bearing settings as inventory. Fingerprint a normalized non-secret projection."
+  },
+  "verified_bindings": {
+    "suggested_local_path": "<TargetRoot>/workbench-memory/mcp/bindings.local.json",
+    "base_contract": "config/bindings.example.json",
+    "actual_tool_names": null,
+    "unverified_bindings_status": "unconfigured"
+  },
+  "native_adapter": {
+    "target_version": "26.9.75",
+    "target_verified_here": false,
+    "agent_path_pattern": ".gigacode/agents/workbench-<profile>.md",
+    "documented_frontmatter_fields": [
+      "name",
+      "description",
+      "model",
+      "approvalMode",
+      "tools",
+      "disallowedTools"
+    ],
+    "required_for_delegation": [
+      "actual_tools_allowlist",
+      "verified_supported_format",
+      "verified_effective_permissions",
+      "verified_resource_scope"
+    ],
+    "missing_tools_field": "forbidden_for_generated_agent_because_it_inherits_parent_tools",
+    "permission_caveat": "A more permissive parent approval mode may take precedence. An allowlist or prompt is not proof of input, resource or account isolation."
+  },
+  "context_read_policy": {
+    "capabilities": [
+      "repo.read",
+      "git.read",
+      "git.pr.read",
+      "knowledge.read",
+      "ci.read",
+      "cluster.read",
+      "browser.inspect",
+      "data.read",
+      "metrics.read",
+      "tracker.read",
+      "security.scan.read"
+    ],
+    "requires": "actual task relevance, verified read-only effect, allowed resource and current authorization; record why context is needed",
+    "not_authorization": "Never permits writes, unrelated browsing or extra scopes."
+  },
+  "service_operations": {
+    "owner": "parent host",
+    "scope": "local fixed Workbench journal, artifact and memory commands within configured paths",
+    "not_profile_mcp_access": "Does not give subagents a general shell or external write tools; they return structured facts to the parent for recording."
+  }
+}

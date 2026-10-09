@@ -1,0 +1,105 @@
+name: Windows desktop
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-x64:
+    runs-on: windows-2022
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: app
+    env:
+      CI: true
+      CSC_IDENTITY_AUTO_DISCOVERY: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Node.js 22
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+          architecture: x64
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install locked dependencies including native optional packages
+        run: npm ci --include=optional
+
+      - name: Verify Workbench script hashes, manifest and entry links
+        run: node ../tools/check-bundle.mjs
+
+      - name: Legacy Workbench suites on Windows PowerShell 5.1
+        run: |
+          powershell.exe -NoLogo -NoProfile -NonInteractive -File ../workbench/tests/run-tests.ps1 -RequireNode
+          if ($LASTEXITCODE -ne 0) { throw 'Windows PowerShell legacy suites failed' }
+
+      - name: Unit and protocol fixture tests (no model credentials)
+        run: npm test
+
+      - name: Verify Windows native dependencies
+        run: |
+          @'
+          const assert = require('node:assert/strict');
+          assert.equal(process.platform, 'win32');
+          assert.equal(process.arch, 'x64');
+          assert.ok(require('sharp').versions.vips);
+          const pty = require('@lydell/node-pty');
+          let output = '';
+          const child = pty.spawn(process.env.ComSpec, ['/d', '/c', 'echo WORKBENCH_PTY_OK'], {name:'xterm-color', cols:80, rows:24, cwd:process.cwd(), env:process.env});
+          const timer = setTimeout(() => { child.kill(); console.error('Native PTY did not complete'); process.exitCode = 1; }, 15000);
+          child.onData(data => { output += data; });
+          child.onExit(({exitCode}) => { clearTimeout(timer); assert.equal(exitCode, 0); assert.match(output, /WORKBENCH_PTY_OK/); console.log('Windows PTY and Sharp loaded successfully'); });
+          '@ | node
+
+      - name: Typecheck and build renderer/main/preload
+        run: npm run build
+
+      - name: Build NSIS and portable (never publish)
+        run: npm exec --offline -- electron-builder --win nsis portable --x64 --publish never
+
+      - name: Verify packaged CLI version and calculate artifact hashes
+        run: |
+          @'
+          const fs = require('node:fs'), path = require('node:path'), assert = require('node:assert/strict');
+          const {spawnSync} = require('node:child_process');
+          const application = path.resolve('release/win-unpacked/GigaCode Workbench.exe');
+          const cli = path.resolve('release/win-unpacked/resources/app.asar.unpacked/node_modules/@qwen-code/qwen-code/cli.js');
+          assert.ok(fs.existsSync(application) && fs.existsSync(cli), 'Packaged app or bundled Qwen entrypoint is missing');
+          const result = spawnSync(application, [cli, '--version'], {env:{...process.env, ELECTRON_RUN_AS_NODE:'1'}, encoding:'utf8', timeout:30000, windowsHide:true, shell:false});
+          assert.ifError(result.error);
+          assert.equal(result.status, 0, result.stderr);
+          assert.ok(result.stdout.includes(require('@qwen-code/qwen-code/package.json').version), 'Packaged CLI did not report the pinned version');
+          console.log('Packaged Qwen:', result.stdout.trim());
+          '@ | node
+          if ($LASTEXITCODE -ne 0) { throw 'Bundled Qwen version probe failed' }
+          $artifacts = @(Get-ChildItem -LiteralPath 'release' -File -Filter '*.exe')
+          if ($artifacts.Count -lt 2) { throw 'Expected both NSIS and portable executables' }
+          $hashes = $artifacts | ForEach-Object { '{0}  {1}' -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $_.Name }
+          $hashes | Set-Content -Encoding utf8 'release/SHA256SUMS.txt'
+
+      - name: Upload unsigned Windows build artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: gigacode-workbench-windows-x64-${{ github.sha }}
+          path: |
+            app/release/*.exe
+            app/release/*.exe.blockmap
+            app/release/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14

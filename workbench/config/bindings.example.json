@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "status": "unconfigured",
+  "notes": "These are Workbench capability names, not actual MCP tool names. Obtain exact names/input schemas and resource scope from the target session. Do not copy into .gigacode/settings.json.",
+  "bindings": {
+    "repo.read": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "repo.write": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "git.read": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "git.branch": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "git.commit": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "git.push": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "git.pr.read": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "git.pr.write": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "git.merge": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "knowledge.read": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "knowledge.write": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "ci.read": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "ci.run": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "cluster.read": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "cluster.apply": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "browser.inspect": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "test.run": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "data.read": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "data.migrate": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "metrics.read": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "tracker.read": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "tracker.write": {
+      "provider": null,
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured"
+    },
+    "security.scan.read": {
+      "provider": "Sprut",
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured",
+      "note": "Discover actual tools; run capability is optional and not confirmed by the purpose alone."
+    },
+    "security.scan.run": {
+      "provider": "Sprut",
+      "tool": null,
+      "input_schema_reference": null,
+      "resource_scope": null,
+      "actual_effects": [],
+      "status": "unconfigured",
+      "note": "Discover actual tools; run capability is optional and not confirmed by the purpose alone."
+    }
+  },
+  "known_user_servers": [
+    "Git",
+    "Jenkins",
+    "OpenShift",
+    "Confluence",
+    "Sprut"
+  ],
+  "sprut_purpose": "dependency-vulnerability-scanning",
+  "sprut_purpose_source": "User clarification: vulnerable versions of libraries"
+}

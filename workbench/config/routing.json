@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "id": "adaptive-execution",
+  "status": "declarative-host-policy",
+  "description": "Выбор процесса по риску, неопределённости, области влияния и внешним эффектам; это политика host, а не автоматически исполняемый маршрутизатор workbench.ps1.",
+  "precedence": [
+    "applicable_environment_rules",
+    "explicit_user_scope_and_authorization",
+    "current_project_requirements",
+    "routing_policy"
+  ],
+  "project_defaults": {
+    "existing_project": "preconfigured-reuse-current-instructions-and-bindings",
+    "automatic_repo_setup": false,
+    "automatic_onboarding_on_first_task": false,
+    "new_project_setup_requires_explicit_opt_in": true,
+    "unfamiliar_project_read_only": "По явному запросу изучить адресно существующий проект; использовать discovery без настройки и изменения правил.",
+    "existing_environment_issue": "Исследовать конкретный сбой и предложить адресное исправление; не переписывать проектную конфигурацию автоматически."
+  },
+  "active_task": {
+    "clarification_creates_new_run": false,
+    "reuse_current_context_permissions_and_journal": true,
+    "escalation": "Сохранить текущие артефакты и причины; смена workflow оформляется явно и не стирает историю."
+  },
+  "decision_order": [
+    "reuse-active-task-if-applicable",
+    "determine-work-kind",
+    "assess-four-dimensions",
+    "select-mode",
+    "select-workflow",
+    "reassess-on-new-evidence"
+  ],
+  "dimensions": {
+    "risk": {
+      "low": "Обратимое локальное изменение без существенного риска данных, доступа, совместимости или пользовательского ущерба.",
+      "moderate": "Нетривиальное поведение или зависимость требует специализированной проверки.",
+      "high": "Существенные последствия ошибки либо изменение критичной границы.",
+      "unknown": "Риск не установлен; quick не допускается."
+    },
+    "ambiguity": {
+      "resolved": "Критерий результата и сохраняемые гарантии известны.",
+      "local-technical": "Есть обратимые технические варианты, которые можно выбрать в рамках полномочий.",
+      "blocking": "Нет бизнес-решения или источники противоречат друг другу так, что меняется корректность.",
+      "unknown": "Контекста недостаточно для выбора маршрута."
+    },
+    "impact": {
+      "local": "Известный ограниченный путь; зависимости и потребители понятны.",
+      "multiple-components": "Несколько связанных частей требуют анализа совместного поведения.",
+      "public-or-cross-system": "Изменяется публичный контракт, совместимость, схема или взаимодействие систем.",
+      "unknown": "Границы воздействия не установлены."
+    },
+    "external_effects": {
+      "none": "Только анализ или ответ.",
+      "local-reversible": "Разрешённые локальные правки и проверки с ограниченным воздействием.",
+      "shared-or-production": "Публикация, доставка, общая среда, данные или иное внешнее действие требуют отдельного подходящего маршрута.",
+      "unknown": "Исход предыдущего действия либо ожидаемое воздействие неизвестны."
+    }
+  },
+  "not_standalone_escalation_reasons": [
+    "ТЗ предоставлено файлом или ссылкой.",
+    "В запросе есть слово баг, ошибка, тест или срочно.",
+    "Определённое число строк, файлов или страниц без оценки содержания.",
+    "Первый запрос в существующем проекте.",
+    "Отсутствие ранее созданного полного SDD для ясной локальной правки."
+  ],
+  "modes": {
+    "quick": {
+      "eligibility": {
+        "risk": [
+          "low"
+        ],
+        "ambiguity": [
+          "resolved",
+          "local-technical"
+        ],
+        "impact": [
+          "local"
+        ],
+        "external_effects": [
+          "none",
+          "local-reversible"
+        ]
+      },
+      "routes": {
+        "standalone-small-question": "quick-answer",
+        "local-server-or-code-edit": "quick-backend",
+        "local-ui-edit": "quick-frontend",
+        "local-document-edit": "quick-doc"
+      },
+      "required": [
+        "current-facts-and-source-provenance",
+        "existing-journal-or-automatic-action-log",
+        "clear-acceptance-criterion",
+        "targeted-validation",
+        "review-current-diff-for-edits",
+        "truthful-result-and-limitations"
+      ],
+      "not_automatically_required": [
+        "full-sdd",
+        "additional-agents",
+        "new-test",
+        "full-test-suite",
+        "mutation-testing",
+        "full-design-matrix",
+        "documentation-update",
+        "retrospective",
+        "onboarding"
+      ],
+      "stop_conditions": [
+        "blocking-ambiguity",
+        "unanticipated-risk",
+        "unbounded-impact",
+        "unverified-external-outcome",
+        "required-validation-unavailable"
+      ],
+      "stop_status": "blocked",
+      "stop_action": "Указать причину и предложить конкретный standard/deep workflow; не продолжать quick поверх неизвестного и не считать blocked успешным завершением."
+    },
+    "standard": {
+      "eligibility": "Известная задача с умеренным риском, несколькими связанными частями или нужной специализированной проверкой.",
+      "routes": [
+        "discovery",
+        "specification",
+        "backend-feature",
+        "frontend-feature",
+        "behavior-change",
+        "bugfix",
+        "refactor",
+        "dependency-upgrade",
+        "ux-design",
+        "documentation",
+        "review",
+        "acceptance",
+        "pull-request"
+      ],
+      "selection": "Выбрать нужный сценарий и только применимых специалистов; известные незатронутые результаты не повторять без основания."
+    },
+    "deep": {
+      "eligibility": "Явный полный аудит, существенные риски данных или доступа, сложная миграция, широкий межсистемный эффект либо значимая неразрешённая неопределённость.",
+      "routes": [
+        "security-review",
+        "data-migration",
+        "infrastructure",
+        "release",
+        "incident",
+        "performance",
+        "design-audit",
+        "design-system",
+        "specification"
+      ],
+      "selection": "Состав определяется конкретным риском; не включать все workflows, специалистов и мутации автоматически."
+    }
+  },
+  "validation_policy": {
+    "not_applicable": "Только если разрешено check и есть предметное обоснование со свидетельством; отсутствие доступа, failed и unknown не равны неприменимости.",
+    "new_tests": "Нужны для существенного поведения, которое не защищено достаточной существующей проверкой; не создавать тест, зеркалящий реализацию, ради формального шага.",
+    "quick_ui": "При визуальном или интерактивном изменении проверить реально изменённый UI в релевантном состоянии и viewport; расширять набор по влиянию, не до полной матрицы автоматически.",
+    "independent_review": "В quick исполнитель сам пересматривает итоговый diff; это не называется независимым ревью. При необходимости независимой проверки выбрать standard/deep.",
+    "capabilities": "Перечень потенциально нужных возможностей. Host сначала определяет применимые действия/checks и проверяет инструменты и полномочия для них. Недоступность обязательного блокирует, неприменимость обосновывается по workflow; декларация прав не выдаёт."
+  },
+  "evidence_reuse": {
+    "required_provenance": [
+      "claim-or-check",
+      "source-path-or-operation-id",
+      "source-revision-or-content-hash",
+      "spec-revision",
+      "command-or-method",
+      "input-data-and-environment-identity",
+      "scope",
+      "observed-result",
+      "recorded-at"
+    ],
+    "reuse_only_when": "Подтверждено, что входы, методы, требования, окружение и область влияния остаются применимыми; проверить изменившиеся зависимости.",
+    "not_sufficient": [
+      "exists-in-memory",
+      "previous-pass-without-version",
+      "timestamp-alone",
+      "unchanged-filename"
+    ],
+    "invalidates": [
+      "changed-relevant-source",
+      "changed-relevant-requirement",
+      "changed-environment-or-input",
+      "changed-check-method",
+      "changed-dependency",
+      "evidence-integrity-failure"
+    ],
+    "external_state": "Не считать изменяемое внешнее состояние подтверждённым старым receipt; выполнить нужное адресное чтение.",
+    "record_reuse": "Сохранить ссылку на прежнее свидетельство и основание актуальности; не выдавать повторное использование за новый запуск."
+  },
+  "journal_and_recovery": {
+    "facts_and_operations_always_recorded": true,
+    "duplicate_manual_logging_when_host_captures": false,
+    "default_read": "Проверенная компактная сводка, последний checkpoint, события после него и нужные исходные артефакты.",
+    "full_read_when": [
+      "audit-or-export",
+      "integrity-problem",
+      "missing-checkpoint-or-journal-gap",
+      "conflicting-records",
+      "targeted-investigation-needs-history"
+    ],
+    "unknown_operation": "Сначала сверить фактический исход; не повторять запись на основании потери ответа.",
+    "sealed_evidence": "Принятые и зарегистрированные свидетельства не перезаписывать; новую версию сохранять под новым именем."
+  },
+  "documentation_policy": {
+    "unchanged_documented_behavior": "no-op-with-short-rationale",
+    "update_trigger": [
+      "documented-behavior-changed",
+      "public-contract-changed",
+      "operator-action-changed",
+      "existing-document-proven-wrong"
+    ],
+    "scope": "Обновить затронутый документ, не начинать полный аудит документации автоматически."
+  },
+  "retrospective_policy": {
+    "mode": "event-driven",
+    "triggers": [
+      "repeated-failure",
+      "unexpected-material-risk",
+      "process-caused-defect",
+      "incorrect-evidence-or-recovery",
+      "explicit-user-request"
+    ],
+    "successful_tiny_task": "Нет обязательной ретроспективы; полезное наблюдение можно кратко записать в текущий журнал.",
+    "workflow": "retrospective"
+  },
+  "reporting": {
+    "summary": "Что изменено или выяснено, как проверено, ограничения и существенная рекомендация при наличии.",
+    "no_compulsory_full_history_reread": true,
+    "wallclock_claim": "Сокращён только статический состав процесса; ускорение и токены подтверждаются замерами на реальных задачах, не обещаются заранее."
+  },
+  "project_modes": {
+    "established_strict": {
+      "applies_to": "Working/shared/production projects unless a more specific user instruction applies",
+      "scope": "Only authorized task changes; incidental optimization recommendations do not authorize edits",
+      "validation": "Risk-based regression and real applicable integrations; see docs/CHANGE_SAFETY.md"
+    },
+    "personal_fast": {
+      "applies_to": "User personal GigaCode UI",
+      "scope": "Short autonomous slices and constructive critique within task; no automatic production gates",
+      "validation": "Affected live scenario; stronger targeted checks for session state, recovery and persisted data"
+    }
+  },
+  "specialized_routes": {
+    "gigacode-ui": {
+      "diagnostics": "gigacode-ui-diagnostics",
+      "feature": "gigacode-ui-feature",
+      "small_local_change": "Use a sufficient quick route without forcing full diagnostics",
+      "project_mode": "personal_fast"
+    }
+  },
+  "native_task_hierarchy": {
+    "order": [
+      "project",
+      "task",
+      "role_assignment"
+    ],
+    "role_switch_creates_task": false,
+    "role_switch_creates_run_by_default": false,
+    "policy": "docs/TASK_WORKSPACE.md"
+  },
+  "native_role_routing": {
+    "policy": "docs/ROLE_ROUTING.md",
+    "scope_expansion": "recommend_one_click_handoff_without_starting_unrequested_work",
+    "runtime_implemented_in_reference_controller": false,
+    "default_by_project_mode": {
+      "personal_fast": "automaticWithinScope",
+      "established_strict": "assisted"
+    }
+  },
+  "context_budget_policy": {
+    "policy": "docs/CONTEXT_BUDGET.md",
+    "nominal_window_tokens": 256000,
+    "window_source": "user_reported_verify_actual_runtime",
+    "load_all_roles_or_journals": false
+  }
+}

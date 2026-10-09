@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "id": "backend-feature",
+  "title": "Реализация бэкенд-функции",
+  "description": "Реализовать согласованное серверное поведение с проверкой контрактов и реальных зависимостей.",
+  "stages": [
+    {
+      "id": "preflight",
+      "profile": "backend",
+      "title": "Проверить вход и зависимости",
+      "instructions": [
+        "Прочитать применимую спецификацию или краткие требования, инструкции проекта и текущий код.",
+        "Определить доступность интеграций, тестовых данных и проверок; недоступное записать как блокировку соответствующей части.",
+        "Если отсутствующее бизнес-решение влияет на корректность или внешнее поведение, зафиксировать конкретный вопрос и перейти в waiting_input; продолжать только независимую работу, не подменяя неизвестное заглушкой."
+      ],
+      "required_artifacts": [
+        "backend-scope",
+        "backend-dependencies"
+      ],
+      "checks": [
+        {
+          "id": "ready",
+          "description": "Внешнее поведение определено достаточно для выбранного объёма.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "git.read"
+      ],
+      "rework_targets": []
+    },
+    {
+      "id": "design",
+      "profile": "backend",
+      "title": "Спланировать изменение",
+      "instructions": [
+        "Найти существующие механизмы и выбрать минимальное совместимое изменение.",
+        "Описать API, данные, права, ошибки и необходимость отдельного workflow миграции данных."
+      ],
+      "required_artifacts": [
+        "backend-design"
+      ],
+      "checks": [
+        {
+          "id": "impact",
+          "description": "Затронутые контракты, потребители и риски совместимости перечислены.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "preflight"
+      ]
+    },
+    {
+      "id": "implement",
+      "profile": "backend",
+      "title": "Реализовать поведение",
+      "instructions": [
+        "Изменить код в соответствии с требованиями, включая ошибки и права доступа.",
+        "Не выдавать фиктивный успех, неработающий endpoint или скрытый TODO за завершённое поведение; тестовые doubles отделить от продуктового кода."
+      ],
+      "required_artifacts": [
+        "backend-change"
+      ],
+      "checks": [
+        {
+          "id": "diff",
+          "description": "Изменения реально присутствуют в рабочей копии и доступны в diff.",
+          "kind": "execution",
+          "allow_na": false
+        },
+        {
+          "id": "behavior",
+          "description": "В diff реализованы предусмотренные ветви поведения.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "repo.write",
+        "git.read"
+      ],
+      "rework_targets": [
+        "design"
+      ]
+    },
+    {
+      "id": "validate",
+      "profile": "backend",
+      "title": "Выполнить проверки",
+      "instructions": [
+        "Запустить необходимые проверки проекта, целевые тесты и применимые проверки контрактов.",
+        "Для интеграций различать результаты на test doubles и на реальном тестовом сервисе; сохранять команды, выходы, версии и ограничения."
+      ],
+      "required_artifacts": [
+        "backend-validation"
+      ],
+      "checks": [
+        {
+          "id": "checks-ran",
+          "description": "Необходимые проверки фактически выполнены; успешность подтверждена результатами.",
+          "kind": "execution",
+          "allow_na": false
+        },
+        {
+          "id": "real-integration",
+          "description": "Заявления о работоспособности интеграций подтверждены соответствующими проверками; непроверенное явно отмечено.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "test.run"
+      ],
+      "rework_targets": [
+        "implement"
+      ]
+    },
+    {
+      "id": "review",
+      "profile": "reviewer",
+      "title": "Проверить реализацию",
+      "instructions": [
+        "Сопоставить diff с требованиями и доказательствами проверок.",
+        "Проверить корректность, совместимость и отсутствие обходов бизнес-правил; вернуть конкретные замечания."
+      ],
+      "required_artifacts": [
+        "backend-review"
+      ],
+      "checks": [
+        {
+          "id": "blocking-findings",
+          "description": "Нет неустранённых блокирующих замечаний.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "git.read"
+      ],
+      "rework_targets": [
+        "design",
+        "implement",
+        "validate"
+      ]
+    },
+    {
+      "id": "handoff",
+      "profile": "backend",
+      "title": "Передать результат в приёмку",
+      "instructions": [
+        "Составить перечень реализованных требований, изменённых контрактов и результатов проверок.",
+        "Указать точную ревизию, ограничения, необходимые миграции и условия запуска QA."
+      ],
+      "required_artifacts": [
+        "backend-handoff"
+      ],
+      "checks": [
+        {
+          "id": "handoff-complete",
+          "description": "Приёмка может воспроизвести проверки для указанной ревизии.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "git.read"
+      ],
+      "rework_targets": [
+        "validate",
+        "review"
+      ]
+    }
+  ]
+}

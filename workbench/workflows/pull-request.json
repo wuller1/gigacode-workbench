@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "id": "pull-request",
+  "title": "Подготовка и сопровождение pull request",
+  "description": "Подготовить проверенные изменения, опубликовать PR и обработать обратную связь без автоматического merge.",
+  "stages": [
+    {
+      "id": "state",
+      "profile": "reviewer",
+      "title": "Проверить состояние изменений",
+      "instructions": [
+        "Прочитать статус рабочей копии, текущую и целевую ветки, diff и историю задачи.",
+        "Выделить принадлежащие задаче изменения; не включать чужие правки, не выбирать произвольную целевую ветку и не переписывать историю без основания.",
+        "Когда отсутствующее бизнес-решение влияет на корректность результата, задать конкретный вопрос и перейти в waiting_input; выполнять только независимую работу, не выдавая предположение или заглушку за решение."
+      ],
+      "required_artifacts": [
+        "pr-scope"
+      ],
+      "checks": [
+        {
+          "id": "scope",
+          "description": "Состав изменений, ветки и имеющиеся полномочия однозначно определены.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "git.read"
+      ],
+      "rework_targets": []
+    },
+    {
+      "id": "validate",
+      "profile": "qa",
+      "title": "Подтвердить готовность к публикации",
+      "instructions": [
+        "Выполнить необходимые проверки для текущего diff и сверить результаты с требованиями.",
+        "Если есть конфликты или неготовые зависимости, зафиксировать их и направить на исправление; не скрывать пропуски проверки."
+      ],
+      "required_artifacts": [
+        "pr-validation"
+      ],
+      "checks": [
+        {
+          "id": "checks-ran",
+          "description": "Заявленные проверки фактически выполнены для текущего содержимого.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "git.read",
+        "test.run"
+      ],
+      "rework_targets": [
+        "state"
+      ]
+    },
+    {
+      "id": "commit",
+      "profile": "backend",
+      "title": "Подготовить коммиты",
+      "instructions": [
+        "Сформировать коммиты только из изменений задачи в рамках уже выданных полномочий либо проверить существующие коммиты.",
+        "Записать идентификаторы коммитов и подтвердить отсутствие непреднамеренных файлов, секретов и изменений других задач."
+      ],
+      "required_artifacts": [
+        "pr-commits"
+      ],
+      "checks": [
+        {
+          "id": "commits-exist",
+          "description": "Указанные коммиты реально существуют и содержат проверенный объём изменений.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "git.read",
+        "git.commit"
+      ],
+      "rework_targets": [
+        "state",
+        "validate"
+      ]
+    },
+    {
+      "id": "publish",
+      "profile": "backend",
+      "title": "Опубликовать ветку и PR",
+      "instructions": [
+        "На основании существующей авторизации отправить нужную ветку и создать либо обновить соответствующий PR через разрешённый host-маршрут.",
+        "Описать конкретную проблему, итоговое поведение и результаты проверки; сохранить URL и опубликованную ревизию."
+      ],
+      "required_artifacts": [
+        "pr-publication"
+      ],
+      "checks": [
+        {
+          "id": "published",
+          "description": "Ветка и PR фактически опубликованы; URL и ревизия подтверждены удалённой системой.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "git.read",
+        "git.push",
+        "git.pr.read",
+        "git.pr.write"
+      ],
+      "rework_targets": [
+        "commit"
+      ]
+    },
+    {
+      "id": "feedback",
+      "profile": "reviewer",
+      "title": "Разобрать ревью и конфликты",
+      "instructions": [
+        "Прочитать актуальные замечания, статус PR и сведения о конфликтах; отделить обязательные исправления от обсуждений.",
+        "Для кода создать связанное исправление и вернуть текущий workflow к проверке и публикации; конфликты разрешать с сохранением согласованного поведения обеих сторон."
+      ],
+      "required_artifacts": [
+        "pr-feedback"
+      ],
+      "checks": [
+        {
+          "id": "feedback-current",
+          "description": "Замечания и конфликты относятся к актуальному PR и имеют явный статус.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "git.read",
+        "git.pr.read"
+      ],
+      "rework_targets": [
+        "state",
+        "validate",
+        "commit",
+        "publish"
+      ]
+    },
+    {
+      "id": "readiness",
+      "profile": "reviewer",
+      "title": "Зафиксировать готовность PR",
+      "instructions": [
+        "Проверить актуальную опубликованную ревизию и разрешение блокирующих замечаний.",
+        "Сообщить готовность, ожидание внешнего ревью или блокировки; merge не выполнять в этом workflow."
+      ],
+      "required_artifacts": [
+        "pr-readiness"
+      ],
+      "checks": [
+        {
+          "id": "ready-state",
+          "description": "Заключение соответствует текущему удалённому состоянию PR и не выдаёт ожидание за завершённое слияние.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "git.read",
+        "git.pr.read"
+      ],
+      "rework_targets": [
+        "validate",
+        "publish",
+        "feedback"
+      ]
+    }
+  ]
+}

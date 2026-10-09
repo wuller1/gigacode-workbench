@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "enforced_by": "host-and-native-tool-permissions-not-prompts",
+  "grants": [],
+  "grant_fields": [
+    "id",
+    "source_user_message_or_policy",
+    "capability",
+    "resource",
+    "environment",
+    "allowed_effects",
+    "conditions",
+    "expires_at"
+  ],
+  "reuse_existing_authorization": true,
+  "external_write_requires_matching_scope": true,
+  "secrets_stored_here": false
+}

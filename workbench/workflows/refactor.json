@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "id": "refactor",
+  "title": "Рефакторинг без изменения поведения",
+  "description": "Упростить структуру кода с доказуемым сохранением внешнего поведения и ограничений.",
+  "stages": [
+    {
+      "id": "baseline",
+      "profile": "backend",
+      "title": "Зафиксировать область и поведение",
+      "instructions": [
+        "Определить конкретную проблему структуры, границы рефакторинга и исключённые функциональные изменения.",
+        "Выполнить существующие значимые проверки затронутого поведения и сохранить baseline, включая известные сбои.",
+        "Если отсутствующее бизнес-решение меняет корректность или внешнее поведение, перейти в waiting_input с конкретным вопросом; продолжать только независимую работу, не изобретая заглушек."
+      ],
+      "required_artifacts": [
+        "refactor-baseline"
+      ],
+      "checks": [
+        {
+          "id": "baseline-ran",
+          "description": "Исходные проверки реально выполнены; их результаты привязаны к ревизии.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "git.read",
+        "test.run"
+      ],
+      "rework_targets": []
+    },
+    {
+      "id": "plan",
+      "profile": "backend",
+      "title": "Спланировать последовательность",
+      "instructions": [
+        "Выбрать небольшие обратимые шаги и перечислить сохраняемые контракты.",
+        "Определить достаточные проверки поведения; при слабом покрытии сначала сформулировать наблюдаемые гарантии, не зеркалить внутреннюю реализацию."
+      ],
+      "required_artifacts": [
+        "refactor-plan"
+      ],
+      "checks": [
+        {
+          "id": "preservation",
+          "description": "Сохраняемые гарантии и способ их проверки определены.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "baseline"
+      ]
+    },
+    {
+      "id": "change",
+      "profile": "backend",
+      "title": "Выполнить рефакторинг",
+      "instructions": [
+        "Последовательно изменить структуру кода, не расширяя требования.",
+        "Отделять обнаруженные дефекты и функциональные предложения от рефакторинга; при необходимости создать связанную задачу."
+      ],
+      "required_artifacts": [
+        "refactor-change"
+      ],
+      "checks": [
+        {
+          "id": "diff",
+          "description": "Рефакторинг фактически выполнен; diff доступен и ограничен планом.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "repo.write",
+        "git.read"
+      ],
+      "rework_targets": [
+        "plan"
+      ]
+    },
+    {
+      "id": "validate",
+      "profile": "qa",
+      "title": "Сравнить поведение до и после",
+      "instructions": [
+        "Повторить baseline и целевые проверки сохраняемых контрактов.",
+        "Проверить сборку и применимые ограничения производительности; сравнить результаты с исходным состоянием."
+      ],
+      "required_artifacts": [
+        "refactor-validation"
+      ],
+      "checks": [
+        {
+          "id": "checks-ran",
+          "description": "Проверки выполнены на новой ревизии и сопоставлены с baseline.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "test.run"
+      ],
+      "rework_targets": [
+        "change"
+      ]
+    },
+    {
+      "id": "review",
+      "profile": "reviewer",
+      "title": "Проверить границы рефакторинга",
+      "instructions": [
+        "Проверить сохранение публичных контрактов и отсутствие скрытого изменения поведения.",
+        "Оценить, решена ли исходная проблема структуры; указать оставшиеся ограничения."
+      ],
+      "required_artifacts": [
+        "refactor-conclusion"
+      ],
+      "checks": [
+        {
+          "id": "scope-preserved",
+          "description": "Заявленная цель достигнута без несогласованных функциональных изменений.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "git.read"
+      ],
+      "rework_targets": [
+        "plan",
+        "change",
+        "validate"
+      ]
+    }
+  ]
+}

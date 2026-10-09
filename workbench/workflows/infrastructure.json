@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "id": "infrastructure",
+  "title": "Изменение инфраструктуры",
+  "description": "Подготовить, применить и проверить конфигурацию целевого кластера в пределах выданных полномочий.",
+  "stages": [
+    {
+      "id": "baseline",
+      "profile": "devops",
+      "title": "Зафиксировать окружение",
+      "instructions": [
+        "Определить целевой кластер, namespace, сервис, требуемое состояние и допустимое воздействие.",
+        "Прочитать актуальное состояние кластера и конфигурацию репозитория; не выводить секреты в артефакты.",
+        "Если отсутствующее бизнес-решение влияет на корректность или внешнее поведение, зафиксировать конкретный вопрос и перейти в waiting_input; продолжать только независимую работу, не подменяя неизвестное заглушкой."
+      ],
+      "required_artifacts": [
+        "infra-baseline"
+      ],
+      "checks": [
+        {
+          "id": "observed",
+          "description": "Текущее состояние целевого окружения действительно прочитано и зафиксировано без секретов.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "cluster.read"
+      ],
+      "rework_targets": []
+    },
+    {
+      "id": "plan",
+      "profile": "devops",
+      "title": "Подготовить план и восстановление",
+      "instructions": [
+        "Определить изменения, порядок, зависимости и критерии успеха.",
+        "Описать восстановление; для необратимых изменений данных выделить отдельное бизнес-решение и data-migration."
+      ],
+      "required_artifacts": [
+        "infra-plan",
+        "infra-recovery-plan"
+      ],
+      "checks": [
+        {
+          "id": "target-and-recovery",
+          "description": "Цель, воздействие, полномочия и применимый способ восстановления определены.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "cluster.read"
+      ],
+      "rework_targets": [
+        "baseline"
+      ]
+    },
+    {
+      "id": "configure",
+      "profile": "devops",
+      "title": "Подготовить конфигурацию",
+      "instructions": [
+        "Изменить манифесты, настройки или pipeline в принятом формате репозитория.",
+        "Представить diff и проверить отсутствие секретов и непреднамеренных изменений других окружений."
+      ],
+      "required_artifacts": [
+        "infra-change"
+      ],
+      "checks": [
+        {
+          "id": "config-saved",
+          "description": "Конфигурация фактически сохранена; diff доступен для просмотра.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "repo.write",
+        "git.read"
+      ],
+      "rework_targets": [
+        "plan"
+      ]
+    },
+    {
+      "id": "validate",
+      "profile": "devops",
+      "title": "Проверить конфигурацию до применения",
+      "instructions": [
+        "Выполнить применимые проверки синтаксиса, политик и dry-run.",
+        "Сопоставить проверенную конфигурацию с планом; отсутствие технической возможности выполнить обязательную проверку считать блокировкой."
+      ],
+      "required_artifacts": [
+        "infra-preflight"
+      ],
+      "checks": [
+        {
+          "id": "validation-ran",
+          "description": "Предварительные проверки выполнены для точной версии конфигурации.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "test.run",
+        "cluster.read"
+      ],
+      "rework_targets": [
+        "configure"
+      ]
+    },
+    {
+      "id": "apply",
+      "profile": "devops",
+      "title": "Применить разрешённое изменение",
+      "instructions": [
+        "Проверить актуальность целевого окружения и уже выданных полномочий; при их отсутствии ожидать требуемое решение, не запрашивая повторно существующее разрешение.",
+        "Применить проверенную конфигурацию и записать точную версию, время, цель и результат операции."
+      ],
+      "required_artifacts": [
+        "infra-apply-result"
+      ],
+      "checks": [
+        {
+          "id": "applied",
+          "description": "Операция реально выполнена в указанном окружении; результат подтверждён системой.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "cluster.read",
+        "cluster.apply"
+      ],
+      "rework_targets": [
+        "plan",
+        "validate"
+      ]
+    },
+    {
+      "id": "verify",
+      "profile": "devops",
+      "title": "Проверить результат и зафиксировать состояние",
+      "instructions": [
+        "Проверить rollout, здоровье сервисов и необходимые smoke-проверки.",
+        "При неуспехе выполнить предусмотренный и разрешённый план восстановления; сохранить результаты и актуальную конфигурацию."
+      ],
+      "required_artifacts": [
+        "infra-verification",
+        "infra-final-state"
+      ],
+      "checks": [
+        {
+          "id": "verified",
+          "description": "Здоровье и требуемое состояние подтверждены фактическими проверками.",
+          "kind": "execution",
+          "allow_na": false
+        },
+        {
+          "id": "recovery-accounted",
+          "description": "Если потребовалось восстановление, его результат зафиксирован; незавершённое изменение не объявлено успешным.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "test.run",
+        "cluster.read",
+        "cluster.apply"
+      ],
+      "rework_targets": [
+        "plan",
+        "configure",
+        "apply"
+      ]
+    }
+  ]
+}

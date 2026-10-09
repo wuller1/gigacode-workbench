@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "unconfigured",
+  "project_name": null,
+  "project_root": null,
+  "instructions": [],
+  "stack": [],
+  "commands": {
+    "build": null,
+    "test": null,
+    "lint": null,
+    "typecheck": null,
+    "browser_test": null
+  },
+  "requirements_sources": [],
+  "source_of_truth_policy": "Resolve conflicting current sources explicitly; do not automatically prefer code over approved requirements.",
+  "design": {
+    "quality_policy": "gigacode-workbench/config/design-quality.json",
+    "contract": null,
+    "approved_visual_reference": null,
+    "inherit_zidao_appearance": false
+  },
+  "environments": [],
+  "data_classification": null,
+  "notes": "Commands must be verified argv arrays with cwd, required environment variable NAMES and effect classification. Do not store secret values."
+}

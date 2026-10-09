@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "purpose": "Measure specific properties and support expert review; no global aesthetic score. No Zidao appearance reference.",
+  "policy_state": "baseline-proposal-adapt-to-project-contract",
+  "normative_reference": "Selected WCAG 2.2 AA criteria; NOT a complete WCAG compliance checklist",
+  "metrics": [
+    {
+      "id": "text-contrast",
+      "kind": "standard",
+      "minimum_normal": 4.5,
+      "minimum_large": 3.0,
+      "unit": "ratio",
+      "large_text": {
+        "regular_px": 24,
+        "bold_px": 18.666666666666668,
+        "bold_weight": 700
+      },
+      "exceptions": "Inactive, incidental and logo text and other criterion-specific conditions must be assessed; conventional font size rule is only a classifier.",
+      "source": "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html"
+    },
+    {
+      "id": "nontext-contrast",
+      "kind": "standard",
+      "minimum": 3.0,
+      "unit": "ratio",
+      "scope": "Visual information necessary to identify UI controls, states and meaningful graphics; assess exceptions.",
+      "source": "https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html"
+    },
+    {
+      "id": "pointer-target",
+      "kind": "standard",
+      "minimum_width_css_px": 24,
+      "minimum_height_css_px": 24,
+      "exceptions": "Spacing, equivalent target, inline, user-agent control and essential presentation; bounding rect alone cannot decide compliance.",
+      "source": "https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html"
+    },
+    {
+      "id": "reflow",
+      "kind": "standard",
+      "vertical_content_width_css_px": 320,
+      "horizontal_content_height_css_px": 256,
+      "exceptions": "Content requiring two-dimensional layout; no loss of information or functionality.",
+      "source": "https://www.w3.org/WAI/WCAG22/Understanding/reflow.html"
+    },
+    {
+      "id": "text-resize",
+      "kind": "standard",
+      "scale_percent": 200,
+      "source": "https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html",
+      "scope": "No loss of content/functionality with criterion exceptions."
+    },
+    {
+      "id": "primary-touch-target",
+      "kind": "project-target-proposal",
+      "minimum_css_px": 44,
+      "scope": "Primary touch controls; adopt in design contract before using as a gate. Not WCAG AA universal minimum."
+    },
+    {
+      "id": "body-text",
+      "kind": "project-target-proposal",
+      "minimum_css_px": 16,
+      "scope": "Main reading text; secondary/dense content assessed separately. Not a universal WCAG minimum."
+    },
+    {
+      "id": "confirmed-clipping-or-overlap",
+      "kind": "project-target",
+      "maximum_blocking_defects": 0,
+      "scope": "Meaningful content and required actions; intentional overlays and scrolling are not automatically defects."
+    },
+    {
+      "id": "required-coverage",
+      "kind": "project-target",
+      "percent": 100,
+      "denominator": "Selected applicable required screen/state/viewport/theme/scenario cases enumerated before testing. Unknown cases do not count as covered."
+    },
+    {
+      "id": "token-compliance",
+      "kind": "project-target",
+      "unexplained_violations_max": 0,
+      "scope": "Properties for which this project has adopted tokens; documented exceptions remain visible."
+    },
+    {
+      "id": "visual-regression",
+      "kind": "project-specific",
+      "pixel_difference_threshold": null,
+      "scope": "Calibrate per component, platform and rendering noise. A small diff is not proof of good design."
+    },
+    {
+      "id": "usability",
+      "kind": "project-specific",
+      "task_success_threshold": null,
+      "time_on_task_threshold": null,
+      "scope": "Use actual participants/protocol/baseline and report sample size. Agent opinion is not user-study evidence."
+    }
+  ],
+  "performance_reference": {
+    "kind": "web-vitals-guidance",
+    "lcp_ms_max": 2500,
+    "inp_ms_max": 200,
+    "cls_max": 0.1,
+    "aggregation": "75th percentile of field visits, segmented mobile/desktop; lab results are separate",
+    "source": "https://web.dev/articles/vitals"
+  },
+  "suggested_viewports_css_px": [
+    [
+      320,
+      800
+    ],
+    [
+      360,
+      800
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      1280,
+      800
+    ],
+    [
+      1440,
+      900
+    ]
+  ],
+  "viewport_policy": "Select applicable cases and include relevant breakpoint boundaries. Test live resize/state persistence; fixed screenshots alone are insufficient.",
+  "expert_review": [
+    "task-fit",
+    "information-hierarchy",
+    "visual-rhythm",
+    "interaction-feedback",
+    "content-clarity",
+    "coherence-with-project"
+  ],
+  "verdicts": [
+    "ready-for-agreed-scope",
+    "rework",
+    "incomplete"
+  ],
+  "unknown_policy": "Unknown required observation blocks readiness; optional observations remain explicit limitations."
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "workbench_post_setup_handoff",
+  "is_example": true,
+  "handoff_id": null,
+  "revision": 0,
+  "updated_at": null,
+  "bundle": {
+    "version": null,
+    "installed_root": null,
+    "source_manifest_sha256": null
+  },
+  "paths": {
+    "target_root": null,
+    "memory_store": null,
+    "local_context_ref": null,
+    "inventory_ref": null,
+    "bindings_ref": null,
+    "profile_permissions_ref": null
+  },
+  "setup": {
+    "phase": "not_started",
+    "activation": "unknown",
+    "restart_required": null,
+    "cli_version": null,
+    "powershell_version": null,
+    "receipt_refs": [],
+    "check_refs": [],
+    "limitations": [],
+    "next_setup_action": null
+  },
+  "next_task": {
+    "kind": "gigacode_ui",
+    "status": "pending_setup",
+    "goal": "Продолжить существующую GigaCode UI: диагностика состояния и параллельных сессий, затем проверенные небольшие поставки по готовому плану",
+    "project_root": null,
+    "project_identity_ref": null,
+    "project_id": null,
+    "task_id": null,
+    "project_mode": "personal_fast",
+    "profile": "gigacode-ui",
+    "workflow": "gigacode-ui-diagnostics",
+    "first_delivery": "D0",
+    "authorization_ref": null,
+    "offer_presented_at": null,
+    "user_response_ref": null,
+    "deferred_reason": null
+  },
+  "resume": {
+    "run_directory": null,
+    "checkpoint_ref": null,
+    "pending_operation_refs": [],
+    "question_refs": [],
+    "next_action": null,
+    "read_next": []
+  }
+}

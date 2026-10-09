@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "id": "performance",
+  "title": "Исследование и улучшение производительности",
+  "description": "Измерить проблему, проверить гипотезы и сравнить изменение на воспроизводимой нагрузке.",
+  "stages": [
+    {
+      "id": "baseline",
+      "profile": "diagnostics",
+      "title": "Измерить исходную производительность",
+      "instructions": [
+        "Определить пользовательский симптом, метрику, целевое значение и ограничения ресурсов.",
+        "Выполнить воспроизводимый baseline в разрешённой среде с указанием нагрузки, данных, версий и разброса результатов.",
+        "Если отсутствующее бизнес-решение меняет корректность или внешнее поведение, перейти в waiting_input с конкретным вопросом; продолжать только независимую работу, не изобретая заглушек."
+      ],
+      "required_artifacts": [
+        "performance-baseline"
+      ],
+      "checks": [
+        {
+          "id": "baseline-measured",
+          "description": "Baseline реально измерен; метод и условия позволяют повторение.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "test.run"
+      ],
+      "rework_targets": []
+    },
+    {
+      "id": "hypotheses",
+      "profile": "diagnostics",
+      "title": "Выбрать проверяемые гипотезы",
+      "instructions": [
+        "На основании измерений и кода определить вероятные узкие места.",
+        "Для каждой гипотезы указать ожидаемый эффект, способ проверки и риск для корректности; не оптимизировать по догадке."
+      ],
+      "required_artifacts": [
+        "performance-hypotheses"
+      ],
+      "checks": [
+        {
+          "id": "testable",
+          "description": "Гипотезы связаны с наблюдениями и имеют критерии подтверждения.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "baseline"
+      ]
+    },
+    {
+      "id": "experiment",
+      "profile": "backend",
+      "title": "Проверить гипотезу экспериментом",
+      "instructions": [
+        "Выполнить ограниченный эксперимент или профилирование в разрешённой среде.",
+        "Сравнить с baseline и выбрать изменение только при подтверждённом эффекте; сохранить отрицательные результаты, не выдавая эксперимент за готовую функцию."
+      ],
+      "required_artifacts": [
+        "performance-experiment"
+      ],
+      "checks": [
+        {
+          "id": "experiment-ran",
+          "description": "Эксперимент реально выполнен и сравнение содержит измерения.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "repo.write",
+        "test.run"
+      ],
+      "rework_targets": [
+        "hypotheses"
+      ]
+    },
+    {
+      "id": "improve",
+      "profile": "backend",
+      "title": "Внести подтверждённое улучшение",
+      "instructions": [
+        "Реализовать выбранное изменение с сохранением корректности, контрактов и разумной сложности сопровождения.",
+        "Указать применимость эффекта и условия, при которых результат может отличаться."
+      ],
+      "required_artifacts": [
+        "performance-change"
+      ],
+      "checks": [
+        {
+          "id": "change-saved",
+          "description": "Улучшение фактически внесено и доступно в diff.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "repo.write",
+        "git.read"
+      ],
+      "rework_targets": [
+        "experiment"
+      ]
+    },
+    {
+      "id": "validate",
+      "profile": "qa",
+      "title": "Проверить эффект и корректность",
+      "instructions": [
+        "Повторить сопоставимую нагрузку и целевые функциональные проверки.",
+        "Сравнить метрики, разброс, потребление ресурсов и возможные регрессии; не переносить результаты локального опыта на production без оснований."
+      ],
+      "required_artifacts": [
+        "performance-validation"
+      ],
+      "checks": [
+        {
+          "id": "comparison-ran",
+          "description": "Сравнительные и функциональные проверки фактически выполнены.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "test.run"
+      ],
+      "rework_targets": [
+        "baseline",
+        "improve"
+      ]
+    },
+    {
+      "id": "decision",
+      "profile": "reviewer",
+      "title": "Оценить результат оптимизации",
+      "instructions": [
+        "Сопоставить эффект с целевой метрикой, рисками и сложностью изменения.",
+        "Зафиксировать решение принять, доработать или отклонить изменение; указать границы подтверждённого результата."
+      ],
+      "required_artifacts": [
+        "performance-conclusion"
+      ],
+      "checks": [
+        {
+          "id": "evidence-based",
+          "description": "Решение обосновано измерениями и результатами проверки корректности.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "git.read"
+      ],
+      "rework_targets": [
+        "hypotheses",
+        "improve",
+        "validate"
+      ]
+    }
+  ]
+}

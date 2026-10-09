@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "kind": "optional_project_design_preset",
+  "id": "sber-plasma",
+  "label": "Корпоративный зелёный · адаптация Plasma SDDS SERV",
+  "status": "proposed_not_applied",
+  "scope": "explicit_project_design_contract_only",
+  "is_official_brand_theme": false,
+  "changes_workbench_default": false,
+  "upstream_subset_ref": "../../assets/sber-reference/plasma-token-subset.json",
+  "upstream_license_ref": "../../assets/sber-reference/LICENSE.txt",
+  "source_record_ref": "../../assets/sber-reference/SOURCE.md",
+  "notes": [
+    "Selected source tokens are MIT licensed; recipe and resolved semantic adaptation are project proposals, not official Sber brand requirements.",
+    "Colors are opaque resolved project values. Do not apply raw alpha tokens without compositing over the actual background.",
+    "No font binaries, logos, screenshots, SVG icons or full component SDK are included.",
+    "Runtime loading/activation must be implemented and scoped explicitly; this file is not an existing GigaCode configuration format."
+  ],
+  "colors": {
+    "light": {
+      "canvas": "#F9F9F9",
+      "surface": "#FFFFFF",
+      "surfaceSubtle": "#F5F5F5",
+      "surfaceHover": "#ECECEC",
+      "surfaceSelected": "#E5F2E8",
+      "text": "#1E261F",
+      "textSecondary": "#445548",
+      "textMuted": "#5E6C60",
+      "borderSubtle": "#DDDDDD",
+      "borderControl": "#738375",
+      "accent": "#146C32",
+      "accentHover": "#105A29",
+      "accentActive": "#0D4B22",
+      "onAccent": "#FFFFFF",
+      "focus": "#146C32",
+      "successText": "#246338",
+      "successBg": "#E5F2E8",
+      "warningText": "#775210",
+      "warningBg": "#FFF4DA",
+      "errorText": "#A12C37",
+      "errorBg": "#FFE8E9",
+      "infoText": "#365E82",
+      "infoBg": "#EAF1FA"
+    },
+    "dark": {
+      "canvas": "#080808",
+      "surface": "#171717",
+      "surfaceSubtle": "#262626",
+      "surfaceHover": "#303830",
+      "surfaceSelected": "#203C27",
+      "text": "#F0F5EF",
+      "textSecondary": "#CED9CD",
+      "textMuted": "#A6B8A5",
+      "borderSubtle": "#363636",
+      "borderControl": "#7E967D",
+      "accent": "#A9D6A6",
+      "accentHover": "#C0E1BB",
+      "accentActive": "#97C992",
+      "onAccent": "#172318",
+      "focus": "#A9D6A6",
+      "successText": "#AED5A8",
+      "successBg": "#203923",
+      "warningText": "#DFC58B",
+      "warningBg": "#3D321B",
+      "errorText": "#F0B5BD",
+      "errorBg": "#442A2E",
+      "infoText": "#B7D0E9",
+      "infoBg": "#253648"
+    }
+  },
+  "exact_source_mappings": {
+    "light": {
+      "canvas": "--background-primary",
+      "surfaceSubtle": "--surface-solid-primary",
+      "surfaceHover": "--surface-solid-secondary",
+      "borderSubtle": "--surface-solid-tertiary"
+    },
+    "dark": {
+      "canvas": "--background-primary",
+      "surface": "--surface-solid-primary",
+      "surfaceSubtle": "--surface-solid-secondary",
+      "borderSubtle": "--surface-solid-tertiary"
+    }
+  },
+  "adaptation_note": "All resolved keys outside exact_source_mappings are own project choices; same spellings or incidental equal values do not imply an official source mapping. Green action text/background states were changed for the measured pairs.",
+  "typography": {
+    "fontFamily": "Segoe UI, system-ui, sans-serif",
+    "fontBinaryIncluded": false,
+    "bodyPx": 14,
+    "bodyLineHeightPx": 20,
+    "formTextPx": 15,
+    "formLineHeightPx": 22,
+    "metadataPx": 13,
+    "metadataLineHeightPx": 18,
+    "pageTitlePx": 24,
+    "pageTitleLineHeightPx": 32
+  },
+  "geometry": {
+    "spaceUnitPx": 4,
+    "pagePaddingPx": 24,
+    "sectionGapPx": 24,
+    "fieldGapPx": 16,
+    "labelGapPx": 8,
+    "controlHeightPx": 36,
+    "comfortableControlHeightPx": 40,
+    "tableRowMinHeightPx": 40,
+    "compactTableRowMinHeightPx": 36,
+    "controlRadiusPx": 8,
+    "panelRadiusPx": 12,
+    "focusWidthPx": 2,
+    "focusOffsetPx": 2
+  },
+  "motion": {
+    "stateTransitionMs": 120,
+    "panelTransitionMs": 160,
+    "respectReducedMotion": true
+  }
+}

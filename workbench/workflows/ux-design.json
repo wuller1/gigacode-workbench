@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "id": "ux-design",
+  "title": "Проектирование пользовательского опыта",
+  "description": "Разработать варианты интерфейса, измеримый design contract и проверяемый прототип до продуктовой реализации.",
+  "stages": [
+    {
+      "id": "hypothesis",
+      "profile": "analyst",
+      "title": "Определить UX-гипотезу",
+      "instructions": [
+        "Изучить пользовательскую задачу, участников, контекст, ограничения и доступные исследования.",
+        "Сформулировать основной путь, ожидаемый результат и иерархию экранов; не выдумывать интервью и пользовательские наблюдения.",
+        "Прочитать docs/DESIGN_QUALITY.md и config/design-quality.json пакета; различать нормативные основания и проектные целевые значения, не выдавать внутренний порог за универсальный стандарт.",
+        "При отсутствии бизнес-решения, влияющего на корректность или пользовательский результат, перейти в waiting_input с конкретным вопросом; независимую работу продолжать без выдуманных ответов и заглушек."
+      ],
+      "required_artifacts": [
+        "ux-hypothesis",
+        "ux-screen-hierarchy"
+      ],
+      "checks": [
+        {
+          "id": "hypothesis",
+          "description": "Гипотеза, пользователи, задача и основания ясно определены.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": []
+    },
+    {
+      "id": "options",
+      "profile": "frontend",
+      "title": "Сравнить варианты решения",
+      "instructions": [
+        "Подготовить варианты навигации, структуры содержания и композиции, если различия могут влиять на пользовательский результат.",
+        "Зафиксировать выбор и компромиссы; при достаточности одного варианта объяснить это ограничениями задачи."
+      ],
+      "required_artifacts": [
+        "ux-options"
+      ],
+      "checks": [
+        {
+          "id": "choice",
+          "description": "Выбранный подход обоснован задачами пользователя и ограничениями.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "hypothesis"
+      ]
+    },
+    {
+      "id": "contract",
+      "profile": "spec",
+      "title": "Согласовать design contract",
+      "instructions": [
+        "Описать действия, содержимое, состояния, компоненты и адаптивность выбранного решения.",
+        "Составить матрицу viewport и состояний, пороги геометрии и контраста, методы и источники; отличить нормативное основание от проектной цели.",
+        "Задать отдельные экспертные критерии и обозначить, какие интеграции прототип не реализует."
+      ],
+      "required_artifacts": [
+        "ux-design-contract",
+        "ux-state-viewport-matrix"
+      ],
+      "checks": [
+        {
+          "id": "contract",
+          "description": "Design contract содержит измеримые требования и границы прототипа.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "hypothesis",
+        "options"
+      ]
+    },
+    {
+      "id": "prototype",
+      "profile": "frontend",
+      "title": "Создать прототип",
+      "instructions": [
+        "Создать прототип в согласованном формате, покрывающий выбранные пользовательские пути и состояния.",
+        "Пометить примерные данные и нереализованные интеграции; реалистичность изображения не считать работоспособностью функции."
+      ],
+      "required_artifacts": [
+        "ux-prototype"
+      ],
+      "checks": [
+        {
+          "id": "prototype-exists",
+          "description": "Прототип действительно создан и открывается в доступной среде.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "repo.write",
+        "test.run",
+        "browser.inspect"
+      ],
+      "rework_targets": [
+        "contract"
+      ]
+    },
+    {
+      "id": "measure",
+      "profile": "qa",
+      "title": "Проверить сценарии и измерения",
+      "instructions": [
+        "Пройти основные пользовательские пути и клавиатурные действия в браузере.",
+        "Собрать реальные измерения геометрии, контраста, viewport coverage и state coverage; использовать браузерный JavaScript, экспортированный через tools/design-metrics.ps1 согласно инструкции DESIGN_QUALITY.md и дополнить неподдерживаемые измерения проверяемыми данными. Неизвестное измерение не считать пройденной проверкой.",
+        "Указать, какие наблюдения получены экспертным проходом, а какие — исследованием с пользователями; не смешивать эти основания."
+      ],
+      "required_artifacts": [
+        "ux-validation",
+        "ux-design-metrics"
+      ],
+      "checks": [
+        {
+          "id": "walkthrough-ran",
+          "description": "Сценарии фактически пройдены в прототипе.",
+          "kind": "execution",
+          "allow_na": false
+        },
+        {
+          "id": "metrics-ran",
+          "description": "Измерения выполнены по матрице и порогам design contract; неизвестное не считается успешным результатом.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "browser.inspect"
+      ],
+      "rework_targets": [
+        "contract",
+        "prototype"
+      ]
+    },
+    {
+      "id": "visual-review",
+      "profile": "reviewer",
+      "title": "Провести независимое дизайн-ревью",
+      "instructions": [
+        "Независимо оценить иерархию, композицию, ясность действий, содержание и визуальную согласованность по реальным изображениям и сценарию; для замечаний указать место и последствия. Общий числовой балл не доказывает качество дизайна.",
+        "Проверить, поддерживает ли выбранная композиция UX-гипотезу; числовые пороги и экспертное заключение оценивать отдельно."
+      ],
+      "required_artifacts": [
+        "ux-visual-review"
+      ],
+      "checks": [
+        {
+          "id": "review-ran",
+          "description": "Прототип действительно просмотрен в предусмотренных состояниях и размерах.",
+          "kind": "execution",
+          "allow_na": false
+        },
+        {
+          "id": "clarity",
+          "description": "Существенные проблемы ясности и иерархии устранены либо остаются блокирующими замечаниями.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "browser.inspect"
+      ],
+      "rework_targets": [
+        "hypothesis",
+        "options",
+        "contract",
+        "prototype",
+        "measure"
+      ]
+    },
+    {
+      "id": "handoff",
+      "profile": "spec",
+      "title": "Передать решения в реализацию",
+      "instructions": [
+        "Связать решения со сценариями, состояниями, компонентами и критериями приёмки.",
+        "Передать contract, прототип, измерения и ревью; явно отделить продуктовую реализацию от прототипа и сохранить открытые вопросы."
+      ],
+      "required_artifacts": [
+        "ux-handoff"
+      ],
+      "checks": [
+        {
+          "id": "handoff",
+          "description": "Разработчик получает проверяемые решения, их основания и явные ограничения.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "contract",
+        "measure",
+        "visual-review"
+      ]
+    }
+  ]
+}

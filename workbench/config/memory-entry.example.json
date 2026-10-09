@@ -1,0 +1,17 @@
+{
+  "key": "build-command",
+  "category": "project_fact",
+  "scope": "project",
+  "project_id": "replace-with-confirmed-project-id",
+  "summary": "Пример: команда проверки проекта",
+  "content": "Заменить проверенным значением; не сохранять этот пример как факт.",
+  "status": "needs_verification",
+  "sources": [
+    {
+      "kind": "file",
+      "reference": "replace-with-actual-source-path",
+      "revision": "replace-with-actual-hash",
+      "observed_at": "2026-10-09T00:00:00Z"
+    }
+  ]
+}

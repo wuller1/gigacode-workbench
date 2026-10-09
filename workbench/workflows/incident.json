@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "id": "incident",
+  "title": "Диагностика и сопровождение инцидента",
+  "description": "Локализовать причину, подготовить восстановление и подтвердить результат связанного исправления.",
+  "stages": [
+    {
+      "id": "triage",
+      "profile": "diagnostics",
+      "title": "Оценить инцидент",
+      "instructions": [
+        "Зафиксировать симптом, начало, затронутых пользователей, окружение и изменение относительно нормального состояния.",
+        "Установить допустимые действия и срочность; не смешивать восстановление сервиса с окончательным устранением причины.",
+        "При отсутствии бизнес-решения, влияющего на корректность, сформулировать конкретный вопрос и перейти в waiting_input; независимую работу продолжать без выдуманных ответов и заглушек."
+      ],
+      "required_artifacts": [
+        "incident-triage"
+      ],
+      "checks": [
+        {
+          "id": "impact",
+          "description": "Область воздействия, симптомы и ограничения действий описаны.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": []
+    },
+    {
+      "id": "evidence",
+      "profile": "diagnostics",
+      "title": "Собрать проверяемые факты",
+      "instructions": [
+        "Изучить код и предоставленные логи, события, версии и метрики; сохранять время и происхождение каждого наблюдения.",
+        "Если нужны дополнительные read-only данные CI, кластера или мониторинга, запросить соответствующую host-возможность либо получить экспорт; не выдумывать доступ."
+      ],
+      "required_artifacts": [
+        "incident-evidence"
+      ],
+      "checks": [
+        {
+          "id": "facts",
+          "description": "Факты отделены от гипотез; значимые пробелы наблюдаемости явно отмечены.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "triage"
+      ]
+    },
+    {
+      "id": "hypotheses",
+      "profile": "diagnostics",
+      "title": "Проверить гипотезы",
+      "instructions": [
+        "Сформулировать ранжированные гипотезы с наблюдениями, которые их подтвердят или опровергнут.",
+        "Выполнить безопасные воспроизведения и целевые диагностические проверки в разрешённой среде; обновить оценку гипотез."
+      ],
+      "required_artifacts": [
+        "incident-hypotheses",
+        "incident-diagnostic-results"
+      ],
+      "checks": [
+        {
+          "id": "diagnostics-ran",
+          "description": "Заявленные воспроизведения и диагностические проверки реально выполнены.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "test.run"
+      ],
+      "rework_targets": [
+        "evidence"
+      ]
+    },
+    {
+      "id": "recovery-plan",
+      "profile": "devops",
+      "title": "Спланировать восстановление",
+      "instructions": [
+        "Подготовить конкретный вариант восстановления, критерии успеха и ограничения отката.",
+        "Передать исправление в bugfix, infrastructure или data-migration с привязкой к инциденту; исполнение происходит через соответствующий workflow и полномочия host."
+      ],
+      "required_artifacts": [
+        "incident-recovery-plan",
+        "incident-linked-change"
+      ],
+      "checks": [
+        {
+          "id": "plan-actionable",
+          "description": "Названы действие, исполнительный маршрут, цель, риск и способ проверки восстановления.",
+          "kind": "artifact",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "triage",
+        "hypotheses"
+      ]
+    },
+    {
+      "id": "verify",
+      "profile": "qa",
+      "title": "Проверить восстановление",
+      "instructions": [
+        "Получить реальные результаты связанного изменения и его точную ревизию; до этого не утверждать, что восстановление выполнено.",
+        "Выполнить целевые проверки исходного симптома и основного пользовательского пути; сопоставить состояние с исходными наблюдениями."
+      ],
+      "required_artifacts": [
+        "incident-recovery-validation"
+      ],
+      "checks": [
+        {
+          "id": "recovery-tested",
+          "description": "Проверки восстановления фактически выполнены после изменения и подтверждают его результат.",
+          "kind": "execution",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read",
+        "test.run"
+      ],
+      "rework_targets": [
+        "evidence",
+        "hypotheses",
+        "recovery-plan"
+      ]
+    },
+    {
+      "id": "postmortem",
+      "profile": "diagnostics",
+      "title": "Зафиксировать причину и профилактику",
+      "instructions": [
+        "Составить временную шкалу, подтверждённую причину или оставшиеся гипотезы, предпринятые действия и результаты.",
+        "Определить конкретные меры предотвращения повторения и улучшения обнаружения; не выдавать гипотезу за доказанную причину."
+      ],
+      "required_artifacts": [
+        "incident-report",
+        "incident-prevention-actions"
+      ],
+      "checks": [
+        {
+          "id": "report-grounded",
+          "description": "Причинные выводы поддержаны фактами; остаточная неопределённость и дальнейшие действия указаны.",
+          "kind": "judgment",
+          "allow_na": false
+        }
+      ],
+      "capabilities": [
+        "repo.read"
+      ],
+      "rework_targets": [
+        "hypotheses",
+        "verify"
+      ]
+    }
+  ]
+}

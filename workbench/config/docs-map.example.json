@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "configured": false,
+  "rules": [
+    {
+      "id": "example-api-contract",
+      "sources": ["src/api/*"],
+      "documents": ["docs/api.md"],
+      "reason": "Example only: API behavior and contracts described in this document"
+    }
+  ],
+  "ignores": [
+    {
+      "pattern": "work/gigacode/*",
+      "reason": "Example only: local execution records are outside maintained product documentation"
+    }
+  ]
+}

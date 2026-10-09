@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "kind": "attributed_token_subset",
+  "license": "MIT",
+  "copyright": "Copyright (c) Salute Devices",
+  "repository": "https://github.com/salute-developers/plasma",
+  "commit": "fe399bad3bfa7ffe4eea233c258d944c866e9815",
+  "package": "@salutejs/sdds-themes",
+  "source_package_version": "0.84.0-dev.0",
+  "source_theme": "sdds_serv",
+  "transformation": "Selected exact CSS variable/value pairs serialized as JSON; no color conversion. Eight-digit colors retain alpha. This is not the full theme.",
+  "source_files": {
+    "light": {
+      "path": "packages/themes/sdds-themes/src/css/sdds_serv__light.css",
+      "url": "https://github.com/salute-developers/plasma/blob/fe399bad3bfa7ffe4eea233c258d944c866e9815/packages/themes/sdds-themes/src/css/sdds_serv__light.css",
+      "sha256": "44774f88a5657cb54d3217a7fd298ae7d74b4a8164189969869a7011b97b3e3d",
+      "token_lines": {
+        "--background-primary": 572,
+        "--surface-solid-primary": 250,
+        "--surface-solid-secondary": 254,
+        "--surface-solid-tertiary": 257,
+        "--text-primary": 78,
+        "--text-secondary": 82,
+        "--text-accent": 91,
+        "--text-positive": 96,
+        "--surface-accent": 285,
+        "--surface-accent-hover": 283,
+        "--surface-accent-active": 284,
+        "--outline-solid-tertiary": 636
+      }
+    },
+    "dark": {
+      "path": "packages/themes/sdds-themes/src/css/sdds_serv__dark.css",
+      "url": "https://github.com/salute-developers/plasma/blob/fe399bad3bfa7ffe4eea233c258d944c866e9815/packages/themes/sdds-themes/src/css/sdds_serv__dark.css",
+      "sha256": "e191f29e59ea1e684a50466e336a295f89006306ca433110c86b94ecc2d0f1bb",
+      "token_lines": {
+        "--background-primary": 570,
+        "--surface-solid-primary": 248,
+        "--surface-solid-secondary": 252,
+        "--surface-solid-tertiary": 255,
+        "--text-primary": 78,
+        "--text-secondary": 82,
+        "--text-accent": 91,
+        "--text-positive": 96,
+        "--surface-accent": 284,
+        "--surface-accent-hover": 282,
+        "--surface-accent-active": 283,
+        "--outline-solid-tertiary": 650
+      }
+    }
+  },
+  "tokens": {
+    "light": {
+      "--background-primary": "#F9F9F9",
+      "--surface-solid-primary": "#F5F5F5",
+      "--surface-solid-secondary": "#ECECEC",
+      "--surface-solid-tertiary": "#DDDDDD",
+      "--text-primary": "#171717F5",
+      "--text-secondary": "#1717178F",
+      "--text-accent": "#108E26",
+      "--text-positive": "#108E26",
+      "--surface-accent": "#1A9E32",
+      "--surface-accent-hover": "#1EB83AFF",
+      "--surface-accent-active": "#178C2CFF",
+      "--outline-solid-tertiary": "#707070"
+    },
+    "dark": {
+      "--background-primary": "#080808",
+      "--surface-solid-primary": "#171717",
+      "--surface-solid-secondary": "#262626",
+      "--surface-solid-tertiary": "#363636",
+      "--text-primary": "#F5F5F5F5",
+      "--text-secondary": "#F5F5F58F",
+      "--text-accent": "#24B23E",
+      "--text-positive": "#24B23E",
+      "--surface-accent": "#1A9E32",
+      "--surface-accent-hover": "#1DAF37FF",
+      "--surface-accent-active": "#18952FFF",
+      "--outline-solid-tertiary": "#858585"
+    }
+  }
+}

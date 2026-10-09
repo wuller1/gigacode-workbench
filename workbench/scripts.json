@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "scripts": [
+    {
+      "source": "source/prepare-scripts.txt",
+      "target": "prepare-scripts.ps1",
+      "sha256": "6a652ac33d90d8a8d18091d2266adcdee7d2c4f36967026f20c9c52b22af3825"
+    },
+    {
+      "source": "source/workbench.txt",
+      "target": "workbench.ps1",
+      "sha256": "fdf29406a021e835b1dd1239caca2ccdb82daf720307f317f36f0a7b3cae40ba"
+    },
+    {
+      "source": "source/install-user.txt",
+      "target": "install-user.ps1",
+      "sha256": "d2e7b1a5efb66f1581bcd17de577c34d96b8808152b960d5cf8df13a31c77ee8"
+    },
+    {
+      "source": "source/docs-impact.txt",
+      "target": "tools/docs-impact.ps1",
+      "sha256": "528ae248469b841565c772e910053659844e3eec53f5bd5ecd1410f4b5b3b960"
+    },
+    {
+      "source": "source/design-metrics.txt",
+      "target": "tools/design-metrics.ps1",
+      "sha256": "c3ba229606535de12ede079ef3c5362ad05bbdd073ac4e435d7d4a81716297c2"
+    },
+    {
+      "source": "source/memory.txt",
+      "target": "tools/memory.ps1",
+      "sha256": "32f9b8b2c512f533b9247247e0716726894ba068795a861f1a0a26008ce344a2"
+    },
+    {
+      "source": "source/test-workbench.txt",
+      "target": "tests/test-workbench.ps1",
+      "sha256": "c4bfe474ff528b1399b555ba5cd89c4c884920d5b87fddd7004e7e67d5253189"
+    },
+    {
+      "source": "source/test-docs-impact.txt",
+      "target": "tests/test-docs-impact.ps1",
+      "sha256": "7cfe10555ecb7e0d873a7ab49dd6ca037b86dd9dbc9fdc47b274c9be102a5f71"
+    },
+    {
+      "source": "source/test-design-metrics.txt",
+      "target": "tests/test-design-metrics.ps1",
+      "sha256": "eb1f0527b7c7f1dd59fdaae51f9939b26ca496b83506593d6a4515dff3055c9c"
+    },
+    {
+      "source": "source/test-install-user.txt",
+      "target": "tests/test-install-user.ps1",
+      "sha256": "d10caf65dba358cdbcec997e2a55b3d3854e013206a9081aa50559b35f811c08"
+    },
+    {
+      "source": "source/test-memory.txt",
+      "target": "tests/test-memory.ps1",
+      "sha256": "55d56e2a0d505df94b60c24ef29bebe8de5831b10412bbfebe4ad1f72275f7b4"
+    },
+    {
+      "source": "source/run-tests.txt",
+      "target": "tests/run-tests.ps1",
+      "sha256": "cc8eca20b60598c0623f7256ac179d3d8760a302e5d0c31d43d4c5f93b1fc925"
+    }
+  ]
+}
