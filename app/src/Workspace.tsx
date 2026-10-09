@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { flushSync } from "react-dom";
 import { useStored } from "./api";
 import { Icon, IconButton, Menu, useLayer } from "./ui";
 import {
@@ -72,6 +73,9 @@ export function Workspace({
     () => new Set([...layout.right, ...layout.bottom]),
   );
   const [drag, setDrag] = useState<PanelId>();
+  const [dropSide, setDropSide] = useState<Side>();
+  const cancelDrag = useRef<(() => void) | undefined>(undefined);
+  const suppressDragClick = useRef(false);
   const [resizing, setResizing] = useState(false);
   const [maximized, setMaximized] = useState<PanelId>();
   useLayer(!!drag || resizing);
@@ -85,6 +89,108 @@ export function Workspace({
       [`${side}Active`]: id,
     }));
     setDrag(undefined);
+  };
+  useEffect(() => {
+    // A drag-generated click must not activate the old tab or a control under the drop.
+    // A fresh pointerdown always restores ordinary click behavior.
+    const resetClick = () => {
+      suppressDragClick.current = false;
+    };
+    const guardClick = (event: MouseEvent) => {
+      if (suppressDragClick.current && event.detail > 0) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+      suppressDragClick.current = false;
+    };
+    window.addEventListener("pointerdown", resetClick, true);
+    window.addEventListener("click", guardClick, true);
+    return () => {
+      cancelDrag.current?.();
+      window.removeEventListener("pointerdown", resetClick, true);
+      window.removeEventListener("click", guardClick, true);
+    };
+  }, []);
+  const beginTabDrag = (
+    id: PanelId,
+    event: React.PointerEvent<HTMLButtonElement>,
+  ) => {
+    if (event.button !== 0 || !event.isPrimary) return;
+    cancelDrag.current?.();
+    const source = event.currentTarget;
+    const pointerId = event.pointerId;
+    const startX = event.clientX,
+      startY = event.clientY;
+    let active = false,
+      finished = false;
+    const hit = (x: number, y: number): Side | undefined => {
+      const target = document
+        .elementFromPoint(x, y)
+        ?.closest<HTMLElement>("[data-dock-side]");
+      if (!target || !area.current?.contains(target)) return undefined;
+      const side = target.dataset.dockSide;
+      return side === "right" || side === "bottom" ? side : undefined;
+    };
+    const finish = (side?: Side) => {
+      if (finished) return;
+      finished = true;
+      window.removeEventListener("pointermove", pointerMove, true);
+      window.removeEventListener("pointerup", pointerUp, true);
+      window.removeEventListener("pointercancel", pointerCancel, true);
+      window.removeEventListener("keydown", keyDown, true);
+      window.removeEventListener("blur", cancel);
+      source.removeEventListener("lostpointercapture", cancel);
+      try {
+        if (source.hasPointerCapture(pointerId))
+          source.releasePointerCapture(pointerId);
+      } catch {
+        /* Window may already be closing. */
+      }
+      cancelDrag.current = undefined;
+      if (active) suppressDragClick.current = true;
+      setDrag(undefined);
+      setDropSide(undefined);
+      if (active && side) move(id, side);
+    };
+    const cancel = () => finish();
+    const pointerCancel = (e: PointerEvent) => {
+      if (e.pointerId === pointerId) finish();
+    };
+    const keyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        finish();
+      }
+    };
+    const pointerMove = (e: PointerEvent) => {
+      if (e.pointerId !== pointerId) return;
+      if (!active) {
+        if (Math.hypot(e.clientX - startX, e.clientY - startY) <= 6) return;
+        active = true;
+        // Commit hit targets before measuring them, even for a single long pointer move.
+        flushSync(() => setDrag(id));
+      }
+      e.preventDefault();
+      setDropSide(hit(e.clientX, e.clientY));
+    };
+    const pointerUp = (e: PointerEvent) => {
+      if (e.pointerId !== pointerId) return;
+      if (active) e.preventDefault();
+      finish(active ? hit(e.clientX, e.clientY) : undefined);
+    };
+    cancelDrag.current = cancel;
+    window.addEventListener("pointermove", pointerMove, true);
+    window.addEventListener("pointerup", pointerUp, true);
+    window.addEventListener("pointercancel", pointerCancel, true);
+    window.addEventListener("keydown", keyDown, true);
+    window.addEventListener("blur", cancel);
+    source.addEventListener("lostpointercapture", cancel);
+    try {
+      source.setPointerCapture(pointerId);
+    } catch {
+      /* Window listeners remain the fallback. */
+    }
   };
   const close = (id: PanelId) => {
     setLayout((old) => ({
@@ -190,24 +296,14 @@ export function Workspace({
                 bottom: bottomHeight - 36,
               }
         }
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => {
-          e.preventDefault();
-          if (drag) move(drag, side);
-        }}
       >
         {ids.map((id) => (
-          <div
-            className={`dock-tab ${active === id ? "active" : ""}`}
-            key={id}
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("text/plain", id);
-              setDrag(id);
-            }}
-            onDragEnd={() => setDrag(undefined)}
-          >
+          <div className={`dock-tab ${active === id ? "active" : ""}`} key={id}>
             <button
+              className="dock-tab-label"
+              title={`${panels[id].title} · перетащите для перемещения`}
+              onPointerDown={(event) => beginTabDrag(id, event)}
+              onDragStart={(event) => event.preventDefault()}
               onClick={() =>
                 setLayout((old) => ({ ...old, [`${side}Active`]: id }))
               }
@@ -404,20 +500,14 @@ export function Workspace({
         {drag && (
           <div className="dock-drop-overlay">
             <div
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                move(drag, "right");
-              }}
+              data-dock-side="right"
+              className={dropSide === "right" ? "drop-target-active" : ""}
             >
               Поместить справа
             </div>
             <div
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                move(drag, "bottom");
-              }}
+              data-dock-side="bottom"
+              className={dropSide === "bottom" ? "drop-target-active" : ""}
             >
               Поместить снизу
             </div>

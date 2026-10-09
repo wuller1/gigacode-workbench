@@ -1676,13 +1676,14 @@ kbd {
   inset: 0;
   z-index: 50;
   background: #314c2e33;
-  display: flex;
-  align-items: stretch;
-  padding: 25px;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 45%);
+  grid-template-rows: minmax(0, 1fr) minmax(110px, 32%);
+  gap: 12px;
+  cursor: grabbing;
+  user-select: none;
 }
 .dock-drop-overlay > div {
-  flex: 1;
   border: 2px dashed var(--control);
   border-radius: 12px;
   display: flex;
@@ -1692,8 +1693,28 @@ kbd {
   opacity: 0.9;
   font-size: 14px;
 }
-.dock-drop-overlay > div:hover {
+.dock-drop-overlay > div:first-child {
+  grid-column: 2;
+  grid-row: 1;
+}
+.dock-drop-overlay > div:last-child {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+.dock-drop-overlay > div:hover,
+.dock-drop-overlay > .drop-target-active {
   background: var(--selected);
+  border-color: var(--accent);
+  border-style: solid;
+}
+.dock-tab-label {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.dock-tab-label:active {
+  cursor: grabbing;
 }
 .resource-tabs {
   display: flex;

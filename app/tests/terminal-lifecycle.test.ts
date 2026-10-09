@@ -101,6 +101,37 @@ describe("terminal lifetime ownership", () => {
     expect(() => x.exit()).not.toThrow();
     expect(await x.service.dispose()).toEqual({ unconfirmed: [] });
   });
+  it.skipIf(process.platform !== "win32")(
+    "releases a naturally exited Windows PTY after its callback and awaits cleanup on dispose",
+    async () => {
+      const x = fixture();
+      await x.service.invoke("terminal.create", { projectId: "project" });
+      x.exit();
+      expect(x.child.kill).not.toHaveBeenCalled();
+      expect(await x.service.invoke("terminal.list", {})).toEqual([]);
+      const disposal = x.service.dispose();
+      expect(await disposal).toEqual({ unconfirmed: [] });
+      expect(x.child.kill).toHaveBeenCalledTimes(1);
+      expect(x.child.kill).toHaveBeenCalledWith();
+      await x.service.dispose();
+      expect(x.child.kill).toHaveBeenCalledTimes(1);
+    },
+  );
+  it.skipIf(process.platform !== "win32")(
+    "reports failed native handle cleanup instead of confirming disposal",
+    async () => {
+      const x = fixture();
+      const terminal = (await x.service.invoke("terminal.create", {
+        projectId: "project",
+      })) as { id: string };
+      x.child.kill.mockImplementation(() => {
+        throw new Error("native cleanup failed");
+      });
+      x.exit();
+      expect(await x.service.dispose()).toEqual({ unconfirmed: [terminal.id] });
+      expect(x.child.kill).toHaveBeenCalledTimes(1);
+    },
+  );
   it.skipIf(process.platform === "win32")(
     "escalates once on POSIX and reports unobserved exit without a false event",
     async () => {

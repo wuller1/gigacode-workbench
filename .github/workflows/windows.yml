@@ -53,19 +53,75 @@ jobs:
         run: npm test
 
       - name: Verify Windows native dependencies
+        timeout-minutes: 2
         run: |
           @'
           const assert = require('node:assert/strict');
+          const {spawn, spawnSync} = require('node:child_process');
           assert.equal(process.platform, 'win32');
           assert.equal(process.arch, 'x64');
-          assert.ok(require('sharp').versions.vips);
-          const pty = require('@lydell/node-pty');
-          let output = '';
-          const child = pty.spawn(process.env.ComSpec, ['/d', '/c', 'echo WORKBENCH_PTY_OK'], {name:'xterm-color', cols:80, rows:24, cwd:process.cwd(), env:process.env});
-          const timer = setTimeout(() => { child.kill(); console.error('Native PTY did not complete'); process.exitCode = 1; }, 15000);
-          child.onData(data => { output += data; });
-          child.onExit(({exitCode}) => { clearTimeout(timer); assert.equal(exitCode, 0); assert.match(output, /WORKBENCH_PTY_OK/); console.log('Windows PTY and Sharp loaded successfully'); });
+          // A separate watchdog remains responsive if a native call blocks the probe.
+          const probe = String.raw`
+            const assert = require('node:assert/strict');
+            const report = (phase, fields = {}) => console.log(JSON.stringify({phase, ...fields}));
+            assert.ok(require('sharp').versions.vips);
+            const pty = require('@lydell/node-pty');
+            report('native_loaded');
+            let output = '', exited = false, cleaned = false;
+            const child = pty.spawn(process.env.ComSpec, ['/d', '/c', 'echo WORKBENCH_PTY_OK'], {name:'xterm-color', cols:80, rows:24, cwd:process.cwd(), env:process.env});
+            report('spawn_returned');
+            const data = child.onData(chunk => { output = (output + chunk).slice(-65536); });
+            const exit = child.onExit(({exitCode}) => {
+              if (exited) return;
+              exited = true;
+              report('pty_exit', {exitCode, output});
+              assert.equal(exitCode, 0);
+              assert.match(output, /WORKBENCH_PTY_OK/);
+              // beta.15 natural exit closes its output socket; explicit kill also
+              // releases the ConPTY worker/native handles. Leave the callback first.
+              setImmediate(() => {
+                data.dispose(); exit.dispose();
+                report('cleanup_requested');
+                child.kill();
+                cleaned = true;
+                report('cleanup_returned');
+              });
+            });
+            const diagnostic = setTimeout(() => report('still_alive', {exited, cleaned, resources:process.getActiveResourcesInfo()}), 10000);
+            diagnostic.unref();
+            process.once('beforeExit', () => {
+              assert.ok(exited && cleaned, 'Probe ended without observing PTY exit and cleanup');
+              clearTimeout(diagnostic);
+              report('natural_exit_ready');
+            });
+          `;
+          const child = spawn(process.execPath, ['-e', probe], {stdio:['ignore','pipe','pipe'], windowsHide:true, shell:false});
+          let stdout = '', stderr = '', timedOut = false;
+          child.stdout.on('data', chunk => { stdout = (stdout + chunk).slice(-131072); process.stdout.write(chunk); });
+          child.stderr.on('data', chunk => { stderr = (stderr + chunk).slice(-131072); process.stderr.write(chunk); });
+          const timer = setTimeout(() => {
+            timedOut = true;
+            console.error('Native PTY watchdog expired; probe is FAILED even if it emitted a success milestone.');
+            const killed = spawnSync('taskkill.exe', ['/PID', String(child.pid), '/T', '/F'], {encoding:'utf8', timeout:5000, windowsHide:true, shell:false});
+            console.error('Watchdog tree cleanup:', JSON.stringify({status:killed.status, error:killed.error?.message, stdout:killed.stdout, stderr:killed.stderr}));
+            process.exitCode = 1;
+            child.kill();
+          }, 30000);
+          child.on('error', error => { clearTimeout(timer); console.error(error); process.exitCode = 1; });
+          child.on('close', (code, signal) => {
+            clearTimeout(timer);
+            try {
+              assert.equal(timedOut, false, 'Native probe exceeded its watchdog');
+              assert.equal(code, 0, 'Native probe failed: ' + stderr + ' signal=' + signal);
+              const records = stdout.split(/\r?\n/).filter(line => line.startsWith('{')).map(line => JSON.parse(line));
+              assert.ok(records.some(row => row.phase === 'pty_exit' && row.exitCode === 0 && /WORKBENCH_PTY_OK/.test(row.output)));
+              assert.ok(records.some(row => row.phase === 'cleanup_returned'));
+              assert.ok(records.some(row => row.phase === 'natural_exit_ready'));
+              console.log('Windows PTY: actual output, exit code, explicit cleanup and natural Node exit verified. Sharp loaded.');
+            } catch (error) { console.error(error); process.exitCode = 1; }
+          });
           '@ | node
+          if ($LASTEXITCODE -ne 0) { throw 'Windows native dependency probe failed' }
 
       - name: Typecheck and build renderer/main/preload
         run: npm run build

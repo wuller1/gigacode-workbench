@@ -13,6 +13,8 @@ type TerminalEntry = {
   history: string;
   closing: boolean;
   exited: boolean;
+  killRequested: boolean;
+  cleanup?: Promise<boolean>;
   exit: Promise<void>;
   resolveExit: () => void;
   dataListener?: pty.IDisposable;
@@ -65,14 +67,14 @@ export class TerminalService {
     if (this.stopping) throw new Error("Терминалы завершаются");
     if (method === "terminal.shells") return this.shells();
     if (method === "terminal.list")
-      return [...this.items.values()].map(
-        ({ id, title, projectId, history }) => ({
+      return [...this.items.values()]
+        .filter((item) => !item.exited)
+        .map(({ id, title, projectId, history }) => ({
           id,
           title,
           projectId,
           history,
-        }),
-      );
+        }));
     if (method === "terminal.create") {
       if (this.items.size >= 12)
         throw new Error("Открыто 12 терминалов. Закройте неиспользуемый");
@@ -99,6 +101,7 @@ export class TerminalService {
         history: "",
         closing: false,
         exited: false,
+        killRequested: false,
         exit: new Promise<void>((resolve) => {
           resolveExit = resolve;
         }),
@@ -116,8 +119,24 @@ export class TerminalService {
         entry.closing = true;
         entry.dataListener?.dispose();
         entry.exitListener?.dispose();
-        this.items.delete(id);
-        entry.resolveExit();
+        // ConPTY beta.15 can keep worker/native handles after natural process exit.
+        // Do not call back into native code from its exit callback or kill by a stale PID.
+        entry.cleanup = new Promise<boolean>((resolve) =>
+          setImmediate(() => {
+            let released = true;
+            if (process.platform === "win32" && !entry.killRequested) {
+              try {
+                entry.process.kill();
+                entry.killRequested = true;
+              } catch {
+                released = false;
+              }
+            }
+            if (released) this.items.delete(id);
+            entry.resolveExit();
+            resolve(released);
+          }),
+        );
         if (!this.stopping)
           this.safeEmit({ type: "terminal.exit", payload: { id, exitCode } });
       });
@@ -183,6 +202,7 @@ export class TerminalService {
       if (!item.exited) {
         try {
           item.process.kill();
+          item.killRequested = true;
         } catch {}
       }
       if (!(await this.waitForExit(item, 1500))) {
@@ -210,7 +230,7 @@ export class TerminalService {
       }
       // onExit resolves inside the native callback; let it and queued stream callbacks unwind.
       await new Promise<void>((resolve) => setImmediate(resolve));
-      return item.exited;
+      return item.exited && (item.cleanup ? await item.cleanup : true);
     })();
     return item.closePromise;
   }
