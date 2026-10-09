@@ -126,6 +126,10 @@ jobs:
       - name: Typecheck and build renderer/main/preload
         run: npm run build
 
+      - name: Offline Electron modal and focus regression
+        timeout-minutes: 2
+        run: npm run test:ui
+
       - name: Build NSIS and portable (never publish)
         run: npm exec --offline -- electron-builder --win nsis portable --x64 --publish never
 

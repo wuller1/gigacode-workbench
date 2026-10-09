@@ -1,6 +1,6 @@
 # Ручная проверка установленного Qwen / GigaCode
 
-Инструмент: `app/tools/acp-live.manual.ts`, отдельная конфигурация `app/vitest.live.config.ts`. Обычный `npm test` и Windows CI его не включают. В `app/package.json` отдельный script не добавлен; команда запуска приведена ниже. Это проверка транспорта через настоящий `AcpConnection` приложения, а не Electron UI E2E.
+Инструмент: `app/tools/acp-live.manual.ts`, отдельная конфигурация `app/vitest.live.config.ts`. Обычный `npm test` и Windows CI его не включают. Доступна отдельная команда `npm run test:live`; ниже приведён её эквивалент с явным файлом конфигурации. Это проверка транспорта через настоящий `AcpConnection` приложения, а не Electron UI E2E.
 
 ## По умолчанию: без prompt к модели
 

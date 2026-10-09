@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useLayoutEffect,
   useId,
   useRef,
   useState,
@@ -116,6 +117,44 @@ export function useLayer(show: boolean) {
   }, [id, show, change]);
 }
 export const useCovered = () => useContext(LayerContext).covered;
+
+// Only registered modal components trap focus. Task question overlays stay nonmodal.
+const modalRoots = new Set<HTMLElement>();
+const menuRoots = new Map<HTMLElement, HTMLElement>();
+function lastInDocument(elements: HTMLElement[]) {
+  return elements
+    .filter((element) => element.isConnected)
+    .reduce<HTMLElement | undefined>(
+      (last, element) =>
+        !last ||
+        last.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING
+          ? element
+          : last,
+      undefined,
+    );
+}
+function topModal() {
+  return lastInDocument([...modalRoots]);
+}
+function topMenu(modal = topModal()) {
+  return lastInDocument(
+    [...menuRoots.keys()].filter(
+      (root) => !modal || modal.contains(menuRoots.get(root)!),
+    ),
+  );
+}
+function focusableIn(root: HTMLElement) {
+  return Array.from(
+    root.querySelectorAll<HTMLElement>(
+      'button:not(:disabled),a[href],input:not(:disabled):not([type="hidden"]),textarea:not(:disabled),select:not(:disabled),[tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter(
+    (element) =>
+      element.tabIndex >= 0 &&
+      element.getClientRects().length > 0 &&
+      !element.closest('[inert],[aria-hidden="true"]'),
+  );
+}
 export function Modal({
   title,
   children,
@@ -128,18 +167,107 @@ export function Modal({
   wide?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null),
-    previous = useRef<HTMLElement | null>(null);
+    previous = useRef<HTMLElement | null>(
+      document.activeElement as HTMLElement,
+    ),
+    lastFocus = useRef<HTMLElement | null>(null),
+    closeRef = useRef(onClose);
+  closeRef.current = onClose;
   const titleId = useId();
   useLayer(true);
-  useEffect(() => {
-    previous.current = document.activeElement as HTMLElement;
-    const first =
-      ref.current?.querySelector<HTMLElement>(
-        "input:not(:disabled),textarea:not(:disabled),select:not(:disabled)",
-      ) || ref.current?.querySelector<HTMLElement>('button,[tabindex="0"]');
-    first?.focus();
+  useLayoutEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    modalRoots.add(root);
+    const focusInside = (last = false) => {
+      const menu = topMenu(root);
+      const candidates = focusableIn(menu || root);
+      const remembered = lastFocus.current;
+      const target = last
+        ? candidates.at(-1)
+        : remembered?.isConnected &&
+            root.contains(remembered) &&
+            candidates.includes(remembered)
+          ? remembered
+          : candidates[0];
+      (target || root).focus({ preventScroll: true });
+    };
+    const inside = (target: EventTarget | null) =>
+      target instanceof Node &&
+      (root.contains(target) || !!topMenu(root)?.contains(target));
+    const key = (event: KeyboardEvent) => {
+      if (topModal() !== root || event.defaultPrevented || topMenu(root))
+        return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        closeRef.current();
+      } else if (event.key === "Tab") {
+        const all = focusableIn(root),
+          first = all[0],
+          last = all.at(-1);
+        if (
+          !inside(document.activeElement) ||
+          !all.includes(document.activeElement as HTMLElement)
+        ) {
+          event.preventDefault();
+          focusInside(event.shiftKey);
+        } else if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          (last || root).focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          (first || root).focus();
+        }
+      }
+    };
+    const focus = (event: FocusEvent) => {
+      if (topModal() !== root) return;
+      if (!inside(event.target)) focusInside();
+      else if (
+        event.target instanceof HTMLElement &&
+        root.contains(event.target)
+      )
+        lastFocus.current = event.target;
+    };
+    // Removing/disabling a focused Restore button may silently move focus to body.
+    const observer = new MutationObserver(() => {
+      if (
+        topModal() === root &&
+        (!inside(document.activeElement) ||
+          (document.activeElement instanceof HTMLButtonElement &&
+            document.activeElement.disabled))
+      )
+        focusInside();
+    });
+    observer.observe(root, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["disabled", "hidden"],
+    });
+    document.addEventListener("keydown", key, true);
+    document.addEventListener("focusin", focus, true);
+    if (topModal() === root) {
+      const first = focusableIn(root).find((element) =>
+        element.matches("input,textarea,select"),
+      );
+      if (first) first.focus({ preventScroll: true });
+      else focusInside();
+    }
     return () => {
-      if (previous.current?.isConnected) previous.current.focus();
+      observer.disconnect();
+      modalRoots.delete(root);
+      document.removeEventListener("keydown", key, true);
+      document.removeEventListener("focusin", focus, true);
+      const remaining = topModal();
+      if (
+        previous.current?.isConnected &&
+        (!remaining || remaining.contains(previous.current))
+      )
+        previous.current.focus({ preventScroll: true });
+      else if (remaining)
+        (focusableIn(remaining)[0] || remaining).focus({ preventScroll: true });
     };
   }, []);
   return (
@@ -153,30 +281,9 @@ export function Modal({
         ref={ref}
         className={`modal ${wide ? "modal-wide" : ""}`}
         role="dialog"
+        tabIndex={-1}
         aria-modal="true"
         aria-labelledby={titleId}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") {
-            e.stopPropagation();
-            onClose();
-          }
-          if (e.key === "Tab") {
-            const all = Array.from(
-              ref.current?.querySelectorAll<HTMLElement>(
-                'button:not(:disabled),input:not(:disabled),textarea:not(:disabled),select:not(:disabled),[tabindex="0"]',
-              ) || [],
-            );
-            const first = all[0],
-              last = all[all.length - 1];
-            if (e.shiftKey && document.activeElement === first) {
-              e.preventDefault();
-              last?.focus();
-            } else if (!e.shiftKey && document.activeElement === last) {
-              e.preventDefault();
-              first?.focus();
-            }
-          }
-        }}
       >
         <header className="modal-header">
           <h2 id={titleId}>{title}</h2>
@@ -211,8 +318,12 @@ export function Menu({
     setOpen(false);
     ref.current?.querySelector("button")?.focus();
   };
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return;
+    const root = popup.current,
+      anchor = ref.current;
+    if (!root || !anchor) return;
+    menuRoots.set(root, anchor);
     const f = (e: PointerEvent) => {
       if (
         !ref.current?.contains(e.target as Node) &&
@@ -221,17 +332,22 @@ export function Menu({
         setOpen(false);
     };
     const key = (e: KeyboardEvent) => {
+      if (topMenu() !== root) return;
       if (e.key === "Escape") {
-        e.stopPropagation();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        close();
+      } else if (e.key === "Tab") {
         close();
       }
     };
     document.addEventListener("pointerdown", f);
-    document.addEventListener("keydown", key);
+    document.addEventListener("keydown", key, true);
     popup.current?.querySelector("button")?.focus();
     return () => {
       document.removeEventListener("pointerdown", f);
-      document.removeEventListener("keydown", key);
+      document.removeEventListener("keydown", key, true);
+      menuRoots.delete(root);
     };
   }, [open]);
   return (

@@ -16,7 +16,8 @@
     "dist:mac": "npm run build && electron-builder --mac dir",
     "test:live": "vitest run --config vitest.live.config.ts",
     "bundle:cli": "node tools/bundle-cli.mjs",
-    "format": "prettier --write src electron shared tests *.ts *.mjs"
+    "format": "prettier --write src electron shared tests *.ts *.mjs",
+    "test:ui": "node tools/test-modal-ui.mjs"
   },
   "dependencies": {
     "@lydell/node-pty": "1.2.0-beta.15",
