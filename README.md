@@ -22,9 +22,9 @@
 
 Реализованная команда и документированный продуктовый контракт — разные уровни готовности. Полная миграция прежнего workflow-контроллера, расширенный брокер между проектами, управление версиями всех материалов, самооптимизирующаяся библиотека скриптов и языковая IDE остаются в [плане развития](workbench/docs/GIGACODE_UI_DEVELOPMENT_PLAN.md). Окончание ответа модели само по себе не доказывает, что её результат проверен.
 
-## Скачать Windows-сборку
+## Получить код для рабочего компьютера
 
-Скачайте [preview.1 для Windows x64](https://github.com/wuller1/gigacode-workbench/releases/tag/v0.1.0-preview.1). Архив `gigacode-workbench-windows-full.zip` содержит portable-приложение, NSIS-установщик, полный исходный код, профили и инструкции; начните с `START-HERE.txt` внутри. Отдельный `gigacode-workbench-full-source.zip` содержит исходники без готовых приложений. Сборка кода **`de0b6df`** прошла [Windows CI](https://github.com/wuller1/gigacode-workbench/actions/runs/37965731926), включая 10 проверок диалогов Electron. Сборки не подписаны; ручная установка на рабочем Windows ещё не проверена. Контрольные суммы опубликованы рядом с архивами.
+Клонируйте репозиторий либо скачайте [`gigacode-workbench-full-source.zip`](https://github.com/wuller1/gigacode-workbench/releases/download/v0.1.0-preview.1/gigacode-workbench-full-source.zip). Откройте код в GigaCode и направьте агента на `WORK-COMPUTER-BOOTSTRAP.md`. Готовое приложение для этого процесса не требуется: агент работает с существующей заготовкой пользователя и переносит в неё подходящие части небольшими проверяемыми изменениями. Код **`de0b6df`** прошёл [Windows CI](https://github.com/wuller1/gigacode-workbench/actions/runs/37965731926), включая 10 проверок диалогов Electron; последующие изменения затрагивают только инструкции.
 
 [Снимок настоящего приложения с работающим исполнителем](docs/images/live-workers.jpg) · [Отчёт проверок и оставшиеся ограничения](docs/LIVE_TEST_REPORT.md).
 
