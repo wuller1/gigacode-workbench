@@ -1,7 +1,9 @@
 ﻿#requires -Version 5.1
 [CmdletBinding()]
-param([string]$BundleRoot = (Split-Path -Parent $PSScriptRoot), [switch]$RequireNode)
+param([string]$BundleRoot, [switch]$RequireNode)
 $ErrorActionPreference = 'Stop'
+# Resolve automatic script paths after parameter binding on Windows PowerShell 5.1.
+if (-not $BundleRoot) { $BundleRoot = Split-Path -Parent $PSScriptRoot }
 $temp = Join-Path ([IO.Path]::GetTempPath()) ('gigacode-design-' + [Guid]::NewGuid().ToString('N'))
 $oldVariable = [Environment]::GetEnvironmentVariable('GIGACODE_METRICS_TEST_SCRIPT', 'Process')
 try {

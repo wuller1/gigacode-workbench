@@ -1,7 +1,9 @@
 ﻿#requires -Version 5.1
 [CmdletBinding()]
-param([string]$BundleRoot = (Split-Path -Parent $PSScriptRoot), [switch]$RequireNode)
+param([string]$BundleRoot, [switch]$RequireNode)
 $ErrorActionPreference = 'Stop'
+# Resolve automatic script paths after parameter binding on Windows PowerShell 5.1.
+if (-not $BundleRoot) { $BundleRoot = Split-Path -Parent $PSScriptRoot }
 $engine = (Get-Process -Id $PID).Path
 $suites = @('test-workbench.ps1', 'test-docs-impact.ps1', 'test-install-user.ps1', 'test-memory.ps1', 'test-design-metrics.ps1')
 $failures = @()

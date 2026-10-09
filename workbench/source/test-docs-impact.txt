@@ -1,7 +1,9 @@
 ﻿# test-docs-impact.ps1 — standalone Windows PowerShell 5.1 tests; no Pester or Python.
 [CmdletBinding()]
-param([string]$BundleRoot = (Split-Path -Parent $PSScriptRoot), [string]$PowerShellPath)
+param([string]$BundleRoot, [string]$PowerShellPath)
 $ErrorActionPreference = 'Stop'
+# Resolve automatic script paths after parameter binding on Windows PowerShell 5.1.
+if (-not $BundleRoot) { $BundleRoot = Split-Path -Parent $PSScriptRoot }
 $script:TestUtf8 = New-Object Text.UTF8Encoding($false)
 $script:TestRoot = Join-Path ([IO.Path]::GetTempPath()) ('gigacode docs тест ' + [guid]::NewGuid().ToString('N'))
 [void][IO.Directory]::CreateDirectory($script:TestRoot)

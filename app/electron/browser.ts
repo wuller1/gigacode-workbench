@@ -80,6 +80,10 @@ export class BrowserService {
       const tab: Tab = {
         id,
         title: "Новая вкладка",
+        customTitle:
+          typeof p.title === "string"
+            ? p.title.trim().slice(0, 120) || undefined
+            : undefined,
         url,
         projectId: p.projectId,
         sessionId: p.sessionId,

@@ -4,7 +4,7 @@
 [CmdletBinding()]
 param(
     [string]$TargetRoot,
-    [string]$SourceRoot = $PSScriptRoot,
+    [string]$SourceRoot,
     [string]$GlobalContextPath,
     [switch]$IncludeAgents,
     [switch]$SetUserSystemPrompt,
@@ -13,6 +13,8 @@ param(
     [switch]$LibraryOnly
 )
 $ErrorActionPreference = 'Stop'
+# Windows PowerShell 5.1 may not populate $PSScriptRoot during parameter default binding.
+if (-not $SourceRoot) { $SourceRoot = $PSScriptRoot }
 $script:WIUtf8 = New-Object Text.UTF8Encoding($false, $true)
 $script:WIWindows = [Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT
 $script:WIComparison = [StringComparison]::Ordinal

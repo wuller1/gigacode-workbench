@@ -1113,6 +1113,7 @@ export function ArtifactsPanel({
                 onClick={async () => {
                   const tab = await run("browser.create", {
                     url: opened.url,
+                    title: selected.name,
                     projectId: task?.projectId,
                     sessionId: session?.id,
                   });

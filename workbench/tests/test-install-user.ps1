@@ -1,7 +1,9 @@
 ﻿# test-install-user.ps1 — isolated, standalone PowerShell 5.1 tests. Never changes User env.
 [CmdletBinding()]
-param([string]$BundleRoot = (Split-Path -Parent $PSScriptRoot))
+param([string]$BundleRoot)
 $ErrorActionPreference = 'Stop'
+# Resolve automatic script paths after parameter binding on Windows PowerShell 5.1.
+if (-not $BundleRoot) { $BundleRoot = Split-Path -Parent $PSScriptRoot }
 $script:IUtf8 = New-Object Text.UTF8Encoding($false)
 $temporaryBase = [IO.Path]::GetTempPath()
 # macOS /var is a symlink; tests use the physical path so the reparse guard stays strict.
@@ -55,6 +57,16 @@ function Read-InstallReceipt {
 }
 
 $tests = [ordered]@{
+    'CLI source defaults to its script directory after parameter binding' = {
+        $entry = Join-Path $script:ISource 'install-user.ps1'
+        [IO.File]::WriteAllBytes($entry, [IO.File]::ReadAllBytes($loader))
+        $engine = [Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
+        $output = & $engine -NoLogo -NoProfile -File $entry -TargetRoot $script:ITarget -PlanOnly
+        Assert-InstallTest ($LASTEXITCODE -eq 0) 'Default-source installer CLI failed'
+        $plan = ConvertFrom-Json -InputObject ($output -join "`n")
+        Assert-InstallTest ($plan.status -eq 'ready' -and $plan.source_root -eq [IO.Path]::GetFullPath($script:ISource)) 'Default source did not resolve to the script directory'
+        Assert-InstallTest (-not [IO.Directory]::Exists($script:ITarget)) 'Default-source preflight modified the target'
+    }
     'preflight is read-only and agents are opt-in' = {
         $plan = Get-InstallTestPlan
         Assert-InstallTest ($plan.status -eq 'ready' -and $plan.plan_hash.Length -eq 64) 'Preflight did not produce a ready hashed plan'

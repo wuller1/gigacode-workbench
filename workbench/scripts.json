@@ -14,7 +14,7 @@
     {
       "source": "source/install-user.txt",
       "target": "install-user.ps1",
-      "sha256": "d2e7b1a5efb66f1581bcd17de577c34d96b8808152b960d5cf8df13a31c77ee8"
+      "sha256": "9c9c4f98ca396de538f02a24e69924acc3760b6832670f978b18e95bb59f097d"
     },
     {
       "source": "source/docs-impact.txt",
@@ -39,17 +39,17 @@
     {
       "source": "source/test-docs-impact.txt",
       "target": "tests/test-docs-impact.ps1",
-      "sha256": "7cfe10555ecb7e0d873a7ab49dd6ca037b86dd9dbc9fdc47b274c9be102a5f71"
+      "sha256": "a06477e71ce23b6d08a2d9baf93a54404365731daa52f72e42ccfaaadf179536"
     },
     {
       "source": "source/test-design-metrics.txt",
       "target": "tests/test-design-metrics.ps1",
-      "sha256": "eb1f0527b7c7f1dd59fdaae51f9939b26ca496b83506593d6a4515dff3055c9c"
+      "sha256": "e6c5b3da2b5cf556d6ca5a2c45eb793a4fbb1c7428b6622cd55f0f916f909289"
     },
     {
       "source": "source/test-install-user.txt",
       "target": "tests/test-install-user.ps1",
-      "sha256": "d10caf65dba358cdbcec997e2a55b3d3854e013206a9081aa50559b35f811c08"
+      "sha256": "c0d8575f552476404916341ecdbf78553faf900c8fcf4ca1b5ee328476a69b57"
     },
     {
       "source": "source/test-memory.txt",
@@ -59,7 +59,7 @@
     {
       "source": "source/run-tests.txt",
       "target": "tests/run-tests.ps1",
-      "sha256": "cc8eca20b60598c0623f7256ac179d3d8760a302e5d0c31d43d4c5f93b1fc925"
+      "sha256": "e798c31574da1cc68dd0c539946c934d147e02da4ba3dfc47033f34a7ab212bf"
     }
   ]
 }
