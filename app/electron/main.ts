@@ -104,8 +104,13 @@ function createWindow() {
     void log("renderer-gone", details);
     browser.hideWindow(window.id);
   });
-  window.webContents.on("console-message", (_event, level, message) => {
-    if (level >= 3) void log("renderer-error", message);
+  window.webContents.on("console-message", (details) => {
+    if (details.level === "error" || details.level === "warning")
+      void log("renderer-" + details.level, {
+        windowId: window.id,
+        message: details.message,
+        line: details.lineNumber,
+      });
   });
   window.on(
     "unresponsive",

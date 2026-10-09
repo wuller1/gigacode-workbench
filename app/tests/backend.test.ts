@@ -448,7 +448,11 @@ describe("durable backend", () => {
       x.service.invoke("project.delete", { id: x.p.id }),
     ).rejects.toThrow("Stop active");
     await until(() => x.service.snapshot().sessions[0].status === "completed");
+    const processIds = (await logs(x.project))
+      .filter((event) => event.type === "prompt")
+      .map((event) => event.pid);
     await x.service.invoke("project.delete", { id: x.p.id });
+    for (const pid of processIds) expect(() => process.kill(pid, 0)).toThrow();
     expect(await fs.readFile(path.join(x.project, "keep.txt"), "utf8")).toBe(
       "owned by user",
     );

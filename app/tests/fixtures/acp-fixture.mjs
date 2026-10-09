@@ -20,7 +20,7 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
       setTimeout(()=>{log({type:'config_end',id:request.params.configId});result(request.id,{configOptions:configs()});},75);break;
     case 'session/prompt':{
       const content=request.params.prompt[0].text;const command=content.includes('Current user message:\n')?content.split('Current user message:\n').at(-1):content.includes('Peer message:\n')?content.split('Peer message:\n').at(-1):content;
-      log({type:'prompt',sessionId:current,command,content,model,reasoning});pending={id:request.id,command};
+      log({type:'prompt',pid:process.pid,sessionId:current,command,content,model,reasoning});pending={id:request.id,command};
       update({sessionUpdate:'agent_message_chunk',content:{type:'text',text:'start:'+command+' '}});
       if(command==='exit'){process.exit(3);break;}
       if(command==='malformed'){process.stdout.write('<html><title>Gateway 502</title><script>secret()</script><body>bad gateway</body></html>\n');break;}

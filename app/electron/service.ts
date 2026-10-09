@@ -209,6 +209,7 @@ function configOptions(raw: unknown): ConfigOption[] {
 export class WorkbenchService {
   private store: AtomicStore<Persisted>;
   private live = new Map<string, Live>();
+  private retiring = new Set<Promise<void>>();
   private launches = new Set<string>();
   private configuring = new Set<string>();
   private permissionWaiters = new Map<
@@ -438,6 +439,9 @@ export class WorkbenchService {
           for (const t of tasks) this.removeTask(state, t.id);
           state.projects = state.projects.filter((x) => x.id !== p.id);
           return { deleted: p.id, sourceFilesDeleted: false };
+        }).then(async (result) => {
+          await Promise.all([...this.retiring]);
+          return result;
         });
       case "task.create":
         return this.change((state) => {
@@ -499,6 +503,9 @@ export class WorkbenchService {
           );
           this.removeTask(state, task.id);
           return { deleted: task.id, sourceFilesDeleted: false };
+        }).then(async (result) => {
+          await Promise.all([...this.retiring]);
+          return result;
         });
       case "session.create":
         return this.change((state) => {
@@ -797,7 +804,11 @@ export class WorkbenchService {
     if (live) {
       live.intentionalClose = true;
       this.live.delete(sessionId);
-      void live.client.dispose();
+      const closure = live.client.dispose();
+      this.retiring.add(closure);
+      void closure
+        .finally(() => this.retiring.delete(closure))
+        .catch(() => undefined);
     }
   }
   private removeTask(state: Persisted, taskId: string): void {
@@ -1191,7 +1202,7 @@ export class WorkbenchService {
         "When exposed by the current host tool list, task_history retrieves the full retained task transcript in bounded pages and workbench_reference retrieves selected workflow or instruction documents. Use these tools on demand after a handoff; do not assume the packaged workbench files exist inside the project or load every document. If a tool is unavailable, report that limit rather than inventing its contents.",
       );
       sections.push(
-        "The host MCP server is named workbench-ui. If its tools are deferred, search the available tool-discovery catalog for workbench-ui once, then use the exact qualified names returned by that catalog. Qwen may expose names such as mcp__workbench-ui__browser_list; that prefix is version-dependent, not a naming guarantee. Do not guess bare names or retry an invented select: list.",
+        "The host MCP server is named workbench-ui. If its tools are deferred, search the available tool-discovery catalog for workbench-ui once, then use the exact qualified names returned by that catalog. Qwen may expose names such as mcp__workbench-ui__browser_list; that prefix is version-dependent, not a naming guarantee. Do not guess bare names or retry an invented select: list. Before invoking a deferred tool, read its current schema and pass every required field exactly as named. After a validation error, inspect the schema/error once; never repeat the same invalid arguments or rely on a schema from a previous session.",
       );
       if (state._memory)
         sections.push(
@@ -2063,12 +2074,13 @@ export class WorkbenchService {
         }
       state.revision++;
     });
-    await Promise.all(
-      [...this.live.values()].map(async (live) => {
+    await Promise.all([
+      ...this.retiring,
+      ...[...this.live.values()].map(async (live) => {
         live.intentionalClose = true;
         await live.client.dispose();
       }),
-    );
+    ]);
     this.live.clear();
     await this.store.close();
   }
