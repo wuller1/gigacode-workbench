@@ -1,6 +1,6 @@
 # Аудит реализации IDE
 
-14.10.2026. Критика выполнялась итерациями с проверкой кода, реальных процессов и UI. Итоговые наблюдения: [live evidence](evidence/ide-live-macos.json), [целостность пакета](evidence/bundle-integrity.json). Отчёт относится к macOS ARM64; Windows/ВАРМ и корпоративные подключения не подменяются этим прогоном.
+14.10.2026. Критика выполнялась итерациями с проверкой кода, реальных процессов и UI. Наблюдения: [macOS ARM64](evidence/ide-live-macos.json), [Windows x64](evidence/ide-live-windows.json), [упакованный Windows runtime](evidence/ide-live-windows-packaged.json), [целостность пакета](evidence/bundle-integrity.json). Корпоративный ВАРМ, сертификаты, MCP и GigaCode проверяются отдельно на работе.
 
 ## Исправлено по результатам проверки
 
@@ -22,11 +22,11 @@
 | Перенос | Локальный Node ABI и глобальные SDK делали сборку зависимой от компьютера | Независимый закреплённый Node, platform VSIX, managed JDK/Maven, hashes, installer staging, Windows workflow |
 | Перенос | Старые manifest hashes и acceptance IDs ломали общий checker | Обновлены реальные хеши/PS1 mapping, согласованы ID, проверяется фактическая motion policy, а не декоративный marker |
 
-Дополнительная итерация: реальные React TSX diagnostics → исправление → сборка TypeScript 6 → React DOM render; запрет скрытого saveAll перед агентским запуском; native refactoring preview возвращается как pending, а не applied; opaque revision привязан к жизни document model, включая close/reopen при одинаковом numeric version. Текущий локальный результат: 93 unit/protocol checks, 16 modal/composer/focus cases и 41 live Electron/IDE checks. После frame-clock исправления повторно прошёл базовый live прогон.
+Дополнительная итерация: реальные React TSX diagnostics → исправление → сборка TypeScript 6 → React DOM render; запрет скрытого saveAll перед агентским запуском; native refactoring preview возвращается как pending, а не applied; opaque revision привязан к жизни document model, включая close/reopen при одинаковом numeric version. Текущий локальный результат: 94 unit/protocol checks, 16 modal/composer/focus cases и 41 live Electron/IDE checks. После frame-clock исправления повторно прошёл базовый live прогон.
 
-Первый Windows CI прошёл установку, legacy PowerShell 5.1, unit/build, Markdown, TypeScript/semantic edits, tasks и Node DAP, затем обнаружил timeout после backend restart. Добавлены backend epoch для layout, свежие интерактивные терминалы вместо чужих process IDs, исключение task terminals из повторного запуска и диагностические artifacts. Подтверждение исправления на Windows ожидается отдельно.
+Первый Windows CI прошёл установку, legacy PowerShell 5.1, unit/build, Markdown, TypeScript/semantic edits, tasks и Node DAP, затем обнаружил timeout после backend restart. Добавлены backend epoch для layout, свежие интерактивные терминалы вместо чужих process IDs, исключение task terminals из повторного запуска и диагностические artifacts. Эти изменения затем проверены последующими Windows прогонами ниже.
 
-Последующие Windows прогоны подтвердили Java/Spring Maven/JUnit, Python native tests с настоящим assertion failure и исправлением, React TSX compile/render. Логи локализовали timeout до `attached_shell`: Theia ожидала animationFrame до чтения layout. Native-first frame clock с cancellable timer устранил зависание; Windows подтвердил восстановление dirty buffer. Следующий обнаруженный дефект — несовпадение Node `file:///C:/` с Theia `file:///c%3A/` при чтении/удалении конфликтного черновика — исправлен нормализацией через URI. Полный CI повторяется после этой правки.
+Последующие Windows прогоны подтвердили Java/Spring Maven/JUnit, Python native tests с настоящим assertion failure и исправлением, React TSX compile/render. Логи локализовали timeout до `attached_shell`: Theia ожидала animationFrame до чтения layout. Native-first frame clock с cancellable timer устранил зависание; Windows подтвердил восстановление dirty buffer. Следующий обнаруженный дефект — несовпадение Node `file:///C:/` с Theia `file:///c%3A/` при чтении/удалении конфликтного черновика — исправлен нормализацией через URI. Полный Windows CI после этих исправлений завершился успешно.
 
 UI/UX итерация: объединены model/reasoning, контекст перенесён в цветное кольцо; добавлены прямые Send now/Edit/Delete и inline редактор. Редактируемый текст сохраняется, если строка ушла в работу. Проверены порядок ACP после отмены, запрет unknown, приоритет явного Stop, focus/Escape, узкая desktop панель и статус при OS reduced-motion. UI kit собирается TypeScript 6 и упаковывает CSS/JS/types/LICENSE; весь каталог из 26 требований не объявлен реализованным.
 
@@ -39,3 +39,38 @@ UI/UX итерация: объединены model/reasoning, контекст �
 Два окна могут работать с разными проектами. Один корень имеет одну живую авторитетную IDE surface с переносом между окнами; одновременные независимые dirty buffers одного файла в двух native surfaces не заявляются. Для Windows штатное завершение дерева предусмотрено; принудительный crash containment потомков и ВАРМ проверяются на целевом окружении отдельно.
 
 Сквозная приёмка chat: три сценария полного приложения (каталог до prompt, inline очередь/приоритет/реальная отмена, различение completed/cancelled). Найдено и исправлено фоновое error toast для новой папки без Git. Metadata сообщений больше не резервирует пустую строку. В Windows UI действия прошли, Playwright screenshot скрытого окна завис; захват заменён на Electron capturePage с проверкой непустого NativeImage, сами UI проверки сохранены.
+
+## Последняя итерация: проверка установленного runtime
+
+Успешный прежний Windows run `38464209601` проверял исходники и создание installer, но не запуск самой упакованной IDE. Следующий run `38466723005` добавил этот запуск и выявил `MODULE_NOT_FOUND`: electron-builder отфильтровал корневой `node_modules` из extraResources. Исправление — parent mapping `runtime/.ide-package` → resources, сохраняющий вложенный `ide/node_modules`. Добавлен regression через настоящий copier electron-builder, а не имитацию фильтра.
+
+Финальный [run 38468996688](https://github.com/wuller1/gigacode-workbench/actions/runs/38468996688), commit `614591890576193854116c5ca9cc850279cbe061`, завершился успешно:
+
+- legacy Windows PowerShell 5.1 suites;
+- 94 unit/protocol checks, 2 platform-specific skips; реальные PTY/Sharp;
+- 16 Electron modal/composer/focus cases и 3 full-app chat/ACP workflows;
+- 40 настоящих IDE/language/build/test/debug/recovery сценариев из исходников;
+- ещё 40 таких сценариев из `win-unpacked/GigaCode Workbench.exe`, с независимо упакованными Node, JDK/Maven, plugins и dependencies;
+- создание NSIS/portable из уже проверенной папки, packaged Qwen `--version` → 0.25.1, resource/hash probes.
+
+Платный провайдер не использовался: ACP peer локальный, language servers, сборки, тесты и debugger настоящие. Успешная проверка unpacked EXE не означает ручную установку NSIS, проверку автообновления или корпоративного GigaCode. Windows forced hard-crash containment потомков остаётся отдельным непроверенным случаем.
+
+Последнее UX-уточнение пользователя: ориентир IDE — IntelliJ IDEA, сам продукт в Workbench не встраивается. Рабочий GigaCode IDE является форком Community с неизвестными здесь build/plugins; наличие Ultimate-функций не предполагается. [Инструкции](IDE-RUNTIME-HANDOFF.md) сохраняют самостоятельный Theia engine и сравнение с уже написанной пользовательской оболочкой.
+
+## Дополнительная проверка зависимостей
+
+Отдельный npm audit IDE обнаружил предупреждения, которых нет в app dependency tree. Критический unmaintained `decompress` заменён на `@xhmikosr/decompress` 11.1.4 через собственный CommonJS adapter, поскольку Theia требует callable `require('decompress')`, а поддерживаемая библиотека использует ESM. Проверен настоящий Theia VSIX identity/deploy path, а также отклонение escaping symlink/hardlink и записи в соседний каталог. [Первичный advisory](https://github.com/advisories/GHSA-mp2f-45pm-3cg9).
+
+Обновлены DOMPurify, UUID в старых consumers, Mocha diff/serialize dependencies. Для [braces stack exhaustion](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) upstream release с исправлением пока нет: добавлена узкая depth guard в три рекурсивных walker. Patch проверяет точные исходные SHA-256, повторное применение и результат; неизвестный исходник останавливает установку. Он применяется при install/build и перед staging. Версия braces не подделывается, поэтому npm audit продолжает показывать предупреждение. Слишком глубокие glob AST теперь дают контролируемый SyntaxError; обычные вложенные шаблоны проходят.
+
+Девять отдельных dependency checks проходят на macOS с независимым Node22. Повторный полный языковой прогон также дал 41/41. [Windows run 38475439677](https://github.com/wuller1/gigacode-workbench/actions/runs/38475439677), commit `0f9d8eb8c22b5d966022b384da8bceb6e5bdf3ec`, прошёл заново: 9 dependency checks, legacy PS5.1, 94 unit/protocol + 2 platform skips, 16 UI, 3 chat, 40 source IDE и 40 packaged IDE сценариев, NSIS/portable, packaged Qwen0.25.1/resources/hashes. Это подтверждение текущего runtime после hardening, а не наследование прежнего pass. Позднее изменены инструкции, evidence и диагностическое логирование отдельной manual ACP-пробы; обычный runtime не менялся.
+
+Точный [audit snapshot](evidence/dependency-audit.json): app — 0; IDE — 22 затронутых dependency nodes, **0 critical, 10 high, 5 moderate, 7 low**. Это три первичных advisory families, а не 22 независимые дыры: braces (локальная mitigation), sprintf-js и @tootallnate/once. Последние два предупреждения остаются открытыми; достижимость по всем callers не доказана. Нельзя писать «все зависимости безопасны», скрывать alerts или запускать `npm audit fix --force`: предлагаемый npm downgrade Theia до 1.4/1.44 не является проверенным исправлением.
+
+Повторный прогон отдельно выявил неработоспособность локального Maven SDK с лишними boot JARs. Установка теперь проверяет реальный Java/Maven launcher/version, переиспользует исправный SDK, а неисправный заменяет из проверенного архива через staging с откатом. Локальный тестовый SDK пересоздан вне синхронизируемого каталога; это не изменение глобального JDK/Maven пользователя.
+
+## Отдельный настоящий Qwen 0.25.1
+
+Free metadata/config probe создал две ACP-сессии Qwen0.25.1 и подтвердил `mode=plan` точным readback. Для этой CLI/model-конфигурации reasoning option не предложена; это не переносится на рабочий GigaCode-форк. [Metadata evidence](evidence/qwen-0.25.1-metadata.json).
+
+Отдельная разрешённая OpenRouter-проверка Qwen3.7 Flash: три прогона по два коротких marker-only prompt, **6 host prompts всего**. Первые два дали несовпадение точного marker в B; диагностический прогон прошёл с перекрытием времени запросов, без чужих marker, tools/permissions или позднего текста. Причина ранних несовпадений не установлена. [Все результаты](evidence/qwen-0.25.1-provider.json) сохранены; это не unconditional provider pass. Manual harness теперь сообщает безопасные счётчики/длины, а не только «marker mismatch». CI и IDE fixtures по-прежнему не вызывают платную модель. Ключ, raw responses и session IDs не публикуются.

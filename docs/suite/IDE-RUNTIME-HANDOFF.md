@@ -14,6 +14,21 @@
 
 Theia владеет моделями открытых документов. Агент читает и редактирует те же несохранённые buffers. Второй редактор с собственным изменяемым состоянием поверх них недопустим. Нельзя подменить семантическое переименование поиском строк. Открытие native preview — состояние pending, а не применённая правка. Перед агентским run/test/debug нужные file buffers должны быть явно сохранены; не сохраняй посторонние изменения, чтобы пройти эту проверку.
 
+## Ориентир интерфейса — IntelliJ IDEA
+
+Уточнение пользователя 14.10.2026: IntelliJ IDEA предпочтительнее как привычный IDE UX; на работе будет GigaCode IDE, форк Community. **IDEA не встраивается в наше приложение**. Текущий engine — Theia; интерфейс, команды и project workflow развиваем в Workbench. Никакая установка GigaCode IDE или Ultimate-лицензия для этого пути не требуется. Версию корпоративного форка и его plugins проверяет агент на рабочем компьютере; они не доказаны нашими тестами.
+
+При дальнейшей доработке соблюдай следующие правила:
+
+- Редактор занимает основное место. Project tree находится слева, имеет сохранённую ширину и скрывается отдельно; в текущем первом запуске ширина 220 px. Компактные строки, исключение build/dependency каталогов, поиск, раскрытие к выбранному файлу и Git status важнее постоянных пояснений.
+- Editor tabs имеют крестик, dirty indicator, контекстное меню и понятное активное состояние. Для краткого просмотра используй preview tab; редактирование закрепляет документ. Не плодить вкладки при повторном открытии того же файла. Перенос в группу и split right/down должны действовать одинаково для всех поддерживаемых документов.
+- Run/Test/Debug, Problems, Git и Terminal — инструменты, раскрываемые по действию. Не добавлять отдельные дублирующие внешние панели поверх соответствующих native IDE views. Chat скрывается кнопкой над IDE на левой rail.
+- Drag показывает целевую группу и край до отпускания; Escape отменяет перенос. Resize сохраняется. Узкая группа не должна менять приложение на мобильную композицию или скрывать единственный путь назад.
+- Поиск actions/files/symbols, клавиатурный переход между editor groups, rename/refactor preview и навигация из ошибок должны работать на фактическом проекте. Keymap можно приблизить к IntelliJ; не объявляй shortcut работающим, пока команда не зарегистрирована и конфликт не проверен.
+- Собственные темы, иконки и tokens сохраняются. Заимствуются принципы взаимодействия; изображения, branding и закрытые компоненты JetBrains в пакет не копируются.
+
+Первичные UX-источники: [tool windows](https://www.jetbrains.com/help/idea/tool-windows.html), [Project window](https://www.jetbrains.com/help/idea/project-tool-window.html), [editor tabs, preview и split](https://www.jetbrains.com/help/idea/using-code-editor.html). Это ориентиры для реализации и сравнения, а не перечень уже сертифицированных возможностей Theia. Сценарии матрицы по-прежнему закрываются по отдельности.
+
 ## Установка из исходников на Windows
 
 В каталоге `app`, в обычном Windows PowerShell 5.1:
@@ -70,7 +85,11 @@ npm.cmd run dist:win
 
 Staging исключает download caches, личные настройки и историю; включает независимый Node, собранную Theia, platform modules, VSIX, JDK/Maven, corresponding-source архив JDK и лицензии. Упаковку делать на целевой ОС. Текущий локальный прогон macOS не подтверждает Windows installer, корпоративный ВАРМ, сертификаты, внутренние MCP или GigaCode 26.9.75. Для них есть Windows workflow и рабочий probe.
 
+Windows CI на commit `0f9d8eb` прошёл **40 языковых/IDE сценариев из исходников и ещё 40 из упакованного приложения** до создания NSIS/portable. [Прогон](https://github.com/wuller1/gigacode-workbench/actions/runs/38475439677), [packaged evidence](evidence/ide-live-windows-packaged.json). Ручная установка NSIS, корпоративный ВАРМ и GigaCode IDE этим не проверены. Сохраняй parent resource mapping `runtime/.ide-package` → resources: nested `ide/node_modules` должен попасть в пакет. Mapping с корнем на `.../ide` заставляет electron-builder отфильтровать его зависимости. Regression использует настоящий copier, а E2E действительно запускает EXE из `win-unpacked`.
+
 Каталог расширений — Open VSX и разрешённые VSIX. Microsoft Marketplace и закрытые Ultimate-компоненты не копируются. Сохраняй исходные лицензии/NOTICE и corresponding-source сведения JDK из lock; собственная лицензия репозитория не заменяет лицензии зависимостей.
+
+Сохраняй также `decompress-compat`, pinned overrides и `tools/harden-dependencies.mjs`: они устраняют старый extractor и защищают braces recursion. Не удаляй patch ради чистого diff и не подделывай package version ради зелёного audit. `npm.cmd run test:dependencies` из `ide` проверяет 9 реальных extraction/glob сценариев; setup запускает их до загрузки plugins, staging заново проверяет guard. При неизвестном upstream hash нужно перепроверить новый release, а не пропускать защиту. Текущие незакрытые warnings и границы mitigation — в [аудите](IDE-RUNTIME-AUDIT.md).
 
 ## Перенос панели ввода и очереди
 
@@ -83,3 +102,5 @@ Staging исключает download caches, личные настройки и �
 `npm.cmd test` и `npm.cmd run test:ui` не используют токены. Native IDE использует резервный frame clock: Windows может остановить requestAnimationFrame у скрытой WebContentsView даже при backgroundThrottling=false. Host status использует один JS clock только при наличии индикаторов. Системное отключение CSS-анимаций не делает работу невидимой; явная настройка уменьшения движения внутри приложения сохраняется. Реальный ВАРМ проверяется отдельно.
 
 До первого запроса popup вызывает `session.prepare`: initialize/new/config без model prompt. Подготовка дедуплицируется; пустая ACP-сессия сохраняется при первом автоматическом выборе роли. Проверка полного приложения — `npm.cmd run test:chat`, она использует настоящий backend/IPC/диск/CLI-процесс и локального ACP peer, а не платную модель.
+
+В текущем host transport inventory MCP не меняется от роли. Если корпоративный adapter начнёт передавать разные MCP bindings для разных ролей, включи identity/version этого inventory в transport fingerprint: нельзя переиспользовать подготовленную ACP-сессию с прежним набором инструментов только потому, что CLI-команда и cwd совпадают.

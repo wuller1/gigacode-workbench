@@ -44,18 +44,21 @@
 
 ```powershell
 cd app
-npm ci --include=optional
-npm test
-npm start
+npm.cmd ci --include=optional
+npm.cmd run setup:ide
+npm.cmd test
+npm.cmd start
 ```
 
 `npm start` собирает renderer и Electron main/preload, затем открывает desktop-приложение. `npm run dev` запускает только Vite и не заменяет запуск Electron. Установка требует доступа к npm и загрузкам Electron. Не исключайте optional dependencies: среди них находятся платформенные компоненты терминала и обработки изображений.
+
+`setup:ide` отдельно готовит закреплённые Theia, Node, Java/Maven и расширения; глобальные SDK не меняются. Проверка полного чата — `npm run test:chat`, реальной IDE — `npm run test:ide`; Python/Java/React набор — `npm run test:ide:languages`. У проверок чата локальный ACP peer, у IDE настоящие language servers и инструменты; платный провайдер не нужен.
 
 Откройте папку проекта, создайте задачу и разговор. Приложение не запускает настройку существующего репозитория автоматически. Для первого знакомства можно открыть отдельную пустую тестовую папку.
 
 ### CLI и доступ к модели
 
-В зависимостях закреплён **официальный `@qwen-code/qwen-code` 0.25.1**, опубликованный 11 октября 2026 года. В режиме разработки он находится в `app/node_modules`; конфигурация упаковки включает его в desktop-сборку. Глобальная установка Qwen не нужна. Локальный entrypoint подтвердил `--version` → 0.25.1; предыдущий опубликованный Windows CI проверял 0.25.0, поэтому новый Windows package остаётся отдельной проверкой текущего среза. Проверяйте конкретный скачанный артефакт: этот результат не заменяет установку и авторизацию на вашем компьютере.
+В зависимостях закреплён **официальный `@qwen-code/qwen-code` 0.25.1**, опубликованный 11 октября 2026 года. В режиме разработки он находится в `app/node_modules`; конфигурация упаковки включает его в desktop-сборку. Глобальная установка Qwen не нужна. Локальный entrypoint и Windows packaged probe на commit `0f9d8eb` подтвердили `--version` → 0.25.1. Проверяйте конкретный скачанный артефакт: этот результат не заменяет установку и авторизацию на вашем компьютере и не подтверждает совместимость корпоративного форка GigaCode.
 
 Если Qwen уже настроен, приложение использует доступную этому CLI конфигурацию. Для OpenRouter можно передать переменные только текущему процессу PowerShell. Пример не записывает ключ в репозиторий или в командную историю:
 
@@ -85,17 +88,19 @@ try {
 Из папки `app/`:
 
 ```powershell
-npm run dist:win -- --publish never
+npm.cmd run dist:win -- --publish never
 ```
 
 В `app/release/` формируются NSIS installer и portable `.exe`. Сборки сейчас не подписываются; наличие файла не означает завершённую ручную проверку установки. CI собирает **Windows x64** на Windows, а не переносит нативные модули с macOS. `npmRebuild: false` сохранён намеренно: используются платформенные пакеты из lockfile, а CI отдельно проверяет загрузку PTY/Sharp. Если такие пакеты отсутствуют, сборку нужно исправить, а не считать терминал проверенным.
 
-[Windows workflow](.github/workflows/windows.yml) запускает `npm ci`, тесты, build, проверку нативных зависимостей, NSIS/portable packaging и проверку запуска упакованного Qwen с `--version`. Результаты доступны как Actions artifacts после успешного прогона. Автоматической публикации GitHub Release и обращений к платным моделям в workflow нет. Git, Java, Python и инструменты проектов не становятся частью приложения из-за упаковки Qwen.
+[Windows workflow](.github/workflows/windows.yml) запускает `npm ci`, тесты, build, проверку нативных зависимостей, NSIS/portable packaging, проверку запуска упакованного Qwen с `--version` и самого packaged IDE. Результаты доступны как Actions artifacts после успешного прогона. Платные модели в workflow не вызываются. IDE staging отдельно включает закреплённые Node, Temurin Java 21 с corresponding source и Maven. Python, Git и SDK конкретных проектов настраиваются отдельно.
 
 ## Проверки и ограничения
 
 - `npm run test:ui` из `app/` проверяет закрытие диалогов и восстановление фокуса в отдельном Electron без CLI и обращений к модели. Проверка включена и в Windows CI.
-- Локальные проверки текущего IDE/composer среза: **93 unit/protocol**, **16 Electron UI/focus**, **41 языковой live IDE сценарий**; дополнительно повторён базовый IDE прогон после исправления clock. Два платных probe пропущены. [Наблюдения IDE](docs/suite/evidence/ide-live-macos.json), [аудит](docs/suite/IDE-RUNTIME-AUDIT.md). Fixture-проверка протокола не подменяет реальный language server или рабочий GigaCode.
+- Локальные проверки текущего IDE/composer среза: **94 unit/protocol**, **16 Electron UI/focus**, **3 full-app chat**, **41 языковой live IDE сценарий** и **9 dependency checks**. Два unit-теста пропускаются по платформе; обычные наборы не используют платную модель. [Наблюдения IDE](docs/suite/evidence/ide-live-macos.json), [аудит](docs/suite/IDE-RUNTIME-AUDIT.md). Fixture-проверка протокола не подменяет реальный language server или рабочий GigaCode.
+- [Windows CI `0f9d8eb`](https://github.com/wuller1/gigacode-workbench/actions/runs/38475439677): те же 94 unit/protocol, 16 UI и 3 chat; **40 IDE/language сценариев из исходников + 40 из упакованного EXE**, затем NSIS/portable и packaged Qwen 0.25.1. [Packaged evidence](docs/suite/evidence/ide-live-windows-packaged.json). Ручная установка и корпоративное окружение проверяются отдельно.
+- Настоящий Qwen0.25.1: [две ACP-сессии и точный config readback](docs/suite/evidence/qwen-0.25.1-metadata.json) прошли. [Три отдельных OpenRouter marker-прогона](docs/suite/evidence/qwen-0.25.1-provider.json), 6 host prompts всего: два несовпадения и один успешный диагностический прогон; unconditional provider pass не заявляется. [Dependency audit](docs/suite/evidence/dependency-audit.json) отдельно сохраняет оставшиеся IDE warnings и применённые защиты.
 - Отдельно были выполнены короткие реальные ACP-проверки Qwen 0.25.0 через OpenRouter на macOS: независимые одновременные сессии, отмена одной сессии и чтение/смена reasoning. Приватные credentials, harness и трассы этих запусков в репозиторий не включены.
 - В настоящем Electron на macOS проверены browser click/viewport/docking, вопросы, материалы, модель/reasoning, дочерний агент, два окна, архив/восстановление, focus/Escape и завершение PTY. Полные результаты — в [отчёте](docs/LIVE_TEST_REPORT.md). Ручная установка Windows NSIS/portable, GigaCode 26.9.75 и весь roadmap пока не проверены.
 - Передача краткого контекста создаёт новую ACP-сессию с host checkpoint. Она не редактирует непрозрачную историю CLI и не является его нативной командой сжатия.

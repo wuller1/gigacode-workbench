@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-14",
+  "sourceCommit": "0f9d8eb8c22b5d966022b384da8bceb6e5bdf3ec",
+  "scope": "npm audit full dev+prod dependency trees; no provider credentials; metadata snapshot, not a safety certificate",
+  "app": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "ideBefore": {
+    "info": 0,
+    "low": 4,
+    "moderate": 49,
+    "high": 11,
+    "critical": 1,
+    "total": 65
+  },
+  "ideAfter": {
+    "info": 0,
+    "low": 7,
+    "moderate": 5,
+    "high": 10,
+    "critical": 0,
+    "total": 22
+  },
+  "remaining": [
+    {
+      "package": "@tootallnate/once",
+      "severity": "low",
+      "advisories": [
+        {
+          "title": "@tootallnate/once vulnerable to Incorrect Control Flow Scoping",
+          "url": "https://github.com/advisories/GHSA-vpq2-c234-7xj6",
+          "range": "<2.0.1"
+        }
+      ],
+      "status": "open_reachability_not_fully_verified"
+    },
+    {
+      "package": "braces",
+      "severity": "high",
+      "advisories": [
+        {
+          "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+          "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+          "range": "<=3.0.3"
+        }
+      ],
+      "status": "local_depth_guard_applied_upstream_audit_warning_retained"
+    },
+    {
+      "package": "sprintf-js",
+      "severity": "moderate",
+      "advisories": [
+        {
+          "title": "sprintf-js vulnerable to denial of service through unbounded precision specifiers",
+          "url": "https://github.com/advisories/GHSA-hp3w-g68c-fv3c",
+          "range": "<=1.1.3"
+        }
+      ],
+      "status": "open_reachability_not_fully_verified"
+    }
+  ],
+  "localDependencyChecks": {
+    "passed": 9,
+    "command": "npm run test:dependencies",
+    "platform": "macOS ARM64 / pinned Node22"
+  },
+  "windowsStatus": "success",
+  "windowsRun": "https://github.com/wuller1/gigacode-workbench/actions/runs/38475439677",
+  "windowsDependencyChecksPassed": 9
+}

@@ -4,9 +4,9 @@
 **Reviewed artifact:** [`design/suite-workspace-prototype.html`](../../design/suite-workspace-prototype.html)  
 **Runtime implementation:** authorized by the direct user instruction of 14.10.2026 to implement maximum functionality and proactively improve UI/UX. Earlier prototype-only restrictions below are historical; verification gates remain.
 
-## Scope presented for approval
+## Historical scope presented for approval
 
-**Актуальное указание 13.10.2026:** сначала полный интерактивный макет итогового продукта, затем критика и явное согласование. Старые записи ниже являются историей решений; актуальный scope и проверки — `FINAL-PROTOTYPE-SCOPE.md`. Частичная положительная оценка не разрешает runtime-разработку.
+**Историческое указание 13.10.2026, отменено прямым разрешением 14.10.2026:** сначала полный интерактивный макет итогового продукта, затем критика и явное согласование. Записи ниже сохраняют историю решений; действующее разрешение реализации указано в начале файла и в `AGENTS.md`. Не используй прежний gate для повторной остановки уже порученной работы.
 
 - quiet warm light/dark shell, surface hierarchy, density, radii and shadows;
 - Project → Task → Session continuity, compact tool activity and automatic read-only role routing;

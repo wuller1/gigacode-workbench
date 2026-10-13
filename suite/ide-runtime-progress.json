@@ -1,6 +1,6 @@
 {
   "date": "2026-10-14",
-  "phase": "Local acceptance passed; Windows restart regression under verification",
+  "phase": "Native IDE and desktop composer acceptance passed on macOS ARM64 and Windows x64, including packaged Windows languages/recovery; corporate validation pending",
   "runtimeAuthorized": true,
   "engine": "Theia 1.76.0",
   "vscodeApi": "1.139.0",
@@ -20,33 +20,46 @@
   ],
   "verified": [
     "App and IDE builds",
-    "79 unit/protocol tests passed; 2 paid probes skipped",
-    "Real TypeScript diagnostics/correction/navigation/multi-file rename/save/Git changes",
-    "Real Pyright incompatible assignment",
-    "Real JDT definition in Java Maven Spring project",
-    "Real Java21 Maven JUnit build",
-    "Real Python venv unittest",
-    "Real Node paused debugger stack",
-    "Unsaved dirty buffer restored after backend restart",
-    "Self-contained macOS IDE staging",
-    "Bundle integrity 12 scripts /239 files /71 plan cards /226 acceptance IDs /14 roles /29 workflows /35 kit files",
-    "82 unit/protocol tests passed; 10 Electron focus/modal cases passed",
-    "36 live Electron/IDE checks passed, including native failing test then repaired rerun, isolated Markdown webview, hard backend crash with dirty-buffer rescue, lifetime revision rejection and disk conflict preservation",
-    "Live mouse center docking, chat hide/return, maximize, consistent native light/dark themes"
+    "94 unit/protocol checks; 2 platform-specific skips; no paid prompts in ordinary unit/protocol suites",
+    "16 Electron modal/composer/focus cases on macOS and Windows",
+    "3 full application chat/ACP workflows on macOS and Windows",
+    "41 macOS /40 Windows real IDE cases: TS/React, Pyright, JDT, Spring/Maven/JUnit, native Python/Java tests, failing test then repaired rerun, actual Node DAP stack",
+    "Versioned edits/idempotency/semantic rename with dirty-buffer authority",
+    "Backend restart, stale model lifetime, disk conflict recovery on both OSes",
+    "Forced POSIX backend crash preserves live dirty buffer",
+    "Actual native Markdown webview",
+    "Mouse docking, chat hide/return, actual light/dark surfaces",
+    "Bundle integrity 12 scripts /239 files /68 root links /71 plan cards /226 acceptance IDs /14 roles /29 workflows",
+    "Windows NSIS/portable packaging and packaged CLI checks",
+    "40 real IDE/language/build/test/debug/recovery cases in packaged Windows EXE before generating NSIS/portable",
+    "9 maintained-extractor and guarded-glob cases on macOS and Windows; npm warnings retained with scoped mitigation evidence"
   ],
   "open": [
-    "Windows installer, VDI and corporate environments require the Windows probe",
-    "Per-feature Ultimate depth parity remains individually tracked; no blanket certificate",
-    "Two simultaneous editable native windows for one dirty model are not implemented; ownership transfer preserves it"
+    "Manual installer use, corporate VDI/VARM, internal certificates/MCP and GigaCode26.9.75 require workplace validation",
+    "Ultimate feature depth remains individually tracked; no blanket parity certificate",
+    "One native view per root with ownership transfer; two simultaneous independent editable native views for the same root are not implemented",
+    "Windows forced hard-crash descendant containment remains unverified",
+    "Workplace GigaCode IDE is a Community fork with unknown build/plugins; IntelliJ is a UX reference, not an embedded runtime"
   ],
   "evidence": "docs/suite/evidence/ide-live-macos.json",
   "latestTests": {
-    "unitPassed": 93,
-    "paidSkipped": 2,
+    "unitPassed": 94,
     "modalFocusPassed": 10,
     "liveElectronPassed": 41,
     "composerUiPassed": 6,
-    "fullAppChatPassed": 3
+    "fullAppChatPassed": 3,
+    "windowsLiveElectronPassed": 40,
+    "windowsUnitPassed": 94,
+    "windowsComposerUiPassed": 16,
+    "windowsFullAppChatPassed": 3,
+    "platformSkipped": 2,
+    "paidProbesRun": 3,
+    "windowsPackagedLiveElectronPassed": 40,
+    "paidHostPromptDispatches": 6,
+    "paidProbePassed": 1,
+    "paidProbeFailed": 2,
+    "ideDependencyChecksPassed": 9,
+    "windowsIdeDependencyChecksPassed": 9
   },
   "windowsFirstRun": {
     "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38451576506",
@@ -65,5 +78,72 @@
     "passed": "unit/build, native modules and all 16 modal/composer UI actions",
     "failed": "Playwright screenshot of hidden fixture window timed out",
     "fix": "actual Electron capturePage with non-empty image assertion; next complete CI pending"
+  },
+  "windowsPreviousSuccessfulRun": {
+    "status": "success",
+    "sourceCommit": "56a1b34b9382e921c08e497c235350b9a461aa84",
+    "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38464209601",
+    "evidence": "docs/suite/evidence/ide-live-windows.json",
+    "passed": [
+      "Legacy PowerShell 5.1 suites",
+      "93 unit/protocol checks, 2 platform-specific skips; no paid probes run",
+      "16 real Electron modal/composer checks",
+      "3 full application chat/ACP workflows",
+      "40 live IDE/language/build/test/debug/recovery checks",
+      "Self-contained IDE staging",
+      "NSIS and portable packaging",
+      "Packaged CLI/reference/hash checks"
+    ]
+  },
+  "windowsPackagedFailure": {
+    "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38466723005",
+    "sourceCommit": "0d14f725c1281956d1fe430d95a94a21cdd8297d",
+    "failure": "Packaged IDE backend MODULE_NOT_FOUND; root node_modules filtered from extraResources",
+    "fix": "Parent staging mapping retains nested ide/node_modules; real electron-builder copy regression; packaged E2E gate before installers"
+  },
+  "providerProbe": {
+    "metadata": "docs/suite/evidence/qwen-0.25.1-metadata.json",
+    "paid": "docs/suite/evidence/qwen-0.25.1-provider.json",
+    "assessment": "Metadata and config readback passed; paid exact-marker outcome inconsistent (1/3 passed), 6 total host prompts; no blanket provider pass"
+  },
+  "windowsPackagedAcceptanceBeforeHardening": {
+    "status": "success",
+    "sourceCommit": "614591890576193854116c5ca9cc850279cbe061",
+    "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38468996688",
+    "evidence": [
+      "docs/suite/evidence/ide-live-windows.json",
+      "docs/suite/evidence/ide-live-windows-packaged.json"
+    ],
+    "passed": [
+      "Legacy PowerShell 5.1 suites",
+      "9 real dependency extraction/recursion cases; hardening checked before build/staging",
+      "94 unit/protocol checks, 2 platform-specific skips; no paid provider prompts",
+      "16 Electron modal/composer checks",
+      "3 full application chat/ACP workflows",
+      "40 live IDE/language/build/test/debug/recovery checks from source",
+      "40 more live IDE/language/build/test/debug/recovery checks from packaged EXE",
+      "NSIS and portable built from verified application",
+      "Packaged Qwen 0.25.1, resources and hash checks"
+    ]
+  },
+  "windowsFinalRun": {
+    "status": "success",
+    "sourceCommit": "0f9d8eb8c22b5d966022b384da8bceb6e5bdf3ec",
+    "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38475439677",
+    "evidence": [
+      "docs/suite/evidence/ide-live-windows.json",
+      "docs/suite/evidence/ide-live-windows-packaged.json"
+    ],
+    "passed": [
+      "Legacy PowerShell 5.1 suites",
+      "9 real dependency extraction/recursion cases; hardening checked before build/staging",
+      "94 unit/protocol checks, 2 platform-specific skips; no paid provider prompts",
+      "16 Electron modal/composer checks",
+      "3 full application chat/ACP workflows",
+      "40 live IDE/language/build/test/debug/recovery checks from source",
+      "40 more live IDE/language/build/test/debug/recovery checks from packaged EXE",
+      "NSIS and portable built from verified application",
+      "Packaged Qwen 0.25.1, resources and hash checks"
+    ]
   }
 }

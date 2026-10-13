@@ -1,10 +1,10 @@
 # Матрица IDE: целевой уровень IntelliJ IDEA Ultimate
 
-Дата исследования: 14.10.2026. Это подробная карта реализации и приёмки, не отчёт о готовой IDE. Все строки `planned_unverified`; выбранного и проверенного engine пока нет. Наличие расширения не доказывает соответствие Ultimate. Сохранены также дополнительные JVM/framework/remote сценарии; приоритет Java/Spring/Maven, Python и frontend.
+Дата исследования и обновления: 14.10.2026. Это подробная карта реализации и приёмки, а не сертификат полного Ultimate parity. В поставке уже работает Theia 1.76.0; [runtime handoff](IDE-RUNTIME-HANDOFF.md) и [audit](IDE-RUNTIME-AUDIT.md) фиксируют реальные macOS/Windows, включая packaged Windows, сценарии. В JSON строки с подтверждённой частью имеют `partial_evidence`, точный `observedSubset` и незакрытый `remainingAcceptance`; остальные — `planned_unverified`. Полные критерии строк не закрываются установкой расширения или узким smoke test. Сохранены дополнительные JVM/framework/remote сценарии; приоритет Java/Spring/Maven, Python и frontend.
 
 Машиночитаемый источник: [ide-ultimate-parity.json](../../suite/ide-ultimate-parity.json). Обоснование архитектуры: [IDE-ULTIMATE-RESEARCH.md](IDE-ULTIMATE-RESEARCH.md). Источники и фактические snapshots: [ide-research-sources.json](../../suite/ide-research-sources.json). Контрольные сценарии: [ide-engine-fixtures.json](../../suite/ide-engine-fixtures.json).
 
-Для агента: читать только строки текущего `card`/`area`, соответствующий source ID и fixture. Не загружать всю матрицу на каждом ходе. Theia/Code-OSS — варианты host; JDT/IntelliJ Java-Kotlin — отдельный выбор semantic backend. Лицензируемые candidates не становятся обязательными dependencies OSS пути.
+Для агента: читать только строки текущего `card`/`area`, соответствующий source ID и fixture. Не загружать всю матрицу на каждом ходе. Текущий host — Theia, Java — JDT/Spring Tools; Code-OSS и IntelliJ Java-Kotlin остаются альтернативами исследования. IntelliJ IDEA — UX-ориентир, не встраиваемый продукт. Лицензируемые candidates не становятся обязательными dependencies OSS пути. Не переделывай подтверждённую основу ради исторического слова «кандидат» в таблице; при переносе сравни её с уже написанным кодом пользователя.
 
 ## Платформа и расширения
 

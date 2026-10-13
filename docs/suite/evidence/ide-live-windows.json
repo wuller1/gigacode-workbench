@@ -1,0 +1,1082 @@
+{
+  "results": [
+    {
+      "name": "Real Theia frontend and backend",
+      "observed": {
+        "engine": "theia",
+        "version": "1.76.0",
+        "roots": [
+          "file:///<FIXTURE_RUN>/project"
+        ],
+        "pluginCount": 70
+      }
+    },
+    {
+      "name": "Open real project file",
+      "observed": {
+        "id": "code-editor-opener:file:///<FIXTURE_RUN>/project/src/main.ts:153513265534789",
+        "uri": "file:///<FIXTURE_RUN>/project/src/main.ts",
+        "version": 1,
+        "revision": "f7baa98e-a172-4ae6-b90d-3b0bf327b4b3:1",
+        "languageId": "typescript",
+        "dirty": false,
+        "lineCount": 4,
+        "selection": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          },
+          "direction": "ltr"
+        }
+      }
+    },
+    {
+      "name": "Read authoritative buffer",
+      "observed": {
+        "version": 1,
+        "language": "typescript",
+        "text": "import { greet } from \"./greet.js\";\nconst count: number = \"intentional diagnostic\";\nconsole.log(greet(\"Workbench\"), count);\n"
+      }
+    },
+    {
+      "name": "Actual close/reopen rejects old model revision at matching numeric version",
+      "observed": true
+    },
+    {
+      "name": "Actual TypeScript diagnostic detects intentional error",
+      "observed": [
+        {
+          "uri": "file:///<FIXTURE_RUN>/project/src/main.ts",
+          "source": "ts",
+          "code": "2322",
+          "severity": 1,
+          "range": {
+            "start": {
+              "line": 1,
+              "character": 6
+            },
+            "end": {
+              "line": 1,
+              "character": 11
+            }
+          },
+          "message": "Type 'string' is not assignable to type 'number'."
+        }
+      ]
+    },
+    {
+      "name": "Edit same unsaved buffer without overwriting disk",
+      "observed": {
+        "id": "code-editor-opener:file:///<FIXTURE_RUN>/project/src/main.ts:153513265534789",
+        "uri": "file:///<FIXTURE_RUN>/project/src/main.ts",
+        "version": 2,
+        "revision": "f7baa98e-a172-4ae6-b90d-3b0bf327b4b3:2",
+        "languageId": "typescript",
+        "dirty": true,
+        "lineCount": 4,
+        "selection": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          },
+          "direction": "ltr"
+        }
+      }
+    },
+    {
+      "name": "Duplicate operation does not apply twice",
+      "observed": {
+        "id": "code-editor-opener:file:///<FIXTURE_RUN>/project/src/main.ts:153513265534789",
+        "uri": "file:///<FIXTURE_RUN>/project/src/main.ts",
+        "version": 2,
+        "revision": "f7baa98e-a172-4ae6-b90d-3b0bf327b4b3:2",
+        "languageId": "typescript",
+        "dirty": true,
+        "lineCount": 4,
+        "selection": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          },
+          "direction": "ltr"
+        },
+        "alreadyApplied": true
+      }
+    },
+    {
+      "name": "Stale revision rejected",
+      "observed": "Error: page.evaluate: Error: Error invoking remote method 'workbench:invoke': Error: STALE_REVISION"
+    },
+    {
+      "name": "Save verified on disk and diagnostics cleared",
+      "observed": {
+        "id": "code-editor-opener:file:///<FIXTURE_RUN>/project/src/main.ts:153513265534789",
+        "uri": "file:///<FIXTURE_RUN>/project/src/main.ts",
+        "version": 2,
+        "revision": "f7baa98e-a172-4ae6-b90d-3b0bf327b4b3:2",
+        "languageId": "typescript",
+        "dirty": false,
+        "lineCount": 4,
+        "selection": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          },
+          "direction": "ltr"
+        }
+      }
+    },
+    {
+      "name": "Semantic definition navigates across files",
+      "observed": {
+        "uri": "file:///<FIXTURE_RUN>/project/src/main.ts",
+        "version": 2,
+        "kind": "definition",
+        "providerCount": 1,
+        "locations": [
+          {
+            "uri": "file:///<FIXTURE_RUN>/project/src/greet.ts",
+            "range": {
+              "startLineNumber": 1,
+              "startColumn": 1,
+              "endLineNumber": 3,
+              "endColumn": 2
+            },
+            "originSelectionRange": {
+              "startLineNumber": 3,
+              "startColumn": 13,
+              "endLineNumber": 3,
+              "endColumn": 18
+            }
+          }
+        ],
+        "total": 1
+      }
+    },
+    {
+      "name": "Multi-file semantic rename preview",
+      "observed": {
+        "proposalId": "f66aa10a-0128-4dbd-818a-5bea19387935",
+        "label": "Rename greet → welcome",
+        "files": [
+          {
+            "uri": "file:///<FIXTURE_RUN>/project/src/greet.ts",
+            "exists": true,
+            "hash": "c2d442c19c49dba932d13cdbd0ae124b53043f1a342d4ae2de59c42502159535",
+            "version": 1,
+            "dirty": false
+          },
+          {
+            "uri": "file:///<FIXTURE_RUN>/project/src/main.ts",
+            "exists": true,
+            "hash": "9598836f6446ca43f06ff99fa8eb8acd39c6e7e340271fd92da411d9ebccc570",
+            "version": 2,
+            "dirty": false
+          }
+        ],
+        "totalFiles": 2,
+        "filesTruncated": false,
+        "editCount": 3,
+        "applied": false,
+        "expiresAt": "2026-10-13T22:27:36.651Z",
+        "preview": [
+          {
+            "uri": "file:///<FIXTURE_RUN>/project/src/greet.ts",
+            "range": {
+              "startLineNumber": 1,
+              "startColumn": 17,
+              "endLineNumber": 1,
+              "endColumn": 22
+            },
+            "text": "welcome",
+            "textTruncated": false
+          },
+          {
+            "uri": "file:///<FIXTURE_RUN>/project/src/main.ts",
+            "range": {
+              "startLineNumber": 1,
+              "startColumn": 10,
+              "endLineNumber": 1,
+              "endColumn": 15
+            },
+            "text": "welcome",
+            "textTruncated": false
+          },
+          {
+            "uri": "file:///<FIXTURE_RUN>/project/src/main.ts",
+            "range": {
+              "startLineNumber": 3,
+              "startColumn": 13,
+              "endLineNumber": 3,
+              "endColumn": 18
+            },
+            "text": "welcome",
+            "textTruncated": false
+          }
+        ],
+        "previewTruncated": false
+      }
+    },
+    {
+      "name": "Semantic rename updates actual usages",
+      "observed": {
+        "proposalId": "f66aa10a-0128-4dbd-818a-5bea19387935",
+        "label": "Rename greet → welcome",
+        "applied": true,
+        "summary": "Made 9 text edits in 2 files",
+        "files": [
+          "file:///<FIXTURE_RUN>/project/src/greet.ts",
+          "file:///<FIXTURE_RUN>/project/src/main.ts"
+        ],
+        "requiresBuildAndTests": true
+      }
+    },
+    {
+      "name": "Semantic rename preserves dirty-buffer state instead of silently saving",
+      "observed": true
+    },
+    {
+      "name": "Agent execution refuses dirty buffers without silently saving unrelated edits",
+      "observed": true
+    },
+    {
+      "name": "Native refactoring preview is explicitly pending, not reported as applied",
+      "observed": {
+        "proposalId": "d5b257db-97ca-4169-8124-b3562abf9c52",
+        "previewOpened": true,
+        "applied": false,
+        "requiresReadback": true,
+        "requiresUserAction": true
+      }
+    },
+    {
+      "name": "Git tracks actual file changes",
+      "observed": "src/greet.ts | 2 +-\n src/main.ts  | 6 +++---\n 2 files changed, 4 insertions(+), 4 deletions(-)"
+    },
+    {
+      "name": "Actual isolated Markdown webview renders project content",
+      "observed": [
+        {
+          "text": "",
+          "isolatedOrigin": true
+        },
+        {
+          "text": "Live IDE fixture\n\nA real editor, diagnostics, navigation and Git workflow.",
+          "isolatedOrigin": true
+        }
+      ]
+    },
+    {
+      "name": "Real React TSX diagnostic, repair, TypeScript build and React DOM render",
+      "observed": "<button>1</button>"
+    },
+    {
+      "name": "Real Pyright detects incompatible Python assignment",
+      "observed": [
+        {
+          "uri": "file:///<FIXTURE_RUN>/project/python/main.py",
+          "source": "Ruff",
+          "code": "I001",
+          "severity": 2,
+          "range": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 0,
+              "character": 26
+            }
+          },
+          "message": "Import block is un-sorted or un-formatted\n\nhelp: Organize imports",
+          "relatedInformation": [],
+          "data": {
+            "code": "I001",
+            "edits": [
+              {
+                "newText": "from greeting import greet\n\n",
+                "range": {
+                  "end": {
+                    "character": 0,
+                    "line": 1
+                  },
+                  "start": {
+                    "character": 0,
+                    "line": 0
+                  }
+                }
+              }
+            ],
+            "is_preferred": true,
+            "noqa_edit": {
+              "newText": "  # noqa: I001\n",
+              "range": {
+                "end": {
+                  "character": 0,
+                  "line": 1
+                },
+                "start": {
+                  "character": 26,
+                  "line": 0
+                }
+              }
+            },
+            "title": "Organize imports"
+          }
+        },
+        {
+          "uri": "file:///<FIXTURE_RUN>/project/python/main.py",
+          "source": "Pyright",
+          "code": "reportAssignmentType",
+          "severity": 1,
+          "range": {
+            "start": {
+              "line": 1,
+              "character": 13
+            },
+            "end": {
+              "line": 1,
+              "character": 37
+            }
+          },
+          "message": "Type \"Literal['intentional diagnostic']\" is not assignable to declared type \"int\"\n  \"Literal['intentional diagnostic']\" is not assignable to \"int\""
+        }
+      ]
+    },
+    {
+      "name": "Real Python virtualenv unittest",
+      "observed": ".\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK"
+    },
+    {
+      "name": "Real JDT Java definition across Maven project",
+      "observed": {
+        "uri": "file:///<FIXTURE_RUN>/project/java-maven/src/main/java/dev/workbench/Application.java",
+        "version": 1,
+        "kind": "definition",
+        "providerCount": 1,
+        "locations": [
+          {
+            "uri": "file:///<FIXTURE_RUN>/project/java-maven/src/main/java/dev/workbench/GreetingService.java",
+            "range": {
+              "startLineNumber": 4,
+              "startColumn": 14,
+              "endLineNumber": 4,
+              "endColumn": 29
+            }
+          }
+        ],
+        "total": 1
+      }
+    },
+    {
+      "name": "Real Java21 Spring Maven JUnit build",
+      "observed": "non existing resourceDirectory <FIXTURE_RUN>\\project\\java-maven\\src\\main\\resources\r\n[INFO] \r\n[INFO] --- compiler:3.13.0:compile (default-compile) @ ide-fixture ---\r\n[INFO] Recompiling the module because of added or removed source files.\r\n[INFO] Compiling 2 source files with javac [debug parameters release 21] to target\\classes\r\n[INFO] \r\n[INFO] --- resources:3.3.1:testResources (default-testResources) @ ide-fixture ---\r\n[INFO] skip non existing resourceDirectory <FIXTURE_RUN>\\project\\java-maven\\src\\test\\resources\r\n[INFO] \r\n[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ ide-fixture ---\r\n[INFO] Recompiling the module because of changed dependency.\r\n[INFO] Compiling 1 source file with javac [debug parameters release 21] to target\\test-classes\r\n[INFO] \r\n[INFO] --- surefire:3.5.2:test (default-test) @ ide-fixture ---\r\n[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider\r\n[INFO] \r\n[INFO] -------------------------------------------------------\r\n[INFO]  T E S T S\r\n[INFO] -------------------------------------------------------\r\n[INFO] Running dev.workbench.GreetingServiceTest\r\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.063 s -- in dev.workbench.GreetingServiceTest\r\n[INFO] \r\n[INFO] Results:\r\n[INFO] \r\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0\r\n[INFO] \r\n[INFO] ------------------------------------------------------------------------\r\n[INFO] BUILD SUCCESS\r\n[INFO] ------------------------------------------------------------------------\r\n[INFO] Total time:  7.500 s\r\n[INFO] Finished at: 2026-10-13T22:13:27Z\r\n[INFO] ------------------------------------------------------------------------\r\n"
+    },
+    {
+      "name": "Native test controllers discover real tests",
+      "observed": [
+        {
+          "id": "python-tests",
+          "tests": 4,
+          "profiles": [
+            {
+              "label": "Run Tests",
+              "kind": 1,
+              "isDefault": true
+            },
+            {
+              "label": "Debug Tests",
+              "kind": 2,
+              "isDefault": true
+            },
+            {
+              "label": "Coverage Tests",
+              "kind": 3,
+              "isDefault": true
+            }
+          ]
+        },
+        {
+          "id": "java",
+          "tests": 3,
+          "profiles": [
+            {
+              "label": "Run Tests",
+              "kind": 1,
+              "isDefault": true
+            },
+            {
+              "label": "Debug Tests",
+              "kind": 2,
+              "isDefault": true
+            },
+            {
+              "label": "Run Tests with Coverage",
+              "kind": 3,
+              "isDefault": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Native IDE test runner passed actual tests: python-tests",
+      "observed": {
+        "id": "617aa8a3-13b4-433e-b73c-36255338adf0",
+        "name": "Running Tests for Workspace(s): <FIXTURE_RUN>\\project",
+        "running": false,
+        "totalResults": 1,
+        "items": [
+          {
+            "id": "<FIXTURE_RUN>\\project\\python\\test_greeting.py\\GreetingTest\\test_greeting",
+            "label": "test_greeting",
+            "result": {
+              "itemPath": [
+                "<FIXTURE_RUN>\\project\\python",
+                "<FIXTURE_RUN>\\project\\python\\test_greeting.py",
+                "<FIXTURE_RUN>\\project\\python\\test_greeting.py\\GreetingTest",
+                "<FIXTURE_RUN>\\project\\python\\test_greeting.py\\GreetingTest\\test_greeting"
+              ],
+              "state": 3
+            }
+          }
+        ],
+        "output": "test_greeting (test_greeting.GreetingTest.test_greeting) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\nFinished running tests!\r\n"
+      }
+    },
+    {
+      "name": "Native test runner reports actual assertion failure",
+      "observed": {
+        "id": "daf067a3-f446-4fc3-8de8-b9bfe428623e",
+        "name": "Running Tests for Workspace(s): <FIXTURE_RUN>\\project",
+        "running": false,
+        "totalResults": 1,
+        "items": [
+          {
+            "id": "<FIXTURE_RUN>\\project\\python\\test_greeting.py\\GreetingTest\\test_greeting",
+            "label": "test_greeting",
+            "result": {
+              "itemPath": [
+                "<FIXTURE_RUN>\\project\\python",
+                "<FIXTURE_RUN>\\project\\python\\test_greeting.py",
+                "<FIXTURE_RUN>\\project\\python\\test_greeting.py\\GreetingTest",
+                "<FIXTURE_RUN>\\project\\python\\test_greeting.py\\GreetingTest\\test_greeting"
+              ],
+              "state": 4,
+              "messages": [
+                {
+                  "location": {
+                    "uri": "file:///<FIXTURE_RUN>/project/python/test_greeting.py",
+                    "range": {
+                      "_start": {
+                        "_line": 3,
+                        "_character": 0
+                      },
+                      "_end": {
+                        "_line": 4,
+                        "_character": 0
+                      }
+                    }
+                  },
+                  "message": {
+                    "value": "test_greeting.GreetingTest.test_greeting failed: <class 'AssertionError'> 'Hello, Workbench' != 'Intentional failing expectation'\n- Hello, Workbench\n+ Intentional failing expectation\n\r\nTraceback (most recent call last):\r\n  File \"C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\Lib\\unittest\\case.py\", line 58, in testPartExecutor\r\n    yield\r\n  File \"C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\Lib\\unittest\\case.py\", line 634, in run\r\n    self._callTestMethod(testMethod)\r\n  File \"C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\Lib\\unittest\\case.py\", line 589, in _callTestMethod\r\n    if method() is not None:\r\n       ^^^^^^^^\r\n  File \"<FIXTURE_RUN>\\project\\python\\test_greeting.py\", line 5, in test_greeting\r\n    self.assertEqual(greet(\"Workbench\"), \"Intentional failing expectation\")\r\nAssertionError: 'Hello, Workbench' != 'Intentional failing expectation'\r\n- Hello, Workbench\r\n+ Intentional failing expectation"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "output": "test_greeting (test_greeting.GreetingTest.test_greeting) ... FAIL\r\n\r\n======================================================================\r\nFAIL: test_greeting (test_greeting.GreetingTest.test_greeting)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"<FIXTURE_RUN>\\project\\python\\test_greeting.py\", line 5, in test_greeting\r\n    self.assertEqual(greet(\"Workbench\"), \"Intentional failing expectation\")\r\nAssertionError: 'Hello, Workbench' != 'Intentional failing expectation'\r\n- Hello, Workbench\r\n+ Intentional failing expectation\r\n\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.001s\r\n\r\nFAILED (failures=1)\r\nFinished running tests!\r\n"
+      }
+    },
+    {
+      "name": "Native test runner passes after actual repair",
+      "observed": {
+        "id": "2ddd36f6-3523-42c5-8a81-f832b1c86405",
+        "name": "Running Tests for Workspace(s): <FIXTURE_RUN>\\project",
+        "running": false,
+        "totalResults": 1,
+        "items": [
+          {
+            "id": "<FIXTURE_RUN>\\project\\python\\test_greeting.py\\GreetingTest\\test_greeting",
+            "label": "test_greeting",
+            "result": {
+              "itemPath": [
+                "<FIXTURE_RUN>\\project\\python",
+                "<FIXTURE_RUN>\\project\\python\\test_greeting.py",
+                "<FIXTURE_RUN>\\project\\python\\test_greeting.py\\GreetingTest",
+                "<FIXTURE_RUN>\\project\\python\\test_greeting.py\\GreetingTest\\test_greeting"
+              ],
+              "state": 3
+            }
+          }
+        ],
+        "output": "test_greeting (test_greeting.GreetingTest.test_greeting) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\nFinished running tests!\r\n"
+      }
+    },
+    {
+      "name": "Native IDE test runner passed actual tests: java",
+      "observed": {
+        "id": "4d21966c-8b39-49d5-b43f-c0e939ececb8",
+        "name": "",
+        "running": false,
+        "totalResults": 1,
+        "items": [
+          {
+            "id": "ide-fixture@dev.workbench.GreetingServiceTest#greetsByName()",
+            "label": "greetsByName()",
+            "result": {
+              "itemPath": [
+                "ide-fixture",
+                "ide-fixture@dev.workbench",
+                "ide-fixture@dev.workbench.GreetingServiceTest",
+                "ide-fixture@dev.workbench.GreetingServiceTest#greetsByName()"
+              ],
+              "state": 3,
+              "duration": 24
+            }
+          }
+        ],
+        "output": ""
+      }
+    },
+    {
+      "name": "Actual build task exit: Fixture pass",
+      "observed": {
+        "taskId": 0,
+        "label": "Fixture pass",
+        "state": "passed",
+        "exitCode": 0
+      }
+    },
+    {
+      "name": "Actual build task exit: Fixture fail",
+      "observed": {
+        "taskId": 1,
+        "label": "Fixture fail",
+        "state": "failed",
+        "exitCode": 7
+      }
+    },
+    {
+      "name": "Actual debug adapter threads",
+      "observed": {
+        "seq": 181,
+        "type": "response",
+        "request_seq": 14,
+        "command": "threads",
+        "success": true,
+        "body": {
+          "threads": [
+            {
+              "id": 0,
+              "name": "debug.mjs [7736]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Actual paused source stack",
+      "observed": {
+        "seq": 182,
+        "type": "response",
+        "request_seq": 15,
+        "command": "stackTrace",
+        "success": true,
+        "body": {
+          "stackFrames": [
+            {
+              "id": 0,
+              "name": "<anonymous>",
+              "line": 1,
+              "column": 16,
+              "source": {
+                "name": "debug.mjs",
+                "path": "<FIXTURE_RUN>\\project\\debug.mjs",
+                "sourceReference": 0
+              },
+              "presentationHint": "normal",
+              "canRestart": false
+            },
+            {
+              "id": 1,
+              "name": "ModuleJob.run",
+              "line": 343,
+              "column": 25,
+              "source": {
+                "name": "<node_internals>/internal/modules/esm/module_job",
+                "path": "<node_internals>/internal/modules/esm/module_job",
+                "sourceReference": 739120119,
+                "presentationHint": "deemphasize",
+                "origin": "Skipped by skipFiles"
+              },
+              "presentationHint": "deemphasize",
+              "canRestart": false
+            },
+            {
+              "id": 2,
+              "name": "process.processTicksAndRejections",
+              "line": 103,
+              "column": 5,
+              "source": {
+                "name": "<node_internals>/internal/process/task_queues",
+                "path": "<node_internals>/internal/process/task_queues",
+                "sourceReference": 1090918982,
+                "presentationHint": "deemphasize",
+                "origin": "Skipped by skipFiles"
+              },
+              "presentationHint": "deemphasize",
+              "canRestart": false
+            },
+            {
+              "name": "await",
+              "id": 3,
+              "line": 0,
+              "column": 0,
+              "presentationHint": "label"
+            },
+            {
+              "id": 4,
+              "name": "onImport.tracePromise.__proto__",
+              "line": 681,
+              "column": 42,
+              "source": {
+                "name": "<node_internals>/internal/modules/esm/loader",
+                "path": "<node_internals>/internal/modules/esm/loader",
+                "sourceReference": 2091968186,
+                "presentationHint": "deemphasize",
+                "origin": "Skipped by skipFiles"
+              },
+              "presentationHint": "deemphasize",
+              "canRestart": false
+            },
+            {
+              "id": 5,
+              "name": "processTicksAndRejections",
+              "line": 103,
+              "column": 5,
+              "source": {
+                "name": "<node_internals>/internal/process/task_queues",
+                "path": "<node_internals>/internal/process/task_queues",
+                "sourceReference": 1090918982,
+                "presentationHint": "deemphasize",
+                "origin": "Skipped by skipFiles"
+              },
+              "presentationHint": "deemphasize",
+              "canRestart": false
+            },
+            {
+              "name": "await",
+              "id": 6,
+              "line": 0,
+              "column": 0,
+              "presentationHint": "label"
+            },
+            {
+              "id": 7,
+              "name": "tracePromise",
+              "line": 350,
+              "column": 14,
+              "source": {
+                "name": "<node_internals>/diagnostics_channel",
+                "path": "<node_internals>/diagnostics_channel",
+                "sourceReference": 1054846929,
+                "presentationHint": "deemphasize",
+                "origin": "Skipped by skipFiles"
+              },
+              "presentationHint": "deemphasize",
+              "canRestart": false
+            },
+            {
+              "id": 8,
+              "name": "import",
+              "line": 679,
+              "column": 21,
+              "source": {
+                "name": "<node_internals>/internal/modules/esm/loader",
+                "path": "<node_internals>/internal/modules/esm/loader",
+                "sourceReference": 2091968186,
+                "presentationHint": "deemphasize",
+                "origin": "Skipped by skipFiles"
+              },
+              "presentationHint": "deemphasize",
+              "canRestart": false
+            },
+            {
+              "id": 9,
+              "name": "<anonymous>",
+              "line": 179,
+              "column": 35,
+              "source": {
+                "name": "<node_internals>/internal/modules/run_main",
+                "path": "<node_internals>/internal/modules/run_main",
+                "sourceReference": 426318630,
+                "presentationHint": "deemphasize",
+                "origin": "Skipped by skipFiles"
+              },
+              "presentationHint": "deemphasize",
+              "canRestart": false
+            },
+            {
+              "id": 10,
+              "name": "asyncRunEntryPointWithESMLoader",
+              "line": 117,
+              "column": 11,
+              "source": {
+                "name": "<node_internals>/internal/modules/run_main",
+                "path": "<node_internals>/internal/modules/run_main",
+                "sourceReference": 426318630,
+                "presentationHint": "deemphasize",
+                "origin": "Skipped by skipFiles"
+              },
+              "presentationHint": "deemphasize",
+              "canRestart": false
+            },
+            {
+              "id": 11,
+              "name": "runEntryPointWithESMLoader",
+              "line": 139,
+              "column": 19,
+              "source": {
+                "name": "<node_internals>/internal/modules/run_main",
+                "path": "<node_internals>/internal/modules/run_main",
+                "sourceReference": 426318630,
+                "presentationHint": "deemphasize",
+                "origin": "Skipped by skipFiles"
+              },
+              "presentationHint": "deemphasize",
+              "canRestart": false
+            },
+            {
+              "id": 12,
+              "name": "executeUserEntryPoint",
+              "line": 176,
+              "column": 5,
+              "source": {
+                "name": "<node_internals>/internal/modules/run_main",
+                "path": "<node_internals>/internal/modules/run_main",
+                "sourceReference": 426318630,
+                "presentationHint": "deemphasize",
+                "origin": "Skipped by skipFiles"
+              },
+              "presentationHint": "deemphasize",
+              "canRestart": false
+            },
+            {
+              "id": 13,
+              "name": "<anonymous>",
+              "line": 36,
+              "column": 49,
+              "source": {
+                "name": "<node_internals>/internal/main/run_main_module",
+                "path": "<node_internals>/internal/main/run_main_module",
+                "sourceReference": 700523592,
+                "presentationHint": "deemphasize",
+                "origin": "Skipped by skipFiles"
+              },
+              "presentationHint": "deemphasize",
+              "canRestart": false
+            }
+          ],
+          "totalFrames": 14
+        }
+      }
+    },
+    {
+      "name": "Unsaved buffer recovered after actual IDE backend restart",
+      "observed": {
+        "dirty": true,
+        "text": "// unsaved recovery fixture\nimport { welcome } from \"./greet.js\";\nconst count: n"
+      }
+    },
+    {
+      "name": "Old document lifetime rejected after restart even with matching numeric version",
+      "observed": true
+    },
+    {
+      "name": "Recovery preserves both external disk edit and conflicting unsaved draft",
+      "observed": {
+        "conflict": true
+      }
+    },
+    {
+      "name": "Actual Git commands registered",
+      "observed": [
+        "git-base.api.getRemoteSources",
+        "git.continueInLocalClone",
+        "git.clone",
+        "git.cloneRecursive",
+        "git.init",
+        "git.openRepository",
+        "git.reopenClosedRepositories",
+        "git.close",
+        "git.closeOtherRepositories",
+        "git.openWorktree",
+        "git.openWorktreeInNewWindow",
+        "git.refresh",
+        "git.compareWithWorkspace",
+        "git.openChange",
+        "git.openAllChanges",
+        "git.openFile",
+        "git.openFile2",
+        "git.openHEADFile",
+        "git.stage",
+        "git.stageAll",
+        "git.stageAllTracked",
+        "git.stageAllUntracked",
+        "git.stageAllMerge",
+        "git.stageSelectedRanges",
+        "git.diff.stageHunk",
+        "git.diff.stageSelection",
+        "git.revertSelectedRanges",
+        "git.stageChange",
+        "git.stageFile",
+        "git.revertChange",
+        "git.unstage",
+        "git.unstageAll",
+        "git.unstageSelectedRanges",
+        "git.unstageChange",
+        "git.unstageFile",
+        "git.clean",
+        "git.cleanAll",
+        "git.cleanAllTracked",
+        "git.cleanAllUntracked",
+        "git.rename",
+        "git.commit",
+        "git.commitAmend",
+        "git.commitSigned",
+        "git.commitStaged",
+        "git.commitEmpty",
+        "git.commitStagedSigned",
+        "git.commitStagedAmend",
+        "git.commitAll",
+        "git.commitAllSigned",
+        "git.commitAllAmend",
+        "git.commitNoVerify",
+        "git.commitStagedNoVerify",
+        "git.commitEmptyNoVerify",
+        "git.commitStagedSignedNoVerify",
+        "git.commitAmendNoVerify",
+        "git.commitSignedNoVerify",
+        "git.commitStagedAmendNoVerify",
+        "git.commitAllNoVerify",
+        "git.commitAllSignedNoVerify",
+        "git.commitAllAmendNoVerify",
+        "git.commitMessageAccept",
+        "git.commitMessageDiscard",
+        "git.restoreCommitTemplate",
+        "git.undoCommit",
+        "git.checkout",
+        "git.graph.checkout",
+        "git.checkoutDetached",
+        "git.graph.checkoutDetached",
+        "git.branch",
+        "git.branchFrom",
+        "git.deleteBranch",
+        "git.graph.deleteBranch",
+        "git.deleteRemoteBranch",
+        "git.renameBranch",
+        "git.merge",
+        "git.mergeAbort",
+        "git.rebase",
+        "git.createTag",
+        "git.deleteTag",
+        "git.migrateWorktreeChanges",
+        "git.createWorktree",
+        "git.deleteWorktree",
+        "git.deleteWorktree2",
+        "git.graph.deleteTag",
+        "git.deleteRemoteTag",
+        "git.fetch",
+        "git.fetchPrune",
+        "git.fetchAll",
+        "git.fetchRef",
+        "git.pull",
+        "git.pullRebase",
+        "git.pullFrom",
+        "git.pullRef",
+        "git.push",
+        "git.pushForce",
+        "git.pushTo",
+        "git.pushToForce",
+        "git.pushTags",
+        "git.pushWithTags",
+        "git.pushWithTagsForce",
+        "git.pushRef",
+        "git.cherryPick",
+        "git.graph.cherryPick",
+        "git.cherryPickAbort",
+        "git.addRemote",
+        "git.removeRemote",
+        "git.sync",
+        "git.syncRebase",
+        "git.publish",
+        "git.showOutput",
+        "git.ignore",
+        "git.revealInExplorer",
+        "git.revealFileInOS.linux",
+        "git.revealFileInOS.mac",
+        "git.revealFileInOS.windows",
+        "git.stashIncludeUntracked",
+        "git.stash",
+        "git.stashStaged",
+        "git.stashPop",
+        "git.stashPopLatest",
+        "git.stashPopEditor",
+        "git.stashApply",
+        "git.stashApplyLatest",
+        "git.stashApplyEditor",
+        "git.stashDrop",
+        "git.stashDropAll",
+        "git.stashDropEditor",
+        "git.stashView",
+        "git.timeline.openDiff",
+        "git.timeline.copyCommitId",
+        "git.timeline.copyCommitMessage",
+        "git.timeline.selectForCompare",
+        "git.timeline.compareWithSelected",
+        "git.timeline.viewCommit",
+        "git.rebaseAbort",
+        "git.closeAllDiffEditors",
+        "git.closeAllUnmodifiedEditors",
+        "git.api.getRepositories",
+        "git.api.getRepositoryState",
+        "git.api.getRemoteSources",
+        "git.acceptMerge",
+        "git.openMergeEditor",
+        "git.runGitMerge",
+        "git.runGitMergeDiff3",
+        "git.manageUnsafeRepositories",
+        "git.openRepositoriesInParentFolders",
+        "git.viewChanges",
+        "git.viewStagedChanges",
+        "git.viewUntrackedChanges",
+        "git.viewCommit",
+        "git.copyCommitId",
+        "git.copyCommitMessage",
+        "git.blame.toggleEditorDecoration",
+        "git.blame.toggleStatusBarItem",
+        "git.graph.compareRef",
+        "git.graph.compareWithRemote",
+        "git.graph.compareWithMergeBase",
+        "git.repositories.checkout",
+        "git.repositories.checkoutDetached",
+        "git.repositories.compareRef",
+        "git.repositories.createBranch",
+        "git.repositories.createTag",
+        "git.repositories.merge",
+        "git.repositories.rebase",
+        "git.repositories.deleteBranch",
+        "git.repositories.deleteTag",
+        "git.repositories.createFrom",
+        "git.repositories.stashView",
+        "git.repositories.stashApply",
+        "git.repositories.stashPop",
+        "git.repositories.stashDrop",
+        "git.repositories.createWorktree",
+        "git.repositories.openWorktree",
+        "git.repositories.openWorktreeInNewWindow",
+        "git.repositories.deleteWorktree",
+        "git.openResource",
+        "git.openWorktreeMergeEditor",
+        "git._syncAll",
+        "git.copyContentToClipboard"
+      ]
+    },
+    {
+      "name": "Chat hide/return from the same left rail button",
+      "observed": true
+    },
+    {
+      "name": "Actual mouse drag groups tabs in the same pane",
+      "observed": {
+        "kind": "split",
+        "id": "16e463ba-5f13-425b-a2f0-60bf645c5e59",
+        "axis": "x",
+        "ratio": 0.34,
+        "a": {
+          "kind": "group",
+          "id": "bb480603-204c-40e3-96f1-b0ae65b01755",
+          "tabs": [
+            "chat"
+          ],
+          "active": "chat"
+        },
+        "b": {
+          "kind": "group",
+          "id": "3e0584d7-eb0f-47ad-bc84-765a34572a33",
+          "tabs": [
+            "files",
+            "plan"
+          ],
+          "active": "plan"
+        }
+      }
+    },
+    {
+      "name": "Actual native IDE surface composited with host dark theme",
+      "observed": {
+        "file": "workspace-dark.png",
+        "children": [
+          {
+            "x": 528,
+            "y": 139,
+            "width": 496,
+            "height": 589
+          }
+        ]
+      }
+    },
+    {
+      "name": "Actual native IDE surface composited with host light theme",
+      "observed": {
+        "file": "workspace-light.png",
+        "children": [
+          {
+            "x": 528,
+            "y": 139,
+            "width": 496,
+            "height": 589
+          }
+        ]
+      }
+    },
+    {
+      "name": "Native editor screenshot",
+      "observed": {
+        "path": "<FIXTURE_RUN>\\userdata\\artifacts\\ide-1791929648861.png"
+      }
+    }
+  ],
+  "errors": [],
+  "fixture": "<FIXTURE_RUN>\\project",
+  "temporary": "<FIXTURE_RUN>",
+  "level": "live Electron / real Theia on win32",
+  "verification": {
+    "platform": "Windows x64 / windows-2022 runner",
+    "sourceCommit": "0f9d8eb8c22b5d966022b384da8bceb6e5bdf3ec",
+    "run": "https://github.com/wuller1/gigacode-workbench/actions/runs/38475439677",
+    "command": "npm run test:ide:languages",
+    "passed": 40,
+    "packaged": false,
+    "excluded": "Forced hard-crash descendant containment is POSIX-only; Windows normal restart and disk conflict recovery passed",
+    "scope": "Real Electron/Theia/language/build/test/debug/recovery; local offline ACP peer, no paid provider or corporate MCP"
+  }
+}

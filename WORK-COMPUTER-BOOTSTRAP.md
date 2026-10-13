@@ -38,6 +38,8 @@
 - доступные MCP tool names, schemas, эффекты и области действия;
 - доступные model/reasoning config options через настоящий readback CLI.
 
+Пользователь уточнил: на работе будет **GigaCode IDE — форк IntelliJ IDEA Community**. Это отдельный продукт, а не наш IDE runtime. Если агент запущен внутри него, адресно прочитай доступные About/build metadata, project settings и список установленных plugins; не считай их версиями Qwen или Theia. Не копируй корпоративную IDE в наш дистрибутив. Для дизайна и привычных действий основной ориентир — IntelliJ IDEA, но сама IDEA в Workbench не встраивается, наличие Ultimate-лицензии не предполагается. Сравнение с уже реализованными частями пользовательской оболочки сохраняется; подключать обязательный companion plugin или менять архитектуру только из-за наличия GigaCode IDE не нужно.
+
 Не переноси флаги Qwen в GigaCode по предположению. Не называй совместимость подтверждённой по документации или сходству форка.
 
 Для ACP сначала выполни бесплатный metadata/config probe по `docs/MANUAL_ACP_PROBE.md`. Платные prompt-проверки не запускай без отдельного явного разрешения пользователя. Не повторяй запрос после неизвестного исхода.
@@ -141,14 +143,21 @@ node tools\bundle-cli.mjs --source "C:\BuildInputs\GigaCode-runtime" --entry "Ф
 При существующем runtime замена требует явного `--replace` после проверки источника. Затем собери приложение:
 
 ```powershell
-npm ci --include=optional
-npm test
-npm run test:ui
-npm run build
-npm run dist:win -- --publish never
+npm.cmd ci --include=optional
+npm.cmd run setup:ide
+npm.cmd test
+npm.cmd run test:ui
+npm.cmd run build
+node tools/test-chat-live.mjs
+node tools/test-ide-live.mjs
+npm.cmd run dist:win -- --publish never
 ```
 
 Проверь именно упакованное приложение: выбранный runtime/version, авторизацию вне runtime, ACP, короткий безопасный запрос, две сессии, restart и диагностируемый отказ на повреждённый манифест в отдельной тестовой копии.
+
+`setup:ide` относится к IDE этого репозитория и не меняет глобальный JDK/Python. Подробности установки, SDK, native buffers/recovery и сравнения с существующей реализацией — `docs/suite/IDE-RUNTIME-HANDOFF.md`. Если оставляешь другой, уже более подходящий IDE engine, сначала адаптируй packaging/resources к нему; не выдавай отсутствие нашего staging за готовую сборку. Новый `session.prepare` получает реальный model/reasoning каталог до prompt. Переноси composer, очередь, MCP и backend контракт совместно, сохраняя существующие IDs и историю.
+
+Проверь отдельный **упакованный** runtime до передачи пользователю. Windows CI сначала собирает `win-unpacked`, запускает `node tools/test-ide-live.mjs --packaged --languages`, затем формирует NSIS/portable из проверенной папки. Сохрани parent mapping `runtime/.ide-package` → resources: electron-builder исключает корневой `node_modules` в extraResources, поэтому отображение только `runtime/.ide-package/ide` теряет зависимости IDE. Regression `app/tests/ide-packaging.test.ts` проверяет настоящий copier electron-builder. Он не заменяет запуск упакованной IDE.
 
 ## 7. Продолжи существующий GigaCode UI
 

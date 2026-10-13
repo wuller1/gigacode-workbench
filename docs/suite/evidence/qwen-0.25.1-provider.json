@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-14",
+  "cli": "@qwen-code/qwen-code@0.25.1",
+  "platform": "macOS ARM64",
+  "model": "qwen/qwen3.7-flash",
+  "provider": "OpenRouter",
+  "priceReference": "https://openrouter.ai/qwen/qwen3.7-flash",
+  "hostPromptDispatches": 6,
+  "totalRuns": 3,
+  "passedRuns": 1,
+  "failedRuns": 2,
+  "assessment": "Not an unconditional pass: exact marker reproduction was inconsistent. Last diagnostic run passed with overlapping request lifetimes and zero tools, permissions, foreign markers and late characters. Earlier mismatches are retained; their cause is not established. No unknown external operation was replayed.",
+  "rawResponsesPublished": false,
+  "credentialsPublished": false,
+  "runs": [
+    {
+      "run": 1,
+      "status": "failed",
+      "hostPromptDispatches": 2,
+      "error": "Session B did not return its exact marker; model output is deliberately omitted.",
+      "paidResult": null,
+      "diagnostics": null
+    },
+    {
+      "run": 2,
+      "status": "failed",
+      "hostPromptDispatches": 2,
+      "error": "Session B did not return its exact marker; model output is deliberately omitted.",
+      "paidResult": null,
+      "diagnostics": [
+        {
+          "label": "A",
+          "stopReason": "end_turn",
+          "responseLength": 24,
+          "markerLength": 24,
+          "ownMarkerCount": 1,
+          "otherMarkerCount": 0,
+          "exactMarker": true,
+          "wrongSession": false,
+          "toolCalls": 0,
+          "permissionRequests": 0
+        },
+        {
+          "label": "B",
+          "stopReason": "end_turn",
+          "responseLength": 22,
+          "markerLength": 24,
+          "ownMarkerCount": 0,
+          "otherMarkerCount": 0,
+          "exactMarker": false,
+          "wrongSession": false,
+          "toolCalls": 0,
+          "permissionRequests": 0
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "status": "passed",
+      "hostPromptDispatches": 2,
+      "error": null,
+      "paidResult": {
+        "status": "passed",
+        "exactMarkers": true,
+        "requestLifetimesOverlap": true,
+        "toolCalls": 0,
+        "permissionRequests": 0
+      },
+      "diagnostics": [
+        {
+          "label": "A",
+          "stopReason": "end_turn",
+          "responseLength": 24,
+          "markerLength": 24,
+          "lateCharacters": 0,
+          "ownMarkerCount": 1,
+          "otherMarkerCount": 0,
+          "exactMarker": true,
+          "wrongSession": false,
+          "toolCalls": 0,
+          "permissionRequests": 0,
+          "firstMarkerMismatchIndex": -1
+        },
+        {
+          "label": "B",
+          "stopReason": "end_turn",
+          "responseLength": 24,
+          "markerLength": 24,
+          "lateCharacters": 0,
+          "ownMarkerCount": 1,
+          "otherMarkerCount": 0,
+          "exactMarker": true,
+          "wrongSession": false,
+          "toolCalls": 0,
+          "permissionRequests": 0,
+          "firstMarkerMismatchIndex": -1
+        }
+      ]
+    }
+  ]
+}

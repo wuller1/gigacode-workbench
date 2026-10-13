@@ -100,8 +100,20 @@ it('manual ACP initialize/configuration; exactly two host prompts only with expl
       let results:any[];
       try{results=await Promise.race([Promise.all(prompts),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error('Paid probe timed out. Outcome is unknown; do not automatically repeat it.')),60000);})]);}
       finally{if(timer)clearTimeout(timer);}
+      const terminalText=lanes.map(lane=>lane.text);
+      await new Promise(resolve=>setTimeout(resolve,100));
+      // Keep enough evidence to distinguish model formatting from stream isolation,
+      // without publishing responses, random markers, session IDs or provider frames.
+      summary.paidDiagnostics=lanes.map((lane,i)=>({label:lane.label,stopReason:safe(results[i]?.stopReason),
+        responseLength:lane.text.length,markerLength:markers[i].length,
+        lateCharacters:lane.text.length-terminalText[i].length,
+        firstMarkerMismatchIndex:[...markers[i]].findIndex((character,index)=>lane.text.trim()[index]!==character),
+        ownMarkerCount:lane.text.split(markers[i]).length-1,otherMarkerCount:lane.text.split(markers[1-i]).length-1,
+        exactMarker:lane.text.trim()===markers[i],wrongSession:lane.wrongSession,
+        toolCalls:lane.toolCalls,permissionRequests:lane.permissions}));
       for(let i=0;i<lanes.length;i++) {
         const lane=lanes[i];
+        must(lane.text===terminalText[i],`Session ${lane.label} delivered text after its terminal response; stream ordering is not confirmed.`);
         must(results[i]?.stopReason==='end_turn',`Session ${lane.label} did not report end_turn.`);
         must(lane.text.trim()===markers[i],`Session ${lane.label} did not return its exact marker; model output is deliberately omitted.`);
         must(!lane.text.includes(markers[1-i])&&!lane.wrongSession,`Session ${lane.label} failed the isolation check.`);
@@ -116,7 +128,7 @@ it('manual ACP initialize/configuration; exactly two host prompts only with expl
     console.log(JSON.stringify(summary,null,2));
   } catch(error) {
     // Never expose raw provider frames or Error.cause through Vitest's reporter.
-    console.log(JSON.stringify({probe:'manual-acp',status:'failed',hostPromptDispatches:dispatched,paidOptIn:allowPaid,error:safe(error instanceof Error?error.message:'Unclassified probe failure')}));
+    console.log(JSON.stringify({probe:'manual-acp',status:'failed',hostPromptDispatches:dispatched,paidOptIn:allowPaid,paidDiagnostics:summary.paidDiagnostics,error:safe(error instanceof Error?error.message:'Unclassified probe failure')}));
     throw new Error(`Manual ACP probe failed after ${dispatched} host prompt dispatches. See the sanitized summary; do not replay an unknown request automatically.`);
   } finally {
     await Promise.allSettled(lanes.map(l=>l.connection.dispose()));

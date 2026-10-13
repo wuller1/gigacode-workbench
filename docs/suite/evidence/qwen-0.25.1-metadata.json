@@ -1,0 +1,199 @@
+{
+  "probe": "manual-acp",
+  "platform": "darwin",
+  "node": "26.8.1",
+  "paidOptIn": false,
+  "hostPromptDispatches": 0,
+  "rawLogsWritten": false,
+  "connections": [
+    {
+      "label": "A",
+      "sessionCreated": true,
+      "protocolVersion": 1,
+      "agent": {
+        "name": "qwen-code",
+        "version": "0.25.1"
+      },
+      "capabilityKeys": [
+        "_meta",
+        "loadSession",
+        "mcpCapabilities",
+        "promptCapabilities",
+        "sessionCapabilities"
+      ],
+      "authenticationMethods": [
+        {
+          "id": "openai",
+          "name": "Use OpenAI API key"
+        }
+      ],
+      "configOptionsTruncated": false,
+      "configOptions": [
+        {
+          "id": "mode",
+          "name": "Mode",
+          "category": "mode",
+          "type": "select",
+          "currentValue": "plan",
+          "choicesTruncated": false,
+          "options": [
+            {
+              "value": "plan",
+              "name": "Plan"
+            },
+            {
+              "value": "default",
+              "name": "Default"
+            },
+            {
+              "value": "auto-edit",
+              "name": "Auto Edit"
+            },
+            {
+              "value": "auto",
+              "name": "Auto"
+            },
+            {
+              "value": "yolo",
+              "name": "YOLO"
+            }
+          ]
+        },
+        {
+          "id": "model",
+          "name": "Model",
+          "category": "model",
+          "type": "select",
+          "currentValue": "$runtime|openai|qwen/qwen3.7-flash(openai)",
+          "choicesTruncated": false,
+          "options": [
+            {
+              "value": "$runtime|openai|qwen/qwen3.7-flash(openai)",
+              "name": "qwen/qwen3.7-flash"
+            }
+          ]
+        }
+      ],
+      "legacyModels": {
+        "currentModelId": "$runtime|openai|qwen/qwen3.7-flash(openai)",
+        "availableModels": [
+          {
+            "id": "$runtime|openai|qwen/qwen3.7-flash(openai)",
+            "name": "qwen/qwen3.7-flash"
+          }
+        ]
+      }
+    },
+    {
+      "label": "B",
+      "sessionCreated": true,
+      "protocolVersion": 1,
+      "agent": {
+        "name": "qwen-code",
+        "version": "0.25.1"
+      },
+      "capabilityKeys": [
+        "_meta",
+        "loadSession",
+        "mcpCapabilities",
+        "promptCapabilities",
+        "sessionCapabilities"
+      ],
+      "authenticationMethods": [
+        {
+          "id": "openai",
+          "name": "Use OpenAI API key"
+        }
+      ],
+      "configOptionsTruncated": false,
+      "configOptions": [
+        {
+          "id": "mode",
+          "name": "Mode",
+          "category": "mode",
+          "type": "select",
+          "currentValue": "auto",
+          "choicesTruncated": false,
+          "options": [
+            {
+              "value": "plan",
+              "name": "Plan"
+            },
+            {
+              "value": "default",
+              "name": "Default"
+            },
+            {
+              "value": "auto-edit",
+              "name": "Auto Edit"
+            },
+            {
+              "value": "auto",
+              "name": "Auto"
+            },
+            {
+              "value": "yolo",
+              "name": "YOLO"
+            }
+          ]
+        },
+        {
+          "id": "model",
+          "name": "Model",
+          "category": "model",
+          "type": "select",
+          "currentValue": "$runtime|openai|qwen/qwen3.7-flash(openai)",
+          "choicesTruncated": false,
+          "options": [
+            {
+              "value": "$runtime|openai|qwen/qwen3.7-flash(openai)",
+              "name": "qwen/qwen3.7-flash"
+            }
+          ]
+        }
+      ],
+      "legacyModels": {
+        "currentModelId": "$runtime|openai|qwen/qwen3.7-flash(openai)",
+        "availableModels": [
+          {
+            "id": "$runtime|openai|qwen/qwen3.7-flash(openai)",
+            "name": "qwen/qwen3.7-flash"
+          }
+        ]
+      }
+    }
+  ],
+  "identityRule": "Transport connection + returned sessionId. Equal sessionId strings from different processes do not by themselves violate ACP.",
+  "configReadback": {
+    "requested": {
+      "id": "mode",
+      "value": "plan"
+    },
+    "observedValue": "plan",
+    "exactMatch": true,
+    "note": "A default alias may normalize to a concrete tier; read the observed value."
+  },
+  "paidResult": {
+    "status": "not_requested",
+    "note": "No session/prompt RPC was sent. CLI startup/session creation may still use network or write its own normal state."
+  },
+  "observations": [
+    {
+      "label": "A",
+      "updates": 1,
+      "diagnosticChunks": 0
+    },
+    {
+      "label": "B",
+      "updates": 0,
+      "diagnosticChunks": 0
+    }
+  ],
+  "verification": {
+    "sourceCommit": "0f9d8eb8c22b5d966022b384da8bceb6e5bdf3ec",
+    "command": "npm run test:live (metadata/config readback only)",
+    "scope": "Actual Qwen0.25.1 with authorized OpenRouter credential in child environment; no prompt dispatched; authentication/inference not inferred from metadata",
+    "reasoning": "No reasoning option advertised for this CLI/model configuration; workplace fork must be probed independently",
+    "credentialPublished": false
+  }
+}

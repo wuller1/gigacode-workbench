@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "results": [
+    "First model picker initializes actual ACP without a prompt",
+    "Full app queues, edits inline and sends priority after real cancellation",
+    "Completed/cancelled outcomes render truthfully without speaker labels"
+  ],
+  "errors": [],
+  "scope": "Shipped Electron app with offline ACP model peer; no paid model or corporate MCP",
+  "verification": {
+    "sourceCommit": "56a1b34b9382e921c08e497c235350b9a461aa84",
+    "command": "node app/tools/test-chat-live.mjs",
+    "platform": "macOS ARM64"
+  }
+}

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "researchedAt": "2026-10-14",
   "target": "IntelliJ IDEA Ultimate developer workflows + extensible standalone IDE",
-  "status": "runtime_integration_started_individual_acceptance_pending",
+  "status": "working_native_runtime_partial_acceptance_no_blanket_parity",
   "runtimeImplemented": true,
   "approvalGate": "implementation_authorized_by_user",
   "sourceCatalog": "suite/ide-research-sources.json",
@@ -34,8 +34,14 @@
         "JB-LSP-IMPORT",
         "JB-LSP-DEBUG"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Theia1.76 frontend/backend with 70 deployed extensions and tested language activation; Java/Python/React fixtures on macOS and Windows, including packaged Windows.",
+      "remainingAcceptance": "Compare the existing workplace implementation and remaining engine/plugin workflows; this is not full Ultimate parity."
     },
     {
       "id": "IUP-002",
@@ -154,8 +160,14 @@
         "JB-LSP-IMPORT",
         "JB-LSP-DEBUG"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Backend normal restart on both OSes and forced POSIX backend crash preserve dirty buffers; native view reconnects.",
+      "remainingAcceptance": "Plugin-host-only crash, Windows forced-crash descendants and every debugger/LSP cleanup path are not certified."
     },
     {
       "id": "IUP-008",
@@ -192,8 +204,14 @@
         "LOCAL-HISTORY",
         "THEIA-ARCH"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Agent reads/edits authoritative live Theia models; stale version/lifetime rejected even after close/reopen and restart.",
+      "remainingAcceptance": "Two simultaneous independently editable native views of the same root are not implemented; one authoritative view transfers ownership."
     },
     {
       "id": "IUP-010",
@@ -211,8 +229,14 @@
         "LOCAL-HISTORY",
         "THEIA-ARCH"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Dirty text recovered after backend restart; forced POSIX crash rescue and external disk conflict retain unsaved and disk copies.",
+      "remainingAcceptance": "Power-loss/all autosave/encoding/large-file cases are not certified; ordinary typing has a 100ms debounce window."
     },
     {
       "id": "IUP-011",
@@ -552,8 +576,14 @@
         "JAVA-REFACTOR",
         "PSI"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Actual cross-file TypeScript definition navigation returns target URI/range.",
+      "remainingAcceptance": "Overloads, inheritance, type/implementation navigation and all language-specific fixtures remain."
     },
     {
       "id": "IUP-030",
@@ -612,8 +642,14 @@
         "JAVA-REFACTOR",
         "PSI"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Real TypeScript language-provider rename produces multi-file edits; native preview remains pending until applied.",
+      "remainingAcceptance": "Shadowing/overloads/XML/config references, every language and complete compile/test/undo matrix remain."
     },
     {
       "id": "IUP-033",
@@ -854,8 +890,14 @@
         "PYRIGHT",
         "RUFF"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Real TypeScript/TSX, Pyright and JDT diagnostics, versioned edits and error-clearing readback.",
+      "remainingAcceptance": "Inspection profiles, quick-fix families, all exact ranges and framework-specific severities remain."
     },
     {
       "id": "IUP-045",
@@ -985,8 +1027,14 @@
         "JAVA-DEBUG",
         "JAVA-TEST"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Actual Spring Java Maven fixture imports, compiles and runs JUnit on both OSes and packaged Windows.",
+      "remainingAcceptance": "Multimodule source roots, dependency mediation and annotation processors need separate fixtures."
     },
     {
       "id": "IUP-052",
@@ -1081,8 +1129,14 @@
         "JAVA-DEBUG",
         "JAVA-TEST"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Native Java test controller discovers/runs a concrete JUnit method and returns its structured terminal result.",
+      "remainingAcceptance": "TestNG, parameterized/dynamic suites, rerun-failed and all cancel cases remain."
     },
     {
       "id": "IUP-057",
@@ -1613,8 +1667,14 @@
         "JB-LSP-IMPORT",
         "JB-LSP-DEBUG"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Native Python/Java test tree, completed concrete leaf, intentional assertion failure and repaired rerun.",
+      "remainingAcceptance": "All parameterized/dynamic IDs, skip/cancel and cross-run identity cases remain."
     },
     {
       "id": "IUP-086",
@@ -1670,8 +1730,14 @@
         "COVERAGE",
         "DEBUGPY"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Actual Node DAP child session threads and stopped source stack; parent session is not mistaken for child.",
+      "remainingAcceptance": "Variables/watches/frame switching and large-object performance remain."
     },
     {
       "id": "IUP-089",
@@ -1801,8 +1867,14 @@
         "RUFF",
         "DEBUGPY"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Real Pyright type diagnostic and Python project unittest fixture on both OSes.",
+      "remainingAcceptance": "Full Python completion/symbol/reference/workspace rename acceptance remains."
     },
     {
       "id": "IUP-096",
@@ -1837,8 +1909,14 @@
         "RUFF",
         "DEBUGPY"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Native unittest discovery, concrete pass/failure, failure output and repaired rerun; venv used by fixture.",
+      "remainingAcceptance": "pytest parametrization/fixtures/rerun-failed/cancellation remain."
     },
     {
       "id": "IUP-098",
@@ -1955,8 +2033,14 @@
         "REACT",
         "CODE-OSS"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Real TSX diagnostic, repair, TypeScript6 compile and ReactDOM server render.",
+      "remainingAcceptance": "Monorepo aliases/references, completion, imports rename and framework-specific fixtures remain."
     },
     {
       "id": "IUP-105",
@@ -2020,8 +2104,14 @@
         "CODE-OSS",
         "JS-DEBUG"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Actual Node debugger with paused source stack on both OSes and packaged Windows.",
+      "remainingAcceptance": "Browser debugger/TSX source maps and associated-tab behavior remain."
     },
     {
       "id": "IUP-109",
@@ -2603,8 +2693,14 @@
         "PLATFORM",
         "THEIA-ARCH"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Shared unsaved text, exact document versions/lifetimes, diagnostics and backend/frontend readiness exposed through scoped bridge.",
+      "remainingAcceptance": "Full branch/worktree metadata and all symbol-context scenarios remain."
     },
     {
       "id": "IUP-144",
@@ -2619,8 +2715,14 @@
         "PLATFORM",
         "THEIA-ARCH"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Language-provider TypeScript rename, bounded versioned proposal and native preview state; text replacement is not labeled semantic.",
+      "remainingAcceptance": "All semantic operation families and language/framework boundaries remain."
     },
     {
       "id": "IUP-145",
@@ -2635,8 +2737,14 @@
         "PLATFORM",
         "THEIA-ARCH"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Real task exits0/7, native Python/Java test results and actual Node stopped stack visible through engine/bridge.",
+      "remainingAcceptance": "Every language/debug/evaluate/cancel/live-output combination remains."
     },
     {
       "id": "IUP-146",
@@ -2651,8 +2759,14 @@
         "PLATFORM",
         "THEIA-ARCH"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/ide-live-macos.json",
+        "docs/suite/evidence/ide-live-windows.json",
+        "docs/suite/evidence/ide-live-windows-packaged.json"
+      ],
+      "observedSubset": "Write-ahead operation receipts, duplicate/stale rejection, restart recovery and preservation of conflicting disk/draft text.",
+      "remainingAcceptance": "Full parallel writer/lease recovery, Windows forced-crash descendants and every unknown external effect remain."
     },
     {
       "id": "IUP-147",
@@ -2768,5 +2882,12 @@
       "runtimeVerified": false
     }
   ],
-  "runtimeEvidence": "docs/suite/IDE-RUNTIME-HANDOFF.md"
+  "runtimeEvidence": "docs/suite/IDE-RUNTIME-HANDOFF.md",
+  "selectedRuntime": {
+    "host": "Theia1.76.0",
+    "java": "JDT plus Spring Tools",
+    "uxReference": "IntelliJ IDEA",
+    "embedsIntelliJ": false,
+    "workplaceIde": "GigaCode IDE / IntelliJ Community fork; build/plugins unverified"
+  }
 }
