@@ -163,28 +163,6 @@ jobs:
         timeout-minutes: 12
         run: npm run test:ide:languages
 
-      - name: Collect isolated IDE test diagnostics
-        if: always()
-        run: |
-          @'
-          const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
-          const output=path.resolve('test-results/ide');fs.mkdirSync(output,{recursive:true});
-          for(const name of fs.readdirSync(os.tmpdir()).filter(name=>name.startsWith('workbench-ide-live-'))) {
-            const root=path.join(os.tmpdir(),name);let sequence=0;
-            function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,entry.name);if(entry.isDirectory()&&(['userdata','ide','logs'].includes(entry.name)||dir.endsWith(path.sep+'ide')))walk(full);else if(entry.isFile()&&(/^(result|native-error|native-output|native-test-failure|timeout-.*)\.json$/.test(entry.name)||['backend.log','frontend.jsonl','host.jsonl'].includes(entry.name)))fs.copyFileSync(full,path.join(output,name+'-'+(++sequence)+'-'+entry.name));}}
-            walk(root);
-          }
-          '@ | node
-
-      - name: Upload isolated IDE diagnostics
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: ide-diagnostics-windows-${{ github.sha }}
-          path: app/test-results/ide
-          if-no-files-found: warn
-          retention-days: 7
-
       - name: Stage the self-contained IDE runtime
         run: npm run prepare:ide-package
 
@@ -227,6 +205,32 @@ jobs:
           if ($artifacts.Count -lt 2) { throw 'Expected both NSIS and portable executables' }
           $hashes = $artifacts | ForEach-Object { '{0}  {1}' -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $_.Name }
           $hashes | Set-Content -Encoding utf8 'release/SHA256SUMS.txt'
+
+      - name: Launch and verify actual packaged IDE runtime
+        timeout-minutes: 8
+        run: node tools/test-ide-live.mjs --packaged
+
+      - name: Collect isolated IDE test diagnostics
+        if: always()
+        run: |
+          @'
+          const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+          const output=path.resolve('test-results/ide');fs.mkdirSync(output,{recursive:true});
+          for(const name of fs.readdirSync(os.tmpdir()).filter(name=>name.startsWith('workbench-ide-live-'))) {
+            const root=path.join(os.tmpdir(),name);let sequence=0;
+            function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,entry.name);if(entry.isDirectory()&&(['userdata','ide','logs'].includes(entry.name)||dir.endsWith(path.sep+'ide')))walk(full);else if(entry.isFile()&&(/^(result|native-error|native-output|native-test-failure|timeout-.*)\.json$/.test(entry.name)||['backend.log','frontend.jsonl','host.jsonl'].includes(entry.name)))fs.copyFileSync(full,path.join(output,name+'-'+(++sequence)+'-'+entry.name));}}
+            walk(root);
+          }
+          '@ | node
+
+      - name: Upload isolated IDE diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ide-diagnostics-windows-${{ github.sha }}
+          path: app/test-results/ide
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Upload unsigned Windows build artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

@@ -42,9 +42,12 @@ env.WORKBENCH_CLI_PATH = path.join(root, 'tests/fixtures/acp-fixture.mjs');
 const results = [], errors = [];
 let application;
 const keep = process.argv.includes('--keep-open');
+const packaged = process.argv.includes('--packaged');
 const record = (name, observed) => { results.push({ name, observed }); console.log('PASS', name, JSON.stringify(observed).slice(0, 400)); };
 try {
-  application = await _electron.launch({ executablePath: require('electron'), args: [root], env, timeout: 60_000 });
+  const executablePath = packaged ? path.join(root, 'release/win-unpacked/GigaCode Workbench.exe') : require('electron');
+  if (packaged && process.platform !== 'win32') throw new Error('Packaged acceptance requires the Windows x64 build');
+  application = await _electron.launch({ executablePath, args: packaged ? [] : [root], env, timeout: 60_000 });
   process.once('SIGTERM', () => { void application.close().finally(() => process.exit(0)); });
   const page = await application.firstWindow();
   page.on('pageerror', error => errors.push(String(error)));

@@ -190,6 +190,22 @@ try {
     () => document.documentElement.dataset.theme === "dark",
   );
   const capture = async (name) => {
+    // Theme state changes before the 120 ms button transitions finish. Wait for
+    // the rendered selection color, not just the data-theme attribute.
+    await p.waitForFunction(
+      () => {
+        const selected = document.querySelector(".tool-rail .selected");
+        if (!selected) return false;
+        const probe = document.createElement("span");
+        probe.style.color = "var(--selected)";
+        document.body.appendChild(probe);
+        const expected = getComputedStyle(probe).color;
+        probe.remove();
+        return getComputedStyle(selected).backgroundColor === expected;
+      },
+      undefined,
+      { polling: 50 },
+    );
     const png = await app.evaluate(async ({ BrowserWindow }) => {
       const image =
         await BrowserWindow.getAllWindows()[0].webContents.capturePage(
