@@ -1,0 +1,1838 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-14",
+  "statusLegend": {
+    "planned": "Контракт существует, код ещё не подтверждён",
+    "in_progress": "Выполняется один рабочий срез",
+    "implemented_pending_live": "Код и автоматические тесты готовы, нужна целевая живая проверка",
+    "verified": "Критерии и целевая проверка имеют evidence",
+    "blocked": "Есть конкретный внешний блокер"
+  },
+  "prototypeApprovalGate": {
+    "id": "UX-PROTOTYPE-APPROVAL",
+    "status": "implementation_authorized_by_user",
+    "document": "docs/suite/PROTOTYPE-REVIEW-GATE.md",
+    "reviewArtifact": "design/suite-workspace-prototype.html",
+    "blocksRuntimeImplementation": false,
+    "releaseCondition": "Explicit user approval of a complete identified prototype revision after walkthrough; partial screen feedback does not unlock runtime",
+    "scopeDocument": "docs/suite/FINAL-PROTOTYPE-SCOPE.md",
+    "authorization": {
+      "date": "2026-10-14",
+      "source": "direct_user_message",
+      "text": "Реализуй максимум функционала, не останавливайся на промежуточные результаты. я жду окончательный вариант. я тебе разрешаю любые правки.",
+      "scope": "Runtime implementation and proactive functional/UI/UX improvements; does not waive testing or establish feature parity."
+    }
+  },
+  "cards": [
+    {
+      "id": "S0-01",
+      "title": "Инвентаризация существующего рабочего репозитория",
+      "status": "planned",
+      "dependsOn": [],
+      "docs": [
+        "SUITE-UPGRADE-AGENT.md",
+        "docs/suite/ACCEPTANCE.md",
+        "suite/migration-inventory.example.json"
+      ],
+      "outcome": "Evidence-first карта owners/implementations/data migrations/capabilities с проверенным reuse/repair/replace и без потери более удачного существующего решения",
+      "acceptance": [
+        "FND-07",
+        "CON-01",
+        "REL-05",
+        "MIG-01",
+        "MIG-02",
+        "MIG-03",
+        "MIG-04",
+        "MIG-05"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S0-02",
+      "title": "Capability inspector и project bindings",
+      "status": "planned",
+      "dependsOn": [
+        "S0-01"
+      ],
+      "docs": [
+        "docs/suite/CONNECTIONS-AND-SETTINGS.md",
+        "docs/suite/ADAPTER-CONTRACTS.md",
+        "docs/suite/UX-MULTIWORKSPACE-AUDIT.md"
+      ],
+      "outcome": "Несколько MCP/API/CLI connections привязаны к проектам и окружениям по реальным schemas",
+      "acceptance": [
+        "FND-07",
+        "CON-01",
+        "CON-02",
+        "CON-03"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S0-03",
+      "title": "Центральная execution policy без per-call разрешений",
+      "status": "planned",
+      "dependsOn": [
+        "S0-02"
+      ],
+      "docs": [
+        "docs/suite/AGENT-CONTROL-SURFACE.md",
+        "docs/suite/CONNECTIONS-AND-SETTINGS.md",
+        "workbench/config/authorization.example.json"
+      ],
+      "outcome": "Project binding по умолчанию разрешает все обнаруженные capabilities сессиям и subagents; central disable, target visibility и audit работают без permission popups",
+      "acceptance": [
+        "POL-01",
+        "POL-02",
+        "POL-03",
+        "POL-04",
+        "POL-05",
+        "POL-06"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S1-01",
+      "title": "Activity rail и рабочие пространства",
+      "status": "planned",
+      "dependsOn": [
+        "S0-01"
+      ],
+      "docs": [
+        "docs/suite/UX-FOUNDATION.md",
+        "docs/suite/DEVELOPER-WORKFLOW.md",
+        "docs/suite/REMOTE-DESKTOP-MOTION.md"
+      ],
+      "outcome": "Chat, Code, Browser, Design, Tasks, Operations, Data и Review используют один shell",
+      "acceptance": [
+        "FND-03",
+        "FND-04",
+        "FND-05",
+        "FND-06",
+        "FND-11"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S1-02",
+      "title": "Бесшовные Project и Task switchers",
+      "status": "planned",
+      "dependsOn": [
+        "S1-01"
+      ],
+      "docs": [
+        "docs/suite/DEVELOPER-WORKFLOW.md"
+      ],
+      "outcome": "Переключение восстанавливает workspace/resources/targets и не смешивает проекты",
+      "acceptance": [
+        "FND-01",
+        "FND-02",
+        "FND-08"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S1-03",
+      "title": "Layout tree, command palette и status center",
+      "status": "planned",
+      "dependsOn": [
+        "S1-01"
+      ],
+      "docs": [
+        "docs/suite/UX-FOUNDATION.md",
+        "docs/suite/WORKSPACE-PANEL-LAYOUT.md"
+      ],
+      "outcome": "Панели перемещаются и восстанавливаются; команды и долгие операции доступны адресно",
+      "acceptance": [
+        "FND-03",
+        "FND-04",
+        "FND-05",
+        "FND-10"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S1-04",
+      "title": "Lifecycle, archive, Settings и diagnostic center",
+      "status": "planned",
+      "dependsOn": [
+        "S1-02",
+        "S1-03"
+      ],
+      "docs": [
+        "docs/suite/LIFECYCLE-AND-SETTINGS.md",
+        "docs/suite/CONNECTIONS-AND-SETTINGS.md",
+        "docs/suite/REMOTE-DESKTOP-MOTION.md"
+      ],
+      "outcome": "Project/Task/Session CRUD, archive/restore, scoped settings, desktop chrome и диагностика работают в общем shell",
+      "acceptance": [
+        "FND-08",
+        "LFC-01",
+        "LFC-02",
+        "LFC-03",
+        "LFC-04",
+        "LFC-05",
+        "LFC-06",
+        "LFC-07",
+        "LFC-08",
+        "FND-11"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S1-05",
+      "title": "Unified search, session inbox и быстрые переходы",
+      "status": "planned",
+      "dependsOn": [
+        "S1-03",
+        "S1-04"
+      ],
+      "docs": [
+        "docs/suite/UX-FOUNDATION.md",
+        "docs/suite/COMPETITOR-GAP-AUDIT.md"
+      ],
+      "outcome": "Project, Task, Session, file, command и resource находятся из одного scoped поиска без блокировки renderer",
+      "acceptance": [
+        "FND-09"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S1-06",
+      "title": "Общая agent surface и typed selection",
+      "status": "planned",
+      "dependsOn": [
+        "S0-03",
+        "S1-02",
+        "S1-03",
+        "S1-04"
+      ],
+      "docs": [
+        "docs/suite/AGENT-CONTROL-SURFACE.md",
+        "docs/suite/UX-FOUNDATION.md"
+      ],
+      "outcome": "В каждом workspace видны выбранная Session, typed attachments, composer/queue, текущая operation и нижняя строка model/reasoning/context/auto-role/branch без потери target",
+      "acceptance": [
+        "ACS-01",
+        "ACS-02",
+        "ACS-03",
+        "ACS-11",
+        "ACS-13"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S2-00",
+      "title": "Изоляция browser tabs между окнами",
+      "status": "implemented_pending_live",
+      "dependsOn": [
+        "S0-01"
+      ],
+      "docs": [
+        "docs/suite/BROWSER.md",
+        "docs/suite/UX-MULTIWORKSPACE-AUDIT.md"
+      ],
+      "outcome": "Адресные events, устойчивый active tab, request dedupe и artifact reuse",
+      "acceptance": [
+        "BRW-01",
+        "BRW-02",
+        "BRW-03",
+        "BRW-04",
+        "BRW-08"
+      ],
+      "evidence": [
+        "app/tests/browser-state.test.ts",
+        "npm run build",
+        "54 tests passed, 2 skipped",
+        "live Electron/Windows BRW-02/BRW-08 pending"
+      ]
+    },
+    {
+      "id": "S2-04",
+      "title": "Separate user and agent browser workspaces",
+      "status": "planned",
+      "dependsOn": [
+        "S2-00",
+        "S1-03"
+      ],
+      "docs": [
+        "docs/suite/BROWSER.md",
+        "docs/suite/SEPARATE-AGENT-BROWSER.md",
+        "docs/suite/BROWSER-FILES.md"
+      ],
+      "outcome": "Independent tabs and execution ownership, background work, non-disruptive presentation, observation and takeover",
+      "acceptance": [
+        "BRW-13",
+        "BRW-14"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S2-01",
+      "title": "Browser profiles, identity, downloads и permissions",
+      "status": "planned",
+      "dependsOn": [
+        "S2-00",
+        "S1-02",
+        "S2-04"
+      ],
+      "docs": [
+        "docs/suite/BROWSER.md",
+        "docs/suite/SEPARATE-AGENT-BROWSER.md",
+        "docs/suite/BROWSER-FILES.md"
+      ],
+      "outcome": "Проектные browser profiles с корпоративной identity без копирования cookies; адресные фоновые загрузки с восстановлением, проверкой содержимого и неизменяемым исходником",
+      "acceptance": [
+        "BRW-07",
+        "BRW-10",
+        "BRW-11",
+        "BRW-12",
+        "BRW-15"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S2-02",
+      "title": "Browser diagnostics и automation refs",
+      "status": "planned",
+      "dependsOn": [
+        "S2-01"
+      ],
+      "docs": [
+        "docs/suite/BROWSER.md",
+        "docs/suite/UX-MULTIWORKSPACE-AUDIT.md",
+        "docs/suite/SEPARATE-AGENT-BROWSER.md"
+      ],
+      "outcome": "Console/network/AX snapshot/actions/waits/screenshots связаны с navigation generation",
+      "acceptance": [
+        "BRW-05",
+        "BRW-06",
+        "BRW-08",
+        "BRW-09"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S2-03",
+      "title": "Browser recipes и trace review",
+      "status": "planned",
+      "dependsOn": [
+        "S2-02"
+      ],
+      "docs": [
+        "docs/suite/BROWSER.md",
+        "docs/suite/DESIGN-AND-ARTIFACTS.md"
+      ],
+      "outcome": "Запись, воспроизведение и анализ UI-сценария дают Task evidence",
+      "acceptance": [
+        "BRW-05",
+        "BRW-06",
+        "DSN-08"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S2-05",
+      "title": "Downloaded files: viewer, editor и agent handoff",
+      "status": "planned",
+      "dependsOn": [
+        "S2-01",
+        "S4-02"
+      ],
+      "docs": [
+        "docs/suite/BROWSER-FILES.md",
+        "docs/suite/BROWSER.md",
+        "docs/suite/IDE.md"
+      ],
+      "outcome": "Агент скачивает файл, адресно читает и изменяет рабочую копию; пользователь видит progress, preview и diff, может продолжить в IDE без потери черновика",
+      "acceptance": [
+        "BRW-16",
+        "BRW-17"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S3-01",
+      "title": "Git status, diff и agent change sets",
+      "status": "planned",
+      "dependsOn": [
+        "S1-01"
+      ],
+      "docs": [
+        "docs/suite/SOURCE-CONTROL.md",
+        "docs/suite/IDE-GIT-PARITY.md"
+      ],
+      "outcome": "Пользователь видит весь фактический diff агента, overlaps и test evidence",
+      "acceptance": [
+        "SCM-01",
+        "SCM-03",
+        "SCM-08"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S3-02",
+      "title": "Полные локальные Git operations",
+      "status": "planned",
+      "dependsOn": [
+        "S3-01"
+      ],
+      "docs": [
+        "docs/suite/SOURCE-CONTROL.md",
+        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md",
+        "docs/suite/IDE-GIT-PARITY.md",
+        "docs/suite/IDE-ULTIMATE-RESEARCH.md",
+        "docs/suite/IDE-ULTIMATE-PARITY.md",
+        "suite/ide-ultimate-parity.json",
+        "suite/ide-research-sources.json",
+        "suite/ide-engine-fixtures.json"
+      ],
+      "outcome": "Полный Git внутри IDE: index/partial commit, changelists, history/blame, branch/worktrees, stash/shelf, merge/rebase/recovery, remotes и настройки по IDE-GIT-PARITY, с revision и dirty-buffer guards",
+      "acceptance": [
+        "SCM-01",
+        "SCM-02",
+        "SCM-03",
+        "SCM-09",
+        "SCM-10",
+        "SCM-11",
+        "SCM-12"
+      ],
+      "evidence": [],
+      "ultimateParityRows": [
+        "IUP-128",
+        "IUP-129",
+        "IUP-130",
+        "IUP-131",
+        "IUP-132"
+      ]
+    },
+    {
+      "id": "S3-03",
+      "title": "Forge spaces, clone/push и pull requests",
+      "status": "planned",
+      "dependsOn": [
+        "S0-02",
+        "S3-02"
+      ],
+      "docs": [
+        "docs/suite/SOURCE-CONTROL.md",
+        "docs/suite/CONNECTIONS-AND-SETTINGS.md",
+        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md",
+        "docs/suite/IDE-GIT-PARITY.md",
+        "docs/suite/IDE-ULTIMATE-RESEARCH.md",
+        "docs/suite/IDE-ULTIMATE-PARITY.md",
+        "suite/ide-ultimate-parity.json",
+        "suite/ide-research-sources.json",
+        "suite/ide-engine-fixtures.json"
+      ],
+      "outcome": "Несколько Bitbucket-подобных пространств дают clone/push/PR/review/approve/merge",
+      "acceptance": [
+        "SCM-04",
+        "SCM-05",
+        "SCM-06",
+        "FGX-01",
+        "SCM-08"
+      ],
+      "evidence": [],
+      "ultimateParityRows": [
+        "IUP-133"
+      ]
+    },
+    {
+      "id": "S3-04",
+      "title": "Release, changelog и merge queue",
+      "status": "planned",
+      "dependsOn": [
+        "S3-03"
+      ],
+      "docs": [
+        "docs/suite/SOURCE-CONTROL.md",
+        "docs/suite/COMPETITOR-GAP-AUDIT.md"
+      ],
+      "outcome": "Capability-aware forge flow создаёт releases и управляет merge queue по точным remote revisions",
+      "acceptance": [
+        "SCM-07"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S4-00",
+      "title": "IDE engine / extension host compatibility spike",
+      "status": "planned",
+      "dependsOn": [
+        "S1-03"
+      ],
+      "docs": [
+        "docs/suite/IDE-EXTENSIONS-AND-EXPLORER.md",
+        "docs/suite/IDE-LANGUAGE-WORKFLOWS.md",
+        "docs/suite/IDE.md",
+        "docs/suite/IDE-ULTIMATE-RESEARCH.md",
+        "docs/suite/IDE-ULTIMATE-PARITY.md",
+        "suite/ide-ultimate-parity.json",
+        "suite/ide-research-sources.json",
+        "suite/ide-engine-fixtures.json"
+      ],
+      "outcome": "Engine ADR по current implementation/Theia/Code-OSS/IntelliJ alternatives, Windows core fixtures, extension API/package/license proofs, measurements, document authority и явные Ultimate gaps с owners; не просто установка VSIX",
+      "acceptance": [
+        "IDE-04",
+        "IDE-05",
+        "IDE-06",
+        "IDEX-04",
+        "IDEX-05",
+        "IDEX-06",
+        "IDEX-12",
+        "IUQ-00"
+      ],
+      "evidence": [],
+      "ultimateParityRows": [
+        "IUP-001",
+        "IUP-002",
+        "IUP-003",
+        "IUP-004",
+        "IUP-005",
+        "IUP-006",
+        "IUP-007",
+        "IUP-008"
+      ]
+    },
+    {
+      "id": "S4-01",
+      "title": "Secure app origin и DocumentService",
+      "status": "planned",
+      "dependsOn": [
+        "S1-03",
+        "S4-00"
+      ],
+      "docs": [
+        "docs/suite/IDE.md",
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json",
+        "docs/suite/IDE-LANGUAGE-WORKFLOWS.md",
+        "docs/suite/IDE-EXTENSIONS-AND-EXPLORER.md",
+        "docs/suite/BROWSER-FILES.md",
+        "docs/suite/IDE-ULTIMATE-RESEARCH.md",
+        "docs/suite/IDE-ULTIMATE-PARITY.md",
+        "suite/ide-ultimate-parity.json",
+        "suite/ide-research-sources.json",
+        "suite/ide-engine-fixtures.json"
+      ],
+      "outcome": "Secure editor/engine transport; единственный document authority для UI/extensions/agents, drafts/conflicts и two-window recovery",
+      "acceptance": [
+        "IDE-01",
+        "IDE-02",
+        "IDE-03",
+        "IUQ-01"
+      ],
+      "evidence": [],
+      "ultimateParityRows": [
+        "IUP-009",
+        "IUP-010",
+        "IUP-011",
+        "IUP-012",
+        "IUP-013",
+        "IUP-014",
+        "IUP-015",
+        "IUP-016"
+      ]
+    },
+    {
+      "id": "S4-02",
+      "title": "Editor, search, problems, run и tests",
+      "status": "planned",
+      "dependsOn": [
+        "S4-01"
+      ],
+      "docs": [
+        "docs/suite/IDE.md",
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json",
+        "docs/suite/IDE-LANGUAGE-WORKFLOWS.md",
+        "docs/suite/IDE-EXTENSIONS-AND-EXPLORER.md",
+        "docs/suite/BROWSER-FILES.md",
+        "docs/suite/IDE-ULTIMATE-RESEARCH.md",
+        "docs/suite/IDE-ULTIMATE-PARITY.md",
+        "suite/ide-ultimate-parity.json",
+        "suite/ide-research-sources.json",
+        "suite/ide-engine-fixtures.json"
+      ],
+      "outcome": "Ежедневный edit/search/run/test цикл работает до подключения языковых серверов",
+      "acceptance": [
+        "IDE-04",
+        "IDE-06",
+        "IDE-07",
+        "IDEX-01",
+        "IDEX-11",
+        "IUQ-02"
+      ],
+      "evidence": [],
+      "ultimateParityRows": [
+        "IUP-017",
+        "IUP-018",
+        "IUP-019",
+        "IUP-020",
+        "IUP-021",
+        "IUP-022",
+        "IUP-023",
+        "IUP-024",
+        "IUP-025",
+        "IUP-026",
+        "IUP-027",
+        "IUP-028",
+        "IUP-151"
+      ]
+    },
+    {
+      "id": "S4-03",
+      "title": "React, Python и Java language/debug adapters",
+      "status": "planned",
+      "dependsOn": [
+        "S4-02"
+      ],
+      "docs": [
+        "docs/suite/IDE.md",
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json",
+        "docs/suite/IDE-LANGUAGE-WORKFLOWS.md",
+        "docs/suite/IDE-EXTENSIONS-AND-EXPLORER.md",
+        "docs/suite/IDE-ULTIMATE-RESEARCH.md",
+        "docs/suite/IDE-ULTIMATE-PARITY.md",
+        "suite/ide-ultimate-parity.json",
+        "suite/ide-research-sources.json",
+        "suite/ide-engine-fixtures.json"
+      ],
+      "outcome": "Реальные project/import/run/test/coverage/debug cycles Java/Maven/Gradle, Python и React/TS; отдельные toolchains и declared per-feature capabilities",
+      "acceptance": [
+        "IDE-04",
+        "IDE-05",
+        "IDE-06",
+        "IDEX-07",
+        "IDEX-08",
+        "IUQ-03"
+      ],
+      "evidence": [],
+      "ultimateParityRows": [
+        "IUP-050",
+        "IUP-051",
+        "IUP-052",
+        "IUP-053",
+        "IUP-054",
+        "IUP-055",
+        "IUP-056",
+        "IUP-057",
+        "IUP-058",
+        "IUP-059",
+        "IUP-060",
+        "IUP-061",
+        "IUP-083",
+        "IUP-084",
+        "IUP-085",
+        "IUP-086",
+        "IUP-087",
+        "IUP-088",
+        "IUP-089",
+        "IUP-090",
+        "IUP-091",
+        "IUP-092",
+        "IUP-093",
+        "IUP-094",
+        "IUP-095",
+        "IUP-096",
+        "IUP-097",
+        "IUP-098",
+        "IUP-099",
+        "IUP-100",
+        "IUP-104",
+        "IUP-105",
+        "IUP-106",
+        "IUP-107",
+        "IUP-108",
+        "IUP-109",
+        "IUP-110",
+        "IUP-149"
+      ]
+    },
+    {
+      "id": "S4-04",
+      "title": "Optional remote workspace adapters",
+      "status": "planned",
+      "dependsOn": [
+        "S4-03",
+        "S1-02"
+      ],
+      "docs": [
+        "docs/suite/IDE.md",
+        "docs/suite/COMPETITOR-GAP-AUDIT.md",
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json",
+        "docs/suite/IDE-LANGUAGE-WORKFLOWS.md",
+        "docs/suite/IDE-EXTENSIONS-AND-EXPLORER.md",
+        "docs/suite/IDE-ULTIMATE-RESEARCH.md",
+        "docs/suite/IDE-ULTIMATE-PARITY.md",
+        "suite/ide-ultimate-parity.json",
+        "suite/ide-research-sources.json",
+        "suite/ide-engine-fixtures.json"
+      ],
+      "outcome": "SSH, WSL, dev-container и multi-root paths получают явный host/runtime boundary без смешения процессов",
+      "acceptance": [
+        "IDE-08",
+        "IDEX-12",
+        "IUQ-04"
+      ],
+      "evidence": [],
+      "ultimateParityRows": [
+        "IUP-137",
+        "IUP-138",
+        "IUP-139",
+        "IUP-140",
+        "IUP-141",
+        "IUP-142"
+      ]
+    },
+    {
+      "id": "S5-01",
+      "title": "Расширенный Task aggregate и миграция",
+      "status": "planned",
+      "dependsOn": [
+        "S1-02"
+      ],
+      "docs": [
+        "docs/suite/TASK-TRACKER.md",
+        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md"
+      ],
+      "outcome": "Requirements, acceptance, decisions, relations и activity расширяют текущую Task без смены ID; автоматические названия задач с историей и обновлением по изменению цели",
+      "acceptance": [
+        "TSK-01",
+        "TSK-02",
+        "TSK-06",
+        "TSK-09"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S5-02",
+      "title": "Task list, detail, board, backlog и timeline",
+      "status": "planned",
+      "dependsOn": [
+        "S5-01"
+      ],
+      "docs": [
+        "docs/suite/TASK-TRACKER.md",
+        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md"
+      ],
+      "outcome": "Jira/Linear-класс планирования доступен мышью и клавиатурой; автоматические названия задач с историей и обновлением по изменению цели",
+      "acceptance": [
+        "TSK-03",
+        "TSK-07",
+        "TSK-09"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S5-03",
+      "title": "Динамический Todo и evidence gates",
+      "status": "planned",
+      "dependsOn": [
+        "S5-01",
+        "S3-01"
+      ],
+      "docs": [
+        "docs/suite/TASK-TRACKER.md"
+      ],
+      "outcome": "Агент перестраивает план с причиной, а Done опирается на проверяемые результаты",
+      "acceptance": [
+        "TSK-04",
+        "TSK-05",
+        "TSK-06"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S5-04",
+      "title": "Task inbox, reports и remote tracker sync",
+      "status": "planned",
+      "dependsOn": [
+        "S5-02",
+        "S0-02"
+      ],
+      "docs": [
+        "docs/suite/TASK-TRACKER.md",
+        "docs/suite/COMPETITOR-GAP-AUDIT.md",
+        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md"
+      ],
+      "outcome": "Actionable inbox, personal reports и versioned remote sync сохраняют поля и конфликты",
+      "acceptance": [
+        "TSK-08",
+        "CON-01",
+        "TRX-01"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S6-01",
+      "title": "Knowledge workspace и SDD publishing",
+      "status": "planned",
+      "dependsOn": [
+        "S0-02",
+        "S5-01"
+      ],
+      "docs": [
+        "docs/suite/OPERATIONS.md"
+      ],
+      "outcome": "Поиск, страницы, drafts, version conflict и публикация SDD работают через adapter",
+      "acceptance": [
+        "KNW-01"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S6-02",
+      "title": "Jenkins read и action flows",
+      "status": "planned",
+      "dependsOn": [
+        "S0-02"
+      ],
+      "docs": [
+        "docs/suite/OPERATIONS.md"
+      ],
+      "outcome": "Jobs, queue, runs, logs, tests, artifacts, trigger/cancel и reconciliation",
+      "acceptance": [
+        "OPS-05",
+        "OPS-06",
+        "CON-03",
+        "OPS-09"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S6-03",
+      "title": "Kubernetes/OpenShift read workspace",
+      "status": "planned",
+      "dependsOn": [
+        "S0-02"
+      ],
+      "docs": [
+        "docs/suite/OPERATIONS.md",
+        "docs/suite/OPENSHIFT-K8S-FULL-SCOPE.md"
+      ],
+      "outcome": "Discovery, resources, topology, events, logs, watch и RBAC по нескольким clusters",
+      "acceptance": [
+        "OPS-01",
+        "OPS-02",
+        "OPS-04",
+        "KUX-03"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S6-04",
+      "title": "Prepared cluster actions",
+      "status": "planned",
+      "dependsOn": [
+        "S6-03"
+      ],
+      "docs": [
+        "docs/suite/OPERATIONS.md",
+        "docs/suite/OPENSHIFT-K8S-FULL-SCOPE.md"
+      ],
+      "outcome": "Dry-run/diff/apply/scale/restart/delete/exec/port-forward имеют target и readback",
+      "acceptance": [
+        "OPS-01",
+        "OPS-03",
+        "OPS-04",
+        "KUX-03"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S6-05",
+      "title": "Dependency inventory и SBOM revisions",
+      "status": "planned",
+      "dependsOn": [
+        "S0-02",
+        "S3-01"
+      ],
+      "docs": [
+        "docs/suite/DEPENDENCY-SECURITY.md"
+      ],
+      "outcome": "Manifest/lockfile/SBOM inventory нормализован по ecosystem, paths и revisions",
+      "acceptance": [
+        "SEC-01",
+        "SEC-02",
+        "SEC-03",
+        "SEC-07"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S6-06",
+      "title": "Sprut findings, baseline и suppressions",
+      "status": "planned",
+      "dependsOn": [
+        "S6-05"
+      ],
+      "docs": [
+        "docs/suite/DEPENDENCY-SECURITY.md",
+        "docs/suite/CONNECTIONS-AND-SETTINGS.md"
+      ],
+      "outcome": "Фактический Sprut MCP schema даёт provenance-aware findings, coverage, baseline и expiring suppressions",
+      "acceptance": [
+        "SEC-01",
+        "SEC-02",
+        "SEC-03",
+        "SEC-06",
+        "SEC-08"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S6-07",
+      "title": "Dependency upgrade proposal",
+      "status": "planned",
+      "dependsOn": [
+        "S6-06",
+        "S3-02"
+      ],
+      "docs": [
+        "docs/suite/DEPENDENCY-SECURITY.md",
+        "docs/suite/SOURCE-CONTROL.md"
+      ],
+      "outcome": "Минимальное совместимое обновление создаётся как reviewable diff с impact и test plan",
+      "acceptance": [
+        "SEC-04",
+        "SEC-07",
+        "SCM-03"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S6-08",
+      "title": "Dependency fix verification",
+      "status": "planned",
+      "dependsOn": [
+        "S6-07"
+      ],
+      "docs": [
+        "docs/suite/DEPENDENCY-SECURITY.md"
+      ],
+      "outcome": "Resolve/build/behavior/re-scan подтверждают исправление на новой revision без новых regressions",
+      "acceptance": [
+        "SEC-04",
+        "SEC-05",
+        "SEC-08"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S6-09",
+      "title": "Read-first GitOps desired/live workspace",
+      "status": "planned",
+      "dependsOn": [
+        "S6-03",
+        "S6-04",
+        "S3-03"
+      ],
+      "docs": [
+        "docs/suite/OPERATIONS.md",
+        "docs/suite/COMPETITOR-GAP-AUDIT.md"
+      ],
+      "outcome": "Desired/live diff, health и history видимы до guarded sync по реальным GitOps capabilities",
+      "acceptance": [
+        "OPS-07",
+        "OPS-01",
+        "SCM-04"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S6-10",
+      "title": "CI pipeline graph, environments и manual gates",
+      "status": "planned",
+      "dependsOn": [
+        "S6-02"
+      ],
+      "docs": [
+        "docs/suite/OPERATIONS.md",
+        "docs/suite/COMPETITOR-GAP-AUDIT.md"
+      ],
+      "outcome": "Nested, parallel и matrix stages сохраняют topology, execution target, live state и addressed approvals",
+      "acceptance": [
+        "OPS-08",
+        "OPS-05",
+        "OPS-06",
+        "OPS-09"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S7-01",
+      "title": "Database connection vault и read-only explorer",
+      "status": "planned",
+      "dependsOn": [
+        "S0-02",
+        "S1-02"
+      ],
+      "docs": [
+        "docs/suite/DATABASE.md",
+        "docs/suite/UX-MULTIWORKSPACE-AUDIT.md",
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json",
+        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md"
+      ],
+      "outcome": "Изолированные drivers, project datasources и metadata explorer",
+      "acceptance": [
+        "DAT-01",
+        "DAT-02",
+        "DAT-08",
+        "DATX-01",
+        "DATX-02"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S7-02",
+      "title": "SQL console, result grid и transactions",
+      "status": "planned",
+      "dependsOn": [
+        "S7-01",
+        "S4-01"
+      ],
+      "docs": [
+        "docs/suite/DATABASE.md",
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json",
+        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md"
+      ],
+      "outcome": "Parameterized queries, pagination, cancel, grid и safe transaction flow",
+      "acceptance": [
+        "DAT-02",
+        "DAT-03",
+        "DAT-04",
+        "DAT-05",
+        "DATX-05",
+        "DATX-14"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S7-03",
+      "title": "Data editing, schema tools, explain и ERD",
+      "status": "planned",
+      "dependsOn": [
+        "S7-02"
+      ],
+      "docs": [
+        "docs/suite/DATABASE.md",
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json",
+        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md",
+        "docs/suite/IDE-ULTIMATE-RESEARCH.md",
+        "docs/suite/IDE-ULTIMATE-PARITY.md",
+        "suite/ide-ultimate-parity.json",
+        "suite/ide-research-sources.json",
+        "suite/ide-engine-fixtures.json"
+      ],
+      "outcome": "DataGrip-подобный полный цикл с preview/conflicts/import/export/plan/diagram",
+      "acceptance": [
+        "DAT-06",
+        "DAT-07",
+        "DAT-08",
+        "DATX-06",
+        "DATX-08",
+        "DATX-09",
+        "DATX-10"
+      ],
+      "evidence": [],
+      "ultimateParityRows": [
+        "IUP-134",
+        "IUP-135",
+        "IUP-136"
+      ]
+    },
+    {
+      "id": "SD-01",
+      "title": "Versioned artifact store и безопасный preview",
+      "status": "planned",
+      "dependsOn": [
+        "S1-01",
+        "S2-00"
+      ],
+      "docs": [
+        "docs/suite/DESIGN-AND-ARTIFACTS.md"
+      ],
+      "outcome": "Design/artifact drafts, immutable versions, provenance и sandbox preview",
+      "acceptance": [
+        "DSN-01",
+        "DSN-02",
+        "DSN-09",
+        "DSN-10"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SD-02",
+      "title": "Responsive interactive mockup canvas",
+      "status": "planned",
+      "dependsOn": [
+        "SD-01",
+        "S2-02"
+      ],
+      "docs": [
+        "docs/suite/DESIGN-AND-ARTIFACTS.md"
+      ],
+      "outcome": "Агент создаёт и проверяет responsive themes/states prototype внутри Task",
+      "acceptance": [
+        "DSN-01",
+        "DSN-03",
+        "DSN-04"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SD-03",
+      "title": "Tokens, components, inspect, review и handoff",
+      "status": "planned",
+      "dependsOn": [
+        "SD-02",
+        "S4-02"
+      ],
+      "docs": [
+        "docs/suite/DESIGN-AND-ARTIFACTS.md"
+      ],
+      "outcome": "Versions/comments/compare/audit/handoff связывают дизайн с реализацией",
+      "acceptance": [
+        "DSN-04",
+        "DSN-05",
+        "DSN-06",
+        "DSN-07"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SD-04",
+      "title": "Visual and behavioral implementation verification",
+      "status": "planned",
+      "dependsOn": [
+        "SD-03",
+        "S2-03"
+      ],
+      "docs": [
+        "docs/suite/DESIGN-AND-ARTIFACTS.md"
+      ],
+      "outcome": "Approved design сравнивается с живым UI по screenshots, interactions и accessibility",
+      "acceptance": [
+        "DSN-05",
+        "DSN-06",
+        "DSN-08"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SD-05",
+      "title": "Optional vector scene graph or Penpot adapter",
+      "status": "planned",
+      "dependsOn": [
+        "SD-04"
+      ],
+      "docs": [
+        "docs/suite/DESIGN-AND-ARTIFACTS.md",
+        "docs/suite/OPEN-SOURCE.md",
+        "docs/suite/COMPETITOR-GAP-AUDIT.md"
+      ],
+      "outcome": "Vector workflow сохраняет geometry, tokens и provenance без скрытой потери несовместимых features",
+      "acceptance": [
+        "DSN-11",
+        "REL-04"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SD-06",
+      "title": "Corporate UI kit foundations и catalog",
+      "status": "planned",
+      "dependsOn": [
+        "SD-03"
+      ],
+      "docs": [
+        "docs/suite/DESIGN-SYSTEM-AND-UI-KIT.md",
+        "ui-kit/README.md"
+      ],
+      "outcome": "DTCG tokens, honest component/state catalog, original icons, templates и Design/Kit gallery имеют source/provenance и quality contracts",
+      "acceptance": [
+        "UIK-01",
+        "UIK-02",
+        "UIK-03",
+        "UIK-04",
+        "UIK-05",
+        "UIK-12"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SD-07",
+      "title": "UI kit repository, review и release channels",
+      "status": "planned",
+      "dependsOn": [
+        "SD-06",
+        "S3-04",
+        "S6-08",
+        "S0-03"
+      ],
+      "docs": [
+        "docs/suite/DESIGN-SYSTEM-AND-UI-KIT.md",
+        "ui-kit/governance/RELEASE.md",
+        "ui-kit/governance/SECURITY.md"
+      ],
+      "outcome": "Корпоративный forge/package binding публикует reviewed immutable canary/next/stable releases с SBOM, signing, provenance и readback",
+      "acceptance": [
+        "UIK-06",
+        "UIK-07",
+        "UIK-08",
+        "UIK-11"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "SD-08",
+      "title": "Agent-assisted kit publication и consumer updates",
+      "status": "planned",
+      "dependsOn": [
+        "SD-07",
+        "S8-08",
+        "S1-06"
+      ],
+      "docs": [
+        "docs/suite/DESIGN-SYSTEM-AND-UI-KIT.md",
+        "docs/suite/AGENT-CONTROL-SURFACE.md"
+      ],
+      "outcome": "Design/Kit показывает active Session, automatic role/runtime readback и durable publication lifecycle; consumers получают совместимые reviewable update PR",
+      "acceptance": [
+        "UIK-09",
+        "UIK-10",
+        "UIK-13",
+        "UIK-14",
+        "ACS-04",
+        "ACS-05"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S8-00",
+      "title": "Role binding, model и reasoning capability probe",
+      "status": "planned",
+      "dependsOn": [
+        "S0-02"
+      ],
+      "docs": [
+        "docs/suite/AGENT-RUNTIME-AND-ROLES.md",
+        "workbench/docs/ROLE_PROMPT_BINDING.md",
+        "workbench/docs/QWEN_BASELINE.md"
+      ],
+      "outcome": "Instruction delivery, session isolation и requested/actual model/reasoning подтверждены на целевом GigaCode runtime",
+      "acceptance": [
+        "ROL-01",
+        "ROL-04",
+        "AGT-05"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S8-01",
+      "title": "Subagent coordinator и project mailbox",
+      "status": "planned",
+      "dependsOn": [
+        "S8-00",
+        "S5-03",
+        "S3-02"
+      ],
+      "docs": [
+        "docs/suite/AGENT-RUNTIME-AND-ROLES.md",
+        "workbench/docs/MANAGED_SUBAGENTS.md"
+      ],
+      "outcome": "Параллельные исполнители, leases, status, messages и join evidence управляются из UI",
+      "acceptance": [
+        "AGT-01",
+        "AGT-02",
+        "ROL-10"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S8-02",
+      "title": "Context, compaction и provider resilience",
+      "status": "planned",
+      "dependsOn": [
+        "S8-01"
+      ],
+      "docs": [
+        "docs/suite/AGENT-RUNTIME-AND-ROLES.md",
+        "workbench/docs/CONTEXT_CONTROL_AND_ERROR_RECOVERY.md"
+      ],
+      "outcome": "256k context, 400/413/429, fallback и resume управляются прозрачно",
+      "acceptance": [
+        "AGT-03",
+        "AGT-04",
+        "AGT-05",
+        "AGT-07",
+        "ROL-09"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S8-03",
+      "title": "Profiles, AI role router, recipes, memory и self-optimization",
+      "status": "planned",
+      "dependsOn": [
+        "S8-01",
+        "S0-02"
+      ],
+      "docs": [
+        "docs/suite/AGENT-RUNTIME-AND-ROLES.md",
+        "workbench/docs/SHARED_MEMORY.md",
+        "workbench/docs/CUSTOM_PROFILES.md",
+        "workbench/docs/ROLE_ROUTING.md",
+        "workbench/docs/ROLE_PROMPT_BINDING.md"
+      ],
+      "outcome": "AI router автоматически выбирает объяснимую роль из request/project/task/stage/resource context; профили/recipes создаются без повышения прав и ручного role selector",
+      "acceptance": [
+        "AGT-05",
+        "AGT-06",
+        "AGT-07",
+        "ROL-07",
+        "ROL-11",
+        "ROL-12"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S8-10",
+      "title": "Native host-owned управление subagents",
+      "status": "planned",
+      "dependsOn": [
+        "S8-02",
+        "S8-03",
+        "S1-06"
+      ],
+      "docs": [
+        "docs/suite/AGENT-RUNTIME-AND-ROLES.md",
+        "docs/suite/AGENT-CONTROL-SURFACE.md",
+        "workbench/docs/MANAGED_SUBAGENTS.md"
+      ],
+      "outcome": "Назначения/attempts, durable outbox, budgets/leases, pause/resume/stop/retry/reconcile, per-child actual settings, join/evidence и recovery полностью управляются из native UI; CLI остаётся execution adapter",
+      "acceptance": [
+        "AGT-08",
+        "AGT-09",
+        "AGT-10",
+        "AGT-11",
+        "AGT-12",
+        "AGT-13",
+        "AGT-14"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S8-04",
+      "title": "Chat queue, questions, Todo и agent controls",
+      "status": "planned",
+      "dependsOn": [
+        "S8-02",
+        "S8-03",
+        "S1-04",
+        "S8-10"
+      ],
+      "docs": [
+        "docs/suite/AGENT-RUNTIME-AND-ROLES.md",
+        "docs/suite/UX-FOUNDATION.md",
+        "docs/suite/AGENT-CONTROL-SURFACE.md",
+        "workbench/docs/ARTIFACTS_AND_QUESTIONS.md"
+      ],
+      "outcome": "Queue/steer, durable Task/Session Question Queue с one-at-a-time overlay и exact-origin receipts, model/reasoning/context/auto-role/branch, динамический Todo, native subagent controls, artifacts и evidence работают нативно",
+      "acceptance": [
+        "ROL-03",
+        "ROL-04",
+        "ROL-06",
+        "AGT-01",
+        "AGT-03",
+        "AGT-05",
+        "QST-01",
+        "QST-02",
+        "QST-03",
+        "QST-04",
+        "QST-05",
+        "QST-06",
+        "QST-07",
+        "QST-08"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S8-05",
+      "title": "Analyst и SDD vertical slice",
+      "status": "planned",
+      "dependsOn": [
+        "S8-03",
+        "S8-04",
+        "S6-01"
+      ],
+      "docs": [
+        "docs/suite/AGENT-RUNTIME-AND-ROLES.md",
+        "workbench/profiles/analyst.md",
+        "workbench/profiles/spec.md"
+      ],
+      "outcome": "Описание функции проходит contradiction/gap analysis, становится traceable SDD и передаётся профильной роли",
+      "acceptance": [
+        "ROL-02",
+        "ROL-03",
+        "ROL-05",
+        "ROL-08"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S8-06",
+      "title": "Scheduled automations и review inbox",
+      "status": "planned",
+      "dependsOn": [
+        "S8-02",
+        "S8-04",
+        "S1-04"
+      ],
+      "docs": [
+        "docs/suite/AGENT-RUNTIME-AND-ROLES.md",
+        "docs/suite/COMPETITOR-GAP-AUDIT.md"
+      ],
+      "outcome": "Persistent schedules и triggers создают ровно один recoverable run и возвращают результат на review",
+      "acceptance": [
+        "AUT-01",
+        "AGT-07"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S8-07",
+      "title": "Declarative hooks и signed plugin packages",
+      "status": "planned",
+      "dependsOn": [
+        "S8-03",
+        "S0-02",
+        "S1-04"
+      ],
+      "docs": [
+        "docs/suite/AGENT-RUNTIME-AND-ROLES.md",
+        "docs/suite/OPEN-SOURCE.md",
+        "docs/suite/COMPETITOR-GAP-AUDIT.md"
+      ],
+      "outcome": "Typed bounded hooks и packages расширяют Workbench с видимым origin, permissions и diagnostics",
+      "acceptance": [
+        "EXT-01",
+        "CON-01",
+        "CON-02"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S8-08",
+      "title": "Устойчивый lifecycle agent operations",
+      "status": "planned",
+      "dependsOn": [
+        "S0-03",
+        "S1-06",
+        "S8-02",
+        "S8-04"
+      ],
+      "docs": [
+        "docs/suite/AGENT-CONTROL-SURFACE.md",
+        "docs/suite/ADAPTER-CONTRACTS.md"
+      ],
+      "outcome": "UI и агент используют один persisted proposal-to-evidence lifecycle, policy inheritance, exact target и reconcile неизвестного результата",
+      "acceptance": [
+        "ACS-04",
+        "ACS-05",
+        "ACS-06",
+        "ACS-07",
+        "ACS-08",
+        "ACS-12",
+        "POL-02",
+        "POL-03",
+        "POL-04"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S8-09",
+      "title": "Agent recipes и evidence во всех workspace",
+      "status": "planned",
+      "dependsOn": [
+        "S8-08",
+        "S2-02",
+        "S3-03",
+        "S4-02",
+        "S5-03",
+        "S6-01",
+        "S6-02",
+        "S6-04",
+        "S7-03",
+        "SD-03"
+      ],
+      "docs": [
+        "docs/suite/AGENT-CONTROL-SURFACE.md",
+        "docs/suite/DEVELOPER-WORKFLOW.md",
+        "docs/suite/IDE-ULTIMATE-RESEARCH.md",
+        "docs/suite/IDE-ULTIMATE-PARITY.md",
+        "suite/ide-ultimate-parity.json",
+        "suite/ide-research-sources.json",
+        "suite/ide-engine-fixtures.json"
+      ],
+      "outcome": "Chat, Tasks, Browser, IDE, Git/PR, Jenkins, Kubernetes/OpenShift, Docs, Data и Design дают агенту одинаково видимые target, result, verification и evidence",
+      "acceptance": [
+        "ACS-09",
+        "ACS-10",
+        "IUQ-08"
+      ],
+      "evidence": [],
+      "ultimateParityRows": [
+        "IUP-143",
+        "IUP-144",
+        "IUP-145",
+        "IUP-146"
+      ]
+    },
+    {
+      "id": "S9-01",
+      "title": "Windows package, bundled CLI и migration hardening",
+      "status": "planned",
+      "dependsOn": [
+        "S8-02",
+        "S8-04"
+      ],
+      "docs": [
+        "docs/suite/DELIVERY-PLAN.md",
+        "docs/IMPLEMENTATION_STATUS.md"
+      ],
+      "outcome": "NSIS/portable с чистым runtime, backup/restore и диагностикой проверен на Windows",
+      "acceptance": [
+        "REL-01",
+        "REL-02",
+        "REL-03",
+        "REL-05"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S9-03",
+      "title": "Usage, cost, performance и trace center",
+      "status": "planned",
+      "dependsOn": [
+        "S9-01",
+        "S8-02",
+        "S1-04"
+      ],
+      "docs": [
+        "docs/suite/LIFECYCLE-AND-SETTINGS.md",
+        "docs/suite/COMPETITOR-GAP-AUDIT.md"
+      ],
+      "outcome": "Measured и estimated usage, retry/fallback, latency и correlation traces доступны без утечки данных",
+      "acceptance": [
+        "OBS-01",
+        "REL-05"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S9-02",
+      "title": "Accessibility, performance, licenses и final audit",
+      "status": "planned",
+      "dependsOn": [
+        "S9-01",
+        "S1-04",
+        "S1-05",
+        "S2-03",
+        "S3-03",
+        "S4-03",
+        "S5-02",
+        "S5-03",
+        "S5-04",
+        "S6-02",
+        "S6-04",
+        "S6-08",
+        "S6-10",
+        "S7-03",
+        "SD-04",
+        "SD-08",
+        "S8-05",
+        "S9-03",
+        "S0-03",
+        "S1-06",
+        "S8-09",
+        "S3-04",
+        "S6-09",
+        "S8-06",
+        "S8-07",
+        "S8-10",
+        "S4-04",
+        "S4-06",
+        "S4-07",
+        "S7-06",
+        "S6-12",
+        "S2-05"
+      ],
+      "docs": [
+        "docs/suite/ACCEPTANCE.md",
+        "docs/suite/OPEN-SOURCE.md",
+        "docs/suite/COMPETITOR-GAP-AUDIT.md",
+        "docs/suite/AGENT-CONTROL-SURFACE.md"
+      ],
+      "outcome": "Полный продуктовый audit закрывает gaps либо явно фиксирует ограничения",
+      "acceptance": [
+        "FND-04",
+        "FND-06",
+        "REL-03",
+        "REL-04"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S4-05",
+      "title": "Семантические refactorings и structural navigation",
+      "status": "planned",
+      "dependsOn": [
+        "S4-03"
+      ],
+      "docs": [
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json",
+        "docs/suite/IDE-LANGUAGE-WORKFLOWS.md",
+        "docs/suite/IDE-EXTENSIONS-AND-EXPLORER.md",
+        "docs/suite/IDE-ULTIMATE-RESEARCH.md",
+        "docs/suite/IDE-ULTIMATE-PARITY.md",
+        "suite/ide-ultimate-parity.json",
+        "suite/ide-research-sources.json",
+        "suite/ide-engine-fixtures.json"
+      ],
+      "outcome": "Семантические refactorings и structural navigation с реальными adapters и проверкой каждой capability",
+      "acceptance": [
+        "IDEX-02",
+        "IDEX-03",
+        "IUQ-05"
+      ],
+      "evidence": [],
+      "ultimateParityRows": [
+        "IUP-029",
+        "IUP-030",
+        "IUP-031",
+        "IUP-032",
+        "IUP-033",
+        "IUP-034",
+        "IUP-035",
+        "IUP-036",
+        "IUP-037",
+        "IUP-038",
+        "IUP-039",
+        "IUP-040",
+        "IUP-041",
+        "IUP-042",
+        "IUP-043",
+        "IUP-044",
+        "IUP-045",
+        "IUP-046",
+        "IUP-047",
+        "IUP-048",
+        "IUP-049",
+        "IUP-148",
+        "IUP-150"
+      ]
+    },
+    {
+      "id": "S4-06",
+      "title": "Framework intelligence и API workflow для Java/Python/React",
+      "status": "planned",
+      "dependsOn": [
+        "S4-05"
+      ],
+      "docs": [
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json",
+        "docs/suite/IDE-LANGUAGE-WORKFLOWS.md",
+        "docs/suite/IDE-EXTENSIONS-AND-EXPLORER.md",
+        "docs/suite/IDE-ULTIMATE-RESEARCH.md",
+        "docs/suite/IDE-ULTIMATE-PARITY.md",
+        "suite/ide-ultimate-parity.json",
+        "suite/ide-research-sources.json",
+        "suite/ide-engine-fixtures.json"
+      ],
+      "outcome": "Spring/JPA/ORM, Python/frontend framework intelligence и API workflows; глубина семантики/runtime подтверждена отдельными scenarios, custom/license gaps не скрыты",
+      "acceptance": [
+        "IDEX-04",
+        "IDEX-05",
+        "IDEX-06",
+        "IDEX-10",
+        "IUQ-06"
+      ],
+      "evidence": [],
+      "ultimateParityRows": [
+        "IUP-062",
+        "IUP-063",
+        "IUP-064",
+        "IUP-065",
+        "IUP-066",
+        "IUP-067",
+        "IUP-068",
+        "IUP-069",
+        "IUP-070",
+        "IUP-071",
+        "IUP-072",
+        "IUP-073",
+        "IUP-074",
+        "IUP-075",
+        "IUP-076",
+        "IUP-077",
+        "IUP-078",
+        "IUP-079",
+        "IUP-080",
+        "IUP-081",
+        "IUP-082",
+        "IUP-101",
+        "IUP-102",
+        "IUP-103",
+        "IUP-111",
+        "IUP-112",
+        "IUP-113",
+        "IUP-114",
+        "IUP-115",
+        "IUP-116",
+        "IUP-117",
+        "IUP-118",
+        "IUP-119",
+        "IUP-147"
+      ]
+    },
+    {
+      "id": "S4-07",
+      "title": "Profiling, dumps и performance investigations",
+      "status": "planned",
+      "dependsOn": [
+        "S4-03"
+      ],
+      "docs": [
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json",
+        "docs/suite/IDE-LANGUAGE-WORKFLOWS.md",
+        "docs/suite/IDE-EXTENSIONS-AND-EXPLORER.md",
+        "docs/suite/IDE-ULTIMATE-RESEARCH.md",
+        "docs/suite/IDE-ULTIMATE-PARITY.md",
+        "suite/ide-ultimate-parity.json",
+        "suite/ide-research-sources.json",
+        "suite/ide-engine-fixtures.json"
+      ],
+      "outcome": "Windows JFR/jcmd, JFR/heap/thread analysis и Python/Node profiling с source navigation, snapshot compare и bounded large-file workers; OS capabilities доказаны",
+      "acceptance": [
+        "IDEX-09",
+        "IUQ-07"
+      ],
+      "evidence": [],
+      "ultimateParityRows": [
+        "IUP-120",
+        "IUP-121",
+        "IUP-122",
+        "IUP-123",
+        "IUP-124",
+        "IUP-125",
+        "IUP-126",
+        "IUP-127"
+      ]
+    },
+    {
+      "id": "S7-04",
+      "title": "SQL intelligence и offline/file-based schemas",
+      "status": "planned",
+      "dependsOn": [
+        "S7-02",
+        "S4-02"
+      ],
+      "docs": [
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json"
+      ],
+      "outcome": "SQL intelligence и offline/file-based schemas с реальными adapters и проверкой каждой capability",
+      "acceptance": [
+        "DATX-03",
+        "DATX-04"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S7-05",
+      "title": "Data compare/sync и расширенные file workflows",
+      "status": "planned",
+      "dependsOn": [
+        "S7-03",
+        "S7-04"
+      ],
+      "docs": [
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json",
+        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md"
+      ],
+      "outcome": "Data compare/sync и расширенные file workflows с реальными adapters и проверкой каждой capability",
+      "acceptance": [
+        "DATX-07",
+        "DATX-11",
+        "PGX-01"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S7-06",
+      "title": "Vendor capability waves и native database tools",
+      "status": "planned",
+      "dependsOn": [
+        "S7-05"
+      ],
+      "docs": [
+        "docs/suite/IDE-DATA-FULL-SCOPE.md",
+        "suite/ide-data-coverage.json"
+      ],
+      "outcome": "Vendor capability waves и native database tools с реальными adapters и проверкой каждой capability",
+      "acceptance": [
+        "DATX-12",
+        "DATX-13"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S6-11",
+      "title": "Полные OpenShift/K8s console workflows",
+      "status": "planned",
+      "dependsOn": [
+        "S6-03",
+        "S6-04"
+      ],
+      "docs": [
+        "docs/suite/OPENSHIFT-K8S-FULL-SCOPE.md",
+        "docs/suite/OPERATIONS.md"
+      ],
+      "outcome": "Полные OpenShift/K8s console workflows с фактическими MCP capabilities и live evidence",
+      "acceptance": [
+        "KUX-01",
+        "KUX-03"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S6-12",
+      "title": "ДЕВ/ИФТ и console plugins parity audit",
+      "status": "planned",
+      "dependsOn": [
+        "S6-11"
+      ],
+      "docs": [
+        "docs/suite/OPENSHIFT-K8S-FULL-SCOPE.md",
+        "docs/suite/OPERATIONS.md"
+      ],
+      "outcome": "ДЕВ/ИФТ и console plugins parity audit с фактическими MCP capabilities и live evidence",
+      "acceptance": [
+        "KUX-02"
+      ],
+      "evidence": []
+    }
+  ]
+}

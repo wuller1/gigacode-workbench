@@ -1,0 +1,19 @@
+/* Runs the actual shell task boundary in a VM; no browser or backend claim. */
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),crypto=require('node:crypto');
+const file=require('node:path').resolve(__dirname,'../suite-prototype-shell.js'),source=fs.readFileSync(file,'utf8');
+const section=source.slice(source.indexOf('  function normalizedCriteria('),source.indexOf('  // Keep original project routing'));
+const handlers={},nodes={'#windowTask':{},'#taskName':{}},store={project:'A',task:'OLD',tasks:{A:[{key:'OLD',title:'Original'}]},sessions:{'A::OLD':[{id:'first'}],'A::GC-2':[{id:'first'},{id:'second',html:'Preserved history'}]},selected:{'A::GC-2':'second'}},calls={save:0,restore:0,show:0};
+function el(tag,text=''){return {tag,text,children:[],append(...children){this.children.push(...children)},get innerHTML(){return JSON.stringify({tag:this.tag,text:this.text,children:this.children.map(x=>JSON.parse(x.innerHTML))})}}}
+const sandbox={store,el,q:s=>nodes[s],document:{addEventListener:(name,fn)=>handlers[name]=fn},save:()=>calls.save++,restore:()=>calls.restore++,showChat:()=>calls.show++,taskKey:()=>store.project+'::'+store.task,tasks:()=>store.tasks[store.project],selectedId:'first'};
+sandbox.bank=()=>store.sessions[sandbox.taskKey()]||(store.sessions[sandbox.taskKey()]=[{id:'new'}]);sandbox.session=()=>sandbox.bank().find(x=>x.id===sandbox.selectedId)||sandbox.bank()[0];
+vm.createContext(sandbox);vm.runInContext(section,sandbox);
+const results=[];function test(name,fn){try{fn();results.push({name,status:'passed'})}catch(e){results.push({name,status:'failed',error:e.message});process.exitCode=1}}
+const normalize=x=>JSON.parse(JSON.stringify(sandbox.normalizedCriteria(x)));
+test('multiline acceptance remains criteria, not individual characters',()=>assert.deepEqual(normalize('First\r\n\n Second '),['First','Second']));
+test('structured criteria preserve text and title; invalid entries drop',()=>assert.deepEqual(normalize([{text:'A'},{title:'B'},null,42]),['A','B']));
+test('re-entering task restores selected conversation and its history',()=>{handlers['suite:task-selected']({detail:{key:'GC-2',title:'Work'}});assert.equal(sandbox.selectedId,'second');assert.equal(sandbox.session().html,'Preserved history')});
+test('metadata update does not reset conversation or draft',()=>{sandbox.session().draft='unsent';handlers['suite:task-updated']({detail:{project:'A',key:'GC-2',title:'Updated',description:'D'}});assert.equal(sandbox.selectedId,'second');assert.equal(sandbox.session().draft,'unsent');assert.equal(nodes['#taskName'].textContent,'GC-2 Updated')});
+test('other project update does not change active task title',()=>{handlers['suite:task-updated']({detail:{project:'B',key:'GC-2',title:'Other'}});assert.equal(nodes['#taskName'].textContent,'GC-2 Updated');assert.equal(store.tasks.B[0].title,'Other')});
+test('foreign project selection does not switch current scope',()=>{handlers['suite:task-selected']({detail:{project:'B',key:'FOREIGN'}});assert.equal(store.project,'A');assert.equal(store.task,'GC-2')});
+test('new task brief contains complete acceptance lines',()=>{handlers['suite:task-selected']({detail:{key:'NEW',title:'Next',criteria:'One\nTwo'}});const tree=JSON.parse(sandbox.session().html);assert.deepEqual(tree.children[2].children.map(x=>x.text),['One','Two'])});
+const report={method:'Actual shell context boundary extracted into Node VM; browser pickers and visual layout checked separately.',sourceSha256:crypto.createHash('sha256').update(source).digest('hex'),passed:results.filter(x=>x.status==='passed').length,failed:results.filter(x=>x.status==='failed').length,results};fs.writeFileSync(__filename.replace('.cjs','.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({passed:report.passed,failed:report.failed}));

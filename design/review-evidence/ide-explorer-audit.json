@@ -1,0 +1,112 @@
+{
+  "scope": "Node VM of actual explorer planning/apply/preview callbacks, using a minimal host facade. No DOM/CSS interaction, OS filesystem or Windows filesystem was executed; case-insensitive expectations model the requested Windows behavior.",
+  "sourceSHA256": "0f2f77997d3de6ee51e3fc82c24bd9d2ac742d4c06005f5094fa8598b612915d",
+  "passed": 26,
+  "total": 26,
+  "tests": [
+    {
+      "name": "Windows invalid, reserved, absolute and traversal paths are rejected",
+      "pass": true
+    },
+    {
+      "name": "Literal bulk rename preserves directory and exact source snapshot",
+      "pass": true
+    },
+    {
+      "name": "Case-insensitive existing target collision blocks a bulk operation",
+      "pass": true
+    },
+    {
+      "name": "Multiple moved files cannot collide at one target",
+      "pass": true
+    },
+    {
+      "name": "Case-only rename is allowed for the same source on Windows",
+      "pass": true
+    },
+    {
+      "name": "No-op and empty rename plans cannot be applied",
+      "pass": true
+    },
+    {
+      "name": "A file cannot become an ancestor directory of another file",
+      "pass": true
+    },
+    {
+      "name": "A target file cannot replace an existing directory hierarchy",
+      "pass": true
+    },
+    {
+      "name": "Applying a reviewed rename migrates dirty text, saved baseline, tabs, breakpoints and view",
+      "pass": true
+    },
+    {
+      "name": "Swapping two filenames applies from captured sources, not partially overwritten files",
+      "pass": true
+    },
+    {
+      "name": "Changed source after preview blocks the entire batch without partial rename",
+      "pass": true
+    },
+    {
+      "name": "A newly occupied target after preview is detected on apply",
+      "pass": true
+    },
+    {
+      "name": "Switching project rejects a stale preview callback",
+      "pass": true
+    },
+    {
+      "name": "Replacing the owner file map rejects a stale preview even with matching strings",
+      "pass": true
+    },
+    {
+      "name": "Missing source from a folder preview cannot be recreated as undefined",
+      "pass": true
+    },
+    {
+      "name": "Undo restores paths and metadata once, and cannot silently become redo",
+      "pass": true
+    },
+    {
+      "name": "Undo cannot overwrite a later edit made to the renamed file",
+      "pass": true
+    },
+    {
+      "name": "New file rejects both ancestor and descendant file-directory conflicts",
+      "pass": true
+    },
+    {
+      "name": "Duplicate names are chosen case-insensitively without overwriting existing files",
+      "pass": true
+    },
+    {
+      "name": "Single-file rename has a direct name field, preview and preserved dirty buffer",
+      "pass": true
+    },
+    {
+      "name": "Confirmed delete removes only selected files and their editor metadata",
+      "pass": true
+    },
+    {
+      "name": "Delete confirmation refuses edits made after the confirmation opened",
+      "pass": true
+    },
+    {
+      "name": "Explorer selection and configuration belong to the selected project",
+      "pass": true
+    },
+    {
+      "name": "Ctrl selection toggles without navigating or replacing the active editor",
+      "pass": true
+    },
+    {
+      "name": "Explorer excludes generated directories by default and reveals them explicitly",
+      "pass": true
+    },
+    {
+      "name": "Every button has one class attribute and escaped filename content",
+      "pass": true
+    }
+  ]
+}

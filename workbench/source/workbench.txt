@@ -241,7 +241,7 @@ namespace WorkbenchPortable {
 
 $script:WBRoot = $PSScriptRoot
 $script:WBUtf8 = New-Object System.Text.UTF8Encoding -ArgumentList @($false, $true)
-$script:WBProfiles = @('analyst','spec','backend','frontend','devops','qa','reviewer','diagnostics','gigacode-ui')
+$script:WBProfiles = @('analyst','spec','architect','backend','database','designer','frontend','security','devops','qa','reviewer','diagnostics','technical-writer','gigacode-ui')
 $script:WBCapabilities = @('repo.read','repo.write','git.read','git.branch','git.commit','git.push','git.pr.read','git.pr.write','git.merge','knowledge.read','knowledge.write','ci.read','ci.run','cluster.read','cluster.apply','browser.inspect','test.run','data.read','data.migrate','metrics.read','tracker.read','tracker.write','security.scan.read','security.scan.run')
 $script:WBKinds = @('observation','decision','question','answer','action_started','action_finished','action_unknown','checkpoint','verification')
 

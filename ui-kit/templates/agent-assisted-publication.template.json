@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "enterprise.agent-assisted-publication",
+  "status": "specified",
+  "slots": ["activeSession", "changeSummary", "repositoryAndBranch", "versionAndChannel", "requiredReview", "qualityChecks", "consumerFixtures", "actionLifecycle", "releaseEvidence"],
+  "requiredStates": ["proposal", "preview", "review", "blocked", "executing", "result", "verifying", "verified", "failed", "unknown-outcome"],
+  "rules": [
+    "The agent cannot publish from an unbound repository or bypass protected branch/reviewer policy.",
+    "Execution uses an idempotency key and reconciles an unknown remote outcome before retry.",
+    "Promotion to stable requires immutable evidence for source commit, checks, visual baseline, SBOM, signature and consumer compatibility."
+  ]
+}

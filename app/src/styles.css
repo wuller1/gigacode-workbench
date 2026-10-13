@@ -952,6 +952,23 @@ kbd {
   max-width: 180px;
   font-size: 11px;
 }
+.composer-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  max-width: 180px;
+  padding: 4px 6px;
+  color: var(--secondary);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.composer-meta > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .composer-select select {
   border: 0;
   outline: none;
@@ -2359,3 +2376,38 @@ kbd {
   line-height: 1.6;
   margin: 4px 0 8px;
 }
+
+/* Full IDE: compact controls, the actual editor owns the remaining desktop surface. */
+.ide-panel{display:flex;flex-direction:column;flex:1;min-height:0;min-width:0;background:var(--canvas)}
+.ide-actions{display:flex;align-items:center;gap:2px;padding:3px 6px;min-height:35px;border-bottom:1px solid var(--line);background:var(--canvas)}
+.ide-actions .icon-button{width:28px;min-height:28px;padding:4px;border:0;background:transparent}
+.ide-actions-spacer{flex:1}.ide-native-area{position:relative;flex:1;min-height:0;min-width:0;overflow:hidden}
+.ide-loading{display:flex;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--secondary)}
+.ide-loading .working-arc{width:24px;height:24px}.ide-loading small{color:var(--muted)}
+.ide-problems{border:0;background:transparent;font-size:12px;gap:3px;padding:3px 6px}
+/* One desktop docking model: preserve explicit splits at every window size. */
+.desktop-workspace > .tool-rail { order:0; width:42px; border-left:0; border-right:1px solid var(--line); gap:5px; padding:8px 4px; }
+.desktop-workspace .dock-rail-spacer { flex:1; }
+.dock-viewport { flex:1; min-width:0; min-height:0; overflow:auto; position:relative; scrollbar-width:thin; }
+.dock-canvas { position:relative; min-width:100%; min-height:100%; }
+.desktop-workspace .dock-content { position:absolute; min-width:0; min-height:0; flex-direction:column; overflow:hidden; }
+.desktop-workspace .conversation-area > * { width:100%; min-width:0; }
+.desktop-dock-header { position:absolute; display:flex; align-items:center; gap:2px; background:var(--canvas); border-bottom:1px solid var(--line); z-index:2; min-width:0; padding-right:3px; }
+.desktop-dock-tabs { flex:1; min-width:0; display:flex; align-items:stretch; height:100%; overflow-x:auto; scrollbar-width:none; }
+.desktop-dock-tab { flex:none; max-width:220px; display:flex; align-items:center; border-bottom:2px solid transparent; }
+.desktop-dock-tab.active { border-bottom-color:var(--text); background:var(--surface); }
+.desktop-dock-tab > button:first-child { display:flex; align-items:center; gap:7px; padding:0 8px; border:0; background:transparent; font-size:12px; min-width:0; white-space:nowrap; }
+.desktop-dock-tab > button:first-child span:last-child { text-overflow:ellipsis; overflow:hidden; }
+.desktop-dock-header .icon-button { width:27px; height:27px; flex:none; }
+.desktop-dock-tab > .icon-button { opacity:.45; }
+.desktop-dock-tab:hover > .icon-button,.desktop-dock-tab:focus-within > .icon-button { opacity:1; }
+.desktop-dock-divider { position:absolute; z-index:4; background:var(--canvas); touch-action:none; }
+.desktop-dock-divider.x {cursor:col-resize;}.desktop-dock-divider.y {cursor:row-resize;}
+.desktop-dock-divider:hover,.desktop-dock-divider:focus-visible {background:var(--accent);}
+.desktop-dock-drop {position:absolute;z-index:12;pointer-events:none;display:flex;align-items:center;justify-content:center;gap:8px;border:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 18%,var(--canvas));border-radius:6px;}
+.dock-empty {height:100%;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;color:var(--muted);}
+.dock-empty button {min-width:140px;}
+.desktop-workspace .ide-actions {display:none;}
+.ide-installation {display:grid;grid-template-columns:170px 1fr;gap:9px 14px;font-size:12px;line-height:1.5;}
+.ide-installation dt{color:var(--muted)}.ide-installation dd{margin:0;overflow-wrap:anywhere;}
+.ide-engine-row{border-top:1px solid var(--line);padding:15px 0;display:grid;gap:8px;}.ide-engine-row>code{font-size:11px;color:var(--muted);overflow-wrap:anywhere;}

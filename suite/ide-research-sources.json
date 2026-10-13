@@ -1,0 +1,986 @@
+{
+  "schemaVersion": 1,
+  "researchedAt": "2026-10-14",
+  "baseline": {
+    "intellij": "2026.2.3 / build 262.10968.63, official download page",
+    "distribution": "Unified IntelliJ IDEA with Ultimate subscription",
+    "repositorySnapshots": "Reference commits only. Not release/distribution pins.",
+    "runtimeTestsPerformed": false
+  },
+  "sources": [
+    {
+      "id": "IDEA-DISTRIBUTION",
+      "title": "IntelliJ IDEA unified distribution",
+      "url": "https://www.jetbrains.com/help/idea/intellij-idea-single-distribution.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "IDEA-RELEASE",
+      "title": "IntelliJ IDEA download / version",
+      "url": "https://www.jetbrains.com/idea/download/?section=community",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "IDEA-SOURCE",
+      "title": "IntelliJ open source repository",
+      "url": "https://github.com/JetBrains/intellij-community",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "IDEA-BUILD-TERMS",
+      "title": "JetBrains Open-Source Build Terms",
+      "url": "https://github.com/JetBrains/intellij-community/blob/master/LICENSE.txt",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "PLATFORM",
+      "title": "IntelliJ Platform SDK",
+      "url": "https://plugins.jetbrains.com/docs/intellij/intellij-platform.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "PSI",
+      "title": "Modifying PSI",
+      "url": "https://plugins.jetbrains.com/docs/intellij/modifying-psi.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "INDEX",
+      "title": "Indexing and PSI stubs",
+      "url": "https://plugins.jetbrains.com/docs/intellij/indexing-and-psi-stubs.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "THREADING",
+      "title": "IntelliJ threading model",
+      "url": "https://plugins.jetbrains.com/docs/intellij/threading-model.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "REFACTOR",
+      "title": "IntelliJ refactorings",
+      "url": "https://www.jetbrains.com/help/idea/refactoring-source-code.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "SIGNATURE",
+      "title": "Change signature",
+      "url": "https://www.jetbrains.com/help/idea/change-signature.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "SAFE-DELETE",
+      "title": "Safe delete",
+      "url": "https://www.jetbrains.com/help/idea/safe-delete.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "STRUCTURAL",
+      "title": "Structural search and replace",
+      "url": "https://www.jetbrains.com/help/idea/structural-search-and-replace.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "INSPECTIONS",
+      "title": "Code inspections",
+      "url": "https://www.jetbrains.com/help/idea/code-inspection.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "SPRING",
+      "title": "Spring Boot in IntelliJ",
+      "url": "https://www.jetbrains.com/help/idea/spring-boot.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "BEANS",
+      "title": "Beans tool window",
+      "url": "https://www.jetbrains.com/help/idea/beans-tool-window.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "SPRING-DEBUG",
+      "title": "Spring debugger",
+      "url": "https://www.jetbrains.com/help/idea/spring-debugger.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "PERSISTENCE",
+      "title": "Persistence tool window",
+      "url": "https://www.jetbrains.com/help/idea/persistence-tool-window.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JPA",
+      "title": "JPA console",
+      "url": "https://www.jetbrains.com/help/idea/using-jpa-console.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "HTTP",
+      "title": "IntelliJ HTTP client",
+      "url": "https://www.jetbrains.com/pages/idea/http-client/",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "PROFILER",
+      "title": "IntelliJ profiler",
+      "url": "https://www.jetbrains.com/help/idea/cpu-and-allocation-profiling-basic-concepts.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "COVERAGE",
+      "title": "Code coverage",
+      "url": "https://www.jetbrains.com/help/idea/code-coverage.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "MAVEN",
+      "title": "IntelliJ Maven",
+      "url": "https://www.jetbrains.com/help/idea/maven-support.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "GRADLE",
+      "title": "IntelliJ Gradle",
+      "url": "https://www.jetbrains.com/help/idea/gradle.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "PYTHON",
+      "title": "Python in IntelliJ",
+      "url": "https://www.jetbrains.com/help/idea/python.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "REACT",
+      "title": "React in IntelliJ",
+      "url": "https://www.jetbrains.com/help/idea/react.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "DEBUG",
+      "title": "IntelliJ debugger",
+      "url": "https://www.jetbrains.com/help/idea/debugging-code.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "LOCAL-HISTORY",
+      "title": "IntelliJ Local History",
+      "url": "https://www.jetbrains.com/help/idea/local-history.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "REMOTE",
+      "title": "IntelliJ remote development",
+      "url": "https://www.jetbrains.com/help/idea/remote-development-overview.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "VSCODE-FAQ",
+      "title": "VS Code / Code-OSS / Marketplace licensing",
+      "url": "https://code.visualstudio.com/docs/supporting/faq",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "CODE-OSS",
+      "title": "Code-OSS source",
+      "url": "https://github.com/microsoft/vscode",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "THEIA",
+      "title": "Theia application composition",
+      "url": "https://theia-ide.org/docs/composing_applications/",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "THEIA-ARCH",
+      "title": "Theia architecture",
+      "url": "https://theia-ide.org/docs/architecture/",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "THEIA-EXT",
+      "title": "Theia extension installation and compatibility",
+      "url": "https://theia-ide.org/docs/user_install_vscode_extensions/",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "THEIA-API",
+      "title": "Theia API supported / partial / stubbed report",
+      "url": "https://eclipse-theia.github.io/vscode-theia-comparator/status.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "MONACO-API",
+      "title": "monaco-vscode-api",
+      "url": "https://github.com/CodinGame/monaco-vscode-api",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JDT",
+      "title": "Eclipse JDT LS",
+      "url": "https://github.com/eclipse-jdtls/eclipse.jdt.ls",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "SPRING-TOOLS",
+      "title": "Spring Tools",
+      "url": "https://github.com/spring-projects/spring-tools",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JAVA-REFACTOR",
+      "title": "VS Code Java refactoring",
+      "url": "https://code.visualstudio.com/docs/java/java-refactoring",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JAVA-DEBUG",
+      "title": "Java debug adapter",
+      "url": "https://github.com/microsoft/vscode-java-debug",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JAVA-TEST",
+      "title": "Java test runner",
+      "url": "https://github.com/microsoft/vscode-java-test",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "PYRIGHT",
+      "title": "Pyright",
+      "url": "https://github.com/microsoft/pyright",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "RUFF",
+      "title": "Ruff",
+      "url": "https://github.com/astral-sh/ruff",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "DEBUGPY",
+      "title": "debugpy",
+      "url": "https://github.com/microsoft/debugpy",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JCMD",
+      "title": "JDK jcmd / JFR commands",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/specs/man/jcmd.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "ASYNC-PROFILER",
+      "title": "async-profiler supported platforms",
+      "url": "https://github.com/async-profiler/async-profiler",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "MAT",
+      "title": "Eclipse Memory Analyzer",
+      "url": "https://eclipse.dev/mat/",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JMC",
+      "title": "OpenJDK JMC",
+      "url": "https://github.com/openjdk/jmc",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JDT-SIGNATURE",
+      "title": "JDT LS change-signature implementation",
+      "url": "https://github.com/eclipse-jdtls/eclipse.jdt.ls/blob/d38ca4f421834e09eb7ffe180ef5d2001e250299/org.eclipse.jdt.ls.core/src/org/eclipse/jdt/ls/core/internal/handlers/ChangeSignatureHandler.java",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JDT-REFACTOR-EDITS",
+      "title": "JDT LS extract-interface/signature to WorkspaceEdit",
+      "url": "https://github.com/eclipse-jdtls/eclipse.jdt.ls/blob/d38ca4f421834e09eb7ffe180ef5d2001e250299/org.eclipse.jdt.ls.core/src/org/eclipse/jdt/ls/core/internal/handlers/GetRefactorEditHandler.java",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JDT-SIGNATURE-TESTS",
+      "title": "Upstream change-signature test source, not executed here",
+      "url": "https://github.com/eclipse-jdtls/eclipse.jdt.ls/blob/d38ca4f421834e09eb7ffe180ef5d2001e250299/org.eclipse.jdt.ls.tests/src/org/eclipse/jdt/ls/core/internal/handlers/ChangeSignatureHandlerTest.java",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JS-DEBUG",
+      "title": "JavaScript DAP debugger upstream",
+      "url": "https://github.com/microsoft/vscode-js-debug",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "GRADLE-EXT",
+      "title": "Gradle tasks, project model and extension upstream",
+      "url": "https://github.com/microsoft/vscode-gradle/blob/develop/README.md",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "KOTLIN-LSP",
+      "title": "Official Kotlin LSP status and partial closed-source model",
+      "url": "https://github.com/Kotlin/kotlin-lsp/blob/main/README.md",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "KOTLIN-RELEASES",
+      "title": "Kotlin extension release channels and licensing changes",
+      "url": "https://github.com/Kotlin/kotlin-lsp/blob/main/RELEASES.md",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JB-LSP",
+      "title": "Java and Kotlin by IntelliJ IDEA overview",
+      "url": "https://www.jetbrains.com/help/intellij-vscode/About-instance.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JB-LSP-IMPORT",
+      "title": "Java/Kotlin project import and single-backend limit",
+      "url": "https://www.jetbrains.com/help/intellij-vscode/Project-import.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JB-LSP-LICENSE",
+      "title": "Java/Kotlin licensing and activation",
+      "url": "https://www.jetbrains.com/help/intellij-vscode/Register.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JB-LSP-INSTALL",
+      "title": "Java/Kotlin installation, EAP expiry and Open VSX",
+      "url": "https://www.jetbrains.com/help/intellij-vscode/get_started_cursor.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JB-LSP-REFACTOR",
+      "title": "Java/Kotlin extension refactoring scope",
+      "url": "https://www.jetbrains.com/help/intellij-vscode/Refactoring-and-code-generation.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JB-LSP-DEBUG",
+      "title": "Java/Kotlin run/debug and unsupported test discovery/run",
+      "url": "https://www.jetbrains.com/help/intellij-vscode/Run-and-debug.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "INJECTIONS",
+      "title": "Language and reference injections",
+      "url": "https://www.jetbrains.com/help/idea/using-language-injections.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "UML",
+      "title": "UML class diagrams",
+      "url": "https://www.jetbrains.com/help/idea/class-diagram.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "CODE-DEPS",
+      "title": "Dependencies analysis",
+      "url": "https://www.jetbrains.com/help/idea/dependencies-analysis.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "SCRATCHES",
+      "title": "Scratch files",
+      "url": "https://www.jetbrains.com/help/idea/scratches.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "JSHELL",
+      "title": "JShell console is a separate plugin",
+      "url": "https://www.jetbrains.com/help/idea/jshell-console.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    },
+    {
+      "id": "RUN-CONFIGS",
+      "title": "Run/debug configurations",
+      "url": "https://www.jetbrains.com/help/idea/run-debug-configurations-dialog.html",
+      "checkedAt": "2026-10-14",
+      "kind": "primary_documentation_or_upstream"
+    }
+  ],
+  "repositories": [
+    {
+      "repository": "CodinGame/monaco-vscode-api",
+      "defaultBranch": "main",
+      "commit": "5d9c89b88e951508ef5df607df09e8c0c0090b10",
+      "commitDate": "2026-10-13T10:39:23Z",
+      "licenseMetadata": "MIT",
+      "url": "https://github.com/CodinGame/monaco-vscode-api",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "JetBrains/intellij-community",
+      "defaultBranch": "master",
+      "commit": "da378e8d872ded6ea4f86a349fc6f81ef096458f",
+      "commitDate": "2026-10-13T12:09:30Z",
+      "licenseMetadata": "NOASSERTION",
+      "url": "https://github.com/JetBrains/intellij-community",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "astral-sh/ruff",
+      "defaultBranch": "main",
+      "commit": "a7b52a15654cd991d7a2e212ee0cd579cd714450",
+      "commitDate": "2026-10-13T15:04:47Z",
+      "licenseMetadata": "MIT",
+      "url": "https://github.com/astral-sh/ruff",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "async-profiler/async-profiler",
+      "defaultBranch": "master",
+      "commit": "c7d6a3614df284bd92b275378a3f8bb07fdb6a5d",
+      "commitDate": "2026-10-13T10:08:22Z",
+      "licenseMetadata": "Apache-2.0",
+      "url": "https://github.com/async-profiler/async-profiler",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "eclipse-jdtls/eclipse.jdt.ls",
+      "defaultBranch": "main",
+      "commit": "d38ca4f421834e09eb7ffe180ef5d2001e250299",
+      "commitDate": "2026-10-13T15:25:09Z",
+      "licenseMetadata": "EPL-2.0",
+      "url": "https://github.com/eclipse-jdtls/eclipse.jdt.ls",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "eclipse-theia/theia",
+      "defaultBranch": "master",
+      "commit": "daf03290652b049f771a63ccdac16f518ef008b6",
+      "commitDate": "2026-10-13T08:11:11Z",
+      "licenseMetadata": "EPL-2.0",
+      "url": "https://github.com/eclipse-theia/theia",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "microsoft/debugpy",
+      "defaultBranch": "main",
+      "commit": "8902fbb16e0dd9b59f9aac28c3d2c49bfd2f43eb",
+      "commitDate": "2026-10-09T19:51:36Z",
+      "licenseMetadata": "NOASSERTION",
+      "url": "https://github.com/microsoft/debugpy",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "microsoft/pyright",
+      "defaultBranch": "main",
+      "commit": "79cd772619fa33f28d3e274665d6355193850f6f",
+      "commitDate": "2026-10-12T23:58:39Z",
+      "licenseMetadata": "NOASSERTION",
+      "url": "https://github.com/microsoft/pyright",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "microsoft/vscode-java-debug",
+      "defaultBranch": "main",
+      "commit": "49cd9da77f9ad527d8dabb56fbfc356fb2dd7856",
+      "commitDate": "2026-10-10T08:27:13Z",
+      "licenseMetadata": "NOASSERTION",
+      "url": "https://github.com/microsoft/vscode-java-debug",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "microsoft/vscode-java-test",
+      "defaultBranch": "main",
+      "commit": "ea7fffbabdf2ea57e6e203475105fb294bee0302",
+      "commitDate": "2026-10-12T05:31:26Z",
+      "licenseMetadata": "NOASSERTION",
+      "url": "https://github.com/microsoft/vscode-java-test",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "microsoft/vscode-maven",
+      "defaultBranch": "main",
+      "commit": "d83e339b4a1cbeb7ba3f39fbabce179786909a23",
+      "commitDate": "2026-10-10T07:42:29Z",
+      "licenseMetadata": "NOASSERTION",
+      "url": "https://github.com/microsoft/vscode-maven",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "microsoft/vscode-python",
+      "defaultBranch": "main",
+      "commit": "93fd328204028d49e46eb7ba998443351f7c147f",
+      "commitDate": "2026-10-12T20:29:10Z",
+      "licenseMetadata": "MIT",
+      "url": "https://github.com/microsoft/vscode-python",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "microsoft/vscode",
+      "defaultBranch": "main",
+      "commit": "3fd165bbb0d1dcafd9e3df36c3aa26474c6ecb85",
+      "commitDate": "2026-10-13T14:52:07Z",
+      "licenseMetadata": "MIT",
+      "url": "https://github.com/microsoft/vscode",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "openjdk/jmc",
+      "defaultBranch": "master",
+      "commit": "dc59d1ca67bfbd3f27886426b3b1b3da0c8438b0",
+      "commitDate": "2026-10-02T10:49:37Z",
+      "licenseMetadata": null,
+      "url": "https://github.com/openjdk/jmc",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "spring-projects/spring-tools",
+      "defaultBranch": "main",
+      "commit": "d6e2f69f0ae8660452d372faecb67d966cbb3641",
+      "commitDate": "2026-10-12T13:22:51Z",
+      "licenseMetadata": "EPL-1.0",
+      "url": "https://github.com/spring-projects/spring-tools",
+      "pinStatus": "reference_snapshot_not_distribution_lock"
+    },
+    {
+      "repository": "microsoft/vscode-js-debug",
+      "url": "https://github.com/microsoft/vscode-js-debug",
+      "defaultBranch": "main",
+      "licenseMetadata": "MIT",
+      "checkedAt": "2026-10-14",
+      "pinStatus": "reference_snapshot_not_distribution_lock",
+      "commit": "b24ecc5de754e4bfcb194688a59d07cad70440b3",
+      "commitDate": null
+    },
+    {
+      "repository": "microsoft/vscode-gradle",
+      "url": "https://github.com/microsoft/vscode-gradle",
+      "defaultBranch": "develop",
+      "licenseMetadata": "MIT",
+      "checkedAt": "2026-10-14",
+      "pinStatus": "reference_snapshot_not_distribution_lock",
+      "commit": "601eeb54467b44d4a263ecfb6af3ddfa41de7c85",
+      "commitDate": null
+    },
+    {
+      "repository": "Kotlin/kotlin-lsp",
+      "url": "https://github.com/Kotlin/kotlin-lsp",
+      "defaultBranch": "main",
+      "licenseMetadata": "Apache-2.0",
+      "checkedAt": "2026-10-14",
+      "pinStatus": "reference_snapshot_not_distribution_lock",
+      "commit": "7602ada025b62d53f7f75c5210c69ffa648a2799",
+      "commitDate": null
+    }
+  ],
+  "extensionCandidates": [
+    {
+      "namespace": "VMware",
+      "name": "vscode-spring-boot",
+      "version": "2.5.2026101300",
+      "license": "EPL-1.0",
+      "engines": {
+        "npm": ">=6.0.0",
+        "vscode": "^1.92.0"
+      },
+      "dependencies": [],
+      "extensionKind": [
+        "workspace"
+      ],
+      "targetPlatform": "universal",
+      "timestamp": "2026-10-13T01:01:41.296055Z",
+      "sourceUrl": "https://open-vsx.org/api/VMware/vscode-spring-boot/latest",
+      "researchOnly": true,
+      "id": "VMware.vscode-spring-boot",
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false
+    },
+    {
+      "namespace": "charliermarsh",
+      "name": "ruff",
+      "version": "2026.86.0",
+      "license": "MIT",
+      "engines": {
+        "vscode": "^1.91.0",
+        "npm": ">=11.10.0"
+      },
+      "dependencies": [],
+      "extensionKind": [
+        "workspace"
+      ],
+      "targetPlatform": "alpine-arm64",
+      "timestamp": "2026-10-09T20:40:21.335047Z",
+      "sourceUrl": "https://open-vsx.org/api/charliermarsh/ruff/latest",
+      "researchOnly": true,
+      "id": "charliermarsh.ruff",
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false
+    },
+    {
+      "namespace": "dbaeumer",
+      "name": "vscode-eslint",
+      "version": "3.0.34",
+      "license": "MIT",
+      "engines": {
+        "vscode": "^1.90.0"
+      },
+      "dependencies": [],
+      "extensionKind": [
+        "workspace"
+      ],
+      "targetPlatform": "universal",
+      "timestamp": "2026-07-17T04:12:54.913196Z",
+      "sourceUrl": "https://open-vsx.org/api/dbaeumer/vscode-eslint/latest",
+      "researchOnly": true,
+      "id": "dbaeumer.vscode-eslint",
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false
+    },
+    {
+      "namespace": "esbenp",
+      "name": "prettier-vscode",
+      "version": "12.4.0",
+      "license": "MIT",
+      "engines": {
+        "vscode": "^1.101.0"
+      },
+      "dependencies": [],
+      "extensionKind": [
+        "workspace",
+        "web"
+      ],
+      "targetPlatform": "universal",
+      "timestamp": "2026-03-16T19:14:43.319347Z",
+      "sourceUrl": "https://open-vsx.org/api/esbenp/prettier-vscode/latest",
+      "researchOnly": true,
+      "id": "esbenp.prettier-vscode",
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false
+    },
+    {
+      "namespace": "ms-pyright",
+      "name": "pyright",
+      "version": "1.1.402",
+      "license": "MIT",
+      "engines": {
+        "vscode": "^1.99.0"
+      },
+      "dependencies": [],
+      "extensionKind": [
+        "workspace"
+      ],
+      "targetPlatform": "universal",
+      "timestamp": "2025-06-12T03:43:36.998726Z",
+      "sourceUrl": "https://open-vsx.org/api/ms-pyright/pyright/latest",
+      "researchOnly": true,
+      "id": "ms-pyright.pyright",
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false
+    },
+    {
+      "namespace": "ms-python",
+      "name": "python",
+      "version": "2026.4.0",
+      "license": "MIT",
+      "engines": {
+        "vscode": "^1.95.0"
+      },
+      "dependencies": [],
+      "extensionKind": [
+        "workspace",
+        "web"
+      ],
+      "targetPlatform": "universal",
+      "timestamp": "2026-03-13T04:21:53.228120Z",
+      "sourceUrl": "https://open-vsx.org/api/ms-python/python/latest",
+      "researchOnly": true,
+      "id": "ms-python.python",
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false
+    },
+    {
+      "namespace": "redhat",
+      "name": "java",
+      "version": "1.57.2026093008",
+      "license": "EPL-2.0",
+      "engines": {
+        "vscode": "^1.77.0"
+      },
+      "dependencies": [],
+      "extensionKind": [
+        "workspace"
+      ],
+      "targetPlatform": "universal",
+      "timestamp": "2026-09-30T08:21:15.564586Z",
+      "sourceUrl": "https://open-vsx.org/api/redhat/java/latest",
+      "researchOnly": true,
+      "id": "redhat.java",
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false
+    },
+    {
+      "namespace": "vscjava",
+      "name": "vscode-java-debug",
+      "version": "0.59.0",
+      "license": "SEE LICENSE IN LICENSE.txt",
+      "engines": {
+        "vscode": "^1.95.0"
+      },
+      "dependencies": [],
+      "extensionKind": [
+        "workspace"
+      ],
+      "targetPlatform": "universal",
+      "timestamp": "2026-04-16T04:31:29.605707Z",
+      "sourceUrl": "https://open-vsx.org/api/vscjava/vscode-java-debug/latest",
+      "researchOnly": true,
+      "id": "vscjava.vscode-java-debug",
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false
+    },
+    {
+      "namespace": "vscjava",
+      "name": "vscode-java-test",
+      "version": "0.46.0",
+      "license": null,
+      "engines": {
+        "vscode": "^1.88.0"
+      },
+      "dependencies": [
+        {
+          "extension": "java",
+          "namespace": "redhat",
+          "url": "https://open-vsx.org/api/redhat/java"
+        },
+        {
+          "extension": "vscode-java-debug",
+          "namespace": "vscjava",
+          "url": "https://open-vsx.org/api/vscjava/vscode-java-debug"
+        }
+      ],
+      "extensionKind": [
+        "workspace"
+      ],
+      "targetPlatform": "universal",
+      "timestamp": "2026-07-31T10:53:03.101812Z",
+      "sourceUrl": "https://open-vsx.org/api/vscjava/vscode-java-test/latest",
+      "researchOnly": true,
+      "id": "vscjava.vscode-java-test",
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false
+    },
+    {
+      "namespace": "vscjava",
+      "name": "vscode-maven",
+      "version": "0.45.3",
+      "license": "MIT",
+      "engines": {
+        "vscode": "^1.75.0"
+      },
+      "dependencies": [],
+      "extensionKind": [
+        "workspace"
+      ],
+      "targetPlatform": "universal",
+      "timestamp": "2026-04-27T04:37:34.044171Z",
+      "sourceUrl": "https://open-vsx.org/api/vscjava/vscode-maven/latest",
+      "researchOnly": true,
+      "id": "vscjava.vscode-maven",
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false
+    },
+    {
+      "id": "vscjava.vscode-gradle",
+      "engines": {
+        "vscode": "^1.76.0",
+        "node": ">=20.0.0",
+        "npm": "^10.7.0"
+      },
+      "targetPlatform": "universal",
+      "extensionKind": [
+        "workspace"
+      ],
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false,
+      "namespace": "vscjava",
+      "name": "vscode-gradle",
+      "version": "3.18.0",
+      "license": "SEE LICENSE IN LICENSE.md",
+      "sourceUrl": "https://open-vsx.org/api/vscjava/vscode-gradle/latest",
+      "dependencies": [],
+      "researchOnly": true
+    },
+    {
+      "id": "ms-vscode.js-debug",
+      "engines": {
+        "vscode": "^1.80.0",
+        "node": ">=10"
+      },
+      "targetPlatform": "universal",
+      "extensionKind": [
+        "workspace"
+      ],
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false,
+      "namespace": "ms-vscode",
+      "name": "js-debug",
+      "version": "1.140.0",
+      "license": "MIT",
+      "sourceUrl": "https://open-vsx.org/api/ms-vscode/js-debug/latest",
+      "dependencies": [],
+      "researchOnly": true
+    },
+    {
+      "id": "JetBrains.intellij-server",
+      "engines": {
+        "node": ">=22.20.0",
+        "vscode": "^1.105.1"
+      },
+      "targetPlatform": "darwin-arm64",
+      "extensionKind": [
+        "workspace"
+      ],
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false,
+      "namespace": "JetBrains",
+      "name": "intellij-server",
+      "version": "0.0.13",
+      "license": "https://www.jetbrains.com/legal/docs/toolbox/user/",
+      "sourceUrl": "https://open-vsx.org/api/JetBrains/intellij-server/latest",
+      "dependencies": [],
+      "researchOnly": true
+    },
+    {
+      "id": "JetBrains.kotlin-server",
+      "engines": {
+        "node": ">=22.20.0",
+        "vscode": "^1.105.1"
+      },
+      "targetPlatform": "darwin-arm64",
+      "extensionKind": [
+        "workspace"
+      ],
+      "checkedAt": "2026-10-14",
+      "compatibilityTested": false,
+      "packageLicenseAuditCompleted": false,
+      "namespace": "JetBrains",
+      "name": "kotlin-server",
+      "version": "0.0.13",
+      "license": "SEE LICENSE IN LICENSE.txt",
+      "sourceUrl": "https://open-vsx.org/api/JetBrains/kotlin-server/latest",
+      "dependencies": [],
+      "researchOnly": true
+    }
+  ],
+  "limitations": [
+    "No installed IDE/extension compatibility or Windows tests were run for this research.",
+    "Registry metadata is not a package-content/license audit.",
+    "Theia compatibility report contains partial/stubbed APIs and ambiguous latest labels; choose exact release and API column in S4-00.",
+    "One Ruff latest response is alpine-arm64; select and verify win32-x64 artifacts explicitly.",
+    "IntelliJ upstream GitHub licenseMetadata is NOASSERTION; inspect module headers, Apache terms, Open-Source Build Terms and bundled third-party licenses separately.",
+    "Java and Kotlin by IntelliJ IDEA is a separate license-dependent candidate. Installation/EAP expiry wording and licensing/trial documentation differ; inspect exact build terms. Do not treat it as open-source or assume full Ultimate/framework/test features."
+  ],
+  "upstreamObservations": [
+    {
+      "id": "JDT-SOURCE-01",
+      "referenceCommit": "d38ca4f421834e09eb7ffe180ef5d2001e250299",
+      "sourceIds": [
+        "JDT-SIGNATURE",
+        "JDT-REFACTOR-EDITS",
+        "JDT-SIGNATURE-TESTS"
+      ],
+      "observed": "ChangeSignatureHandler uses JDT ChangeSignatureProcessor with initial/final checks; GetRefactorEditHandler converts signature and extract-interface changes to WorkspaceEdit. Upstream test source exists.",
+      "notProven": "No server/client execution or Windows integration tested. Cross-language/framework usage parity remains open."
+    },
+    {
+      "id": "JB-LSP-01",
+      "sourceIds": [
+        "JB-LSP",
+        "JB-LSP-IMPORT",
+        "JB-LSP-DEBUG",
+        "JB-LSP-LICENSE",
+        "JB-LSP-INSTALL"
+      ],
+      "observed": "Official IntelliJ-based Java/Kotlin extension for VS Code-like editors, available through Open VSX; one backend per workspace; test discovery/run unsupported in current docs.",
+      "notProven": "Workbench/Theia compatibility, redistribution rights for the exact package, corporate offline activation and full Ultimate parity are not established."
+    }
+  ]
+}

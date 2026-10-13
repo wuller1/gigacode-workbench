@@ -1,0 +1,68 @@
+{
+  "revision": "full-flow-r2-ux-audit-monokai",
+  "scope": "Interactive prototype and documentation only; Node VM assertions and separate live browser checks. No Electron, real MCP, Windows or production operations tested.",
+  "reports": [
+    {
+      "report": "design/review-evidence/shell-context-audit.json",
+      "passed": 7,
+      "failed": 0
+    },
+    {
+      "report": "design/review-evidence/context-chip-audit.json",
+      "passed": 6,
+      "failed": 0
+    },
+    {
+      "report": "design/review-evidence/agent-interop-audit.json",
+      "passed": 16,
+      "failed": 0
+    },
+    {
+      "report": "design/review-evidence/ide-ux-audit.json",
+      "passed": 12,
+      "failed": 0
+    },
+    {
+      "report": "design/review-evidence/ide-language-audit.json",
+      "passed": 36,
+      "failed": 0
+    },
+    {
+      "report": "design/review-evidence/ide-git-audit.json",
+      "passed": 46,
+      "failed": 0
+    },
+    {
+      "report": "design/review-evidence/workspace-layout-audit.json",
+      "passed": 28,
+      "failed": 0
+    },
+    {
+      "report": "design/review-evidence/cluster-environment-audit.json",
+      "passed": 30,
+      "failed": 0
+    },
+    {
+      "report": "design/review-evidence/syntax-state-audit.json",
+      "passed": 33,
+      "failed": 0
+    },
+    {
+      "report": "design/review-evidence/browser-tools-audit.json",
+      "passed": 16,
+      "failed": 0
+    }
+  ],
+  "passed": 230,
+  "failed": 0,
+  "visualViewports": [
+    "1280x720",
+    "768x720"
+  ],
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "runtimeBaselineFiles": 711,
+  "runtimeChanged": []
+}

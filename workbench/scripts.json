@@ -9,12 +9,12 @@
     {
       "source": "source/workbench.txt",
       "target": "workbench.ps1",
-      "sha256": "fdf29406a021e835b1dd1239caca2ccdb82daf720307f317f36f0a7b3cae40ba"
+      "sha256": "06340aa7f5f9997fcb77d354dfe34365557efbd3cd3ae33bc14b0f690e586688"
     },
     {
       "source": "source/install-user.txt",
       "target": "install-user.ps1",
-      "sha256": "9c9c4f98ca396de538f02a24e69924acc3760b6832670f978b18e95bb59f097d"
+      "sha256": "3f4038cae4608d5e6200f74a902d86fbfbf5996f0ec343a477b942a59e924388"
     },
     {
       "source": "source/docs-impact.txt",
@@ -34,7 +34,7 @@
     {
       "source": "source/test-workbench.txt",
       "target": "tests/test-workbench.ps1",
-      "sha256": "c4bfe474ff528b1399b555ba5cd89c4c884920d5b87fddd7004e7e67d5253189"
+      "sha256": "4d6455d04a1efa507bf4cbc38df43931621bc21519f41ae7356090d6a39d56ba"
     },
     {
       "source": "source/test-docs-impact.txt",
@@ -49,7 +49,7 @@
     {
       "source": "source/test-install-user.txt",
       "target": "tests/test-install-user.ps1",
-      "sha256": "c0d8575f552476404916341ecdbf78553faf900c8fcf4ca1b5ee328476a69b57"
+      "sha256": "608461577d815853fb44199b9ffa5c5341309f8bd2a55ce843c101c2209e205e"
     },
     {
       "source": "source/test-memory.txt",

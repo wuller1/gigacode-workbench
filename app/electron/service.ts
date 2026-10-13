@@ -89,6 +89,7 @@ const defaults: Settings = {
   theme: "system",
   reducedMotion: false,
   startupRetries: 1,
+  permissionMode: "auto_allow_bound",
 };
 function text(
   value: unknown,
@@ -206,6 +207,203 @@ function configOptions(raw: unknown): ConfigOption[] {
   return result;
 }
 
+type ProfileRoute = { id: string; reason: string; confidence: number };
+const profileCues: Record<
+  string,
+  { label: string; pattern: RegExp; weight?: number }[]
+> = {
+  analyst: [
+    {
+      label: "описание функции и требований",
+      pattern:
+        /\bbrief\b|user stor|business rule|описан(?:ие|ия) функ|требован|сценари[йя]|вариант(?:ы|ов) решен/i,
+    },
+  ],
+  spec: [
+    {
+      label: "формальная спецификация",
+      pattern:
+        /\bsdd\b|спецификац|acceptance|критери[ий] прием|противореч|трассируем|контракт требований/i,
+      weight: 1.3,
+    },
+  ],
+  architect: [
+    {
+      label: "архитектура и границы системы",
+      pattern:
+        /архитект|\badr\b|границ[аы] систем|ownership|совместимост|отказоустойчив|масштабирован|параллельн(?:ые|ых) сесс/i,
+    },
+  ],
+  backend: [
+    {
+      label: "серверная реализация",
+      pattern:
+        /backend|бэкенд|сервер|\bapi\b|endpoint|spring|fastapi|django|service layer|микросервис/i,
+    },
+  ],
+  frontend: [
+    {
+      label: "клиентская реализация",
+      pattern:
+        /frontend|фронтенд|react|renderer|компонент интерфейс|\bcss\b|\bhtml\b|electron view/i,
+    },
+  ],
+  database: [
+    {
+      label: "данные и SQL",
+      pattern:
+        /database|баз[аы] дан|\bsql\b|схем[аы] бд|индекс|запрос(?:ы|ов)? в бд|postgres|oracle|mysql|mongo|таблиц|миграци[яю] дан/i,
+      weight: 1.2,
+    },
+  ],
+  designer: [
+    {
+      label: "UI/UX и дизайн",
+      pattern:
+        /\bui\/?ux\b|дизайн|макет|визуальн|user experience|интерфейс.*удоб|иконк|design system|токен(?:ы|ов) дизайн/i,
+      weight: 1.25,
+    },
+  ],
+  devops: [
+    {
+      label: "инфраструктура и поставка",
+      pattern:
+        /devops|openshift|kubernetes|\bk8s\b|jenkins|deploy|депло|helm|кластер|pipeline|\bci\/?cd\b|контейнер/i,
+      weight: 1.2,
+    },
+  ],
+  security: [
+    {
+      label: "безопасность и зависимости",
+      pattern:
+        /уязвим|security|безопасност|\bcve\b|sprut|dependency scan|секрет|threat model/i,
+      weight: 1.2,
+    },
+  ],
+  qa: [
+    {
+      label: "проверка качества",
+      pattern:
+        /\bqa\b|тестирован|test plan|приемочн|регресси|e2e|провер(?:ить|ка).*сценари/i,
+    },
+  ],
+  diagnostics: [
+    {
+      label: "диагностика сбоя",
+      pattern:
+        /диагност|не работает|падает|зависает|ошибк[аи]|\b429\b|\b413\b|\b400\b|crash|root cause|воспроизвест/i,
+      weight: 1.1,
+    },
+  ],
+  reviewer: [
+    {
+      label: "независимое ревью",
+      pattern:
+        /code review|ревью|проверь diff|аудит кода|найди (?:ошибки|проблемы)|request changes/i,
+    },
+  ],
+  retrospective: [
+    {
+      label: "ретроспектива процесса",
+      pattern:
+        /ретроспектив|postmortem|что улучшить в процессе|разбор процесса/i,
+    },
+  ],
+  "technical-writer": [
+    {
+      label: "техническая документация",
+      pattern:
+        /документаци|\breadme\b|руководств|инструкци[яю] пользовател|release notes|changelog|\bdocx\b/i,
+    },
+  ],
+};
+function profileTokens(value: string): Set<string> {
+  return new Set(
+    value
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .split(/\s+/)
+      .filter((token) => token.length >= 4)
+      .slice(0, 160),
+  );
+}
+function automaticProfile(
+  state: Persisted,
+  session: Session,
+  message: string,
+): ProfileRoute {
+  const task = present(state.tasks, session.taskId, "Task");
+  const project = present(state.projects, task.projectId, "Project");
+  const sources = [
+    { value: message.slice(0, 16000), weight: 3, origin: "запрос" },
+    {
+      value: `${task.title}\n${task.description}`.slice(0, 12000),
+      weight: 1.15,
+      origin: "задача",
+    },
+    {
+      value: `${project.name}\n${path.basename(project.path)}`,
+      weight: 0.45,
+      origin: "проект",
+    },
+  ];
+  const requestTokens = profileTokens(sources.map((s) => s.value).join("\n"));
+  const ranked = state.profiles.map((profile) => {
+    let score = 0;
+    const reasons: string[] = [];
+    for (const source of sources) {
+      for (const cue of profileCues[profile.id] || []) {
+        cue.pattern.lastIndex = 0;
+        if (cue.pattern.test(source.value)) {
+          score += source.weight * (cue.weight || 1);
+          reasons.push(`${source.origin}: ${cue.label}`);
+        }
+      }
+    }
+    const catalogTokens = profileTokens(
+      `${profile.id} ${profile.name} ${profile.description}`,
+    );
+    let overlap = 0;
+    for (const token of requestTokens) if (catalogTokens.has(token)) overlap++;
+    if (overlap) {
+      score += Math.min(overlap, 4) * 0.35;
+      reasons.push("совпадение с назначением профиля");
+    }
+    if (session.messages.length && profile.id === session.profileId)
+      score += 0.35;
+    return { profile, score, reasons };
+  });
+  ranked.sort(
+    (a, b) =>
+      b.score - a.score || a.profile.id.localeCompare(b.profile.id, "en"),
+  );
+  let winner = ranked[0];
+  if (!winner || winner.score < 0.8) {
+    const fallback =
+      (session.messages.length &&
+        state.profiles.find((profile) => profile.id === session.profileId)) ||
+      state.profiles.find((profile) => profile.id === "analyst") ||
+      state.profiles[0];
+    return {
+      id: fallback?.id || "",
+      reason: session.messages.length
+        ? "Сохранена текущая роль: новый запрос не требует доказанной смены ответственности."
+        : "Недостаточно сигнала для специализации; аналитик уточнит требуемый результат в ходе работы.",
+      confidence: 0.5,
+    };
+  }
+  const second = ranked[1]?.score || 0;
+  const confidence = Math.max(
+    0.55,
+    Math.min(0.98, 0.58 + (winner.score - second) / (winner.score + 4)),
+  );
+  return {
+    id: winner.profile.id,
+    reason: `Автоматический выбор по контексту: ${[...new Set(winner.reasons)].slice(0, 2).join("; ")}.`,
+    confidence: Number(confidence.toFixed(2)),
+  };
+}
+
 export class WorkbenchService {
   private store: AtomicStore<Persisted>;
   private live = new Map<string, Live>();
@@ -276,6 +474,10 @@ export class WorkbenchService {
       await this.diagnostic(`Builtin profiles unavailable: ${redact(error)}`);
     }
     await this.change((state) => {
+      // Keep older state files forward-compatible. Project/session bindings define
+      // the available MCP surface; the permission mode only controls whether an
+      // already offered action needs another per-call prompt.
+      state.settings = { ...defaults, ...state.settings };
       state.profiles = [
         ...profiles,
         ...state.profiles.filter(
@@ -515,8 +717,11 @@ export class WorkbenchService {
             present(state.projects, task.projectId, "Project").archived
           )
             throw new Error("Restore the parent first.");
+          if (params.profileId !== undefined)
+            throw new Error(
+              "Roles are selected automatically from the request and project context.",
+            );
           const profileId =
-            params.profileId ||
             state.profiles.find((x) => x.id === "analyst")?.id ||
             state.profiles[0]?.id ||
             "";
@@ -532,6 +737,9 @@ export class WorkbenchService {
             taskId: task.id,
             title: text(params.title || "New session", "session title", 300),
             profileId,
+            profileReason:
+              "Роль будет автоматически выбрана по первому запросу, задаче и проекту.",
+            profileConfidence: 0,
             model: state.settings.model,
             reasoning: state.settings.reasoning,
             status: "idle",
@@ -560,9 +768,9 @@ export class WorkbenchService {
           if (params.title !== undefined)
             session.title = text(params.title, "session title", 300);
           if (params.profileId !== undefined) {
-            present(state.profiles, params.profileId, "Profile");
-            session.profileId = params.profileId;
-            state._controls[session.id].handoff = this.handoff(state, session);
+            throw new Error(
+              "Roles are selected automatically from the request and project context.",
+            );
           }
           if (params.model !== undefined) {
             session.model = text(params.model, "model", 500, true);
@@ -850,6 +1058,10 @@ export class WorkbenchService {
         if (typeof value !== "boolean")
           throw new Error("Invalid reduced motion.");
         state.settings.reducedMotion = value;
+      } else if (key === "permissionMode") {
+        if (!["auto_allow_bound", "ask_each"].includes(String(value)))
+          throw new Error("Invalid permission mode.");
+        state.settings.permissionMode = value as Settings["permissionMode"];
       } else {
         const min = key === "maxConcurrent" ? 1 : 0,
           max =
@@ -931,6 +1143,18 @@ export class WorkbenchService {
         if (c.paused || active(s) || !entry)
           throw new Error("Queue admission changed.");
         this.ensureWritable(s, state);
+        if (s.queue[0]) {
+          const route = automaticProfile(state, s, s.queue[0].text);
+          if (route.id && route.id !== s.profileId && s.messages.length)
+            c.handoff = this.handoff(state, s);
+          if (route.id) s.profileId = route.id;
+          s.profileReason = route.reason;
+          s.profileConfidence = route.confidence;
+          this.addDiagnostic(
+            state,
+            `Automatically routed session ${s.id} to profile ${s.profileId} (confidence ${route.confidence.toFixed(2)}).`,
+          );
+        }
         s.status = "starting";
         s.error = undefined;
         c.inflight = {
@@ -1203,6 +1427,9 @@ export class WorkbenchService {
       );
       sections.push(
         "The host MCP server is named workbench-ui. If its tools are deferred, search the available tool-discovery catalog for workbench-ui once, then use the exact qualified names returned by that catalog. Qwen may expose names such as mcp__workbench-ui__browser_list; that prefix is version-dependent, not a naming guarantee. Do not guess bare names or retry an invented select: list. Before invoking a deferred tool, read its current schema and pass every required field exactly as named. After a validation error, inspect the schema/error once; never repeat the same invalid arguments or rely on a schema from a previous session.",
+      );
+      sections.push(
+        "IDE workflow: when ide_* tools are exposed, inspect ide_status and read current versioned IDE buffers before editing open files; unsaved user text is authoritative. Use language providers for navigation, semantic rename and refactoring. Inspect a versioned proposal before applying it, then build and test. Never emulate a symbol refactor with regex. ide_edit needs a unique operationId; a repeated ID retrieves its receipt. OPERATION_OUTCOME_UNKNOWN requires buffer/disk reconciliation. Inspect actual task exit codes and test run states; requested, an installed extension, a command returning, or no diagnostics during indexing do not establish success. Debugger sessions include parent/child identities; use a session with actual threads and inspect its stack. Preserve recovery drafts and external-change conflicts. Do not save unrelated unsaved user edits as a side effect. If a native integration fails, report the observed failure and use a real CLI runner with output; never fabricate a native pass.",
       );
       if (state._memory)
         sections.push(
@@ -1678,15 +1905,43 @@ export class WorkbenchService {
   ): Promise<any> {
     if (this.disposed || this.live.get(sessionId)?.generation !== generation)
       return { outcome: { outcome: "cancelled" } };
-    const options = Array.isArray(params.options)
+    const actualOptions = Array.isArray(params.options)
       ? params.options
           .filter(
             (x: any) =>
-              typeof x.optionId === "string" && typeof x.name === "string",
+              typeof x.optionId === "string" &&
+              typeof x.name === "string" &&
+              typeof x.kind === "string",
           )
-          .map((x: any) => ({ id: x.optionId, label: x.name }))
+          .map((x: any) => ({
+            id: x.optionId,
+            label: x.name,
+            kind: x.kind,
+          }))
       : [];
-    if (!options.length) return { outcome: { outcome: "cancelled" } };
+    if (!actualOptions.length) return { outcome: { outcome: "cancelled" } };
+
+    if (this.store.read().settings.permissionMode === "auto_allow_bound") {
+      const allowed =
+        actualOptions.find((option: any) => option.kind === "allow_always") ||
+        actualOptions.find((option: any) => option.kind === "allow_once") ||
+        actualOptions.find((option: any) =>
+          String(option.kind).startsWith("allow_"),
+        );
+      if (!allowed) {
+        await this.diagnostic(
+          `Permission request for session ${sessionId} had no allow option and was cancelled.`,
+        );
+        return { outcome: { outcome: "cancelled" } };
+      }
+      await this.diagnostic(
+        `Auto-allowed a bound CLI/MCP action for session ${sessionId}: ${redact(params.toolCall?.title || "tool action")} (${allowed.kind}).`,
+      );
+      return {
+        outcome: { outcome: "selected", optionId: allowed.id },
+      };
+    }
+    const options = actualOptions.map(({ id, label }: any) => ({ id, label }));
     const questionId = id();
     const answer = new Promise((resolve) => {
       this.permissionWaiters.set(questionId, { sessionId, resolve });
@@ -2033,6 +2288,7 @@ export class WorkbenchService {
       settings: {
         maxConcurrent: state.settings.maxConcurrent,
         startupRetries: state.settings.startupRetries,
+        permissionMode: state.settings.permissionMode,
         cliConfigured: !!state.settings.cliPath,
       },
       sessions: state.sessions.map((s) => ({

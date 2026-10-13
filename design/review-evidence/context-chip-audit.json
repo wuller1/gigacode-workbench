@@ -1,0 +1,32 @@
+{
+  "method": "Actual attachContext and send handler in Node VM; visual chips and session switching checked in live prototype.",
+  "sourceSha256": "fc65eeac7d694e522c7a63b5dcfaa0c10cc9efe35d32e534f9fc669ef8520241",
+  "passed": 6,
+  "failed": 0,
+  "results": [
+    {
+      "name": "snapshot is attached while existing user draft stays intact",
+      "status": "passed"
+    },
+    {
+      "name": "re-attaching same object updates snapshot without duplicate chip",
+      "status": "passed"
+    },
+    {
+      "name": "attachments belong to conversation",
+      "status": "passed"
+    },
+    {
+      "name": "oversized context is rejected without silent truncation",
+      "status": "passed"
+    },
+    {
+      "name": "send captures exact snapshot and clears only current conversation",
+      "status": "passed"
+    },
+    {
+      "name": "busy conversation queue owns immutable text after attachment changes",
+      "status": "passed"
+    }
+  ]
+}

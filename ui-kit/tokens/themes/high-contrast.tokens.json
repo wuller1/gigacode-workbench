@@ -1,0 +1,43 @@
+{
+  "$schema": "https://tr.designtokens.org/format/",
+  "$description": "High-contrast dark semantic theme. It still requires measured platform/browser verification.",
+  "semantic": {
+    "surface": {
+      "$type": "color",
+      "canvas": { "$value": "#000000" },
+      "panel": { "$value": "#090909" },
+      "raised": { "$value": "#141414" },
+      "sunken": { "$value": "#000000" },
+      "hover": { "$value": "#252525" },
+      "selected": { "$value": "#123a63" },
+      "overlay": { "$value": "#000000df" }
+    },
+    "text": {
+      "$type": "color",
+      "primary": { "$value": "#ffffff" },
+      "secondary": { "$value": "#e3e3e3" },
+      "disabled": { "$value": "#a8a8a8" },
+      "inverse": { "$value": "#000000" },
+      "link": { "$value": "#80bfff" }
+    },
+    "border": {
+      "$type": "color",
+      "subtle": { "$value": "#8f8f8f" },
+      "strong": { "$value": "#ffffff" },
+      "focus": { "$value": "#ffdf70" }
+    },
+    "action": {
+      "$type": "color",
+      "primary": { "$value": "#74f0bd" },
+      "primary-hover": { "$value": "#a7ffd9" },
+      "on-primary": { "$value": "#000000" }
+    },
+    "status": {
+      "$type": "color",
+      "success": { "$value": "#74f0bd" },
+      "info": { "$value": "#80bfff" },
+      "warning": { "$value": "#ffd37a" },
+      "danger": { "$value": "#ff9ba4" }
+    }
+  }
+}

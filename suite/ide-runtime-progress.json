@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-14",
+  "phase": "Implementation and local acceptance complete; Windows distribution verification pending",
+  "runtimeAuthorized": true,
+  "engine": "Theia 1.76.0",
+  "vscodeApi": "1.139.0",
+  "implemented": [
+    "Protected independent Node22 IDE backend",
+    "70 deployed language/core/theme extensions",
+    "Managed Java21 and Maven3",
+    "Version-checked live buffer edits with write-ahead operation receipts",
+    "Language-engine rename/refactor proposals",
+    "Native build/test/debug/output MCP adapters",
+    "Disk-backed dirty-buffer recovery",
+    "Desktop docking tree, splits, tabs, drag, persistence",
+    "Windows pinned native plugin/toolchain preparation and installer staging"
+  ],
+  "verified": [
+    "App and IDE builds",
+    "79 unit/protocol tests passed; 2 paid probes skipped",
+    "Real TypeScript diagnostics/correction/navigation/multi-file rename/save/Git changes",
+    "Real Pyright incompatible assignment",
+    "Real JDT definition in Java Maven Spring project",
+    "Real Java21 Maven JUnit build",
+    "Real Python venv unittest",
+    "Real Node paused debugger stack",
+    "Unsaved dirty buffer restored after backend restart",
+    "Self-contained macOS IDE staging",
+    "Bundle integrity 12 scripts /239 files /71 plan cards /226 acceptance IDs /14 roles /29 workflows /35 kit files",
+    "82 unit/protocol tests passed; 10 Electron focus/modal cases passed",
+    "36 live Electron/IDE checks passed, including native failing test then repaired rerun, isolated Markdown webview, hard backend crash with dirty-buffer rescue, lifetime revision rejection and disk conflict preservation",
+    "Live mouse center docking, chat hide/return, maximize, consistent native light/dark themes"
+  ],
+  "open": [
+    "Windows installer, VDI and corporate environments require the Windows probe",
+    "Per-feature Ultimate depth parity remains individually tracked; no blanket certificate",
+    "Two simultaneous editable native windows for one dirty model are not implemented; ownership transfer preserves it"
+  ],
+  "evidence": "docs/suite/evidence/ide-live-macos.json"
+}

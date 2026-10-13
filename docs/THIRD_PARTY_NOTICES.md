@@ -10,7 +10,7 @@
 
 | Компонент / первичный репозиторий | Установленная версия | Лицензия и источник |
 | --- | --- | --- |
-| [Qwen Code](https://github.com/QwenLM/qwen-code) — `@qwen-code/qwen-code` | 0.25.0 | Apache-2.0, `@qwen-code/qwen-code/LICENSE`. Поле `license` в package.json этого опубликованного пакета отсутствует; классификация основана на полном поставленном LICENSE |
+| [Qwen Code](https://github.com/QwenLM/qwen-code) — `@qwen-code/qwen-code` | 0.25.1 | Apache-2.0, `@qwen-code/qwen-code/LICENSE`. Поле `license` в package.json этого опубликованного пакета отсутствует; классификация основана на полном поставленном LICENSE |
 | [node-pty fork](https://github.com/lydell/node-pty) — `@lydell/node-pty` | 1.2.0-beta.15 | MIT, `@lydell/node-pty/LICENSE` |
 | [xterm.js](https://github.com/xtermjs/xterm.js) — `@xterm/xterm` | 6.0.0 | MIT, `@xterm/xterm/LICENSE` |
 | [xterm fit addon](https://github.com/xtermjs/xterm.js/tree/master/addons/addon-fit) — `@xterm/addon-fit` | 0.11.0 | MIT, `@xterm/addon-fit/LICENSE` |
@@ -65,4 +65,10 @@ Playwright NOTICE указывает Microsoft Corporation и производн
 
 Сохранять полные upstream LICENSE/NOTICE, нужные вложенным runtime-компонентам, legal comments сборщика, notices Electron/Chromium/Node, Qwen и платформенных библиотек. Проверять состав конкретного installer/portable, а не только исходную npm-таблицу. Справочный перечень выше не утверждает, что все transitive notices Windows-сборки уже проверены.
 
-Исходный репозиторий не включает GigaCode-форк или его установщик. Возможность выбрать отдельно установленный GigaCode в настройках не означает права на его перераспространение и не распространяет на него лицензию Qwen. Ни этот документ, ни npm-лицензии не выбирают лицензию для самостоятельного кода, документации или собственной графики Workbench.
+Исходный репозиторий не включает GigaCode-форк или его установщик. Возможность выбрать отдельно установленный GigaCode в настройках не означает права на его перераспространение и не распространяет на него лицензию Qwen. Корневой [LICENSE](../LICENSE) лицензирует собственный код, документацию и созданные для проекта материалы по Apache-2.0, кроме участков с отдельной вложенной лицензией. Этот документ не меняет лицензии сторонних компонентов, reference-токенов и отдельно лицензированных assets.
+
+## Embedded IDE runtime (14 October 2026)
+
+The optional self-contained IDE uses Eclipse Theia 1.76.0 (EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0, with component-specific notices), Monaco/VS Code open-source components and individually licensed Open VSX extensions. Exact publisher/version/manifestVersion, source URLs, archive SHA-256, API declarations, native target and license files are retained in `ide/plugins-lock.json`. The Microsoft Marketplace product and proprietary IntelliJ Ultimate modules are not distributed. The project-owned bridge/theme are Apache-2.0.
+
+The independent official Node.js 22.23.3 runtime retains its LICENSE. The Temurin Java 21 distribution retains its GPLv2 + Classpath exception and third-party notices; exact corresponding source download and checksum are in `ide/toolchains-lock.json`. Maven retains its Apache-2.0 LICENSE and NOTICE. Packaging preserves distribution files and npm package licenses; application license does not replace those terms. Download caches and personal IDE state are excluded.

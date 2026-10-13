@@ -1,0 +1,128 @@
+{
+  "scope": "Node VM of actual prototype lifecycle callbacks, deterministic timers, minimal DOM. No real web contents, CSS, ACP, Electron, credentials or paid calls tested.",
+  "sourceSHA256": "068e799270fe69c739b606445726c29c539f6e2a1215955ad72bc702b9aea404",
+  "passed": 30,
+  "total": 30,
+  "tests": [
+    {
+      "name": "Opening an empty viewer does not create an owner or a tab",
+      "pass": true
+    },
+    {
+      "name": "Repeated reveals preserve the existing active tab and never duplicate it",
+      "pass": true
+    },
+    {
+      "name": "URL deduplication is within the owner; different sessions own different tabs",
+      "pass": true
+    },
+    {
+      "name": "Renaming a session preserves owner identity and browsing state",
+      "pass": true
+    },
+    {
+      "name": "A changed task with the same session label has a separate owner",
+      "pass": true
+    },
+    {
+      "name": "Opening persisted owners after session UUID refresh creates no new workspace",
+      "pass": true
+    },
+    {
+      "name": "Project switch does not stop a background run or reveal into another project",
+      "pass": true
+    },
+    {
+      "name": "Two concurrent sessions finish independently",
+      "pass": true
+    },
+    {
+      "name": "Pause invalidates an already captured timer callback",
+      "pass": true
+    },
+    {
+      "name": "Resume completes once and saves the captured URL",
+      "pass": true
+    },
+    {
+      "name": "Stop keeps tabs but stale callbacks cannot create a result",
+      "pass": true
+    },
+    {
+      "name": "Resume rejects a changed target URL instead of continuing the wrong page",
+      "pass": true
+    },
+    {
+      "name": "Resume rejects a closed target tab",
+      "pass": true
+    },
+    {
+      "name": "Reload makes persisted running fixtures paused, never falsely live",
+      "pass": true
+    },
+    {
+      "name": "Agent work never invokes transfer to the user browser implicitly",
+      "pass": true
+    },
+    {
+      "name": "Explicit Open at mine transfers only the selected URL",
+      "pass": true
+    },
+    {
+      "name": "Reveal deferred by layout retains a clickable pending result",
+      "pass": true
+    },
+    {
+      "name": "Presenting another owner while user interacts with current owner cannot replace it",
+      "pass": true
+    },
+    {
+      "name": "Stale mapping cannot expose an owner from another project",
+      "pass": true
+    },
+    {
+      "name": "Project rename preserves the running owner and its target tab",
+      "pass": true
+    },
+    {
+      "name": "Modal callbacks reject a changed session even if stale DOM remains callable",
+      "pass": true
+    },
+    {
+      "name": "Viewing another tab does not show the running cursor on that tab",
+      "pass": true
+    },
+    {
+      "name": "Observer tab selection leaves execution active tab unchanged and removes its cursor",
+      "pass": true
+    },
+    {
+      "name": "Typing in the personal browser defers an automatic presentation",
+      "pass": true
+    },
+    {
+      "name": "An open modal defers presentation without replacing its content",
+      "pass": true
+    },
+    {
+      "name": "Turning off automatic reveal still leaves a result invitation",
+      "pass": true
+    },
+    {
+      "name": "Auto-presentation cannot rerender a focused browser field",
+      "pass": true
+    },
+    {
+      "name": "Background redraw skipped during input catches up when focus leaves",
+      "pass": true
+    },
+    {
+      "name": "Preparing a follow-up request does not retarget the current running browser",
+      "pass": true
+    },
+    {
+      "name": "A stale stop control cannot overwrite a completed result",
+      "pass": true
+    }
+  ]
+}

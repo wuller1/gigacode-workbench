@@ -1,0 +1,188 @@
+{
+  "scope": "Node VM execution of actual downloaded-file prototype helpers with controlled timers and minimal DOM. No Electron DownloadItem, network, PDF/Office native renderer, ACP, filesystem durability, Windows or CSS rendering is tested.",
+  "sourceSHA256": {
+    "suite-prototype-data-ide.js": "a0b3e24c285cf7bff88a4e14d3bf0467ff2df08f1c341ac18c251d513f27e5bd",
+    "suite-prototype-ide-explorer.js": "0f2f77997d3de6ee51e3fc82c24bd9d2ac742d4c06005f5094fa8598b612915d",
+    "suite-prototype-downloads.js": "f8978075fbb30529018d2a43371ca9ace2c8ad4c0d45beae2dc92e63f4ec2aed"
+  },
+  "passed": 44,
+  "total": 44,
+  "tests": [
+    {
+      "name": "IDE import rejects Windows traversal, reserved devices and invalid names",
+      "pass": true
+    },
+    {
+      "name": "IDE import chooses noncolliding Windows case-insensitive path and parent",
+      "pass": true
+    },
+    {
+      "name": "IDE import avoids treating an existing directory as a new file",
+      "pass": true
+    },
+    {
+      "name": "IDE import checks project before opening, changing files or switching panels",
+      "pass": true
+    },
+    {
+      "name": "IDE import rejects missing identity, invalid version and binary content",
+      "pass": true
+    },
+    {
+      "name": "IDE import size ceiling counts UTF-8 bytes, not UTF-16 length",
+      "pass": true
+    },
+    {
+      "name": "Repeat import preserves dirty and saved modifications without duplicating",
+      "pass": true
+    },
+    {
+      "name": "New downloaded revision creates independent IDE copy without touching old edits",
+      "pass": true
+    },
+    {
+      "name": "Same identity/revision with changed source is rejected even after copy deletion",
+      "pass": true
+    },
+    {
+      "name": "HTML imported to IDE stays exact text; no markup executor is invoked",
+      "pass": true
+    },
+    {
+      "name": "Explorer Git decorations distinguish known status from unknown and explicit clean",
+      "pass": true
+    },
+    {
+      "name": "Explorer Git conflicts take precedence; index markers require real staged evidence",
+      "pass": true
+    },
+    {
+      "name": "Actual explorer rename and Undo preserve import identity and dirty copies",
+      "pass": true
+    },
+    {
+      "name": "Download names strip traversal and normalize Windows reserved filenames",
+      "pass": true
+    },
+    {
+      "name": "Download collision naming is Windows case-insensitive and keeps extension",
+      "pass": true
+    },
+    {
+      "name": "Source references redact credentials, query tokens and fragments",
+      "pass": true
+    },
+    {
+      "name": "Repeated samples have stable unique identities and do not mutate older records",
+      "pass": true
+    },
+    {
+      "name": "Pause stops progress; resume completes the same record once",
+      "pass": true
+    },
+    {
+      "name": "A retained timer cannot progress after pause-resume generation changes",
+      "pass": true
+    },
+    {
+      "name": "Cancel and retry reset progress without adding another record",
+      "pass": true
+    },
+    {
+      "name": "Demonstration failure exposes failed state then retry completes exactly once",
+      "pass": true
+    },
+    {
+      "name": "Project switch does not reroute background completion or persistence",
+      "pass": true
+    },
+    {
+      "name": "Project rename keeps stable scope and running transfer identity without duplication",
+      "pass": true
+    },
+    {
+      "name": "Project rename preserves editor draft, expected revision and IDE import identity",
+      "pass": true
+    },
+    {
+      "name": "Empty download manager project rename updates open owner without fabricating records",
+      "pass": true
+    },
+    {
+      "name": "Legacy download list is retained without making up files or crashing",
+      "pass": true
+    },
+    {
+      "name": "Reloaded in-progress records become paused with no spontaneous timer",
+      "pass": true
+    },
+    {
+      "name": "Immutable original survives revisions; stale revisions and invalid JSON are rejected",
+      "pass": true
+    },
+    {
+      "name": "Binary, partial and large byte-counted content cannot become editable text",
+      "pass": true
+    },
+    {
+      "name": "Revision writes reject non-text values, NUL and excess UTF-8 bytes",
+      "pass": true
+    },
+    {
+      "name": "HTML preview escapes source; scripts and handler markup remain inert text",
+      "pass": true
+    },
+    {
+      "name": "Preview bounds large content instead of loading claimed two-gigabyte body",
+      "pass": true
+    },
+    {
+      "name": "Stale dialog save cannot modify a different newly opened file",
+      "pass": true
+    },
+    {
+      "name": "Stale close callback cannot close a newer download dialog",
+      "pass": true
+    },
+    {
+      "name": "Changed project invalidates old editor callbacks without losing existing draft",
+      "pass": true
+    },
+    {
+      "name": "Persistence failure preserves new revision in memory and displays durable-save warning",
+      "pass": true
+    },
+    {
+      "name": "Thrown storage failure keeps transfer running with a truthful warning on reopen",
+      "pass": true
+    },
+    {
+      "name": "Closing a dirty editor asks locally and preserves its draft when leaving",
+      "pass": true
+    },
+    {
+      "name": "Destroy invalidates already captured timer callbacks",
+      "pass": true
+    },
+    {
+      "name": "IDE handoff sends saved source with original revision zero and no fake success",
+      "pass": true
+    },
+    {
+      "name": "Agent handoff sends bounded reference, not complete content or secret URL",
+      "pass": true
+    },
+    {
+      "name": "Unsaved drafts cannot silently pass an older saved copy to IDE or agent",
+      "pass": true
+    },
+    {
+      "name": "Late handoff completion does not overwrite a different file dialog",
+      "pass": true
+    },
+    {
+      "name": "Download reference integrates with real IDE helper for original and edited revisions",
+      "pass": true
+    }
+  ]
+}

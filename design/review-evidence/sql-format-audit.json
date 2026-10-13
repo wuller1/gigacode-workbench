@@ -1,0 +1,306 @@
+{
+  "scope": "Actual helper in Node VM. Keyword casing only; no SQL formatting, parsing, execution, or live browser claim.",
+  "sourceHashes": {
+    "design/suite-prototype-sql-format.js": "9d6b9dbd16f911cfdc7fe1cf6d8c7cad1ff9d46e9dc62e583d7aba69658fba92"
+  },
+  "passed": 74,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Supported keywords only",
+      "pass": true
+    },
+    {
+      "name": "Supported keywords only — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Whitespace is unchanged",
+      "pass": true
+    },
+    {
+      "name": "Whitespace is unchanged — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Unlisted keywords remain unchanged",
+      "pass": true
+    },
+    {
+      "name": "Unlisted keywords remain unchanged — idempotent",
+      "pass": true
+    },
+    {
+      "name": "String literals",
+      "pass": true
+    },
+    {
+      "name": "String literals — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Doubled single quotes",
+      "pass": true
+    },
+    {
+      "name": "Doubled single quotes — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Escape string with escaped quote",
+      "pass": true
+    },
+    {
+      "name": "Escape string with escaped quote — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Lowercase escape prefix stays intact",
+      "pass": true
+    },
+    {
+      "name": "Lowercase escape prefix stays intact — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Ordinary path literal",
+      "pass": true
+    },
+    {
+      "name": "Ordinary path literal — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Ambiguous ordinary backslash quote preserves remainder",
+      "pass": true
+    },
+    {
+      "name": "Ambiguous ordinary backslash quote preserves remainder — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Quoted identifiers and doubled quotes",
+      "pass": true
+    },
+    {
+      "name": "Quoted identifiers and doubled quotes — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Unicode quoted identifier",
+      "pass": true
+    },
+    {
+      "name": "Unicode quoted identifier — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Unicode string",
+      "pass": true
+    },
+    {
+      "name": "Unicode string — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Dollar body",
+      "pass": true
+    },
+    {
+      "name": "Dollar body — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Named dollar body",
+      "pass": true
+    },
+    {
+      "name": "Named dollar body — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Unicode dollar tag",
+      "pass": true
+    },
+    {
+      "name": "Unicode dollar tag — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Astral Unicode dollar tag",
+      "pass": true
+    },
+    {
+      "name": "Astral Unicode dollar tag — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Dollar delimiters are case sensitive",
+      "pass": true
+    },
+    {
+      "name": "Dollar delimiters are case sensitive — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Nested block comments",
+      "pass": true
+    },
+    {
+      "name": "Nested block comments — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Line comments",
+      "pass": true
+    },
+    {
+      "name": "Line comments — idempotent",
+      "pass": true
+    },
+    {
+      "name": "CRLF line comments",
+      "pass": true
+    },
+    {
+      "name": "CRLF line comments — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Bare CR line comments",
+      "pass": true
+    },
+    {
+      "name": "Bare CR line comments — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Comment-like text inside strings",
+      "pass": true
+    },
+    {
+      "name": "Comment-like text inside strings — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Quote-like text inside comments",
+      "pass": true
+    },
+    {
+      "name": "Quote-like text inside comments — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Dollar identifiers",
+      "pass": true
+    },
+    {
+      "name": "Dollar identifiers — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Non-Latin identifiers",
+      "pass": true
+    },
+    {
+      "name": "Non-Latin identifiers — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Combining and astral identifiers",
+      "pass": true
+    },
+    {
+      "name": "Combining and astral identifiers — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Positional and named parameters",
+      "pass": true
+    },
+    {
+      "name": "Positional and named parameters — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Numbers and malformed number tokens",
+      "pass": true
+    },
+    {
+      "name": "Numbers and malformed number tokens — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Unknown backtick quoting preserves remainder",
+      "pass": true
+    },
+    {
+      "name": "Unknown backtick quoting preserves remainder — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Unknown bracket grammar preserves remainder",
+      "pass": true
+    },
+    {
+      "name": "Unknown bracket grammar preserves remainder — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Unterminated string",
+      "pass": true
+    },
+    {
+      "name": "Unterminated string — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Unterminated quoted identifier",
+      "pass": true
+    },
+    {
+      "name": "Unterminated quoted identifier — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Unterminated escape string",
+      "pass": true
+    },
+    {
+      "name": "Unterminated escape string — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Unterminated dollar body",
+      "pass": true
+    },
+    {
+      "name": "Unterminated dollar body — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Unterminated nested comment",
+      "pass": true
+    },
+    {
+      "name": "Unterminated nested comment — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Empty input",
+      "pass": true
+    },
+    {
+      "name": "Empty input — idempotent",
+      "pass": true
+    },
+    {
+      "name": "Non-string rejected before any conversion",
+      "pass": true
+    },
+    {
+      "name": "Public API is immutable",
+      "pass": true
+    }
+  ]
+}

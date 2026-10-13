@@ -1,0 +1,106 @@
+/* Database desktop workspace. Scope deliberately excludes the IDE and other tools. */
+#di-data{--d2-explorer-width:210px;--d2-editor-height:180px;font-size:12px}
+#di-data .di-button{min-height:28px;padding:4px 8px;border-radius:4px;line-height:18px}
+#di-data .di-icon{width:28px;height:28px;padding:5px;flex:none}
+#di-data .di-button:focus-visible,#di-data .di-tree:focus-visible,#di-data .di-tabwrap>button:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+#di-data .di-button[hidden],#di-data [hidden]{display:none!important}
+#di-data .di-bar{min-height:35px;padding:3px 8px;gap:4px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+#di-data .di-bar>*{flex-shrink:0}
+#di-data .di-bar>.di-spacer{flex:1 1 12px}
+#di-data .di-bar>strong{font-size:11px;min-width:0;overflow:hidden;text-overflow:ellipsis;max-width:250px}
+#di-data input,#di-data select{height:28px;padding:3px 7px;border-radius:4px;font-size:11px}
+#di-data .d2-topbar{min-height:36px;background:var(--bg);border:0;gap:6px}
+#di-data .d2-topbar select{max-width:240px;background:transparent;border-color:transparent}
+#di-data .d2-topbar select:hover,#di-data .d2-topbar select:focus-visible{border-color:var(--line2);background:var(--panel)}
+#di-data .di-demo{border:0;padding:0 5px;font-size:10px;color:var(--faint);letter-spacing:0}
+#di-data .d2-workspace{overflow:hidden;min-width:0}
+#di-data .di-explorer,#di-data .d2-explorer{position:relative;inset:auto;z-index:auto;width:var(--d2-explorer-width);min-width:150px;max-width:45%;padding:7px 6px;background:var(--panel);box-shadow:none;border:0;font-size:11px}
+#di-data .di-explorer input{margin-bottom:6px;width:100%;background:var(--bg)}
+#di-data .di-schema-tools{padding:0 2px;margin:0 0 5px}
+#di-data .d2-explorer-target{display:flex;align-items:center;gap:6px;min-height:29px;padding:0 3px 5px;margin-bottom:4px;white-space:nowrap}
+#di-data .d2-explorer-target>.icon{width:14px;height:14px;flex:none;color:var(--muted)}
+#di-data .d2-explorer-target>strong{font-size:11px;font-weight:550;min-width:0;overflow:hidden;text-overflow:ellipsis;flex:1}
+#di-data .d2-explorer-target>span{font-size:9px;padding:1px 5px;border:1px solid var(--line);border-radius:3px;color:var(--muted);flex:none}
+#di-data .di-schema-tools .di-button{min-height:26px;font-size:10px;padding:2px 5px}
+#di-data .di-explorer details{margin-bottom:2px}
+#di-data .di-explorer summary{padding:4px 5px;line-height:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#di-data .di-schema-entry>summary{font-weight:560}
+#di-data .di-schema-entry>details{margin-left:4px}
+#di-data .di-tree{height:27px;padding:3px 6px 3px 14px;border:0;border-radius:4px;gap:6px;font-size:11px}
+#di-data .di-tree .icon{width:14px;height:14px;flex:none;opacity:.8}
+#di-data .di-tree[aria-current=true]{background:var(--sel)}
+#di-data .d2-main{min-width:280px;overflow:hidden}
+#di-data .di-tabbar{height:34px;min-height:34px;padding:0 4px;gap:0;background:var(--panel);border-bottom:1px solid var(--line);scrollbar-width:thin}
+#di-data .di-tabwrap{height:33px;border-radius:0;max-width:225px;border-bottom:2px solid transparent}
+#di-data .di-tabwrap.active{background:var(--bg);border-bottom-color:var(--mint)}
+#di-data .di-tabwrap>button:first-child{min-width:0;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:6px;height:31px;padding:4px 9px;font-size:11px}
+#di-data .di-tabwrap>button:last-child{flex:none;align-self:center;display:grid;place-items:center;width:24px;height:24px;padding:4px;border-radius:4px;font-size:16px}
+#di-data .di-tabwrap .icon{width:14px;height:14px;flex:none;color:var(--muted)}
+#di-data .di-tabwrap>button>span:first-of-type{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#di-data .d2-dirty{color:var(--amber);font-size:12px;flex:none}
+#di-data .d2-running{width:8px;height:8px;border:1.5px solid var(--line2);border-top-color:var(--mint);border-radius:50%;flex:none;animation:d2-spin 1s linear infinite}
+@keyframes d2-spin{to{transform:rotate(360deg)}}
+#di-data .d2-query-toolbar{min-height:35px;background:var(--bg);border-bottom:1px solid var(--line)}
+#di-data .d2-query-toolbar .primary{background:var(--hover);color:var(--text);font-weight:550;border-color:var(--line)}
+#di-data .d2-query-toolbar .primary .icon{color:var(--mint)}
+#di-data .d2-query-toolbar select{background:transparent;border-color:transparent;max-width:160px}
+#di-data .d2-query-toolbar select:hover{background:var(--panel);border-color:var(--line)}
+#di-data .di-editor,#di-data .d2-editor{height:var(--d2-editor-height);min-height:96px;max-height:55%;border:0;border-radius:0;flex:none}
+#di-data .di-editor .wb-code-editor{border-radius:0}
+#di-data .di-gutter{width:38px;flex:none;font-size:12px;padding-top:10px}
+#di-data .di-editor textarea{font-size:12px;line-height:1.7;padding-top:10px}
+#di-data .d2-separator{position:relative;flex:none;touch-action:none;background:var(--line);outline:none;z-index:3}
+#di-data .d2-separator[data-d2-resize=explorer]{width:4px;cursor:col-resize;border-inline:1px solid var(--panel)}
+#di-data .d2-separator[data-d2-resize=editor]{height:5px;min-height:5px;cursor:row-resize;border-block:1px solid var(--bg)}
+#di-data .d2-separator:hover,#di-data .d2-separator:focus-visible{background:var(--blue);border-color:var(--blue)}
+#di-data .di-notice{font-size:11px;padding:4px 8px;line-height:16px;background:var(--bg);color:var(--muted);border-bottom:1px solid var(--line)}
+#di-data .di-notice.error{color:var(--red);white-space:normal}
+#di-data .di-subnav{min-height:32px;padding:0 5px;gap:2px;background:var(--panel);border-bottom:1px solid var(--line);align-items:stretch;scrollbar-width:thin}
+#di-data .di-subnav .di-button{border-radius:0;color:var(--muted);font-size:11px;min-height:31px;border-bottom:2px solid transparent;padding:3px 9px}
+#di-data .di-subnav .active{color:var(--text);background:transparent;border-bottom-color:var(--mint)}
+#di-data .d2-grid-toolbar{min-height:34px;background:var(--bg)}
+#di-data .d2-grid-toolbar input{min-width:100px;max-width:240px;flex:1 1 140px;background:var(--panel)}
+#di-data .d2-filter{display:flex;align-items:center;gap:5px;min-width:110px;max-width:260px;flex:1 1 190px;color:var(--muted)}
+#di-data .d2-filter>.icon{width:14px;height:14px;flex:none}
+#di-data .d2-filter input{width:100%;min-width:70px;background:transparent;border-color:transparent}
+#di-data .d2-filter input:hover,#di-data .d2-filter input:focus{background:var(--panel);border-color:var(--line)}
+#di-data .d2-result-origin{display:flex;align-items:center;min-height:25px;flex:none;padding:0 8px;gap:8px;color:var(--muted);font-size:10px;background:var(--panel)}
+#di-data .d2-result-origin>.di-button{margin-left:auto;font-size:10px;min-height:23px;padding:1px 5px;color:var(--muted)}
+#di-data .d2-grid-toolbar .di-caption{font-size:10px}
+#di-data .di-results{background:var(--bg);min-height:90px;scrollbar-width:thin;overscroll-behavior:contain}
+#di-data .di-grid{font:11px/1.55 var(--mono);width:100%}
+#di-data .di-grid th,#di-data .di-grid td{height:28px;padding:4px 9px;border-right:1px solid color-mix(in srgb,var(--line) 55%,transparent);border-bottom:1px solid color-mix(in srgb,var(--line) 65%,transparent)}
+#di-data .di-grid th{background:var(--panel);font-size:10px;letter-spacing:.01em;color:var(--muted);height:29px}
+#di-data .di-grid tbody tr:hover{background:color-mix(in srgb,var(--hover) 50%,transparent)}
+#di-data .di-grid tbody tr[aria-selected=true],#di-data .di-grid tbody tr.d2-row-selected{background:var(--sel)}
+#di-data .di-grid tbody tr.d2-row-added{background:var(--mintbg)}
+#di-data .di-grid .d2-row-select{width:31px;text-align:center;padding:3px;color:var(--faint)}
+#di-data .di-grid input[type=checkbox]{width:13px;height:13px;padding:0;accent-color:var(--mint)}
+#di-data .di-grid td button{min-width:0;width:100%;line-height:19px;border-radius:2px}
+#di-data .di-grid td button:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+#di-data .di-content{padding:12px;font-size:12px}
+#di-data .di-content h3{font-size:13px;margin:0 0 10px}
+#di-data .di-card{border-radius:5px;padding:10px;box-shadow:none}
+#di-data .di-empty{max-width:520px;margin:auto;font-size:12px;padding:24px}
+#di-data .di-empty b{font-size:14px}
+#di-data .d2-pending,#di-data .d2-draft-bar{background:var(--mintbg);color:var(--text)}
+#di-data .d2-object-path{min-width:0;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono)}
+#di-data .d2-document-target{font:10px var(--ui);color:var(--muted);overflow:hidden;text-overflow:ellipsis;max-width:220px}
+@container(max-width:650px){
+  #di-data .di-explorer,#di-data .d2-explorer{position:relative;inset:auto;min-width:150px;max-width:38%;box-shadow:none}
+  #di-data .d2-main{min-width:250px}
+  #di-data .di-demo{display:none}
+  #di-data .di-bar{padding:3px 5px}
+  #di-data .d2-query-toolbar select{max-width:125px}
+}
+
+/* Desktop grid: focus and edit in place, with explicit local drafts. */
+#di-data .di-grid td.d2-cell-selected{outline:1px solid var(--blue);outline-offset:-1px}
+#di-data .di-grid td.d2-cell-editing{position:relative;padding:0;min-width:100px;outline:2px solid var(--blue);outline-offset:-2px;background:var(--bg)}
+#di-data .d2-cell-editor{display:flex;align-items:center;min-width:90px;height:27px}
+#di-data .d2-cell-editor input{width:0;flex:1;min-width:55px;border:0;border-radius:0;height:26px;padding:3px 8px;background:transparent;color:var(--text);font:11px/1.55 var(--mono);outline:none}
+#di-data .di-grid .d2-null-toggle{width:24px;min-height:24px;height:24px;padding:2px;flex:none;color:var(--muted);border-left:1px solid var(--line);border-radius:0}
+#di-data .di-grid .d2-null-toggle[aria-pressed=true]{background:var(--sel);color:var(--text)}
+#di-data .d2-cell-editor input[aria-invalid=true]{box-shadow:inset 0 -2px var(--red)}
+#di-data .d2-cell-error{display:block;white-space:normal;max-width:230px;padding:3px 7px;color:var(--red);font:10px/1.4 var(--ui)}
+#di-data .d2-empty-cell,#di-data .d2-null-value{color:var(--faint);font-style:italic}

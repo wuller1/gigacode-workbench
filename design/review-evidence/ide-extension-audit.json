@@ -1,0 +1,48 @@
+{
+  "scope": "Node VM of actual extension-planning callbacks with a minimal dialog facade. No DOM/CSS/native close-event timing, network, registry licenses or extension host execution are verified.",
+  "sourceSHA256": "ca4f0c7ec0e8bd961a46379e97776ef3aa1f6e3d99f9bdbedc8fa8c3b3ce510a",
+  "passed": 10,
+  "total": 10,
+  "tests": [
+    {
+      "name": "Add is planned, never installed",
+      "pass": true
+    },
+    {
+      "name": "Plans do not leak between projects",
+      "pass": true
+    },
+    {
+      "name": "Stale add callback from a previous project cannot mutate newly shown project",
+      "pass": true
+    },
+    {
+      "name": "Stale settings callback cannot write an old plan using new dialog fields",
+      "pass": true
+    },
+    {
+      "name": "Settings reject arrays and malformed JSON",
+      "pass": true
+    },
+    {
+      "name": "Settings save is plan-only and preserves inert JSON data",
+      "pass": true
+    },
+    {
+      "name": "Corporate source rejects non-HTTPS and embedded credentials",
+      "pass": true
+    },
+    {
+      "name": "Corporate source saves without fabricating packages or making a request",
+      "pass": true
+    },
+    {
+      "name": "Search narrows Java packages without modifying plans",
+      "pass": true
+    },
+    {
+      "name": "Old source and search events cannot replace a newer dialog in the same project",
+      "pass": true
+    }
+  ]
+}

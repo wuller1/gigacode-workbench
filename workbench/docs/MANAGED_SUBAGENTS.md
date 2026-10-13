@@ -6,6 +6,14 @@
 
 Документ детализирует M2/M5 из [плана разработки](GIGACODE_UI_DEVELOPMENT_PLAN.md), дополняет [QWEN_BASELINE](QWEN_BASELINE.md), [PARALLEL_SESSIONS_FIX](PARALLEL_SESSIONS_FIX.md), [TASK_WORKSPACE](TASK_WORKSPACE.md) и [NATIVE_WORKBENCH_MIGRATION](NATIVE_WORKBENCH_MIGRATION.md). Их WorkflowEngine и единственный writer сохраняются. Для личного UI действует personal_fast: короткие карточки, целевые live-проверки, без производственных согласований для каждого шага.
 
+### Фактическая граница текущего приложения
+
+В текущем `app/` уже есть полезный baseline: persisted child `Session.parentId`, отдельные ACP process/session, глобальный `maxConcurrent`, per-session FIFO, cancel с удержанием очереди, conservative unknown recovery после возможного dispatch, bounded checkpoint, deduplicated peer-message receipts и панель worker с create/open/clarify/cancel. Это нужно **переиспользовать**, а не удалять.
+
+Полноценный control plane ещё не реализован: нет `AgentTask` и immutable assignment/attempt/result-disposition records, dependency DAG, provider quota/Retry-After circuit, durable reservations, execution/resource leases и fencing, per-child requested→actual model/reasoning, join/integrated evidence, worktree writer isolation и authoritative restart reconciliation. Текущий `agent_spawn` принимает `profileId`, но первый prompt может быть заново классифицирован обычным router; это не гарантированный captured child profile. Карточки `S8-*` остаются `planned` без evidence. Макет, интерфейс types или запуск через CLI не повышают этот статус.
+
+Migration сохраняет работающие sessions/queues и вводит host-owned assignment слой поверх них. Внешний caller и пользователь не передают `profileId`: coordinator формулирует assignment, AI router выбирает profile/version по Task/project/resource context, host фиксирует решение и только затем создаёт binding. Model/reasoning следующего attempt могут настраиваться в UI; роль пересчитывается router и вручную не pin-ится.
+
 ## 1. Три разных вида исполнителей
 
 | Вид | Кто владеет | Что можно обещать |
@@ -50,7 +58,7 @@ Workflow сохраняет **ready, waiting_input, blocked, needs_rework, block
 
 Все команды проходят existing backend writer с operationId и expected revision. Команда из второго окна с устаревшей revision отклоняется; повтор того же локального operationId возвращает receipt, а не ещё один dispatch. Приём child result не меняет его старую revision на текущую автоматически.
 
-Минимальный внутренний service contract: createAssignment, enqueue, list/get, queueMessage, pauseQueue/resumeQueue, requestCancel, reconcile, submitCandidate и integrate. Это названия проектируемых методов host, не ACP RPC. UI вызывает их через узкий IPC. Для самостоятельного делегирования основным агентом реализовать один реальный путь: валидируемое structured proposal, которое исполняет backend, либо собственный scoped MCP broker с опубликованной schema и проверенным подключением Giga. До подключения не писать в prompt, что инструменты уже доступны. Broker получает Task/parent/resource scope от authenticated binding, не доверяет произвольному projectId/role/permission из текста модели; запрещает произвольный spawn/argv и повышение разрешений. Результат содержит receipt и доступные действия, а не только свободный текст.
+Минимальный внутренний service contract: `createAssignment`, `enqueue`, `list/get`, `queueMessage`, `pauseQueue/resumeQueue`, `requestCancel`, `retryOrReconcile`, `submitCandidate` и `integrate`. Это методы native host, не ACP RPC и не CLI commands. UI вызывает их через узкий IPC. Для самостоятельного делегирования основным агентом реализовать один реальный путь: валидируемое structured proposal, которое исполняет backend, либо собственный scoped MCP broker с опубликованной schema и проверенным подключением Giga. До подключения не писать в prompt, что инструменты уже доступны. Broker получает Task/parent/resource scope от authenticated binding, не доверяет произвольному projectId/profileId/permission из текста модели; запрещает произвольный spawn/argv и повышение разрешений. Роль/version присваивает router, а результат содержит receipt и доступные host controls, не только свободный текст.
 
 ## 3. Жизненный цикл: таблица для реализации
 
@@ -61,7 +69,7 @@ Workflow сохраняет **ready, waiting_input, blocked, needs_rework, block
 | Новое разрешённое назначение | queued; записать входы/бюджет/dependencies, ничего не отправлять до admission |
 | queued, dependencies приняты, нет hold, квоты/lease доступны | starting; одной транзакцией резервировать slots и execution identity; подготовить проверенный binding и packet |
 | starting, durable dispatch intent сохранён, передача началась | running; хранить промежуточный dispatch phase. Если нельзя доказать, что байты не ушли, сбой трактуется как unknown |
-| running → permission request | waiting_permission; сохранить привязанный callback/options. Утверждение модели «жду разрешения» не создаёт настоящий permission request |
+| running → настоящий external/provider permission request | waiting_permission; сохранить привязанный callback/options. При default `auto_allow_bound` bound MCP/tool вызовы выбирают реальный `allow_*` без modal; утверждение модели «жду разрешения» не создаёт настоящий permission request |
 | waiting_permission → валидный ответ владельца | running; отклонённый/просроченный ответ не разрешает иной запрос; итог определяется реальным ответом CLI |
 | Подтверждённое ожидание retry | waiting_retry; хранить чей retry и known notBefore. Если CLI не передаёт такую информацию, оставить running с нейтральным ожиданием |
 | waiting_retry → разрешённое продолжение | running для живого CLI turn; starting для своей безопасной недоставленной операции. Не выполнять второй prompt |
@@ -93,7 +101,7 @@ Process-per-worker — допустимая простая начальная г
 
 ### 4.1. Когда агент действительно распараллеливает работу
 
-Пользователь запросил видимую полезную параллелизацию и **обязательную координацию** её ветвей. В пределах уже порученной задачи текущий основной агент самостоятельно выделяет небольшие независимые назначения и запускает доступных workers через существующий admission, когда это сокращает ожидание или даёт нужную независимую проверку. Он сохраняет ответственность за цель, общие контракты, разрешение зависимостей и итоговую интеграцию. Host не выводит общий успех просто из суммы зелёных карточек. Не просить подтверждение каждого такого разделения при действующих scope/permissions; новые внешние действия и расширение области не становятся разрешёнными от слова «субагент». Простую локальную правку выполняет один подходящий профиль. Все девять ролей не превращаются в обязательные отдельные процессы.
+Пользователь запросил видимую полезную параллелизацию и **обязательную координацию** её ветвей. В пределах уже порученной задачи текущий основной агент самостоятельно выделяет небольшие независимые назначения и запускает доступных workers через существующий admission, когда это сокращает ожидание или даёт нужную независимую проверку. Он сохраняет ответственность за цель, общие контракты, разрешение зависимостей и итоговую интеграцию. Host не выводит общий успех просто из суммы зелёных карточек. Не просить подтверждение каждого такого разделения при действующих scope/permissions; новые внешние действия и расширение области не становятся разрешёнными от слова «субагент». Простую локальную правку выполняет один подходящий профиль. Все роли каталога не превращаются в обязательные отдельные процессы.
 
 До запуска достаточно короткого DAG: у каждого назначения есть результат, owner, входные refs/revisions, зависимости, разрешённая область чтения/записи и общий budgetRef. Готовая схема исполняется детерминированно; LLM не решает заново на каждом token, кого запустить. Разделение имеет смысл, если назначения можно выполнить по принятым входам, их результаты можно независимо проверить и затем соединить. Подготовка зависимого шага допустима как явно предварительная, но не как принятый output по ещё неизвестному контракту.
 
@@ -161,13 +169,13 @@ Cancel адресуется captured binding, включая generation; поз�
 
 Человеческое **«Уточнить поручение»** в карточке worker создаёт versioned queued input с captured назначением; по умолчанию отправляется после текущего turn. Это управление assignment, а не интерфейс peer-переписки. Автоматические coordinator/worker сообщения используют тот же backend/queue через фоновый broker и не требуют пользовательского ввода. Live steering включать лишь при проверенном target API и отдельно объяснённой семантике. Изменение acceptance/области задачи — новая requirement/assignment revision и invalidation, а не незаметное редактирование уже работающего packet.
 
-Role/model/reasoning меняются по [ROLE_ROUTING](ROLE_ROUTING.md) и [MODEL_AND_REASONING_CONTROLS](MODEL_AND_REASONING_CONTROLS.md): сохранить уже работающие selector/backend calls, применять после safe boundary, с readback и captured settings для turn/retries. Новый binding при необходимости остаётся внутри той же Task, с теми же обязательствами/budget. Resume, rollover и rename worker не обнуляют попытки. Кнопка Retry доступна только для классифицированного безопасного действия либо явно подготовленного нового содержательного назначения; нет универсального «Повторить всё».
+Роль автоматически пересчитывается по [ROLE_ROUTING](ROLE_ROUTING.md); model/reasoning настраиваются по [MODEL_AND_REASONING_CONTROLS](MODEL_AND_REASONING_CONTROLS.md). Host показывает reason/confidence и requested→actual, применяет изменения после safe boundary и сохраняет captured settings для turn/retries. Ручного role selector нет, в том числе у child. Новый binding при необходимости остаётся внутри той же Task, с теми же обязательствами/budget. Resume, rollover и rename worker не обнуляют попытки. Кнопка Retry доступна только для классифицированного безопасного действия либо явно подготовленного нового содержательного назначения; нет универсального «Повторить всё».
 
 ## 8. Workspace, permissions и принятие результата
 
 У каждого write-worker отдельный worktree/checkout с зафиксированным base и принадлежащим ему diff, когда Git позволяет. У существующего dirty дерева сначала сохранить и описать состояние; не делать reset/clean/stash чужой работы автоматически. Если нет проверенной изоляции, один writer и последовательные изменения; параллельно — только реально ограниченные read-only исполнители. Разные директории worktree разделяют изменения, но не являются OS sandbox: `.git`, внешние пути, credentials и remote APIs могут быть общими.
 
-Host проверяет свои Git/browser/MCP/IPC dispatch по пересечению Task authorization, role, actual tool binding, resource/environment и policy revision. Для direct CLI tools использовать подтверждённые штатные permissions. Если общий shell обходит заданные пути, список allowedPaths в prompt не даёт техническую гарантию. Worker без нужной доказанной границы не получает отметку «изолирован». Remote write-workers, credentials scopes и Jenkins/OpenShift targets могут конфликтовать даже с разными worktrees: нужны отдельные resource locks и проверенные environment permissions.
+Host проверяет свои Git/browser/MCP/IPC dispatch по Task authorization, captured project binding, parent assignment scope, actual tool binding, resource/environment, exact target и central policy revision. Роль выбирает инструкции/workflow, но не расширяет и не урезает bound capabilities. Для direct CLI tools использовать подтверждённые штатные permissions. Если общий shell обходит заданные пути, список allowedPaths в prompt не даёт техническую гарантию. Worker без нужной доказанной границы не получает отметку «изолирован». Remote write-workers, credentials scopes и Jenkins/OpenShift targets могут конфликтовать даже с разными worktrees: нужны отдельные resource locks и проверенные environment permissions.
 
 Integration принадлежит одному host-owned writer:
 
@@ -190,7 +198,7 @@ Integration принадлежит одному host-owned writer:
 5. Сверить внешние effects через read-only status/evidence. Доказанный итог закрывает operation; неоднозначность оставляет interrupted_unknown и объяснение. Новый процесс, новая сессия или истёкший lease не являются reconciliation.
 6. Возобновить только доказанно недоставленные queued задания с актуальными входами/разрешениями. Для нового binding подготовить bounded handoff; исходный prompt автоматически не пересылать. Окна получают согласованный snapshot + sequence tail, а не создают работников заново.
 
-Каждый packet содержит одну цель, текущую роль/этап, accepted requirement revision, relevant constraints, разрешённые действия, несколько source/evidence refs с hashes, acceptance, открытые вопросы и delta предыдущей попытки. Общая память scoped global + текущий project и служит навигацией к источникам. Не передавать полный журнал, все девять профилей, все workflow, весь MCP каталог или весь SDD каждому child.
+Каждый packet содержит одну цель, текущую роль/этап, accepted requirement revision, relevant constraints, разрешённые действия, несколько source/evidence refs с hashes, acceptance, открытые вопросы и delta предыдущей попытки. Общая память scoped global + текущий project и служит навигацией к источникам. Не передавать полный журнал, все 14 профилей, все workflow, весь MCP каталог или весь SDD каждому child.
 
 Применять [FLASH_MODEL_EXECUTION](FLASH_MODEL_EXECUTION.md) и [CONTEXT_BUDGET](CONTEXT_BUDGET.md): учёт total input с системными/tool overhead, actual/estimated/unknown, 256k не универсальный denominator, rollover только на safe boundary. Все наблюдаемые шаги сохраняются вне контекста; большие payloads — immutable refs. Checkpoint сохраняет constraints, pending effects, questions и непринятые рекомендации. Model summary не становится авторитетным источником и не очищает blockers.
 
@@ -209,7 +217,7 @@ Integration принадлежит одному host-owned writer:
 | Текущая работа | Последний текущий шаг из agent plan либо структурированный tool title/path. При отсутствии данных — «Работает; действие не сообщено», без выдуманного «анализирует архитектуру» по таймеру. |
 | Зависимость / прогресс | Конкретная причина ожидания и получатель join; при наличии известный elapsed. Нет искусственного процента завершения и LLM-summary каждого token. |
 | Результат | Ссылка на реальный candidate artifact/diff/отчёт и disposition `candidate/accepted/rejected/obsolete`; completed worker может ещё ждать интеграции, но не автоматически пользователя. |
-| Действия | **Открыть работу**, **Уточнить поручение**, **Отменить** для поддержанных managed controls; **Результат** после появления реального ref. Уточнение — необязательный human input назначению, не peer chat. Действие отмены меняется на «Останавливается» до terminal. |
+| Действия | **Открыть работу**, **Уточнить поручение**, **Pause/Resume queue**, **Stop**, **Retry/Reconcile** только по классифицированному пути, **Результат** после реального ref. Priority и model/reasoning меняются для следующего safe attempt; role read-only. Pause не выдаётся за заморозку running turn, Stop меняется на «Останавливается» до terminal. |
 
 В раскрытии: входные refs/revisions, read/write scope, связанная worker-лента, результат/checks, pending operations, timeline и бюджет. Diagnostic IDs доступны там, не заполняют основную карточку; секреты/raw env не выводить. Native children имеют отдельную отметку и только реально раскрытые controls. Не рисовать кнопки cancel/message для непрозрачного native child как работающие.
 
@@ -236,7 +244,7 @@ Coordinator сначала разрешает worker question по принят�
 | **SA4**, SA3 | Cancel, queue pause, queued message, settings capture/readback | Cancel одного не гасит другого; pause не выдаётся за заморозку; старый callback отвергнут |
 | **SA5**, SA4 | Retry classifier, budget/notBefore, shared breaker, restart reconciliation | Fault cases ниже проходят без повторного unknown write и без сброса counters |
 | **SA6**, SA3 + workspace adapter | Worktree ownership, candidate import, diff/base checks, один integration writer | Два patches интегрированы и проверены на общем результате; stale/conflict сохранён без потери |
-| **SA7**, SA4–SA6 | Inline count + панель «Исполнители», main coordinator/ветви/join, role/model/current activity, addressed message/cancel, child-result refs | Два реальных независимых workers видны одновременно; третий завершённый результат отдельно от acceptance, parent не получает ложный check, reload не порождает новые процессы |
+| **SA7**, SA4–SA6 | Inline count + панель «Исполнители», main coordinator/ветви/join, auto-role reason, requested→actual model/reasoning, current activity, pause/resume/stop/retry/reconcile, child-result refs | Два реальных независимых workers видны одновременно; третий завершённый результат отдельно от acceptance, parent не получает ложный check, reload не порождает новые процессы; unsupported control честно недоступен |
 
 Не запускать автоматически процессы для всех ролей. Сначала один worker, затем два независимых; глубина 1. Reviewer нужен для содержательного риска, не каждой косметической правки. После двух содержательных неудач конкретного цикла по Flash policy сохранить evidence и сузить/эскалировать задачу; не создавать новое имя child, чтобы получить ещё две попытки.
 
@@ -249,12 +257,15 @@ Unit/contract fault tests выполняются через собственны
 | Два окна одновременно start одной revision | Один execution/dispatch; второе получает тот же receipt либо conflict, не второй child |
 | A и B stream; отменить A; сразу поставить A2 | B продолжает. A2 ждёт settlement A; cancel_requested не освобождает session slot |
 | Queue pause во время running, затем restart | Running не объявляется frozen; новые dispatch отсутствуют до явного resume; queued input сохранён |
+| Automatic route меняется во время active child turn | Текущий attempt сохраняет captured profile/version; новый route с reason/confidence pending до safe boundary. UI не предлагает ручной profile selector, permissions/model/reasoning не меняются от role decision |
+| Child assignment создан coordinator | Host router фиксирует profile/version и input factors до binding; первый prompt не перетирает роль fallback-классификацией. Requested→actual model/reasoning читаются обратно и видны в карточке |
 | Клиентский timeout после возможной отправки | Interrupted unknown, **ноль автоматических повторов prompt**; виден reconcile путь |
 | Remote write выполнен, ответ потерян | Status lookup находит один эффект либо остаётся unknown; ни второго write, ни ложного pass |
 | Падение между durable intent, spawn, dispatch и result commit | Каждая граница отдельно; очередь/lease/receipt восстанавливаются, неизвестный dispatch не классифицируется как недоставленный |
 | Lease истёк, старый process ещё жив | Новому owner запрещён конфликтующий dispatch; старый result не принимается с новым fencing token |
 | Старые generation/permission callbacks после reconnect | Ни записи, ни разрешения нового действия; диагностическое событие с причиной отказа |
 | Подтверждённый 429, Retry-After, auth error | Общий scope учитывает чаты и workers; CLI retry не дублируется; ожидание bounded, auth fail-fast |
+| Два окна управляют одним assignment | Pause/resume/stop/retry используют expected revision и один operation receipt; stale click не создаёт второй dispatch, retry timer или cancel другого worker |
 | Cancel во время своего retry timer / app shutdown | Timer больше не отправляет операцию; reservation освобождается ровно один раз при соответствующем исходе |
 | Родитель исчерпал budget, child предлагает нового child | Отказ admission, counters прежние; resume/restart/model switch не дают новый budget |
 | Изменён requirement/input/base, child прислал старый output | Obsolete/rejected с сохранённым артефактом; никакого restamp или accepted stage |
@@ -262,7 +273,7 @@ Unit/contract fault tests выполняются через собственны
 | DAG A/B → integration, B ещё работает | A result становится candidate; root показывает обе ветви, не завершает Task; join проверяет объединённый результат после нужных inputs |
 | Coordinator меняет общий контракт/план при работающем B | Новая revision и адресная invalidation, старый packet/result не переписаны; writes reconciled, независимая ветвь продолжается, бюджет не сброшен |
 | Inline count и панель, переключение Task, сообщение/отмена A | Счётчик относится к выбранной Task; captured адресат A сохраняется, B продолжает; worker-ответ связан с тем же result ref, не дублируется как новый Task |
-| Role change или микро-правка без независимой работы | Нет обязательного нового CLI child/девяти ролей; один исполнитель и достаточная адресная проверка |
+| Role change или микро-правка без независимой работы | Нет обязательного нового CLI child или запуска всего каталога ролей; один исполнитель и достаточная адресная проверка |
 | Недоступный MCP, скрытая native delegation, отсутствующая telemetry | Unknown/unsupported и ограниченное coverage; не fake isolated/0 tokens/точный retry countdown |
 | Три context rollovers и restart | Task/attempt/budget/scope/questions/pending сохраняются, полного history clone и replay неизвестного prompt нет |
 

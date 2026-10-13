@@ -1,0 +1,29 @@
+/* Quiet navigation and progressive disclosure for the review prototype. */
+#settingsButton{display:none}
+.dock-head>[hidden]{display:none!important}
+.sp-picker-list{display:flex;flex-direction:column;gap:3px;margin:8px 0}
+.sp-picker-row{display:flex;gap:4px;align-items:center;border-radius:8px;border:1px solid transparent;min-width:0}
+.sp-picker-row:hover{background:var(--hover)}
+.sp-picker-row.current{background:var(--sel)}
+.sp-picker-open{display:flex;flex-direction:column;align-items:flex-start;gap:4px;flex:1;min-width:0;text-align:left;padding:11px 12px;border:0;background:none;color:var(--text);cursor:pointer;border-radius:7px}
+.sp-picker-open strong{font-size:13px;font-weight:550;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-picker-open small{font-size:11px;color:var(--muted)}
+.sp-picker-row>.icon-button{margin-right:6px;flex:none}
+.sp-picker-open:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.sp-picker-list .sp-note{padding:20px 12px}
+@media(max-width:1050px){.title-center{display:none}.titlebar{grid-template-columns:1fr auto}.contextbar{gap:3px}.context-select{max-width:205px}}
+
+.sp-dialog:has(.sp-picker-list){width:min(560px,calc(100vw - 32px))}
+.sp-picker-open{padding:9px 12px}
+.sp-picker-row>.icon-button{font-size:20px}
+
+.sp-object-contexts{display:flex;gap:6px;padding:9px 12px 0;flex-wrap:wrap;max-height:76px;overflow:auto}
+.sp-object-contexts[hidden]{display:none}
+.sp-object-context{display:inline-flex;align-items:center;min-width:0;max-width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:7px}
+.sp-context-open{min-width:0;max-width:300px;padding:5px 8px;border:0;background:none;color:var(--muted);font:11px var(--ui);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.sp-object-context>.icon-button{width:25px;height:26px;font-size:16px;flex:none}
+.sp-context-open:hover{color:var(--text)}
+.sp-context-preview,.sp-message-context pre{white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.6 var(--mono);max-height:45vh;overflow:auto}
+.sp-message-context{margin-top:10px;color:var(--muted);font-size:12px}.sp-message-context summary{cursor:pointer}
+/* One contextual agent entry in the integrated panel controls, at every IDE width. */
+.sw-enabled [data-panel="code"] [data-di="ide-agent"]{display:none}

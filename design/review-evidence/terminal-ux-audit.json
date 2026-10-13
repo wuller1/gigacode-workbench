@@ -1,0 +1,36 @@
+{
+  "sourceSha256": "c54fa1cc9ff6da32a94ed2cab89686aa7494a0a47db433b9eae76556fbc7f180",
+  "method": "Actual terminal UI section and handlers executed in a minimal Node VM DOM fixture. Does not validate browser event timing, visual position or rendering; live CUA verification required.",
+  "passed": 7,
+  "total": 7,
+  "tests": [
+    {
+      "name": "click preserves tab DOM for double click; inline rename Enter and Escape retain focus",
+      "pass": true
+    },
+    {
+      "name": "renaming on blur does not rebuild neighbouring tabs or lose the next click",
+      "pass": true
+    },
+    {
+      "name": "shell menu is nonmodal and choosing a shell keeps custom name and command draft",
+      "pass": true
+    },
+    {
+      "name": "shell menu supports arrow navigation, Escape, outside click and listener cleanup",
+      "pass": true
+    },
+    {
+      "name": "tabs keep individual shells and drafts; adding opens the dock and copies selected shell",
+      "pass": true
+    },
+    {
+      "name": "project switch closes shell menu, isolates state and preserves state on project rename",
+      "pass": true
+    },
+    {
+      "name": "closing inactive tab keeps active tab; closing last allows shell selector to create a new tab",
+      "pass": true
+    }
+  ]
+}

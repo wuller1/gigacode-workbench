@@ -1,0 +1,545 @@
+{
+  "schemaVersion": 3,
+  "repository": {
+    "path": "C:\\path\\to\\existing-gigacode-ui",
+    "commit": "record-before-changes",
+    "dirtyFiles": [],
+    "dataSchemaVersion": "unknown",
+    "testUserData": "C:\\temp\\gigacode-workbench-audit",
+    "runtime": {
+      "appVersion": "unknown",
+      "electronVersion": "unknown",
+      "gigacodeVersion": "26.9.75-or-read-live",
+      "runtimeHash": "unknown",
+      "windowsVersion": "unknown"
+    }
+  },
+  "decisionPolicy": {
+    "allowedDecisions": [
+      "audit",
+      "reuse",
+      "repair",
+      "replace",
+      "held-for-user-choice"
+    ],
+    "comparisonBasis": "same-live-scenarios-and-revisions",
+    "preserveExistingWhenMateriallyBetter": true,
+    "questionOnlyAfterIndependentWork": true,
+    "noResponseBehavior": "keep-existing-working-baseline"
+  },
+  "modules": [
+    {
+      "area": "core-project-task-session",
+      "capabilityIds": [
+        "CMP-A01",
+        "CMP-A02"
+      ],
+      "present": "unknown",
+      "ownerFiles": [],
+      "stateOwner": null,
+      "entryPoints": [],
+      "dataModel": null,
+      "workingScenarios": [],
+      "evidence": [],
+      "gaps": [],
+      "comparison": {
+        "sameScenarioEvidence": [],
+        "dimensions": {
+          "workflowCompleteness": "unknown",
+          "stepsAndTimeToResult": "unknown",
+          "reliabilityAndRecovery": "unknown",
+          "accessibilityAndUx": "unknown",
+          "performance": "unknown",
+          "maintainability": "unknown",
+          "dataCompatibilityAndMigrationRisk": "unknown"
+        },
+        "existingMaterialAdvantages": [],
+        "candidateMaterialAdvantages": [],
+        "compatibleMerge": "unknown",
+        "recommendedDecision": "audit",
+        "recommendationRationale": []
+      },
+      "decision": "audit",
+      "decisionReceipt": {
+        "status": "not-required",
+        "question": null,
+        "options": [],
+        "recommendedOption": null,
+        "evidenceRefs": [],
+        "userChoice": null
+      },
+      "compatibilityAdapter": null,
+      "migration": {
+        "required": false,
+        "backup": null,
+        "rollback": null,
+        "verification": []
+      }
+    },
+    {
+      "area": "sessions-acp-roles-context-memory",
+      "capabilityIds": [
+        "CMP-A03",
+        "CMP-A04",
+        "CMP-A05"
+      ],
+      "present": "unknown",
+      "ownerFiles": [],
+      "stateOwner": null,
+      "entryPoints": [],
+      "dataModel": null,
+      "workingScenarios": [],
+      "evidence": [],
+      "gaps": [],
+      "comparison": {
+        "sameScenarioEvidence": [],
+        "dimensions": {
+          "workflowCompleteness": "unknown",
+          "stepsAndTimeToResult": "unknown",
+          "reliabilityAndRecovery": "unknown",
+          "accessibilityAndUx": "unknown",
+          "performance": "unknown",
+          "maintainability": "unknown",
+          "dataCompatibilityAndMigrationRisk": "unknown"
+        },
+        "existingMaterialAdvantages": [],
+        "candidateMaterialAdvantages": [],
+        "compatibleMerge": "unknown",
+        "recommendedDecision": "audit",
+        "recommendationRationale": []
+      },
+      "decision": "audit",
+      "decisionReceipt": {
+        "status": "not-required",
+        "question": null,
+        "options": [],
+        "recommendedOption": null,
+        "evidenceRefs": [],
+        "userChoice": null
+      },
+      "compatibilityAdapter": null,
+      "migration": {
+        "required": false,
+        "backup": null,
+        "rollback": null,
+        "verification": []
+      }
+    },
+    {
+      "area": "shell-layout-panels-window-chrome-settings",
+      "capabilityIds": [
+        "CMP-I01",
+        "CMP-I02",
+        "CMP-I26"
+      ],
+      "present": "unknown",
+      "ownerFiles": [],
+      "stateOwner": null,
+      "entryPoints": [],
+      "dataModel": null,
+      "workingScenarios": [],
+      "evidence": [],
+      "gaps": [],
+      "comparison": {
+        "sameScenarioEvidence": [],
+        "dimensions": {
+          "workflowCompleteness": "unknown",
+          "stepsAndTimeToResult": "unknown",
+          "reliabilityAndRecovery": "unknown",
+          "accessibilityAndUx": "unknown",
+          "performance": "unknown",
+          "maintainability": "unknown",
+          "dataCompatibilityAndMigrationRisk": "unknown"
+        },
+        "existingMaterialAdvantages": [],
+        "candidateMaterialAdvantages": [],
+        "compatibleMerge": "unknown",
+        "recommendedDecision": "audit",
+        "recommendationRationale": []
+      },
+      "decision": "audit",
+      "decisionReceipt": {
+        "status": "not-required",
+        "question": null,
+        "options": [],
+        "recommendedOption": null,
+        "evidenceRefs": [],
+        "userChoice": null
+      },
+      "compatibilityAdapter": null,
+      "migration": {
+        "required": false,
+        "backup": null,
+        "rollback": null,
+        "verification": []
+      }
+    },
+    {
+      "area": "browser",
+      "capabilityIds": [
+        "CMP-B01",
+        "CMP-B02",
+        "CMP-B03"
+      ],
+      "present": "unknown",
+      "ownerFiles": [],
+      "stateOwner": null,
+      "entryPoints": [],
+      "dataModel": null,
+      "workingScenarios": [],
+      "evidence": [],
+      "gaps": [],
+      "comparison": {
+        "sameScenarioEvidence": [],
+        "dimensions": {
+          "workflowCompleteness": "unknown",
+          "stepsAndTimeToResult": "unknown",
+          "reliabilityAndRecovery": "unknown",
+          "accessibilityAndUx": "unknown",
+          "performance": "unknown",
+          "maintainability": "unknown",
+          "dataCompatibilityAndMigrationRisk": "unknown"
+        },
+        "existingMaterialAdvantages": [],
+        "candidateMaterialAdvantages": [],
+        "compatibleMerge": "unknown",
+        "recommendedDecision": "audit",
+        "recommendationRationale": []
+      },
+      "decision": "audit",
+      "decisionReceipt": {
+        "status": "not-required",
+        "question": null,
+        "options": [],
+        "recommendedOption": null,
+        "evidenceRefs": [],
+        "userChoice": null
+      },
+      "compatibilityAdapter": null,
+      "migration": {
+        "required": false,
+        "backup": null,
+        "rollback": null,
+        "verification": []
+      }
+    },
+    {
+      "area": "design-artifacts-previews",
+      "capabilityIds": [
+        "CMP-D01",
+        "CMP-D02"
+      ],
+      "present": "unknown",
+      "ownerFiles": [],
+      "stateOwner": null,
+      "entryPoints": [],
+      "dataModel": null,
+      "workingScenarios": [],
+      "evidence": [],
+      "gaps": [],
+      "comparison": {
+        "sameScenarioEvidence": [],
+        "dimensions": {
+          "workflowCompleteness": "unknown",
+          "stepsAndTimeToResult": "unknown",
+          "reliabilityAndRecovery": "unknown",
+          "accessibilityAndUx": "unknown",
+          "performance": "unknown",
+          "maintainability": "unknown",
+          "dataCompatibilityAndMigrationRisk": "unknown"
+        },
+        "existingMaterialAdvantages": [],
+        "candidateMaterialAdvantages": [],
+        "compatibleMerge": "unknown",
+        "recommendedDecision": "audit",
+        "recommendationRationale": []
+      },
+      "decision": "audit",
+      "decisionReceipt": {
+        "status": "not-required",
+        "question": null,
+        "options": [],
+        "recommendedOption": null,
+        "evidenceRefs": [],
+        "userChoice": null
+      },
+      "compatibilityAdapter": null,
+      "migration": {
+        "required": false,
+        "backup": null,
+        "rollback": null,
+        "verification": []
+      }
+    },
+    {
+      "area": "workspace-files-editor-terminal-run-test",
+      "capabilityIds": [
+        "CMP-I01",
+        "CMP-I02",
+        "CMP-I03"
+      ],
+      "present": "unknown",
+      "ownerFiles": [],
+      "stateOwner": null,
+      "entryPoints": [],
+      "dataModel": null,
+      "workingScenarios": [],
+      "evidence": [],
+      "gaps": [],
+      "comparison": {
+        "sameScenarioEvidence": [],
+        "dimensions": {
+          "workflowCompleteness": "unknown",
+          "stepsAndTimeToResult": "unknown",
+          "reliabilityAndRecovery": "unknown",
+          "accessibilityAndUx": "unknown",
+          "performance": "unknown",
+          "maintainability": "unknown",
+          "dataCompatibilityAndMigrationRisk": "unknown"
+        },
+        "existingMaterialAdvantages": [],
+        "candidateMaterialAdvantages": [],
+        "compatibleMerge": "unknown",
+        "recommendedDecision": "audit",
+        "recommendationRationale": []
+      },
+      "decision": "audit",
+      "decisionReceipt": {
+        "status": "not-required",
+        "question": null,
+        "options": [],
+        "recommendedOption": null,
+        "evidenceRefs": [],
+        "userChoice": null
+      },
+      "compatibilityAdapter": null,
+      "migration": {
+        "required": false,
+        "backup": null,
+        "rollback": null,
+        "verification": []
+      }
+    },
+    {
+      "area": "git-forge-review",
+      "capabilityIds": [
+        "CMP-G01",
+        "CMP-G02",
+        "CMP-G03"
+      ],
+      "present": "unknown",
+      "ownerFiles": [],
+      "stateOwner": null,
+      "entryPoints": [],
+      "dataModel": null,
+      "workingScenarios": [],
+      "evidence": [],
+      "gaps": [],
+      "comparison": {
+        "sameScenarioEvidence": [],
+        "dimensions": {
+          "workflowCompleteness": "unknown",
+          "stepsAndTimeToResult": "unknown",
+          "reliabilityAndRecovery": "unknown",
+          "accessibilityAndUx": "unknown",
+          "performance": "unknown",
+          "maintainability": "unknown",
+          "dataCompatibilityAndMigrationRisk": "unknown"
+        },
+        "existingMaterialAdvantages": [],
+        "candidateMaterialAdvantages": [],
+        "compatibleMerge": "unknown",
+        "recommendedDecision": "audit",
+        "recommendationRationale": []
+      },
+      "decision": "audit",
+      "decisionReceipt": {
+        "status": "not-required",
+        "question": null,
+        "options": [],
+        "recommendedOption": null,
+        "evidenceRefs": [],
+        "userChoice": null
+      },
+      "compatibilityAdapter": null,
+      "migration": {
+        "required": false,
+        "backup": null,
+        "rollback": null,
+        "verification": []
+      }
+    },
+    {
+      "area": "task-tracker-todo-questions",
+      "capabilityIds": [
+        "CMP-T01",
+        "CMP-T02",
+        "CMP-T03"
+      ],
+      "present": "unknown",
+      "ownerFiles": [],
+      "stateOwner": null,
+      "entryPoints": [],
+      "dataModel": null,
+      "workingScenarios": [],
+      "evidence": [],
+      "gaps": [],
+      "comparison": {
+        "sameScenarioEvidence": [],
+        "dimensions": {
+          "workflowCompleteness": "unknown",
+          "stepsAndTimeToResult": "unknown",
+          "reliabilityAndRecovery": "unknown",
+          "accessibilityAndUx": "unknown",
+          "performance": "unknown",
+          "maintainability": "unknown",
+          "dataCompatibilityAndMigrationRisk": "unknown"
+        },
+        "existingMaterialAdvantages": [],
+        "candidateMaterialAdvantages": [],
+        "compatibleMerge": "unknown",
+        "recommendedDecision": "audit",
+        "recommendationRationale": []
+      },
+      "decision": "audit",
+      "decisionReceipt": {
+        "status": "not-required",
+        "question": null,
+        "options": [],
+        "recommendedOption": null,
+        "evidenceRefs": [],
+        "userChoice": null
+      },
+      "compatibilityAdapter": null,
+      "migration": {
+        "required": false,
+        "backup": null,
+        "rollback": null,
+        "verification": []
+      }
+    },
+    {
+      "area": "mcp-connections-operations-knowledge-security",
+      "capabilityIds": [
+        "CMP-O01",
+        "CMP-O02",
+        "CMP-K01",
+        "CMP-S01"
+      ],
+      "present": "unknown",
+      "ownerFiles": [],
+      "stateOwner": null,
+      "entryPoints": [],
+      "dataModel": null,
+      "workingScenarios": [],
+      "evidence": [],
+      "gaps": [],
+      "comparison": {
+        "sameScenarioEvidence": [],
+        "dimensions": {
+          "workflowCompleteness": "unknown",
+          "stepsAndTimeToResult": "unknown",
+          "reliabilityAndRecovery": "unknown",
+          "accessibilityAndUx": "unknown",
+          "performance": "unknown",
+          "maintainability": "unknown",
+          "dataCompatibilityAndMigrationRisk": "unknown"
+        },
+        "existingMaterialAdvantages": [],
+        "candidateMaterialAdvantages": [],
+        "compatibleMerge": "unknown",
+        "recommendedDecision": "audit",
+        "recommendationRationale": []
+      },
+      "decision": "audit",
+      "decisionReceipt": {
+        "status": "not-required",
+        "question": null,
+        "options": [],
+        "recommendedOption": null,
+        "evidenceRefs": [],
+        "userChoice": null
+      },
+      "compatibilityAdapter": null,
+      "migration": {
+        "required": false,
+        "backup": null,
+        "rollback": null,
+        "verification": []
+      }
+    },
+    {
+      "area": "database",
+      "capabilityIds": [
+        "CMP-DB01",
+        "CMP-DB02",
+        "CMP-DB03"
+      ],
+      "present": "unknown",
+      "ownerFiles": [],
+      "stateOwner": null,
+      "entryPoints": [],
+      "dataModel": null,
+      "workingScenarios": [],
+      "evidence": [],
+      "gaps": [],
+      "comparison": {
+        "sameScenarioEvidence": [],
+        "dimensions": {
+          "workflowCompleteness": "unknown",
+          "stepsAndTimeToResult": "unknown",
+          "reliabilityAndRecovery": "unknown",
+          "accessibilityAndUx": "unknown",
+          "performance": "unknown",
+          "maintainability": "unknown",
+          "dataCompatibilityAndMigrationRisk": "unknown"
+        },
+        "existingMaterialAdvantages": [],
+        "candidateMaterialAdvantages": [],
+        "compatibleMerge": "unknown",
+        "recommendedDecision": "audit",
+        "recommendationRationale": []
+      },
+      "decision": "audit",
+      "decisionReceipt": {
+        "status": "not-required",
+        "question": null,
+        "options": [],
+        "recommendedOption": null,
+        "evidenceRefs": [],
+        "userChoice": null
+      },
+      "compatibilityAdapter": null,
+      "migration": {
+        "required": false,
+        "backup": null,
+        "rollback": null,
+        "verification": []
+      }
+    }
+  ],
+  "connections": [
+    {
+      "alias": "example-read-only",
+      "kind": "mcp",
+      "endpointHint": "host only; no credentials",
+      "serverIdentity": null,
+      "protocolVersion": null,
+      "schemaHash": null,
+      "capabilities": [],
+      "projectBindings": [],
+      "readCanaryEvidence": [],
+      "secretsRecorded": false
+    }
+  ],
+  "summary": {
+    "auditComplete": false,
+    "reused": [],
+    "repaired": [],
+    "replaced": [],
+    "missing": [],
+    "blocked": [],
+    "nextCardId": "S0-01",
+    "heldForUserChoice": []
+  }
+}

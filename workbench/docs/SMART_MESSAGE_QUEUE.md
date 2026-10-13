@@ -1,6 +1,6 @@
 # Умная очередь сообщений
 
-Статус на **2026-10-10**: контракт реализации личного Electron UI, не уже работающая функция прототипа. GigaCode CLI не изменяется. Поведение Qwen исследовано в commit **`4360b003a087fe9e57f6ffbe7ba48795980b59c3`**; конкретные callbacks, steering, восстановление и metadata **GigaCode 26.9.75 нужно проверить на целевой Windows**. Очередь принадлежит host и остаётся полезной без скрытого CLI API.
+Статус на **2026-10-13**: контракт реализации личного Electron UI, не уже работающая live-steering функция. GigaCode CLI не изменяется. Базовое поведение Qwen исследовано в commit **`4360b003a087fe9e57f6ffbe7ba48795980b59c3`**, а опубликованный 0.25.1 дополнительно сверён по tag **`c1a8218f38203e272e6e965778ed6a2795cfeed7`**; конкретные callbacks, steering, восстановление и metadata **GigaCode 26.9.75 нужно проверить на целевой Windows**. Очередь принадлежит host и остаётся полезной без расширений CLI.
 
 Цель: пользователь может продолжать писать, исправлять ожидающее сообщение, менять порядок и отвечать на вопрос, пока агент работает. Приложение сохраняет ввод и показывает, что уже отправлено, что ещё можно изменить и что задерживает следующий шаг. Оно не прерывает текущую работу вторым prompt и не повторяет неизвестные внешние действия после обрыва.
 
@@ -9,6 +9,8 @@
 ## 1. Почему очередь host обязательна
 
 В pinned Qwen новый direct-ACP `Session.prompt` вызывает abort предыдущего pending prompt и затем ждёт его завершения: [Session.ts:5342](https://github.com/QwenLM/qwen-code/blob/4360b003a087fe9e57f6ffbe7ba48795980b59c3/packages/cli/src/acp-integration/session/Session.ts#L5342), [drain:5406](https://github.com/QwenLM/qwen-code/blob/4360b003a087fe9e57f6ffbe7ba48795980b59c3/packages/cli/src/acp-integration/session/Session.ts#L5406). Следовательно, второй prompt — не безопасный способ незаметно дописать сообщение в очередь или выполнить live steering.
+
+Qwen 0.25.1 добавил best-effort extension [`craft/midTurnSendNow`](https://github.com/QwenLM/qwen-code/blob/c1a8218f38203e272e6e965778ed6a2795cfeed7/packages/acp-bridge/src/bridgeTypes.ts#L1481): после сохранения текста в host FIFO пользователь может попросить доставить его текущему foreground turn. Агент может прервать только streaming model response; уже начатый tool сначала завершается, а неизвестный method остаётся fallback на следующую безопасную границу. Для этого host обязан реализовать парный `craft/drainMidTurnQueue`, ownership/reconciliation очереди и capability probe. Текущий `app/electron/acp.ts` этого ещё не делает, поэтому UI не должен выдавать обычный второй `session/prompt` или сам факт версии 0.25.1 за рабочий Send now.
 
 `session/cancel` адресует конкретную сессию и её pending admission: [acpAgent.ts:7183](https://github.com/QwenLM/qwen-code/blob/4360b003a087fe9e57f6ffbe7ba48795980b59c3/packages/cli/src/acp-integration/acpAgent.ts#L7183). Отправка notification сама по себе не подтверждает terminal outcome и не откатывает tool effects. Внутренние retry CLI описаны в [QWEN_BASELINE](QWEN_BASELINE.md); host не ставит поверх них второй цикл одинаковых prompts.
 
@@ -19,11 +21,15 @@
 | Ситуация | Composer и действие |
 |---|---|
 | Получатель idle, отправка разрешена | «Отправить»: сначала durable enqueue, затем обычный admission; единый путь без обхода журнала |
-| Агент работает / ждёт своего retry / permission | «В очередь»: сохранить сообщение, не отправлять второй prompt. Рядом остаётся отдельный Stop текущего ответа |
-| Уже есть ожидающие сообщения | Компактная строка «В очереди N» с раскрытием; номер/получатель, начало текста, вложения, модель/роль и hold reason |
-| Ожидающее сообщение выбрано для edit | Редактируемый блок с Save/Cancel и видимым «Редактируется — не будет отправлено» |
+| Агент работает / ждёт своего retry / tool result | «Следующим»: durable enqueue без второго prompt. Если versioned adapter подтвердил Qwen mid-turn extension, рядом доступно «Уточнить сейчас»; иначе оно честно остаётся следующим сообщением. Отдельный Stop сохраняется |
+| Уже есть ожидающие сообщения | Компактная раскрытая очередь прямо над composer, без popover. Строка содержит начало текста, «Сейчас» с accessible name «Отправить сейчас», карандаш «Редактировать» и корзину «Удалить»; получатель, вложения, настройки и hold reason доступны без потери контекста |
+| Ожидающее сообщение выбрано для edit | Inline-редактор в своей строке: «Сохранить» / «Отмена», Ctrl/Cmd+Enter / Escape. Видимый edit hold удерживает очередь разговора до Save/Cancel; текущая работа продолжается |
 | Живой вопрос требует ответа | Отдельный ответ на конкретный вопрос; при существующем callback — через него, иначе на ближайшей безопасной границе |
 | Очередь paused / blocked / reconnecting | Причина и конкретное Continue/Reconcile/Edit действие; текст и вложения сохраняются |
+
+Очередь и черновик её правки относятся к конкретному разговору (`discussionId` / lane), а не к глобальному composer. Смена проекта, задачи или выбранного разговора не переносит сообщения, получателя, hold или несохранённый текст правки в другую очередь. Основной composer draft и edit draft — разные записи. Кнопки-иконки имеют доступные имена и подсказки; «Сейчас» не является иконкой удаления или сохранения.
+
+**Граница прототипа.** В текущем макете это in-memory демонстрация UI и локальных переходов. «Сейчас» выражает явное возобновление/новый демонстрационный ход; оно не доказывает steering, отправку в CLI, durable enqueue или восстановление после reload. Описанные ниже journal/CAS/adapter/restart требования остаются контрактом рабочей реализации. Наличие экрана или этого документа не означает, что UI-сценарии уже протестированы.
 
 Не заменять молча Enter с «В очередь» на «Прервать». Поведение Enter/многострочного ввода явно следует выбранной настройке; IME composition не отправляет сообщение. Клавиатура и screen reader различают Send, Queue, Stop и Reply. История показывает ожидающее сообщение как **ещё не отправленное**, не как ответ уже работающей модели.
 
@@ -52,6 +58,8 @@ Queue draft и отправленный Turn — разные снимки. Enqu
 ## 4. Edit, remove, reorder, объединение и замена
 
 **Edit** разрешён для ещё не claimed item. Backend атомарно ставит edit hold по item/queue revision; редактор не держит транзакцию БД всё время ввода. Draft редактирования autosave имеет собственного owner/revision. Save сохраняет новую content version и снимает hold; Cancel edit возвращает прежнюю версию. Если приложение закрылось при редактировании, сохранить hold/draft и предложить закончить edit; expiry lock не должен неожиданно отправить старый текст. Другое окно видит owner/conflict.
+
+Видимый inline edit hold блокирует автоматический dispatch этой разговорной lane до Save/Cancel, включая момент завершения текущего turn. «Сейчас» для редактируемого сообщения недоступно до явного завершения правки; отдельная явная отправка другого item не снимает edit hold и не отправляет редактируемый item; не отправлять молча старый текст. Save атомарно обновляет content revision и снимает именно edit hold, Cancel сохраняет прежний текст item и снимает тот же hold; ни одно действие не снимает `after_stop`, user pause, dependency или unknown-effect hold. Ctrl/Cmd+Enter выполняет Save, Escape — Cancel, с теми же guards; IME composition не должен случайно сохранять. При смене разговора незавершённая правка остаётся у исходного получателя.
 
 **Remove** ожидающего item — cancelled/tombstone с Undo по [ENTITY_LIFECYCLE_AND_EDITING](ENTITY_LIFECYCLE_AND_EDITING.md), без ACP вызова. Undo возвращает item только если всё ещё допустимы адресат/права/зависимости; он не запускается автоматически поверх текущего turn. Для уже claimed/dispatched сообщения вместо edit/remove предложить correction либо остановку текущего ответа. Не переименовывать это в «удаление отправленного сообщения».
 
@@ -98,6 +106,10 @@ Queue draft и отправленный Turn — разные снимки. Enqu
 
 Не вводить новое execution enum: использовать **queued, starting, running, waiting_permission, waiting_retry, cancel_requested, reconciling, completed, failed, cancelled, interrupted_unknown** из M2. Editing/paused/dependency/settings/attachment/unknown-effect — reasons для queue hold, а не новые workflow statuses. Workflow ready/waiting_input/blocked/... остаётся у существующего engine.
 
+Обычный idle Send также сначала добавляет item в хвост существующей очереди. Автоматический admission рассматривает голову FIFO выбранной lane; busy/edit/paused/blocked head не обходится поиском следующего «готового» сообщения. Явное «Сейчас» фиксирует конкретный `itemId`/revision: это отдельный запрос приоритета или возобновления, а не автоматическое перескакивание. Reorder/admission всё равно проверяют dependencies и holds. Если пользователь выбирает item не из головы, допустимая перестановка фиксируется явно и атомарно; при конфликте показывается причина, скрытого обхода зависимостей нет.
+
+Enqueue, Save, Cancel edit, Remove и «Сейчас» используют стабильные IDs и guards владельца очереди. Double click, поздний render callback и завершение turn не должны дважды claim один item. Нельзя адресовать строку по её текущему индексу, генерировать новый ID при rerender или считать отключённую кнопку единственной защитой. В макете необходим локальный атомарный guard, в runtime — CAS/operationId у единственного backend writer; это не обещание exactly-once внешних эффектов.
+
 Один admission transaction:
 
 1. Проверить item/queue/assignment versions, recipient existence/lifecycle, scope/authorization, отсутствие edit/user/deletion holds, dependencies и действующий parent budget.
@@ -121,6 +133,8 @@ Scheduler сохраняет FIFO там, где есть разговорная
 | **Продолжить очередь** | Проверить revisions/dependencies/settings/unknown effects и снять hold; не переслать прошлый prompt и не сбросить budget |
 | **Остановить всю задачу** | Удержать все lanes Task, адресно отменить её managed turns/workers; чужие Task не затрагиваются. Queued items сохраняются paused, пока пользователь отдельно не выберет их отмену |
 | **Удалить ожидающие** | Только выбранные недоставленные items становятся cancelled/tombstoned; это не прекращение active turn |
+
+Stop не извлекает и не отправляет остаток очереди, в том числе из запоздавшего completion callback. После подтверждённого settlement «Сейчас» может быть явным запросом возобновить выбранное ожидающее сообщение новым ходом, с теми же revision/dependency/admission проверками; само наличие idle состояния не снимает `after_stop`. При активном turn эта кнопка не разрешает второй `session/prompt`: verified steering использует только поддержанный adapter, а cancel → drain → reconcile → replacement остаётся отдельно названным действием «Остановить и отправить вместо». При unknown результатах оба пути остаются held до сверки. Название «Сейчас» не обещает мгновенное прерывание уже выполняемого tool.
 
 Политику after_stop показать в UI; её можно изменить явной настройкой, но не менять поведение незаметно. Session cancel не означает отмену внешней CI job, PTY или опубликованного изменения. Stop Task показывает реально управляемый scope и pending/unknown, не обещает управление скрытыми native children. При multiplex не убивать общий process ради одного turn.
 
@@ -166,6 +180,10 @@ D2 не ждёт всех advanced controls: первой полезной сб�
 | Сценарий | Что должно быть доказано |
 |---|---|
 | A1 active, A2/A3 queued; B отправляет сообщение | A1 immutable, один prompt/session; B не заблокирован UI очередью A при наличии общей квоты |
+| A1 завершился, пока A2 редактируется inline; A3 ожидает | Lane остаётся на edit hold до Save/Cancel; A3 не обходит голову. Save/Cancel не снимают отдельный after_stop или unknown hold |
+| Idle с A2/A3 в очереди; пользователь отправляет A4 из composer | A4 добавлен в хвост, сначала допускается A2; заблокированная голова не перескакивается |
+| Stop и поздний completion; двойной клик «Сейчас» | Остаток сам не запущен; явный допустимый send-now создаёт один claim, не два. Активный CLI turn не получает скрытый второй prompt |
+| Edit A2, переход A → B → A; Ctrl/Cmd+Enter/Escape | Черновик и hold принадлежат A, в B не появляются; клавиши выполняют только Save/Cancel своей версии, не обычную отправку composer |
 | Save edit одновременно с claim / Remove одновременно с claim | Один CAS winner; проигравший видит conflict, исходный/новый текст не смешиваются |
 | Два окна отправляют один operationId | Один queue receipt и один dispatch; одинаковый текст с разными осознанными операциями не удаляется как «дубликат» |
 | Enqueue success пришёл после нового ввода | Очищена только сохранённая draft revision, новый текст остаётся |

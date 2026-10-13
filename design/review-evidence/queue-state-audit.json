@@ -1,0 +1,81 @@
+{
+  "sourcePath": "design/suite-prototype-shell.js",
+  "sourceSha256": "08776506d1add2467c7693b1ad356b312a2a6fba15a5802dcdee7dd8ba13990a",
+  "method": "Current source functions evaluated in Node VM with minimal DOM and controlled timers; not browser, runtime or persistence evidence.",
+  "passed": 18,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Editing a tail item holds the entire automatic FIFO",
+      "status": "passed"
+    },
+    {
+      "name": "Completion while editing does not send an old revision",
+      "status": "passed"
+    },
+    {
+      "name": "Save commits revision and resumes FIFO head first",
+      "status": "passed"
+    },
+    {
+      "name": "Cancel preserves original text and resumes FIFO",
+      "status": "passed"
+    },
+    {
+      "name": "Empty Save keeps edit and all FIFO held",
+      "status": "passed"
+    },
+    {
+      "name": "Explicit Send now of another item retains edit hold",
+      "status": "passed"
+    },
+    {
+      "name": "Send now cannot claim the currently edited item",
+      "status": "passed"
+    },
+    {
+      "name": "Duplicate Send now and duplicate claim are no-ops",
+      "status": "passed"
+    },
+    {
+      "name": "Stale Edit action after claim cannot create an orphan edit",
+      "status": "passed"
+    },
+    {
+      "name": "Stale textarea after closing the edit is a safe no-op",
+      "status": "passed"
+    },
+    {
+      "name": "Stale textarea does not mutate a reopened revision of the same ID",
+      "status": "passed"
+    },
+    {
+      "name": "Stale Save after reopen same ID cannot commit or clear the new edit",
+      "status": "passed"
+    },
+    {
+      "name": "Stale Cancel after reopen same ID preserves the new edit",
+      "status": "passed"
+    },
+    {
+      "name": "Inactive conversation Save mutates only its owner",
+      "status": "passed"
+    },
+    {
+      "name": "Inactive Send now appends only to captured conversation",
+      "status": "passed"
+    },
+    {
+      "name": "Stop holds ordinary Send; hint correctly directs to explicit Now",
+      "status": "passed"
+    },
+    {
+      "name": "Paused Send now resumes the existing turn and retains remainder",
+      "status": "passed"
+    },
+    {
+      "name": "CtrlEnter Save stops propagation; IME composition cannot save",
+      "status": "passed"
+    }
+  ]
+}

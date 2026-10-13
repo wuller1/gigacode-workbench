@@ -1,0 +1,15 @@
+{
+  "name": "gigacode-ide-bridge",
+  "version": "0.2.0",
+  "license": "Apache-2.0",
+  "main": "lib/frontend-module.js",
+  "theiaExtensions": [
+    {
+      "frontend": "lib/frontend-module",
+      "backend": "lib/backend-module"
+    }
+  ],
+  "peerDependencies": {
+    "@theia/core": "1.76.0"
+  }
+}

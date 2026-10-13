@@ -1,0 +1,36 @@
+{
+  "method": "Actual shell context boundary extracted into Node VM; browser pickers and visual layout checked separately.",
+  "sourceSha256": "c54fa1cc9ff6da32a94ed2cab89686aa7494a0a47db433b9eae76556fbc7f180",
+  "passed": 7,
+  "failed": 0,
+  "results": [
+    {
+      "name": "multiline acceptance remains criteria, not individual characters",
+      "status": "passed"
+    },
+    {
+      "name": "structured criteria preserve text and title; invalid entries drop",
+      "status": "passed"
+    },
+    {
+      "name": "re-entering task restores selected conversation and its history",
+      "status": "passed"
+    },
+    {
+      "name": "metadata update does not reset conversation or draft",
+      "status": "passed"
+    },
+    {
+      "name": "other project update does not change active task title",
+      "status": "passed"
+    },
+    {
+      "name": "foreign project selection does not switch current scope",
+      "status": "passed"
+    },
+    {
+      "name": "new task brief contains complete acceptance lines",
+      "status": "passed"
+    }
+  ]
+}

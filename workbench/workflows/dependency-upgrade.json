@@ -6,7 +6,7 @@
   "stages": [
     {
       "id": "inventory",
-      "profile": "backend",
+      "profile": "security",
       "title": "Определить исходные версии",
       "instructions": [
         "Прочитать manifest, lock-файлы, runtime и инструкции проекта.",
@@ -34,7 +34,7 @@
     },
     {
       "id": "compatibility",
-      "profile": "backend",
+      "profile": "security",
       "title": "Разобрать несовместимости",
       "instructions": [
         "Изучить доступные официальные release notes и migration guides, предоставленные через разрешённые источники host.",

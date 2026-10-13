@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "enterprise.design-library",
+  "status": "specified",
+  "slots": ["repositoryBinding", "catalogNavigation", "themeAndViewport", "componentGallery", "tokenInspector", "iconProvenance", "templateGallery", "usageExamples", "consumerAdoption", "agentAssistant"],
+  "requiredStates": ["draft", "review", "approved", "deprecated", "partial", "repository-offline", "consumer-behind"],
+  "rules": [
+    "Gallery examples are executable fixtures linked to source and tests.",
+    "Every asset exposes origin, license, content hash and review state.",
+    "The assistant works inside the Design surface and exposes proposal, preview, execute, result, verify and evidence."
+  ]
+}

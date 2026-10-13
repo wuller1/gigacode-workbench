@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-13T00:00:00Z",
+  "cardId": "S0-01",
+  "status": "in_progress",
+  "objective": "Один конкретный проверяемый outcome карточки",
+  "repository": {
+    "root": "C:\\path\\to\\repo",
+    "baseCommit": "commit-before-work",
+    "currentCommit": "current-commit-or-null",
+    "dirtyFiles": [],
+    "testUserData": "C:\\temp\\workbench-card-S0-01"
+  },
+  "task": {
+    "projectId": "local-project-id",
+    "taskId": "local-task-id",
+    "sessionIds": [],
+    "role": "backend"
+  },
+  "acceptanceIds": ["FND-01"],
+  "completedSteps": [
+    {
+      "id": "audit",
+      "result": "Что фактически установлено",
+      "evidenceRefs": []
+    }
+  ],
+  "currentStep": {
+    "id": "implementation",
+    "reason": "Почему это следующий шаг"
+  },
+  "remainingSteps": [],
+  "touchedOwners": [
+    {
+      "owner": "BrowserService",
+      "files": ["app/electron/browser.ts"],
+      "dataRevision": null
+    }
+  ],
+  "decisions": [
+    {
+      "statement": "Короткое принятое решение",
+      "reason": "Факт или trade-off",
+      "sourceRefs": []
+    }
+  ],
+  "verifiedFacts": [],
+  "unknowns": [],
+  "tests": [
+    {
+      "level": "unit|fixture|electron-e2e|live-endpoint|windows-package",
+      "commandOrScenario": "Точная проверка",
+      "environment": "ОС/runtime/fixture",
+      "expected": "Ожидаемое",
+      "observed": "Наблюдаемое",
+      "status": "passed|failed|not-run",
+      "evidenceRefs": []
+    }
+  ],
+  "activeOperations": [],
+  "rollback": {
+    "backupRef": null,
+    "instructions": "Как вернуть состояние"
+  },
+  "context": {
+    "summaryRevision": 1,
+    "summary": "Короткий контекст без полного transcript",
+    "pinnedResourceRefs": [],
+    "discardedDetails": []
+  },
+  "nextStep": "Один точный следующий шаг после восстановления"
+}

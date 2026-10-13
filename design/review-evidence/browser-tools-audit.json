@@ -1,0 +1,72 @@
+{
+  "scope": "Node VM model and callback audit of the real browser-tools module with local DOM stubs. No live UI, network, browser engine or credentials.",
+  "sourceHash": "0ca3f9c7256fd4205409ddbaa1479a7ca89cdf6e147146d2f0e405eadb186f5d",
+  "passed": 16,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Debug model is independent per tab and browser profile",
+      "pass": true
+    },
+    {
+      "name": "Inspector selected tool survives switching browser tabs",
+      "pass": true
+    },
+    {
+      "name": "Scoped cache clear leaves cookies, other origins and other profiles untouched",
+      "pass": true
+    },
+    {
+      "name": "Whole-profile clear affects requested types only and preserves credentials/bookmarks",
+      "pass": true
+    },
+    {
+      "name": "No checked data types cannot mutate site data",
+      "pass": true
+    },
+    {
+      "name": "Open site data keeps unknown current origin selected instead of selecting another site",
+      "pass": true
+    },
+    {
+      "name": "Clear callback retains captured profile if active profile later changes",
+      "pass": true
+    },
+    {
+      "name": "Password fixture stores metadata only",
+      "pass": true
+    },
+    {
+      "name": "Password Never and offer-save off stop save prompt",
+      "pass": true
+    },
+    {
+      "name": "Autofill fixture is disabled at a different origin",
+      "pass": true
+    },
+    {
+      "name": "Bookmark create normalizes URL and exposes selected-star state",
+      "pass": true
+    },
+    {
+      "name": "Duplicate bookmarks cannot overwrite an unrelated bookmark",
+      "pass": true
+    },
+    {
+      "name": "Bookmark URLs reject executable schemes and embedded credentials",
+      "pass": true
+    },
+    {
+      "name": "Legacy bookmark migration filters credential-bearing URLs",
+      "pass": true
+    },
+    {
+      "name": "Failed settings persistence never reports saved success",
+      "pass": true
+    },
+    {
+      "name": "Syntax highlighting targets only code blocks, not the interactive inspector host",
+      "pass": true
+    }
+  ]
+}

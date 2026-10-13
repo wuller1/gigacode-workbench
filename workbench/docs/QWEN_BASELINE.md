@@ -1,12 +1,23 @@
 # Qwen Code: проверенная исходная база для оболочки GigaCode
 
-Дата исследования: **2026-10-09**. Это чтение первичных исходников и документации, не результат запуска Qwen, GigaCode или ACP-интеграционных тестов. CLI пользователя менять нельзя: допустимы собственная оболочка, поддержанные параметры запуска, подтверждённые ACP-возможности и MCP. Внутренние классы Qwen приведены как доказательства поведения, а не как доступные точки расширения установленного GigaCode.
+Дата основного исследования: **2026-10-09**; сверка релиза 0.25.1: **2026-10-13**. Это чтение первичных исходников и документации плюс локальный запуск `--version`, но не результат запуска GigaCode или полного ACP-интеграционного теста 0.25.1. CLI пользователя менять нельзя: допустимы собственная оболочка, поддержанные параметры запуска, подтверждённые ACP-возможности и MCP. Внутренние классы Qwen приведены как доказательства поведения, а не как доступные точки расширения установленного GigaCode.
 
 ## Зафиксированная версия и граница переноса
 
 Проверен репозиторий [QwenLM/qwen-code](https://github.com/QwenLM/qwen-code) в commit **`4360b003a087fe9e57f6ffbe7ba48795980b59c3`**. `git ls-remote` вернул этот SHA для `HEAD` и `refs/heads/main`; клонированный checkout подтвердил тот же SHA. Commit имеет время **2026-10-09T09:27:05Z**. Это конкретный snapshot `main`, не утверждение о последнем опубликованном релизе. Его корневой `package.json` содержит версию **0.25.0**. [Commit](https://github.com/QwenLM/qwen-code/commit/4360b003a087fe9e57f6ffbe7ba48795980b59c3), [package.json](https://github.com/QwenLM/qwen-code/blob/4360b003a087fe9e57f6ffbe7ba48795980b59c3/package.json#L4).
 
-Везде ниже «Qwen подтверждено» означает именно этот snapshot. **GigaCode 26.9.75 не сопоставлен с upstream SHA**: его локальные `--version`, `--help`, schema настроек и ACP handshake в этом исследовании не получены. Номер версии форка сам по себе не устанавливает совместимость. Документация сайта Qwen прочитана как дополнительный источник; для воспроизводимости технические ссылки ниже закреплены на commit.
+Везде ниже «Qwen подтверждено» без отдельной пометки означает именно этот snapshot. **GigaCode 26.9.75 не сопоставлен с upstream SHA**: его локальные `--version`, `--help`, schema настроек и ACP handshake в этом исследовании не получены. Номер версии форка сам по себе не устанавливает совместимость. Документация сайта Qwen прочитана как дополнительный источник; для воспроизводимости технические ссылки ниже закреплены на commit.
+
+### Сверка опубликованного Qwen Code 0.25.1
+
+Текущая desktop dependency закреплена на `@qwen-code/qwen-code` **0.25.1**; официальный tag [`v0.25.1`](https://github.com/QwenLM/qwen-code/tree/c1a8218f38203e272e6e965778ed6a2795cfeed7) указывает на commit `c1a8218f38203e272e6e965778ed6a2795cfeed7`. Локальный package entrypoint вернул 0.25.1. Исходники tag сопоставлены с прежним snapshot; текущие app build/tests проверяются отдельно, а прежний live ACP и Windows pass 0.25.0 не переносятся на новую версию автоматически.
+
+Для оболочки особенно важны две добавленные upstream-поверхности:
+
+- extension [`craft/midTurnSendNow`](https://github.com/QwenLM/qwen-code/blob/c1a8218f38203e272e6e965778ed6a2795cfeed7/packages/acp-bridge/src/bridgeTypes.ts#L1481) позволяет host попросить доставить уже сохранённый mid-turn input; direct agent маршрутизирует его в конкретную session ([handler](https://github.com/QwenLM/qwen-code/blob/c1a8218f38203e272e6e965778ed6a2795cfeed7/packages/cli/src/acp-integration/acpAgent.ts#L9773));
+- transcript extensions публикуют request/tool lifecycle с execution ID, фазой, model/tool и временем ([request](https://github.com/QwenLM/qwen-code/blob/c1a8218f38203e272e6e965778ed6a2795cfeed7/packages/acp-bridge/src/transcript-replay.ts#L830), [tool](https://github.com/QwenLM/qwen-code/blob/c1a8218f38203e272e6e965778ed6a2795cfeed7/packages/acp-bridge/src/transcript-replay.ts#L727)). Это хороший источник компактных operation cards и диагностики, если target действительно передаёт metadata.
+
+Обе возможности являются Qwen extensions. Текущий прямой ACP client Workbench пока не реализует host-side `craft/drainMidTurnQueue`, capability probe и parsing lifecycle metadata, поэтому 0.25.1 сам по себе не делает live steering готовым. Сначала добавить versioned adapter, fallback на durable `Send next`, targeted fixture/live test и отдельную проверку GigaCode; неизвестный method `-32601` не является аварией обычной очереди.
 
 | Уровень | Что можно использовать в оболочке | Что не следует обещать заранее |
 |---|---|---|

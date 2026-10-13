@@ -1,0 +1,100 @@
+/* A prototype split-tree workspace; surfaces stay mounted in persistent leaves. */
+.app.sw-enabled .shell{grid-template-columns:var(--rail) minmax(0,1fr)!important}
+.app.sw-enabled .rail{grid-column:1;grid-row:1;border-left:0;border-right:1px solid var(--line);z-index:20}
+.app.sw-enabled .work-area{grid-column:2;grid-row:1;position:relative}
+.app.sw-enabled .rail-button.active:before{left:-6px;right:auto;border-radius:0 2px 2px 0}
+.app.sw-enabled .rail-button[data-open=true]:after{content:"";position:absolute;right:4px;bottom:4px;width:4px;height:4px;border-radius:50%;background:var(--mint)}
+.app.sw-enabled .navigator{left:calc(var(--rail) + 8px);right:auto}
+.app.sw-enabled .inspector{display:none!important}
+.app.sw-enabled #chatVisibility[hidden]{display:none!important}
+.workspace.sw-workspace{display:block!important;position:relative;overflow:hidden;min-width:0;min-height:0;padding:0!important}
+.workspace.sw-workspace>.panel-divider,.workspace.sw-workspace>#restoreChat{display:none!important}
+.sw-scroll{width:100%;height:100%;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;position:relative}
+.sw-canvas{position:relative;min-width:100%;min-height:100%;isolation:isolate}
+.sw-leaf{position:absolute;overflow:hidden;min-width:0;min-height:0;background:var(--bg)}
+.sw-leaf[hidden],.sw-separator[hidden],.sw-empty[hidden]{display:none!important}
+.sw-leaf>.view{display:flex!important;flex-direction:column;width:100%!important;height:100%!important;min-width:0;min-height:0;overflow:hidden}
+/* Panel controls share the tool's first row; no duplicate title strip. */
+.sw-toolbar-row{display:flex;align-items:center;flex:none;min-width:0;min-height:36px;background:var(--panel);color:var(--text);overflow:hidden}
+.sw-toolbar-row>.sw-native-toolbar{flex:1;min-width:0;width:auto;margin:0!important;border:0!important;box-shadow:none!important;background:transparent!important;overflow-x:auto;scrollbar-width:thin}
+.sw-leaf .sw-panel-head{display:flex!important;align-items:center;gap:1px;align-self:stretch;flex:none;width:auto;min-width:0;min-height:30px;height:auto;margin:0!important;padding:0 5px 0 3px!important;background:transparent;border:0;color:var(--muted);white-space:nowrap;touch-action:none;user-select:none}
+.sw-panel-head>.icon-button,.sw-panel-head>.sw-agent-action{display:grid;place-items:center;margin:0!important;width:27px;height:28px;min-height:28px;padding:0!important;flex:none;cursor:pointer;border:0;background:transparent}
+.sw-panel-head>.sw-panel-expand{order:2}.sw-panel-head>.sw-panel-grip{order:1;cursor:grab}.sw-panel-head>.icon-button:last-child{order:3}
+.sw-panel-head>.sw-panel-grip:active{cursor:grabbing}
+.sw-panel-head>.icon-button:hover,.sw-panel-head>.sw-agent-action:hover{background:var(--hover);color:var(--text)}
+.sw-panel-head>.sw-panel-title,.sw-panel-head>.sw-panel-context,.sw-panel-head>.sw-session-action,.sw-panel-head.sw-native-agent>.sw-agent-action{display:none!important}
+.sw-panel-head .icon{width:16px;height:16px;pointer-events:none}
+.sw-panel-head .sw-panel-grip .icon{stroke-width:3;stroke-linecap:round}
+.sw-panel-head .icon-button:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.sw-focused .sw-panel-head{color:var(--text)}
+.sw-integrated [data-bd="expand"],.sw-integrated [data-ab="expand"]{display:none!important}
+/* Native controls scroll independently; panel close/restore always stay in reach. */
+.sw-toolbar-row>.bd-tabs{overflow:hidden}.sw-toolbar-row>.bd-designbar{flex-wrap:nowrap}.sw-toolbar-row>.bd-designbar>h2,.sw-toolbar-row>.bd-designbar>.bd-chip{display:none}
+.sw-toolbar-row>.ab-ownerbar{min-width:0}.sw-toolbar-row .ab-owner-select{min-width:0}
+.sw-toolbar-row>.sto-toolbar{flex-wrap:nowrap;gap:5px;padding:6px 8px;min-height:40px}
+.sw-toolbar-row>.sto-toolbar>.btn{flex:none;padding:4px 7px;white-space:nowrap}
+.sw-toolbar-row>.sto-toolbar>.sto-demo{display:none}
+.sw-toolbar-row>.view-toolbar{gap:6px;padding:6px 10px;min-height:40px}
+.sw-separator{position:absolute;z-index:4;background:var(--line);touch-action:none;cursor:col-resize}
+.sw-separator[data-axis=y]{cursor:row-resize}
+.sw-separator:hover,.sw-separator:focus-visible{background:var(--blue);outline:none}
+.sw-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;color:var(--muted)}
+.sw-empty h2{font-size:20px;font-weight:550;color:var(--text)}
+.sw-empty p{max-width:480px;line-height:1.7;font-size:13px}.sw-empty-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;max-width:600px}
+.sw-status{position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.sw-layout-dialog{width:min(560px,calc(100vw - 28px));max-height:calc(100vh - 32px);padding:0;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.sw-layout-dialog::backdrop{background:#0007}.sw-layout-dialog header,.sw-layout-dialog footer{padding:14px 18px;display:flex;align-items:center;gap:8px}.sw-layout-dialog header{border-bottom:1px solid var(--line)}.sw-layout-dialog header h2{margin:0;font-size:16px;font-weight:600;flex:1}.sw-layout-dialog footer{border-top:1px solid var(--line);flex-wrap:wrap}.sw-layout-body{padding:18px;overflow:auto;max-height:65vh}.sw-layout-body h3{font-size:12px;margin:18px 0 8px}.sw-menu-actions{display:flex;gap:7px;flex-wrap:wrap}.sw-menu-move{display:grid;grid-template-columns:1fr 1fr auto;align-items:end;gap:8px;margin-top:16px}.sw-menu-move label{font-size:11px;display:grid;gap:5px;color:var(--muted);min-width:0}.sw-menu-move select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line2);border-radius:6px;padding:7px}.sw-panel-list{display:flex;flex-wrap:wrap;gap:6px}.sw-layout-note{font-size:11px;line-height:1.6;color:var(--muted);margin:18px 0 0}
+.sw-drag-layer{position:fixed;inset:0;z-index:2400;pointer-events:none}.sw-drag-layer[hidden]{display:none}.sw-drop-preview{position:fixed;background:color-mix(in srgb,var(--blue) 19%,transparent);border:2px solid var(--blue);border-radius:8px}.sw-drop-targets{position:fixed;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;align-items:center;justify-items:center;padding:14px}.sw-drop-targets[hidden],.sw-drop-preview[hidden]{display:none}.sw-target{padding:7px 10px;font:11px var(--ui);border:1px solid var(--line2);border-radius:7px;background:var(--panel);color:var(--text);box-shadow:var(--shadow)}.sw-target.active{background:var(--mint);color:var(--on-accent);border-color:var(--mint)}.sw-target[data-edge=top]{grid-column:2;grid-row:1}.sw-target[data-edge=bottom]{grid-column:2;grid-row:3}.sw-target[data-edge=left]{grid-column:1;grid-row:2}.sw-target[data-edge=right]{grid-column:3;grid-row:2}.sw-target[data-edge=center]{grid-column:2;grid-row:2}.sw-drag-note{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);max-width:calc(100vw - 40px);padding:10px 14px;background:var(--panel);color:var(--text);border:1px solid var(--line2);border-radius:8px;font:12px var(--ui);box-shadow:var(--shadow)}
+body.sw-dragging,body.sw-dragging *{cursor:grabbing!important;user-select:none!important}body.sw-resizing,body.sw-resizing *{user-select:none!important}
+@media(max-width:580px){.sw-menu-move{grid-template-columns:1fr 1fr}.sw-menu-move button{grid-column:1/-1}.sw-layout-dialog footer{padding:12px}.sw-layout-body{padding:14px}}
+
+
+.sw-menu-actions+.sw-menu-actions{margin-top:8px}
+
+/* Only content scrolls inside a tile; focusing editors must never scroll its header away. */
+.sw-leaf,.sw-leaf>.view{overflow:clip!important}.sw-leaf>.view>.di-studio,.sw-leaf>.view>.bd-root,.sw-leaf>.view>.sto-panel,.sw-leaf>.view>.sto-ops-shell{min-height:0;overflow:auto}
+
+/* Explicit tab groups stay groups; explicit splits stay split at every viewport size. */
+.sw-group-tabs{position:absolute;z-index:5;display:flex;gap:2px;align-items:stretch;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:0 5px;background:var(--panel)}
+.sw-group-tabs[hidden]{display:none!important}.sw-group-tabs::-webkit-scrollbar{display:none}
+.sw-group-tab-item{display:flex;align-items:center;flex:none;min-width:80px;max-width:204px;border-bottom:2px solid transparent;background:transparent}
+.sw-group-tab-item:hover{background:var(--hover)}
+.sw-group-tab-item:has([aria-selected=true]){background:var(--panel2);border-bottom-color:var(--mint)}
+.sw-group-tab{align-self:stretch;flex:1;min-width:0;touch-action:none;padding:0 8px 0 11px;border:0;background:transparent;color:var(--muted);font:11px var(--ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.sw-group-tab:hover,.sw-group-tab[aria-selected=true]{color:var(--text)}
+.sw-group-tab-close{display:grid;place-items:center;flex:none;width:24px;height:24px;margin-right:4px;padding:0;border:0;border-radius:4px;background:transparent;color:var(--muted);cursor:pointer}
+.sw-group-tab-close .icon{width:14px;height:14px;pointer-events:none}
+.sw-group-tab-close:hover{background:var(--sel);color:var(--text)}
+.sw-group-tab:focus-visible,.sw-group-tab-close:focus-visible{outline:2px solid var(--blue);outline-offset:-3px}
+.sw-group-overflow{position:sticky;right:0;align-self:stretch;margin-left:auto;z-index:1;display:grid;place-items:center;flex:none;width:28px;padding:0;border:0;border-left:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer}
+.sw-group-overflow:hover,.sw-group-overflow:focus-visible{color:var(--text);background:var(--hover)}.sw-group-overflow .icon{width:14px;height:14px}
+.sw-group-dialog{width:min(340px,calc(100vw - 28px))}.sw-group-list{display:flex;flex-direction:column;padding:8px;gap:2px;max-height:60vh;overflow:auto}
+.sw-group-list button{min-height:36px;background:transparent;border:0;border-radius:6px;color:var(--text);padding:8px 12px;text-align:left;font:12px var(--ui);cursor:pointer}.sw-group-list button:hover,.sw-group-list button:focus-visible{background:var(--hover)}.sw-group-list button.selected{background:var(--sel)}
+
+/* One stable chat control, above IDE; no edge reveal target or titlebar duplicate. */
+.app .rail #chatVisibility{width:36px;min-width:36px;height:36px;padding:0;display:grid;place-items:center;border-radius:6px}
+.app .rail #chatVisibility .icon{width:21px;height:21px}
+.app .rail #chatVisibility[aria-pressed=true]{background:var(--sel);color:var(--text)}
+#sw-panel-chat .sw-panel-head .sw-panel-close{display:none!important}
+
+/* Docking feedback has one meaning across toolbar, group tabs and rail icons. */
+.sw-drop-preview{border-radius:3px;border-width:2px}
+.sw-drop-targets{padding:24px;gap:8px}
+.sw-target{border-radius:4px;padding:6px 10px;font-weight:550;box-shadow:0 2px 10px #0002}
+.sw-target.active{background:var(--blue);color:var(--on-accent);border-color:var(--blue)}
+.app.sw-enabled .rail-button{touch-action:none}
+
+/* Placement menus remain attached to their trigger and do not block other tools. */
+.sw-layout-dialog{position:fixed;z-index:1800;margin:0;inset:auto;max-height:calc(100vh - 24px);overflow:auto;border-radius:8px}
+.sw-layout-dialog header,.sw-layout-dialog footer{padding:10px 12px}
+.sw-layout-dialog header h2{font-size:13px}
+.sw-layout-body{padding:12px;max-height:58vh}
+.sw-layout-body h3{margin-top:12px}
+.sw-layout-dialog .sw-layout-note{margin-top:12px}
+.sw-group-dialog .sw-group-list{max-height:320px}
+
+/* Narrow desktop splits scroll commands instead of wrapping them into tall toolbars. */
+.sw-toolbar-row>.sw-native-toolbar{flex-wrap:nowrap!important}
+.sw-toolbar-row>.sw-native-toolbar>*{flex-shrink:0}
+.sw-leaf .sw-panel-head{flex-wrap:nowrap!important}
+.sw-leaf #di-ide .di-bar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}

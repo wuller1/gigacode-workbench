@@ -21,10 +21,13 @@ import { UiMcpServer } from "./mcp";
 import { redact } from "./acp";
 import { readReference } from "./reference";
 import { bundledCli } from "./bundled-cli";
+import { IdeService } from "./ide";
 import type { HostEvent } from "../shared/types";
 
 if (process.env.WORKBENCH_DATA_DIR)
   app.setPath("userData", path.resolve(process.env.WORKBENCH_DATA_DIR));
+// Keep IDE preview origins isolated while resolving their reserved local subdomains.
+app.commandLine.appendSwitch('host-resolver-rules', 'MAP *.webview.localhost 127.0.0.1');
 const single = app.requestSingleInstanceLock();
 if (!single) app.quit();
 let service: WorkbenchService,
@@ -32,6 +35,7 @@ let service: WorkbenchService,
   terminal: TerminalService,
   workspace: Workspace,
   mcp: UiMcpServer;
+let ide: IdeService;
 let quitting = false,
   previewServer: Server | undefined,
   previewPort = 0;
@@ -41,11 +45,16 @@ const windows = new Set<BrowserWindow>();
 const sessionOwners = new Map<string, number>();
 let builtinCli: { path: string; label: string } | undefined;
 let builtinCliError: string | undefined;
+let resourceRoot = "";
 const uiPath = path.resolve(__dirname, "../dist/index.html");
 const uiUrl = pathToFileURL(uiPath).toString();
 const emit = (event: HostEvent) => {
   for (const window of windows)
-    if (!window.isDestroyed())
+    if (
+      !window.isDestroyed() &&
+      (event.targetWindowId === undefined ||
+        event.targetWindowId === window.id)
+    )
       window.webContents.send("workbench:event", event);
 };
 const log = async (kind: string, message: unknown) => {
@@ -103,6 +112,7 @@ function createWindow() {
   window.webContents.on("render-process-gone", (_e, details) => {
     void log("renderer-gone", details);
     browser.hideWindow(window.id);
+    ide?.hideWindow(window.id);
   });
   window.webContents.on("console-message", (details) => {
     if (details.level === "error" || details.level === "warning")
@@ -121,6 +131,7 @@ function createWindow() {
     const survivor = [...windows].find((w) => w !== window && !w.isDestroyed());
     if (survivor) {
       browser.transferWindow(window, survivor);
+      ide?.transferWindow(window, survivor);
       for (const [id, owner] of sessionOwners)
         if (owner === window.id) sessionOwners.set(id, survivor.id);
       return;
@@ -147,6 +158,7 @@ function createWindow() {
   });
   window.on("closed", () => {
     browser.closeWindow(window.id);
+    ide?.closeWindow(window.id);
     windows.delete(window);
   });
   window.once("ready-to-show", () => window.show());
@@ -184,7 +196,7 @@ async function invoke(
   agentSession?: string,
 ): Promise<any> {
   if (method === "workbench.reference")
-    return readReference(service.options.bundleDir, p);
+    return readReference(resourceRoot, p);
   if (method === "session.attach") {
     sessionProject(p.id);
     const owner = sessionOwners.get(p.id);
@@ -218,6 +230,24 @@ async function invoke(
       });
     return result;
   }
+  if (method.startsWith('ide.')) {
+    if (agentSession) {
+      const owner = sessionProject(agentSession);
+      if (p.projectId && p.projectId !== owner.id) throw new Error('Нельзя управлять IDE другого проекта');
+      p = { ...p, projectId: owner.id };
+      if (method === 'ide.list') return ide.pool.snapshot().filter(entry => entry.projectIds.includes(owner.id));
+    }
+    if (method === 'ide.reveal') {
+      project(p.projectId);
+      emit({ type: 'ide.reveal', targetWindowId: window.id, payload: { projectId: p.projectId } });
+      return { requested: true };
+    }
+    const result = await ide.invoke(method, p, window);
+    if (method === 'ide.capture' && p.taskId) await service.invoke('artifact.register', {
+      taskId: p.taskId, path: result.path, kind: 'image', name: 'Снимок IDE',
+    });
+    return result;
+  }
   if (agentSession) {
     const allowed = new Set([
       "todo.replace",
@@ -243,8 +273,10 @@ async function invoke(
       return {
         version: app.getVersion(),
         platform: process.platform,
+        windowId: window.id,
         dataDir: app.getPath("userData"),
         bundleDir: service.options.bundleDir,
+        referenceRoot: resourceRoot,
         bundledCli: builtinCli,
         bundledCliError: builtinCliError,
       };
@@ -364,10 +396,11 @@ async function invoke(
 async function start() {
   await app.whenReady();
   Menu.setApplicationMenu(null);
+  resourceRoot = app.isPackaged
+    ? process.resourcesPath
+    : path.resolve(__dirname, "../..");
   const dataDir = app.getPath("userData"),
-    bundleDir = app.isPackaged
-      ? path.join(process.resourcesPath, "workbench")
-      : path.resolve(__dirname, "../../workbench");
+    bundleDir = path.join(resourceRoot, "workbench");
   browser = new BrowserService(dataDir, emit);
   terminal = new TerminalService(emit, project);
   workspace = new Workspace(project, (p) => shell.trashItem(p));
@@ -402,6 +435,16 @@ async function start() {
     mcpServersForSession: (id) => mcp.binding(id),
   });
   await service.init();
+  const ideRuntimeRoot = path.join(resourceRoot, 'ide');
+  const ideNodeLock = await fs.readFile(path.join(ideRuntimeRoot, 'node-runtime-lock.json'), 'utf8')
+    .then(value => JSON.parse(value)).catch(() => ({ version: '' }));
+  const nodePlatform = process.platform === 'win32' ? 'win' : process.platform;
+  const ideNodeDirectory = `node-${ideNodeLock.version}-${nodePlatform}-${process.arch}`;
+  const ideNodeRoot = app.isPackaged ? path.join(process.resourcesPath, 'ide-node') : path.resolve(__dirname, '../runtime/ide-node');
+  ide = new IdeService({ runtimeRoot: ideRuntimeRoot,
+    nodePath: process.env.WORKBENCH_IDE_NODE || path.join(ideNodeRoot, ideNodeDirectory, process.platform === 'win32' ? 'node.exe' : 'bin/node'),
+    toolchainsRoot: app.isPackaged ? path.join(process.resourcesPath, 'ide-tools') : path.resolve(__dirname, '../runtime/ide-tools'),
+    dataDir, project, emit });
   mcp = new UiMcpServer(
     () => service.snapshot(),
     (method, p, sessionId) => {
@@ -458,6 +501,7 @@ async function start() {
       "session.attach",
       "browser.bounds",
       "browser.list",
+      "ide.bounds",
       "terminal.list",
       "terminal.write",
       "terminal.resize",
@@ -553,6 +597,7 @@ app.on("before-quit", (e) => {
     service?.dispose(),
     mcp?.dispose(),
     terminal?.dispose(),
+    ide?.dispose(),
   ]).then(async (results) => {
     const terminalResult = results[2];
     if (

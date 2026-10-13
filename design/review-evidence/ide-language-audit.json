@@ -1,0 +1,155 @@
+{
+  "scope": "Actual source helpers and language controller callbacks in Node VM, deterministic timers and minimal API facade. This checks prototype state isolation/cancellation/target capture, not DOM/CSS, semantic analysis, actual compiler/tests/LSP/DAP or Windows execution.",
+  "sources": {
+    "suite-prototype-ide-languages.js": "e38acd5bec118b525dab9ae2de885131dbdbdac93e5a4051d58077608a396a71",
+    "suite-prototype-data-ide.js": "4456caedf8f41559a49cd21e63d65d354d189359955b6126a72a9b874de78743"
+  },
+  "passed": 36,
+  "total": 36,
+  "tests": [
+    {
+      "name": "Per-file breakpoints do not leak to another file or project",
+      "pass": true
+    },
+    {
+      "name": "Three language states are independent",
+      "pass": true
+    },
+    {
+      "name": "Renaming a run configuration preserves the selected language and entry",
+      "pass": true
+    },
+    {
+      "name": "Windows Java uses each project wrapper; POSIX uses its native spelling",
+      "pass": true
+    },
+    {
+      "name": "Maven build and Spring runtime profiles remain distinct in the command",
+      "pass": true
+    },
+    {
+      "name": "Skip-tests preference cannot suppress an explicit Maven Test action",
+      "pass": true
+    },
+    {
+      "name": "Python commands use the selected interpreter and preserve a spaced Windows path",
+      "pass": true
+    },
+    {
+      "name": "Python command display quotes shell metacharacters and POSIX apostrophes",
+      "pass": true
+    },
+    {
+      "name": "Import display follows the selected platform and interpreter",
+      "pass": true
+    },
+    {
+      "name": "Frontend commands use selected package manager and distinct test/build targets",
+      "pass": true
+    },
+    {
+      "name": "Test fixture results point to each selected language, not a shared TS test",
+      "pass": true
+    },
+    {
+      "name": "Missing source fails fixture checks instead of creating passing results",
+      "pass": true
+    },
+    {
+      "name": "Opening a language never overwrites an existing edited manifest",
+      "pass": true
+    },
+    {
+      "name": "Unconfigured Java cannot report a successful run",
+      "pass": true
+    },
+    {
+      "name": "A running operation captures command/name and source before later edits",
+      "pass": true
+    },
+    {
+      "name": "Results visibly become stale after a checked buffer changes",
+      "pass": true
+    },
+    {
+      "name": "A later non-test run cannot erase test revision provenance",
+      "pass": true
+    },
+    {
+      "name": "Late completion cannot change the viewed project or render its editor",
+      "pass": true
+    },
+    {
+      "name": "Concurrent project operations stop and finish independently",
+      "pass": true
+    },
+    {
+      "name": "Stop invalidates an already captured callback and permits a new run",
+      "pass": true
+    },
+    {
+      "name": "Stale callback cannot remove the cancellation handle of a replacement run",
+      "pass": true
+    },
+    {
+      "name": "Changing a scenario applies to the next run, never to pending completion",
+      "pass": true
+    },
+    {
+      "name": "Stopping an import leaves the previous readiness and does not complete later",
+      "pass": true
+    },
+    {
+      "name": "Debug step remains bound to the captured file after opening another editor",
+      "pass": true
+    },
+    {
+      "name": "Frontend debugger displays a frame matching its actual source fixture",
+      "pass": true
+    },
+    {
+      "name": "Deleted debug source cannot step into a different active file",
+      "pass": true
+    },
+    {
+      "name": "Debug continue cancellation rejects its pending successful exit",
+      "pass": true
+    },
+    {
+      "name": "A paused debugger prevents another run in that same profile",
+      "pass": true
+    },
+    {
+      "name": "Background profiles retain aggregate running state until all finish",
+      "pass": true
+    },
+    {
+      "name": "Spring server completion reports its captured profile until explicitly restarted",
+      "pass": true
+    },
+    {
+      "name": "Deleted Spring navigation target cannot focus a line in an unrelated document",
+      "pass": true
+    },
+    {
+      "name": "Old dialog callbacks reject another project before applying settings",
+      "pass": true
+    },
+    {
+      "name": "Preview fix refuses a buffer changed after its review was opened",
+      "pass": true
+    },
+    {
+      "name": "Coverage never fabricates a measured percentage from fixture success",
+      "pass": true
+    },
+    {
+      "name": "User collapse during a run survives both success and failure completion",
+      "pass": true
+    },
+    {
+      "name": "Debug with an unprepared toolchain reveals its repair instructions",
+      "pass": true
+    }
+  ]
+}

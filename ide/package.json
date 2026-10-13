@@ -1,0 +1,73 @@
+{
+  "name": "gigacode-workbench-ide",
+  "version": "0.2.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Full local IDE engine for GigaCode Workbench",
+  "scripts": {
+    "build:bridge": "tsc -p extensions/workbench-bridge",
+    "build": "npm run build:bridge && theia build --mode production",
+    "start": "theia start --hostname=127.0.0.1 --port=0 --plugins=local-dir:plugins",
+    "plugins": "node tools/install-plugins.mjs"
+  },
+  "dependencies": {
+    "@theia/core": "1.76.0",
+    "@theia/editor": "1.76.0",
+    "@theia/filesystem": "1.76.0",
+    "@theia/workspace": "1.76.0",
+    "@theia/navigator": "1.76.0",
+    "@theia/preferences": "1.76.0",
+    "@theia/messages": "1.76.0",
+    "@theia/markers": "1.76.0",
+    "@theia/outline-view": "1.76.0",
+    "@theia/process": "1.76.0",
+    "@theia/terminal": "1.76.0",
+    "@theia/task": "1.76.0",
+    "@theia/debug": "1.76.0",
+    "@theia/test": "1.76.0",
+    "@theia/scm": "1.76.0",
+    "@theia/search-in-workspace": "1.76.0",
+    "@theia/file-search": "1.76.0",
+    "@theia/monaco": "1.76.0",
+    "@theia/plugin-ext": "1.76.0",
+    "@theia/plugin-ext-vscode": "1.76.0",
+    "@theia/vsx-registry": "1.76.0",
+    "@theia/toolbar": "1.76.0",
+    "@theia/callhierarchy": "1.76.0",
+    "@theia/typehierarchy": "1.76.0",
+    "@theia/bulk-edit": "1.76.0",
+    "@theia/editor-preview": "1.76.0",
+    "@theia/notebook": "1.76.0",
+    "@theia/output": "1.76.0",
+    "@theia/console": "1.76.0",
+    "@theia/getting-started": "1.76.0",
+    "gigacode-ide-bridge": "file:extensions/workbench-bridge"
+  },
+  "devDependencies": {
+    "@theia/cli": "1.76.0",
+    "typescript": "~5.8.3",
+    "@types/node": "^22.0.0"
+  },
+  "theia": {
+    "target": "browser",
+    "frontend": {
+      "config": {
+        "applicationName": "GigaCode IDE",
+        "defaultTheme": "workbench-dark",
+        "defaultIconTheme": "theia-file-icons",
+        "preferences": {
+          "files.autoSave": "off",
+          "workbench.startupEditor": "none",
+          "security.workspace.trust.enabled": false,
+          "telemetry.enableTelemetry": false,
+          "workbench.editor.enablePreview": true,
+          "editor.fontSize": 13,
+          "editor.minimap.enabled": false,
+          "editor.renderWhitespace": "selection",
+          "editor.tabSize": 4,
+          "terminal.integrated.fontSize": 13
+        }
+      }
+    }
+  }
+}

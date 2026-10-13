@@ -1,0 +1,46 @@
+{
+  "sources": {
+    "layout": "bcf56a20152845107054b58777bb24ea82c00633b84e8ae2c58a790e0682550f",
+    "ide": "cc11ea1ced75bc3a1f9fb0fc78e50a31c21088b1e73218cac01f1337f7a2281c"
+  },
+  "tests": 8,
+  "passed": 8,
+  "results": [
+    {
+      "name": "mount twice keeps one row, original native toolbar and original controls",
+      "pass": true
+    },
+    {
+      "name": "tool rerender can detach controls; reattachment preserves the same buttons and listeners",
+      "pass": true
+    },
+    {
+      "name": "temporary absence of a toolbar preserves detached controls until the next mount",
+      "pass": true
+    },
+    {
+      "name": "native buttons, selectors and input fields never begin a panel drag",
+      "pass": true
+    },
+    {
+      "name": "grip begins one drag with nested surface listeners; free toolbar space stays draggable",
+      "pass": true
+    },
+    {
+      "name": "right click cannot start drag; double click on button cannot maximize",
+      "pass": true
+    },
+    {
+      "name": "actual IDE/Git controller can switch both modes after native toolbar is wrapped",
+      "pass": true
+    },
+    {
+      "name": "negative control: old direct-child lookup breaks the mode-switch scenario",
+      "pass": true
+    }
+  ],
+  "limits": [
+    "Executes actual mountChrome, bindPanelDrag and refreshGitMount against a minimal DOM shim.",
+    "Does not claim browser rendering, native pointer capture timing, MutationObserver delivery or CSS verification; those require live UI checks."
+  ]
+}

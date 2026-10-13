@@ -59,6 +59,8 @@ export interface Session {
   taskId: string;
   title: string;
   profileId: string;
+  profileReason?: string;
+  profileConfidence?: number;
   model: string;
   reasoning: string;
   status: Status;
@@ -108,6 +110,7 @@ export interface Settings {
   theme: "system" | "light" | "dark";
   reducedMotion: boolean;
   startupRetries: number;
+  permissionMode: "auto_allow_bound" | "ask_each";
 }
 export interface AppState {
   schemaVersion: 1;
@@ -123,6 +126,8 @@ export interface AppState {
 export interface HostEvent {
   type: string;
   payload: unknown;
+  /** Main-process routing only; renderers never choose this value. */
+  targetWindowId?: number;
 }
 export interface Bridge {
   invoke(method: string, params?: Record<string, unknown>): Promise<any>;

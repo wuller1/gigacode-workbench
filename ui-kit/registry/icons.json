@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 1,
+  "catalogStatus": "reference-starter",
+  "family": {
+    "name": "GigaCode Enterprise Outline",
+    "viewBox": "0 0 24 24",
+    "grid": 24,
+    "strokeWidth": 1.75,
+    "lineCap": "round",
+    "lineJoin": "round",
+    "origin": "original",
+    "licenseSpdx": "MIT",
+    "licenseFile": "icons/LICENSE.txt",
+    "authoringContext": "Created specifically for this starter; no vendor or brand geometry was imported."
+  },
+  "icons": [
+    {
+      "id": "add",
+      "source": "icons/add.svg",
+      "sha256": "eca20dceb24f8d2071c64817cf3b9c61f56edbbf1069a0a3291047a50fd24b16",
+      "origin": "original",
+      "tags": [
+        "create",
+        "plus"
+      ]
+    },
+    {
+      "id": "agent",
+      "source": "icons/agent.svg",
+      "sha256": "3c6e80a6acffc311d501e7d8e35fb4dae6aba7ce8857dfbac0b033fbe75f42e8",
+      "origin": "original",
+      "tags": [
+        "assistant",
+        "session"
+      ]
+    },
+    {
+      "id": "branch",
+      "source": "icons/branch.svg",
+      "sha256": "f9553f9da0894bc526216830aa75d722faab15b135b12a96b88caa30e120e501",
+      "origin": "original",
+      "tags": [
+        "git",
+        "version"
+      ]
+    },
+    {
+      "id": "browser",
+      "source": "icons/browser.svg",
+      "sha256": "2cfa37b9189c9a82d2622585f6e9b7d149576a575f9d3b113befbd3d9b6bb137",
+      "origin": "original",
+      "tags": [
+        "web",
+        "preview"
+      ]
+    },
+    {
+      "id": "check",
+      "source": "icons/check.svg",
+      "sha256": "e98d05dd44ee2701cc03f0e54993dcec042ca66e31c2a0fb06f73c3d9e9720ee",
+      "origin": "original",
+      "tags": [
+        "complete",
+        "success"
+      ]
+    },
+    {
+      "id": "chevron-down",
+      "source": "icons/chevron-down.svg",
+      "sha256": "9da14ed7c7e60e7f9b34d25baff11009d19dad2acc2278e88eb868f499a704b6",
+      "origin": "original",
+      "tags": [
+        "expand",
+        "menu"
+      ]
+    },
+    {
+      "id": "close",
+      "source": "icons/close.svg",
+      "sha256": "dd19f200f442de69aebaf28f183ef1b85bf9bf86ceb808d55b723ba42f2c5799",
+      "origin": "original",
+      "tags": [
+        "dismiss",
+        "remove"
+      ]
+    },
+    {
+      "id": "component",
+      "source": "icons/component.svg",
+      "sha256": "86384da987875bf14a69a7b0b0fb7e3c41b7e4fe3139b69ea572d8cef0688fa2",
+      "origin": "original",
+      "tags": [
+        "design-system",
+        "blocks"
+      ]
+    },
+    {
+      "id": "data",
+      "source": "icons/data.svg",
+      "sha256": "a8bd3fb66701bdf20cc040503c9e5cb60b53aace6255fdcf4a78bc340fcd215f",
+      "origin": "original",
+      "tags": [
+        "database",
+        "storage"
+      ]
+    },
+    {
+      "id": "error",
+      "source": "icons/error.svg",
+      "sha256": "31fee2846cccddadb97d03fcd123ad691acbe2b9d6d8275fe89a199b4cebe692",
+      "origin": "original",
+      "tags": [
+        "failure",
+        "danger"
+      ]
+    },
+    {
+      "id": "information",
+      "source": "icons/information.svg",
+      "sha256": "4dd916780a972d7009b8c6a65e735cf04920e8b929bc404699b10286470d8017",
+      "origin": "original",
+      "tags": [
+        "help",
+        "details"
+      ]
+    },
+    {
+      "id": "plan",
+      "source": "icons/plan.svg",
+      "sha256": "52361bc7b5542475f84399e3ce3471e6babae14d2528618391077d4948e11b14",
+      "origin": "original",
+      "tags": [
+        "progress",
+        "todo",
+        "executors"
+      ]
+    },
+    {
+      "id": "pointer",
+      "source": "icons/pointer.svg",
+      "sha256": "eaa5015451fbc7c01e9febf35678bfd09dbc39a1c6f943c71496edf0cf556021",
+      "origin": "original",
+      "tags": [
+        "cursor",
+        "browser",
+        "interaction"
+      ]
+    },
+    {
+      "id": "publish",
+      "source": "icons/publish.svg",
+      "sha256": "d6f2d7bf3d471484373d100af6a3fdd05a0bf06cdb5eff5ff2c85f01dfcda2dd",
+      "origin": "original",
+      "tags": [
+        "release",
+        "upload"
+      ]
+    },
+    {
+      "id": "repository",
+      "source": "icons/repository.svg",
+      "sha256": "285f3a6c5e38caa5f0a50d90c478a0e261194579e6058a746dfea1a667e43c6d",
+      "origin": "original",
+      "tags": [
+        "source",
+        "git"
+      ]
+    },
+    {
+      "id": "search",
+      "source": "icons/search.svg",
+      "sha256": "35ef972bd5937b435928a447d5a1a8bc19ca502c260c1aa6d632206ab881a2cf",
+      "origin": "original",
+      "tags": [
+        "find",
+        "filter"
+      ]
+    },
+    {
+      "id": "settings",
+      "source": "icons/settings.svg",
+      "sha256": "2a06d67a17e348df87ab46562b093c3f8bb8eef9c4ab4f121673441598e800e5",
+      "origin": "original",
+      "tags": [
+        "configuration",
+        "preferences"
+      ]
+    },
+    {
+      "id": "template",
+      "source": "icons/template.svg",
+      "sha256": "a87335b4d4baf156736f8f7d5c5061c3bacc6b46f3d21ffddfd97bb8fa7bd48a",
+      "origin": "original",
+      "tags": [
+        "layout",
+        "starter"
+      ]
+    },
+    {
+      "id": "tokens",
+      "source": "icons/tokens.svg",
+      "sha256": "651d57918d7ae7ea9480c963abccf467965d10cc65f5b0b143416a0ac305c2aa",
+      "origin": "original",
+      "tags": [
+        "theme",
+        "variables"
+      ]
+    },
+    {
+      "id": "warning",
+      "source": "icons/warning.svg",
+      "sha256": "6f157b41ffa60d583af2abf404201cac2c65b6859dae429043107a61d575a4f5",
+      "origin": "original",
+      "tags": [
+        "attention",
+        "risk"
+      ]
+    }
+  ]
+}

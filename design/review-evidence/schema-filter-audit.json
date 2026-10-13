@@ -1,0 +1,102 @@
+{
+  "scope": "Actual prototype schema preference module in Node VM. No database execution or live UI claim.",
+  "sourceHashes": {
+    "design/suite-prototype-schema-filter.js": "6dfab7e30ba00bcc4bf2be5eadc343de78badb8f0b0545989c2dc2662921c7f8"
+  },
+  "passed": 23,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Unset defaults exclude system schemas",
+      "pass": true
+    },
+    {
+      "name": "String catalogs and explicit system descriptor work",
+      "pass": true
+    },
+    {
+      "name": "Selection persists and remounts",
+      "pass": true
+    },
+    {
+      "name": "Connection and endpoint scopes stay isolated",
+      "pass": true
+    },
+    {
+      "name": "Explicit empty selection survives remount and discovery",
+      "pass": true
+    },
+    {
+      "name": "Null resets to defaults; persisted null is unset",
+      "pass": true
+    },
+    {
+      "name": "Newly discovered schemas are not added to explicit selections",
+      "pass": true
+    },
+    {
+      "name": "Unavailable selections disappear and return when catalog returns",
+      "pass": true
+    },
+    {
+      "name": "Set removes unknown and stale names and deduplicates in catalog order",
+      "pass": true
+    },
+    {
+      "name": "System schema may be explicitly selected",
+      "pass": true
+    },
+    {
+      "name": "Prototype-sensitive and Unicode scope/schema names remain literal",
+      "pass": true
+    },
+    {
+      "name": "Result and controller snapshots are immutable and detached from input",
+      "pass": true
+    },
+    {
+      "name": "Invalid persisted state falls back safely: {broken",
+      "pass": true
+    },
+    {
+      "name": "Invalid persisted state falls back safely: null",
+      "pass": true
+    },
+    {
+      "name": "Invalid persisted state falls back safely: []",
+      "pass": true
+    },
+    {
+      "name": "Invalid persisted state falls back safely: {\"version\":88,\"scopes\":{\"db\":[]}}",
+      "pass": true
+    },
+    {
+      "name": "Invalid persisted state falls back safely: {\"version\":1,\"scopes\":[\"wrong\"]}",
+      "pass": true
+    },
+    {
+      "name": "Invalid persisted state falls back safely: {\"version\":1,\"scopes\":{\"db\":[null]}}",
+      "pass": true
+    },
+    {
+      "name": "Denied reads/writes preserve in-memory selection",
+      "pass": true
+    },
+    {
+      "name": "Denied global storage getter does not throw",
+      "pass": true
+    },
+    {
+      "name": "Default storage path works",
+      "pass": true
+    },
+    {
+      "name": "Malformed input has no persistence side effects",
+      "pass": true
+    },
+    {
+      "name": "Only selection names/scopes/version are persisted",
+      "pass": true
+    }
+  ]
+}

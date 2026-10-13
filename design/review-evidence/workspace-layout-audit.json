@@ -1,0 +1,197 @@
+{
+  "source": "design/suite-prototype-workspace-layout.js",
+  "sha256": "bcf56a20152845107054b58777bb24ea82c00633b84e8ae2c58a790e0682550f",
+  "tests": 46,
+  "passed": 46,
+  "operations": 11286,
+  "results": [
+    {
+      "name": "balanced 1..8 panels unique/full; remove collapses branches and leaves no lost siblings",
+      "pass": true
+    },
+    {
+      "name": "all source/target/5 edge combinations preserve membership + immutable original",
+      "pass": true
+    },
+    {
+      "name": "10000 randomized open/remove/move/arrange steps retain each expected panel exactly once",
+      "pass": true
+    },
+    {
+      "name": "normalize rejects invalid/duplicate leaves and malformed/deep trees",
+      "pass": true
+    },
+    {
+      "name": "move invalid/self source leaves tree unchanged",
+      "pass": true
+    },
+    {
+      "name": "agent reveal opens once without changing active panel, focus or scroll",
+      "pass": true
+    },
+    {
+      "name": "agent reveal defers while typing, modal, maximized other panel or tight viewport",
+      "pass": true
+    },
+    {
+      "name": "open existing is idempotent; close last gives empty; reopen recovers panel",
+      "pass": true
+    },
+    {
+      "name": "maximize/restore preserves exact layout; close maximized keeps remaining layout",
+      "pass": true
+    },
+    {
+      "name": "closed panel remembers sibling edge; reopen no duplicate",
+      "pass": true
+    },
+    {
+      "name": "same project/task/session notification does not render or focus",
+      "pass": true
+    },
+    {
+      "name": "project changes isolate layout and restore without missing/duplicated panels",
+      "pass": true
+    },
+    {
+      "name": "active project rename retains exact tree and removes old bank",
+      "pass": true
+    },
+    {
+      "name": "layout minimum recursive sizes are finite positive, keep leaf minimums for 0..3200 viewport",
+      "pass": true
+    },
+    {
+      "name": "source uses mounted same view node; scope same-project guard and explicit keyboard alternative present",
+      "pass": true
+    },
+    {
+      "name": "normalize regenerates empty/duplicate persisted split IDs",
+      "pass": true
+    },
+    {
+      "name": "actual render preserves visible leaf display across resizing, never temporarily hidden",
+      "pass": true
+    },
+    {
+      "name": "actual render removes obsolete dividers after 200 moves; at most leaves-1 separators",
+      "pass": true
+    },
+    {
+      "name": "maximize hides separators but preserves their nodes, restore recovers them",
+      "pass": true
+    },
+    {
+      "name": "actual place creates finite positive geometry even 0x0; separators report numeric ARIA",
+      "pass": true
+    },
+    {
+      "name": "pointer owner rejects another pointer move/up; own up commits once and releases capture",
+      "pass": true
+    },
+    {
+      "name": "lost capture cancels drag with no tree change; header click below threshold never moves",
+      "pass": true
+    },
+    {
+      "name": "actual separator captures pointer; wrong pointer ignored; cancel restores starting layout",
+      "pass": true
+    },
+    {
+      "name": "explicit splits remain visible and keep exact tree across narrow and wide viewports",
+      "pass": true
+    },
+    {
+      "name": "only explicit tab groups hide siblings, and resizing never splits them apart",
+      "pass": true
+    },
+    {
+      "name": "close active grouped panel selects adjacent tool instead of jumping to chat",
+      "pass": true
+    },
+    {
+      "name": "agent reveal cannot switch an already-open but hidden working tab",
+      "pass": true
+    },
+    {
+      "name": "agent presentation does not regroup or shrink user surfaces when available space is insufficient",
+      "pass": true
+    },
+    {
+      "name": "each grouped tab has a separate accessible close button without nested buttons",
+      "pass": true
+    },
+    {
+      "name": "active grouped tab cross invokes actual close handler and focuses adjacent survivor",
+      "pass": true
+    },
+    {
+      "name": "background grouped tab cross closes only its panel and preserves active selection",
+      "pass": true
+    },
+    {
+      "name": "grouped close pointerdown does not capture pointer or begin drag; title still drags",
+      "pass": true
+    },
+    {
+      "name": "Delete closes focused grouped tab and arrow navigation remains usable",
+      "pass": true
+    },
+    {
+      "name": "center drop creates a real tab group; right drop separates it and preserves siblings",
+      "pass": true
+    },
+    {
+      "name": "drop on a group edge splits beside the entire group, not inside its selected tab",
+      "pass": true
+    },
+    {
+      "name": "rail docking can open a closed tool and cannot duplicate an open tool",
+      "pass": true
+    },
+    {
+      "name": "new tools join active tool group instead of inferring split direction from width",
+      "pass": true
+    },
+    {
+      "name": "closing and reopening a grouped tool restores its group without changing neighbouring split",
+      "pass": true
+    },
+    {
+      "name": "legacy collapsed layout materializes tabs once without losing panels",
+      "pass": true
+    },
+    {
+      "name": "normalization cleans duplicate and invalid tabs without losing valid siblings",
+      "pass": true
+    },
+    {
+      "name": "reset and subsequent moves persist the new format and cannot trigger legacy regrouping",
+      "pass": true
+    },
+    {
+      "name": "open all uses one explicit tool group beside chat, rather than a guessed mosaic",
+      "pass": true
+    },
+    {
+      "name": "actual hit-test gives the same four edges and center for different panel sizes",
+      "pass": true
+    },
+    {
+      "name": "dragging a selected grouped tool can split out of its own group; group tab strip is a valid target",
+      "pass": true
+    },
+    {
+      "name": "closed rail tool uses the same target zones; dropping outside has no destination",
+      "pass": true
+    },
+    {
+      "name": "single source panel is not a drop target for itself",
+      "pass": true
+    }
+  ],
+  "limits": [
+    "VM executes actual transform/lifecycle functions. Geometry recurrence mirrors place formula; no browser rendering or pointer event timing.",
+    "DOM and pointer tests use mocked nodes/events with actual render/place/pointer functions. Native browser pointer capture, focus, IME and CSS rendering still require live QA."
+  ]
+}

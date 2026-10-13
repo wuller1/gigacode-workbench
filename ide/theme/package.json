@@ -1,0 +1,26 @@
+{
+  "name": "workbench-theme",
+  "displayName": "Workbench",
+  "publisher": "gigacode-workbench",
+  "version": "0.2.0",
+  "license": "Apache-2.0",
+  "engines": {
+    "vscode": "^1.77.0"
+  },
+  "contributes": {
+    "themes": [
+      {
+        "id": "workbench-dark",
+        "label": "Workbench Dark",
+        "uiTheme": "vs-dark",
+        "path": "themes/dark.json"
+      },
+      {
+        "id": "workbench-light",
+        "label": "Workbench Light",
+        "uiTheme": "vs",
+        "path": "themes/light.json"
+      }
+    ]
+  }
+}

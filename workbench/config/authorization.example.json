@@ -1,18 +1,60 @@
 {
-  "schema_version": 1,
-  "enforced_by": "host-and-native-tool-permissions-not-prompts",
-  "grants": [],
-  "grant_fields": [
-    "id",
-    "source_user_message_or_policy",
-    "capability",
-    "resource",
-    "environment",
-    "allowed_effects",
-    "conditions",
-    "expires_at"
-  ],
-  "reuse_existing_authorization": true,
-  "external_write_requires_matching_scope": true,
+  "schema_version": 2,
+  "kind": "central_execution_policy",
+  "enforced_by": "native_host_and_adapter",
+  "default_policy": {
+    "id": "allow-all-within-configured-binding",
+    "mode": "auto_allow_bound",
+    "decision": "allow",
+    "connection_binding_is_authorization": true,
+    "allow_all_discovered_bound_capabilities": true,
+    "allow_unknown_effect_class_when_bound": true,
+    "allowed_effects": [
+      "read",
+      "local_write",
+      "remote_write",
+      "destructive"
+    ],
+    "per_call_mcp_permission_prompt": false,
+    "per_call_tool_permission_prompt": false,
+    "inherit_in_sessions": true,
+    "inherit_in_subagents": true,
+    "role_change_requires_new_permission": false,
+    "strict_workflow_uses_quality_gates_not_permission_prompts": true
+  },
+  "scope": {
+    "application_connections_are_available_to_bound_projects": true,
+    "project_binding_fields": [
+      "connection_id",
+      "project_id",
+      "resource_scope",
+      "environment_scope",
+      "capability_overrides"
+    ],
+    "task_and_session_inherit_project_binding": true,
+    "subagent_scope_cannot_exceed_parent_binding": true
+  },
+  "central_controls": {
+    "connection_disabled_blocks_new_dispatch": true,
+    "capability_disabled_blocks_new_dispatch": true,
+    "target_rule_block_is_final": true,
+    "default_target_rule": "allow",
+    "temporary_per_call_bypass": false,
+    "policy_revision_is_captured_per_operation": true
+  },
+  "operation_visibility": {
+    "show_exact_target": true,
+    "show_effect_and_parameters_or_diff": true,
+    "show_result_and_verification": true,
+    "inline_preview_is_not_an_approval_dialog": true,
+    "record_actor_session_or_subagent": true,
+    "record_operation_and_correlation_ids": true,
+    "record_external_id_when_available": true
+  },
+  "recovery": {
+    "unknown_outcome_requires_reconcile_before_repeat": true,
+    "revocation_does_not_claim_to_undo_dispatched_effects": true,
+    "unsupported_no_prompt_runtime_is_reported_as_a_limit": true
+  },
   "secrets_stored_here": false
 }

@@ -1,0 +1,137 @@
+{
+  "theme": "Monokai, readable adaptation",
+  "applicationThemes": [
+    "dark",
+    "light"
+  ],
+  "codeBackgrounds": {
+    "background": "#272822",
+    "added-bg": "#2b2e23",
+    "removed-bg": "#302628"
+  },
+  "method": "WCAG relative sRGB luminance, solid code and diff backgrounds; not a full accessibility audit",
+  "cssSha256": "51cfb11c1b02c04c9c40ecd13fe20693862f3a341bdf036a5cc41d3230b58a36",
+  "minimum": 4.64,
+  "results": [
+    {
+      "token": "foreground",
+      "color": "#f8f8f2",
+      "contrast": {
+        "background": 13.94,
+        "added-bg": 12.98,
+        "removed-bg": 13.74
+      },
+      "minimum": 12.98
+    },
+    {
+      "token": "keyword",
+      "color": "#ff5793",
+      "contrast": {
+        "background": 4.98,
+        "added-bg": 4.64,
+        "removed-bg": 4.91
+      },
+      "minimum": 4.64
+    },
+    {
+      "token": "string",
+      "color": "#e6db74",
+      "contrast": {
+        "background": 10.44,
+        "added-bg": 9.72,
+        "removed-bg": 10.29
+      },
+      "minimum": 9.72
+    },
+    {
+      "token": "number",
+      "color": "#ae81ff",
+      "contrast": {
+        "background": 5.23,
+        "added-bg": 4.86,
+        "removed-bg": 5.15
+      },
+      "minimum": 4.86
+    },
+    {
+      "token": "property",
+      "color": "#a6e22e",
+      "contrast": {
+        "background": 9.58,
+        "added-bg": 8.92,
+        "removed-bg": 9.44
+      },
+      "minimum": 8.92
+    },
+    {
+      "token": "type",
+      "color": "#66d9ef",
+      "contrast": {
+        "background": 9.01,
+        "added-bg": 8.39,
+        "removed-bg": 8.88
+      },
+      "minimum": 8.39
+    },
+    {
+      "token": "parameter",
+      "color": "#fd971f",
+      "contrast": {
+        "background": 6.81,
+        "added-bg": 6.34,
+        "removed-bg": 6.71
+      },
+      "minimum": 6.34
+    },
+    {
+      "token": "comment",
+      "color": "#a5a18f",
+      "contrast": {
+        "background": 5.73,
+        "added-bg": 5.33,
+        "removed-bg": 5.65
+      },
+      "minimum": 5.33
+    },
+    {
+      "token": "meta",
+      "color": "#a5a18f",
+      "contrast": {
+        "background": 5.73,
+        "added-bg": 5.33,
+        "removed-bg": 5.65
+      },
+      "minimum": 5.33
+    },
+    {
+      "token": "error",
+      "color": "#ff5793",
+      "contrast": {
+        "background": 4.98,
+        "added-bg": 4.64,
+        "removed-bg": 4.91
+      },
+      "minimum": 4.64
+    },
+    {
+      "token": "warning",
+      "color": "#fd971f",
+      "contrast": {
+        "background": 6.81,
+        "added-bg": 6.34,
+        "removed-bg": 6.71
+      },
+      "minimum": 6.34
+    },
+    {
+      "token": "info",
+      "color": "#66d9ef",
+      "contrast": {
+        "background": 9.01,
+        "added-bg": 8.39,
+        "removed-bg": 8.88
+      },
+      "minimum": 8.39
+    }
+  ]
+}

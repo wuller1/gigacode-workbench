@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "enterprise.data-workspace",
+  "status": "specified",
+  "slots": ["connectionTarget", "schemaNavigator", "queryTabs", "editor", "executionPlan", "results", "history", "export", "evidence"],
+  "requiredStates": ["connected", "read-only", "loading", "running", "cancelled", "partial", "stale", "offline", "error", "result-truncated"],
+  "rules": [
+    "Connection, database and schema stay visible beside Execute.",
+    "Mutating SQL opens review with transaction, affected-object estimate and rollback plan.",
+    "Null, empty string, zero and unavailable have distinct renderings."
+  ]
+}

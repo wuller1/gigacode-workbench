@@ -16,7 +16,7 @@ concurrency:
 jobs:
   windows-x64:
     runs-on: windows-2022
-    timeout-minutes: 40
+    timeout-minutes: 60
     defaults:
       run:
         shell: pwsh
@@ -40,6 +40,10 @@ jobs:
 
       - name: Install locked dependencies including native optional packages
         run: npm ci --include=optional
+
+      - name: Install pinned IDE engine, extensions and Java/Maven toolchain
+        timeout-minutes: 20
+        run: npm run setup:ide
 
       - name: Verify Workbench script hashes, manifest and entry links
         run: node ../tools/check-bundle.mjs
@@ -130,10 +134,17 @@ jobs:
         timeout-minutes: 2
         run: npm run test:ui
 
+      - name: Real IDE language, edit, refactor, task, debug and recovery checks
+        timeout-minutes: 8
+        run: npm run test:ide
+
+      - name: Stage the self-contained IDE runtime
+        run: npm run prepare:ide-package
+
       - name: Build NSIS and portable (never publish)
         run: npm exec --offline -- electron-builder --win nsis portable --x64 --publish never
 
-      - name: Verify packaged CLI version and calculate artifact hashes
+      - name: Verify packaged CLI and self-hosting references, then calculate artifact hashes
         run: |
           @'
           const fs = require('node:fs'), path = require('node:path'), assert = require('node:assert/strict');
@@ -141,13 +152,30 @@ jobs:
           const application = path.resolve('release/win-unpacked/GigaCode Workbench.exe');
           const cli = path.resolve('release/win-unpacked/resources/app.asar.unpacked/node_modules/@qwen-code/qwen-code/cli.js');
           assert.ok(fs.existsSync(application) && fs.existsSync(cli), 'Packaged app or bundled Qwen entrypoint is missing');
+          const resources = path.resolve('release/win-unpacked/resources');
+          for (const relative of [
+            'workbench/CORE.md',
+            'docs/suite/README.md',
+            'suite/implementation-plan.json',
+            'design/suite-workspace-prototype.html',
+            'ui-kit/package.json',
+            'ui-kit/src/index.ts',
+            'LICENSE',
+            'NOTICE',
+            'THIRD_PARTY_NOTICES.md',
+            'ide/src-gen/backend/main.js',
+            'ide/lib/frontend/index.html',
+            'ide/plugins-lock.json',
+            'ide-tools/bindings.json',
+          ]) assert.ok(fs.statSync(path.join(resources, relative)).isFile(), `Packaged reference is missing: ${relative}`);
+          assert.equal(fs.existsSync(path.join(resources, 'ui-kit/node_modules')), false, 'UI-kit dependencies must not be copied into reference resources');
           const result = spawnSync(application, [cli, '--version'], {env:{...process.env, ELECTRON_RUN_AS_NODE:'1'}, encoding:'utf8', timeout:30000, windowsHide:true, shell:false});
           assert.ifError(result.error);
           assert.equal(result.status, 0, result.stderr);
           assert.ok(result.stdout.includes(require('@qwen-code/qwen-code/package.json').version), 'Packaged CLI did not report the pinned version');
           console.log('Packaged Qwen:', result.stdout.trim());
           '@ | node
-          if ($LASTEXITCODE -ne 0) { throw 'Bundled Qwen version probe failed' }
+          if ($LASTEXITCODE -ne 0) { throw 'Bundled Qwen or packaged reference probe failed' }
           $artifacts = @(Get-ChildItem -LiteralPath 'release' -File -Filter '*.exe')
           if ($artifacts.Count -lt 2) { throw 'Expected both NSIS and portable executables' }
           $hashes = $artifacts | ForEach-Object { '{0}  {1}' -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $_.Name }

@@ -1,0 +1,55 @@
+{
+  "name": "@organization/gigacode-ui-kit",
+  "version": "0.0.0-reference",
+  "private": true,
+  "description": "Reference source starter for a versioned corporate UI kit",
+  "type": "module",
+  "sideEffects": [
+    "./src/styles/*.css"
+  ],
+  "files": [
+    "dist",
+    "brand",
+    "icons",
+    "tokens",
+    "templates",
+    "registry",
+    "CHANGELOG.md",
+    "MIGRATION.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./semantic.css": "./src/styles/semantic.css",
+    "./components.css": "./src/styles/components.css",
+    "./tokens/*": "./tokens/*",
+    "./brand/*": "./brand/*",
+    "./icons/*": "./icons/*",
+    "./templates/*": "./templates/*",
+    "./registry/*": "./registry/*"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check:catalog": "node ./tools/check-catalog.mjs"
+  },
+  "peerDependencies": {
+    "react": ">=18 <20",
+    "react-dom": ">=18 <20"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "typescript": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "provenance": true
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "package": "@highlightjs/cdn-assets",
+  "version": "11.12.0",
+  "license": "BSD-3-Clause",
+  "source": "https://github.com/highlightjs/cdn-release",
+  "tarball": "https://registry.npmjs.org/@highlightjs/cdn-assets/-/cdn-assets-11.12.0.tgz",
+  "archiveSha256": "b8a006d30f45afe783072569f3d69c5b60c0e7b9ca28cd474e12f2584e2a3bd9",
+  "files": {
+    "highlight.min.js": "8ab71eb09c51f501e5e25157d9cff100e46cc29bcbfc744d0b746d451fca7f53",
+    "LICENSE": "6c081431591d9df696c82dc598fe1423765b8a299b200ed00b281afd0f64c490",
+    "languages/powershell.min.js": "fc298b3e0db362e531e6d58988b7a78f83da19df6b5d74db75bc961b2bfbfd3d",
+    "languages/groovy.min.js": "55b81d783372ed6c8c99d5c3568113845dceb93ea454c54f61582ef8d2970a17",
+    "languages/pgsql.min.js": "b9e677ac2c95ceab84ab6017b74309cb77c3acc0e685c3d5296ebd93bd8a61d6",
+    "languages/http.min.js": "b09b4afc1ce71f37f4434baccae5800e0812c6eb1db2cb8978fe9e4d668f45a6",
+    "languages/dockerfile.min.js": "d96f73b077d654d776795097cf49afae5dce3ce453106af022eae013ad2ec8b1",
+    "languages/nginx.min.js": "8c53cc63ce0cf4ec0ad80b77273de23dec6974ab069d46d14d5c75febe880e1f",
+    "languages/properties.min.js": "8a987022cc566fa5bfcd79058ec4ba010920d576fff809b92317295827402590",
+    "languages/accesslog.min.js": "acd1a0f21753ef8160f47bc78d96a944ebb66cca1aa97733f5d764daf377391a"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "enterprise.review-and-execute",
+  "status": "specified",
+  "slots": ["actionSummary", "actor", "target", "risk", "diffOrParameters", "impact", "preflight", "rollback", "execute", "progress", "readback", "evidence"],
+  "requiredStates": ["proposal", "preview", "blocked", "ready", "executing", "unknown-outcome", "failed", "verified"],
+  "rules": [
+    "A configured project binding grants normal capabilities without a per-call modal.",
+    "Central policy may disable a connection or capability and must explain why.",
+    "Destructive or externally irreversible actions follow organization policy; repetitive confirmation is not substituted for review quality."
+  ]
+}

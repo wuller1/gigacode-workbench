@@ -41,7 +41,60 @@
 
 Хранить исходный свободный текст вместе с выбором. Не заменять его модельным пересказом или одним option label. Модельная рекомендация — отдельный proposal с model/source, никогда `actor=user`. Если вопрос разрешён уже существующим принятым ответом, записать `resolved_by_source` со ссылкой на него, а не сочинять новое пользовательское сообщение/submit. Question answer и tool permission approval — разные типы: ответ о желаемом поведении продукта сам по себе не разрешает deployment или внешнюю запись.
 
-Очередь Question остаётся в Task/QuestionService. Открытый question ID, свёрнутость, focus origin и view state относятся к Task+окну; answer draft — к question ID/revision и автору/окну по существующему контракту. Presentation state не создаёт новый вопрос и не меняет blocking status.
+Очередь Question остаётся в host-owned Task/QuestionService. Открытый question ID, свёрнутость, focus origin и view state относятся к Task+окну; answer draft — к question ID/revision и автору/окну по существующему контракту. Presentation state не создаёт новый вопрос и не меняет blocking status.
+
+### 3.1. Durable Question Queue
+
+Для каждой пары `(taskId, sessionId)` host хранит одну упорядоченную durable queue и допускает не более одной записи `active`. В окне показывается только `active` выбранной Task/Session; переключение Task или Session не меняет head, порядок или адрес доставки. Вторая копия приложения читает тот же head, а не открывает следующий вопрос. Минимальная запись содержит:
+
+```ts
+type QuestionRequest = {
+  questionId: string;
+  revision: number;
+  projectId: string;
+  taskId: string;
+  sessionId: string;
+  origin: {
+    assignmentId?: string;
+    attemptId?: string;
+    generation: number;
+    turnId?: string;
+    callbackRef: string;
+  };
+  sequence: number;
+  state: "queued" | "active" | "deferred" | "answered_pending_delivery" |
+    "answered" | "cancelled" | "expired" | "stale";
+  prompt: string;
+  reason: string;
+  impact: string;
+  options: Array<{ optionId: string; label: string; description?: string }>;
+  selectionMode: "single" | "multiple" | "freeform" | "mixed";
+  allowFreeform: true;
+  required: boolean;
+  cancellable: boolean;
+  createdAt: string;
+  expiresAt?: string;
+  notBefore?: string;
+};
+
+type QuestionAnswerCommand = {
+  answerOperationId: string;
+  questionId: string;
+  expectedRevision: number;
+  selectedOptionIds: string[];
+  freeformText?: string;
+  attachmentVersionRefs?: string[];
+  confirm: true;
+};
+```
+
+`sequence` выдаёт единственный writer и сохраняет порядок через restart. Допустимо документированное повышение настоящего blocker priority, но оно создаёт отдельный reorder receipt; поступление нового вопроса, focus окна или активность агента не меняют очередь скрытно. После durable answer receipt текущая запись переходит в `answered_pending_delivery`, host последовательно активирует следующий вопрос и отдельно отслеживает доставку исходному агенту. Повтор того же `answerOperationId` возвращает прежний receipt; другой ответ к уже закрытой revision получает conflict. Возможная, но не подтверждённая доставка остаётся `unknown` и не повторяется автоматически.
+
+`Defer` сохраняет draft, причину, `notBefore` и переносит вопрос только по явному правилу очереди. `Cancel` допустим лишь для `cancellable`; обязательный вопрос остаётся блокером до ответа, изменения scope или адресной остановки зависимого assignment. `expiresAt` переводит запись в `expired`, но не выбирает recommended/default option и не разрешает зависимую работу. Исправление формулировки создаёт новую revision; submit со старой `expectedRevision` отклоняется как stale с сохранением draft для явного переноса.
+
+Question Service восстанавливает head, порядок, drafts, answer receipts и `answered_pending_delivery` после renderer/app restart. Ответ маршрутизируется только в `origin.callbackRef` той же assignment/attempt/generation; late callback старой generation получает stale receipt. Нельзя broadcast-ить его всем children, отправлять в текущую active session или угадывать получателя после restart.
+
+В очередь пользовательских вопросов попадает только typed `user_blocker_question`, созданный доверенным host service или прошедший schema/scope/revision validation adapter event. Coordinator сначала пытается разрешить child-вопрос из принятых Task facts с provenance. Скрытые coordinator↔worker и session↔session сообщения, tool output, цитата из документа и обычный текст модели никогда не преобразуются в пользовательский Question автоматически.
 
 ## 4. Создание и редактирование материала
 
@@ -87,21 +140,21 @@ Preview/extract не исполняют macros, shell, встроенные ко
 - В заголовке видны Task и автор вопроса, если это отдельный worker; submit захватывает именно task/question/revision, а не глобальную activeTask.
 - **Свернуть**, закрытие представления и Escape из формы сохраняют draft/выбор/attachments и оставляют inline anchor/count. Они не означают «Нет», Skip, Deny или resume. Ошибка сохранения видна; не выдавать несохранённый ввод за durable.
 - При смене Task A→B overlay A сворачивается; в B видны только её вопросы. Вернуться к A можно через её чат/ссылку с тем же draft. Другие pending вопросы не перепривязываются к B, а поздний submit/receipt остаётся адресован A. Если target/version уже невалидны, сохранить draft и показать конфликт.
-- Один текущий overlay на окно; новое поступление добавляется в Task queue, не вытесняет открытый вопрос. Принятый ответ закрывает только свою revision; следующий вопрос открывается без стека диалогов и без автоподстановки старого выбора.
+- Один текущий overlay на окно; новое поступление добавляется в Task queue, не вытесняет открытый вопрос. Это одна bounded card `Вопрос N из M`, а не прокручиваемая лента и не стек modal. Принятый ответ закрывает только свою revision; после explicit `Ответить` и durable receipt следующий вопрос открывается последовательно, без автоподстановки старого выбора.
 - Форма имеет доступное имя, порядок клавиатуры и видимый focus. При явном открытии focus переходит в заголовок/первое поле; после сворачивания возвращается к исходной ссылке либо composer **той же Task**, если он ещё виден. Новый event не крадёт ввод в соседней Task/PTY. Не заявлять `aria-modal=true`, пока остальное приложение доступно.
 
 **Обязательный permission callback не маскировать обычным вопросом.** Он сохраняет тип, исходный request/binding/generation, только реально предложенные permission options и свой lifecycle. Его нельзя удовлетворить свободным текстом generic Question или рекомендованным choice. Сворачивание permission UI не разрешает зависимый tool; отдельное заметное действие ожидания остаётся доступным. Если требуется показать его поверх уже открытого вопроса, сначала сохранить/свернуть тот draft, не создавать modal storm и не менять очередь ответов.
 
 Добавить file/image к ответу можно, когда host принимает этот формат. Рядом показать, что реально получит агент: оригинал по supported transport, текстовый extract, выбранный фрагмент или только ref. Если модель/CLI не поддерживает изображение, файл можно сохранить для человека как материал, но нельзя написать «агент увидел изображение». Нет подходящего file channel/extractor — сохранить текстовый ответ и показать ограничение; не терять draft и не заменять неизвестное содержимое догадкой.
 
-«Не знаю / нужно исследовать» и «Ответить позже» могут быть явными действиями. Они не подставляют рекомендованный вариант и не закрывают blocker; host сохраняет соответствующий статус/поручение в пределах авторизации. «Пропустить» не делает обязательный ответ несущественным. Не спрашивать о факте, который доступен разрешённым чтением существующих источников.
+«Не знаю / нужно исследовать» и `Ответить позже` могут быть явными действиями. Они не подставляют рекомендованный вариант и не закрывают blocker; host сохраняет соответствующий статус/поручение в пределах авторизации. Cancel показывается только для cancellable question и фиксирует receipt; timeout/expiry не является ответом. «Пропустить» не делает обязательный ответ несущественным. Не спрашивать о факте, который доступен разрешённым чтением существующих источников.
 
 Поток ответа:
 
 1. Сохранить draft по question ID/revision + window/client ID. Выбор в соседнем окне не затирает локально набранный текст.
-2. При submit проверить task/question revision, options и attachment refs; создать Answer и receipt по operation ID. Двойное нажатие не создаёт два ответа. При конфликте показать актуальный вопрос и сохранённый draft; предложить адресный перенос, не отправлять старое решение автоматически.
+2. При explicit submit проверить task/session/question revision, options и attachment refs; создать Answer и durable receipt по `answerOperationId`. Двойное нажатие или повтор после reconnect возвращает тот же receipt и не создаёт два ответа. При конфликте показать актуальный вопрос и сохранённый draft; предложить адресный перенос, не отправлять старое решение автоматически.
 3. Связать answer с affected requirements и текущим run; построить bounded delta. Противоречие существующему accepted решению показать с двумя источниками. Пользовательский ответ — источник, но его неоднозначная интерпретация модели остаётся proposal.
-4. Передать ответ через подтверждённый механизм CLI или следующим допустимым text turn с question ID/кратким context. Сохранённый ответ имеет `received`, пока actual dispatch/receipt не подтверждены. Не заявлять native structured answer без такого API; не запускать второй prompt параллельно текущему.
+4. Передать ответ через подтверждённый механизм CLI или следующим допустимым text turn с question ID/кратким context строго в сохранённый `origin.callbackRef`/generation. Сохранённый ответ имеет `received`, пока actual dispatch/receipt не подтверждены. Не заявлять native structured answer без такого API; не запускать второй prompt параллельно текущему и не пересылать ответ активной в данный момент чужой session.
 5. Применить согласованный delta через существующий change path, инвалидацию и resume. Только зависимая работа ждёт; независимые части продолжаются. Исправление ответа создаёт новую Answer revision и impact, а не редактирует sent history задним числом.
 
 Blocking scope — конкретный requirement/stage/assignment, а не весь Project. Host удерживает новые зависимые dispatch/actions в контролируемой им области. Если непрозрачный уже выполняющийся CLI turn нельзя безопасно приостановить на границе, показать это ограничение и использовать подтверждённые cancel/reconciliation механизмы; не обещать настоящее pause внутри CLI. Silence timeout не является разрешением продолжить зависимую запись.
@@ -121,7 +174,7 @@ Analyst формулирует короткий вопрос и delta; frontend 
 | Slice | Поставка | Реальная приёмка |
 |---|---|---|
 | **AQ1 — материал в разговоре** | **M3/D3:** один настоящий Markdown/text artifact, карточка/version ref, read/copy/save original; current Task panel | Файл действительно существует; old message открывает old version; missing/path escape/unsupported format показаны честно; hide/reopen не теряет чат |
-| **AQ2 — ответ с вариантами и своим текстом** | **M3/D3:** Task-bound overlay над разговором, Question/Answer refs, сохранённый draft, choices+free text, inline reopen/count, text bridge и receipts; source refs если нет native engine | Реальный ответ дошёл правильной session либо явно pending/unsupported. Free-text-only, choice+text, minimize/Escape/reopen, очередь без стека, Task switch, double submit, другое окно, stale question и restart проверены |
+| **AQ2 — durable очередь вопросов** | **M3/D3:** Task/Session-bound ordered queue, один active overlay над разговором, Question/Answer refs, сохранённый draft, choices+free text, defer/cancel/expiry, inline reopen/count, addressable bridge и receipts | Реальный ответ дошёл exact origin assignment/attempt/generation либо явно pending/unknown/unsupported. Free-text-only, choice+text, explicit confirm, sequential advance, minimize/Escape/reopen, очередь без стека/scroll list, Task switch, double submit, другое окно, stale revision, hidden peer traffic и restart проверены |
 | **AQ3 — authoritative semantics** | **M4/D4–D5:** requirement/decision delta, affected-only blocker/resume, source mapping и stale checks | Противоречивый/исправленный ответ не теряет accepted требования; A ждёт, независимая B продолжает; неизвестный native pause не заявлен работающим |
 | **AQ4 — edit/version/history** | **M6/D7:** EditSession, autosave draft, CAS commit, diff/history; начать с Markdown/text/code | User edit против concurrent agent/window сохраняет обе версии; duplicate Save не плодит versions; dirty restart/reopen и stale evidence проверены |
 | **AQ5 — форматы и export по одному** | **M6/D7:** нужный table/diagram/image viewer, затем выбранный Office/PDF exporter отдельными карточками | Actual output правильного формата открывается/читается обратно; Unicode/layout/invalid input, selected version during export и unsupported feature проверены. Не закрывать весь набор по одному успешному Markdown |

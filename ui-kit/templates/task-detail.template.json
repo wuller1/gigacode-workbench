@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "enterprise.task-detail",
+  "status": "specified",
+  "slots": ["identity", "statusAndOwner", "description", "acceptance", "dependencies", "adaptivePlan", "sessions", "artifacts", "evidence", "activity"],
+  "requiredStates": ["draft", "ready", "in-progress", "needs-attention", "review", "completed", "archived", "sync-conflict"],
+  "rules": [
+    "Completed plan steps are struck through and subdued; the current step is textual and may animate only when reduced motion is off.",
+    "Agent-internal messages stay in diagnostics while user-visible decisions and evidence remain on the task.",
+    "Remote synchronization never destroys a local draft or silently resolves a revision conflict."
+  ]
+}

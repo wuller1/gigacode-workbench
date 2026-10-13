@@ -1,8 +1,9 @@
 {
   "name": "gigacode-workbench-ui",
-  "version": "0.1.0",
+  "version": "0.2.0-preview.1",
   "private": true,
   "description": "A local desktop workspace for ACP coding agents",
+  "license": "Apache-2.0",
   "type": "module",
   "main": "dist-electron/main.cjs",
   "scripts": {
@@ -11,17 +12,21 @@
     "start": "npm run build && electron .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "pack": "npm run build && electron-builder --dir",
-    "dist:win": "npm run build && electron-builder --win nsis portable",
-    "dist:mac": "npm run build && electron-builder --mac dir",
+    "pack": "npm run build && npm run prepare:ide-package && electron-builder --dir",
+    "dist:win": "npm run build && npm run prepare:ide-package && electron-builder --win nsis portable",
+    "dist:mac": "npm run build && npm run prepare:ide-package && electron-builder --mac dir",
     "test:live": "vitest run --config vitest.live.config.ts",
     "bundle:cli": "node tools/bundle-cli.mjs",
     "format": "prettier --write src electron shared tests *.ts *.mjs",
-    "test:ui": "node tools/test-modal-ui.mjs"
+    "test:ui": "node tools/test-modal-ui.mjs",
+    "setup:ide": "node tools/setup-ide.mjs",
+    "test:ide": "npm run build && node tools/test-ide-live.mjs",
+    "prepare:ide-package": "node tools/package-ide.mjs",
+    "test:ide:languages": "npm run build && node tools/test-ide-live.mjs --languages"
   },
   "dependencies": {
     "@lydell/node-pty": "1.2.0-beta.15",
-    "@qwen-code/qwen-code": "0.25.0",
+    "@qwen-code/qwen-code": "0.25.1",
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/xterm": "6.0.0",
     "react": "19.3.0",
@@ -64,6 +69,41 @@
         ]
       },
       {
+        "from": "../docs/suite",
+        "to": "docs/suite",
+        "filter": [
+          "**/*",
+          "!.DS_Store"
+        ]
+      },
+      {
+        "from": "../suite/implementation-plan.json",
+        "to": "suite/implementation-plan.json"
+      },
+      {
+        "from": "../design/suite-workspace-prototype.html",
+        "to": "design/suite-workspace-prototype.html"
+      },
+      {
+        "from": "../ui-kit",
+        "to": "ui-kit",
+        "filter": [
+          "**/*",
+          "!node_modules{,/**/*}",
+          "!dist{,/**/*}",
+          "!release{,/**/*}",
+          "!.DS_Store"
+        ]
+      },
+      {
+        "from": "../LICENSE",
+        "to": "LICENSE"
+      },
+      {
+        "from": "../NOTICE",
+        "to": "NOTICE"
+      },
+      {
         "from": "../docs/THIRD_PARTY_NOTICES.md",
         "to": "THIRD_PARTY_NOTICES.md"
       },
@@ -71,8 +111,23 @@
         "from": "runtime",
         "to": "cli",
         "filter": [
-          "**/*"
+          "**/*",
+          "!ide-node{,/**/*}",
+          "!ide-tools{,/**/*}",
+          "!.ide-package{,/**/*}"
         ]
+      },
+      {
+        "from": "runtime/.ide-package/ide",
+        "to": "ide"
+      },
+      {
+        "from": "runtime/.ide-package/ide-node",
+        "to": "ide-node"
+      },
+      {
+        "from": "runtime/.ide-package/ide-tools",
+        "to": "ide-tools"
       }
     ],
     "asarUnpack": [

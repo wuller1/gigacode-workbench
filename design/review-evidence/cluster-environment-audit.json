@@ -1,0 +1,131 @@
+{
+  "scope": "Node VM audit of real extracted prototype functions; no live browser, MCP or cluster testing",
+  "sourceHashes": {
+    "design/suite-prototype-tasks-ops.js": "10ad078c8e9b1318e834b74f34353f35ce8604c0dcde0b6ca20bec6e04872c07",
+    "design/suite-prototype-shell.js": "5f1264f7975f377e3794ba28ce5d45e55538f1f0890e3893ff0cb364ae942955"
+  },
+  "passed": 30,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Seeded targets use stable environment IDs",
+      "pass": true
+    },
+    {
+      "name": "Rename preserves physical target and resource bank key",
+      "pass": true
+    },
+    {
+      "name": "Previously captured target retains its identity and historical display name",
+      "pass": true
+    },
+    {
+      "name": "Successful rename persists once and refreshes callback",
+      "pass": true
+    },
+    {
+      "name": "Reload restores renamed labels",
+      "pass": true
+    },
+    {
+      "name": "Second environment maps to its original distinct cluster",
+      "pass": true
+    },
+    {
+      "name": "Connection labels are shared across projects",
+      "pass": true
+    },
+    {
+      "name": "Other connections remain isolated and Sandbox has one target",
+      "pass": true
+    },
+    {
+      "name": "Renaming Sandbox does not change its target or corporate names",
+      "pass": true
+    },
+    {
+      "name": "Malformed saved registry falls back safely: invalid JSON",
+      "pass": true
+    },
+    {
+      "name": "Malformed saved registry falls back safely: null",
+      "pass": true
+    },
+    {
+      "name": "Malformed saved registry falls back safely: array",
+      "pass": true
+    },
+    {
+      "name": "Malformed saved registry falls back safely: number",
+      "pass": true
+    },
+    {
+      "name": "Malformed saved registry falls back safely: string",
+      "pass": true
+    },
+    {
+      "name": "Malformed saved registry falls back safely: null nested record",
+      "pass": true
+    },
+    {
+      "name": "Malformed saved registry falls back safely: object label",
+      "pass": true
+    },
+    {
+      "name": "Malformed saved registry falls back safely: whitespace label",
+      "pass": true
+    },
+    {
+      "name": "Malformed saved registry falls back safely: control character",
+      "pass": true
+    },
+    {
+      "name": "Malformed saved registry falls back safely: overlong label",
+      "pass": true
+    },
+    {
+      "name": "Malformed saved registry falls back safely: duplicate labels",
+      "pass": true
+    },
+    {
+      "name": "Malformed saved registry falls back safely: case-insensitive duplicates",
+      "pass": true
+    },
+    {
+      "name": "Saved labels are trimmed",
+      "pass": true
+    },
+    {
+      "name": "Actual rename submit rejects empty",
+      "pass": true
+    },
+    {
+      "name": "Actual rename submit rejects whitespace",
+      "pass": true
+    },
+    {
+      "name": "Actual rename submit rejects long",
+      "pass": true
+    },
+    {
+      "name": "Actual rename submit rejects control",
+      "pass": true
+    },
+    {
+      "name": "Actual rename submit rejects duplicate",
+      "pass": true
+    },
+    {
+      "name": "Storage failure does not apply or close rename",
+      "pass": true
+    },
+    {
+      "name": "Missing connection has no environments and an explicit unbound target",
+      "pass": true
+    },
+    {
+      "name": "Settings dynamically switches environment fields without copying their implementation",
+      "pass": true
+    }
+  ]
+}

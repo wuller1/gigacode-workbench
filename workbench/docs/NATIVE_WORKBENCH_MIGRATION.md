@@ -13,7 +13,7 @@
 Статусы не смешиваются:
 
 - **Исполнено в пакете:** локальные controller/memory/docs-impact и JavaScript design-metrics; имеются тесты. Они не образуют полноценный UI и не управляют всеми вызовами CLI.
-- **Описано в пакете:** 9 профилей, 29 workflow, routing, инструкции, templates, capability policy и методы проверки. JSON/Markdown определяет процесс, но не исполняет его автоматически.
+- **Описано в пакете:** 14 профилей, 29 workflow, routing, инструкции, templates, capability policy и методы проверки. JSON/Markdown определяет процесс, но не исполняет его автоматически.
 - **Спроектировано для UI:** native services, настоящий scheduler, автоматический ledger, окна, browser, agents, артефакты и интеграционные панели. Их предстоит реализовать и проверить в репозитории пользователя.
 - **Требует целевой проверки:** возможности именно установленного GigaCode, модели, actual MCP permissions, Windows/Electron runtime и реальные внешние действия.
 
@@ -25,15 +25,20 @@
 |---|---|---|
 | analyst | profiles/analyst.md | Совместное написание описания функциональности в выбранном формате, включая SDD; варианты, самопроверка и рекомендации в заданной области |
 | spec | profiles/spec.md | Формальная проверка/доработка непротиворечивости, контрактов и критериев на назначенном этапе; не обязательный второй автор после analyst |
+| architect | profiles/architect.md | Межсистемные границы, ADR, совместимость, migration/recovery и декомпозиция реализации |
 | backend | profiles/backend.md | Серверный код и применимая проверка поведения |
+| database | profiles/database.md | Схемы, запросы, migrations, целостность и измеряемая производительность данных |
+| designer | profiles/designer.md | Product/UI/UX, макеты, design contract, собственные assets и корпоративный UI kit |
 | frontend | profiles/frontend.md | UX, интерфейс, design contract и визуальная проверка |
+| security | profiles/security.md | Threat model, Sprut/SCA, findings, remediation и повторная проверка риска |
 | devops | profiles/devops.md | Среда, CI/CD, инфраструктура и подтверждение внешних операций |
+| technical-writer | profiles/technical-writer.md | Адресная документация, проверенные примеры и versioned knowledge/repository publish |
 | qa | profiles/qa.md | Проверка критериев на фактическом результате |
 | reviewer | profiles/reviewer.md | Предметная независимая проверка при нужном риске |
 | diagnostics | profiles/diagnostics.md | Воспроизведение, причины, инциденты и recovery |
 | gigacode-ui | profiles/gigacode-ui.md | Electron, ACP и проверка живой оболочки |
 
-Каждый ID сохраняется; профиль — политика поведения, а не обязательный отдельный процесс/субагент. Соответствующие существующие adapters/gigacode/agents/workbench-analyst.md, workbench-spec.md, workbench-backend.md, workbench-frontend.md, workbench-devops.md, workbench-qa.md, workbench-reviewer.md, workbench-diagnostics.md и workbench-gigacode-ui.md остаются экспортными адаптерами только для подтверждённого native agent формата. Основной UI не обязан создавать CLI-subagent ради переключения профиля.
+Каждый ID сохраняется; профиль — политика поведения, а не обязательный отдельный процесс/субагент. Для каждого builtin существует одноимённый экспортный adapter `adapters/gigacode/agents/workbench-<profile>.md`, используемый только после подтверждения native agent формата и tool policy. Основной UI не обязан создавать CLI-subagent ради переключения профиля.
 
 | Группа | Все существующие файлы workflow |
 |---|---|
@@ -55,8 +60,8 @@
 | Исходные файлы и нынешний статус | Native service | Элемент UI | Проверяемая приёмка |
 |---|---|---|---|
 | SYSTEM_PROMPT.md, CORE.md, BOOTSTRAP.md, docs/MAIN_WORK_PROCESS.md — инструкции | InstructionRegistry + PromptAssembler | Выбранные правила/профиль, краткие источники, текущий шаг | Новый контекст получает нужные правила; повтор не отправляет все профили; hash изменившегося источника инвалидирует cache. Модель следует ТЗ и отдельно предлагает улучшение без самовольного scope creep. |
-| bundle.json, profiles/*.md, workflows/*.json, docs/PIPELINES.md — каталог | CatalogService | 9 профилей, 29 сценариев, пояснение текущего этапа | Каталог валидируется; чужой profile/capability, неправильный rework target и duplicate ID отвергаются; существующий run сохраняет snapshot определения. |
-| docs/ROLE_PROMPT_BINDING.md, docs/ROLE_ROUTING.md — проект native binding/переходов | Существующие CatalogService + PromptAssembler + SessionService/Task writer | Role selector, инструкции по запросу, desired/pending/active, фактический delivery mode | Одна роль/stage, fingerprint и immutable capture; context-only не system override, недоставленный prompt не active, startup config не меняет глобальный env. |
+| bundle.json, profiles/*.md, workflows/*.json, docs/PIPELINES.md — каталог | CatalogService | 14 профилей, 29 сценариев, пояснение текущего этапа | Каталог валидируется; чужой profile/capability, неправильный rework target и duplicate ID отвергаются; существующий run сохраняет snapshot определения. |
+| docs/ROLE_PROMPT_BINDING.md, docs/ROLE_ROUTING.md — проект native binding/переходов | Существующие CatalogService + PromptAssembler + SessionService/Task writer | AI router и read-only role chip, инструкции по запросу, selected/pending/captured/actual, фактический delivery mode | Ручного role picker нет. Одна роль/stage, reason/confidence, fingerprint и immutable capture; context-only не system override, недоставленный prompt не active, startup config не меняет глобальный env. |
 | docs/MANAGED_SUBAGENTS.md — проект managed worker controller | Тот же Scheduler/SessionService + OperationLedger/WorkflowEngine | Исполнители Task, очередь, message/cancel/recovery/result | Один quota owner для чатов/coordinator/workers; cancel не terminal; lease expiry не останавливает CLI; native children не объявлены fully managed; stale candidate не принимается. |
 | docs/ENTITY_LIFECYCLE_AND_EDITING.md — проект CRUD/lifecycle | Существующий Task/entity writer + LifecycleService как его модуль, без второго store | Create/edit/rename/archive/trash/restore, отдельный purge по scope | Captured ID/revision, idempotency и recovery; archive не cancel, soft trash не native delete, restore сохраняет ID и прежние outcomes; unknown не успешное удаление. |
 | docs/TASK_TODO_PANEL.md — рабочий план агента | Native ACP plan после probe либо реальный host PlanService/tool; один revisioned store | Агент сам создаёт и перестраивает пункты, отмечает done/current/remaining; история показывает причину изменений | Стабильные IDs, replay reconciliation; выполненные пункты сохраняются. Reported done не formal pass, visual reorder не scheduler reorder; открытие панели не вызывает LLM. |
@@ -155,7 +160,7 @@ Legacy workflow/state имеет schema_version=1 и workflow_digest_algorithm=p
 
 ### MCP и настоящие границы полномочий
 
-Применимая capability пересекается с allowed_potential роли, actual binding, ресурсом/окружением и действующей авторизацией задачи. Cache inventory имеет fingerprint версии, сервера, schema, effect и scope; по ошибке доступа/изменению схемы обновляется затронутая часть. Sprut — проверка уязвимых версий зависимостей; не приписывать ему tracker/SAST.
+Применимая capability берётся из actual connection/project binding, resource/environment scope и централизованной policy revision. `allowed_potential` роли помогает выбрать релевантный инструмент и уменьшить context packet, но не урезает default `auto_allow_bound`: все обнаруженные и привязанные возможности доступны без per-call MCP prompt, пока пользователь явно не отключил connection/capability или target rule не блокирует цель. Cache inventory имеет fingerprint версии, сервера, schema, effect и scope; по ошибке доступа/изменению схемы обновляется затронутая часть. Sprut — проверка уязвимых версий зависимостей; не приписывать ему tracker/SAST.
 
 Host может надёжно остановить **свой** IPC/Git/browser/MCP dispatch и свои managed tasks. Для внутренних вызовов CLI действуют штатные tool permissions и проверенные ACP permission callbacks. Если их поверхность недостаточна, UI показывает границу наблюдения/контроля и не обещает профильную изоляцию. Текст prompt, имя capability и hidden UI button не ограничивают общий shell CLI. Нативные субагенты с непроверенным allowlist не получают статус isolated.
 
@@ -257,7 +262,7 @@ N11–N15 не означают завершение всех UI-функций 
 >
 > Сначала адресно прочитай действующие правила репозитория и сопоставь фактические файлы с M0. Не запускай repo setup и не создавай второй backend/store. Подготовь подробный локальный trace CLI/main/IPC/store/render и пакет диагностики для агента. Исправь parallel failure и обновление UI только после клика/пустой экран через наблюдаемые причины и live A/B/no-pointer сценарии, затем M2. Reload не исправление. Сразу после этого M3: собственные minimize/maximize/restore/close без стандартного menu bar, add/hide/move/resize/groups/persistence панелей, real basic browser/terminal и baseline Task binding. Native N1–N16 выполняй маленькими зависимыми карточками; полный Task workflow — M4. Не откладывай панели до окончания порта, IDE или M7 и не загружай весь пакет в каждый prompt.
 >
-> Сохрани 9 профилей, 29 workflow, правила строгого выполнения SDD и конструктивной критики, короткие маршруты, источники фактов, decisions, checks, revisions, hashes, pending operations и recovery. Портируй реальную семантику controller/memory/helpers и старые сценарии тестов; не ограничивайся кнопками поверх PS. Импорт проверь на копиях и round-trip; authority переключи один раз после проверки, старые хранилища не синхронизируй параллельно.
+> Сохрани 14 профилей, 29 workflow, правила строгого выполнения SDD и конструктивной критики, короткие маршруты, источники фактов, decisions, checks, revisions, hashes, pending operations и recovery. Портируй реальную семантику controller/memory/helpers и старые сценарии тестов; не ограничивайся кнопками поверх PS. Импорт проверь на копиях и round-trip; authority переключи один раз после проверки, старые хранилища не синхронизируй параллельно.
 >
 > Реализуй новые task/panels/session/retry/managed-agents/artifacts/browser/mockup/MCP/UI функции по матрице M0–M12: advanced browser automation в M7; Java/Python/React IDE только M12 после M10, без зависимости от optional M11. Различай уже работающий код, предложение, fixture и live result. Реальные инструменты, запуск тестов, поддержка модели и ограничения CLI должны подтверждаться источниками/результатами; отсутствие API не замещай заглушкой или фиктивным pass. Автоматически сохраняй полезные сведения с provenance и импортируй доступные прежние знания как непроверенные, без выдумывания скрытой памяти.
 >

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "enterprise.application-shell",
+  "status": "specified",
+  "slots": ["titleBar", "projectTaskContext", "activityRail", "navigator", "primaryTabs", "primarySurface", "contextInspector", "bottomTools", "statusLine"],
+  "requiredStates": ["loading", "ready", "partial", "stale", "offline", "permission-disabled", "error"],
+  "responsiveRules": [
+    "At 1024 px hide the inspector behind an explicit toggle before reducing primary content below its minimum.",
+    "Navigation widths and selected workspace persist per user and project.",
+    "At 200% zoom the primary action and effective target remain reachable without two-dimensional page scrolling."
+  ],
+  "evidence": ["keyboard-path", "1024-and-1440-captures", "focus-order", "layout-shift"]
+}

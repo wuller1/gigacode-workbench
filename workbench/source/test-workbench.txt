@@ -254,7 +254,7 @@ try {
     [System.IO.File]::Copy($WorkbenchPath, $script:TController)
     T-WriteText (Join-Path $script:TFixture 'CORE.md') "# Test core`n"
     T-WriteText (Join-Path $script:TFixture 'SYSTEM_PROMPT.md') "# Unique system policy`n"
-    foreach ($profile in @('analyst','spec','backend','frontend','devops','qa','reviewer','diagnostics','gigacode-ui')) {
+    foreach ($profile in @('analyst','spec','architect','backend','database','designer','frontend','security','devops','qa','reviewer','diagnostics','technical-writer','gigacode-ui')) {
         T-WriteText (Join-Path $script:TFixture ('profiles/' + $profile + '.md')) ("# Test profile: " + $profile + "`n")
     }
     $stageIds = @('define','implement','accept')
@@ -305,11 +305,11 @@ try {
         T-WriteText $path '{"metadata":1.5}'
         T-Rejected {WB-Digest -Value (WB-ReadJson -Path $path)}
     }
-    T-Case 'real workflow catalog and eight profiles validate' {
+    T-Case 'real workflow catalog and fourteen profiles validate' {
         WB-SetRoot -Path $script:TBundle
         $result = T-Invoke 'validate'
         T-Assert $result.valid 'Real catalog is invalid'
-        T-Equal $result.profiles 9
+        T-Equal $result.profiles 14
         T-Equal $result.workflows @((Get-ChildItem -LiteralPath (Join-Path $script:TBundle 'workflows') -Filter '*.json' -File)).Count
         T-Assert ($result.stages -ge $result.workflows) 'Stage count is invalid'
     }

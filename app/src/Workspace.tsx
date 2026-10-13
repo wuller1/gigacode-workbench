@@ -1,28 +1,37 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { flushSync } from "react-dom";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useStored } from "./api";
+import { IdePanel } from "./IdePanel";
 import { Icon, IconButton, Menu, useLayer } from "./ui";
 import {
   ArtifactsPanel,
   BrowserPanel,
   ChangesPanel,
-  FilesPanel,
   PlanPanel,
   TerminalPanel,
   WorkersPanel,
   type PanelProps,
 } from "./Panels";
-export type PanelId =
-  | "files"
-  | "plan"
-  | "browser"
-  | "terminal"
-  | "artifacts"
-  | "changes"
-  | "workers";
-type Side = "right" | "bottom";
-const panels: Record<PanelId, { title: string; icon: string }> = {
-  files: { title: "Файлы", icon: "folder" },
+import {
+  dock,
+  geometry,
+  group,
+  groups,
+  ids,
+  location,
+  minimum,
+  normalize,
+  ratio,
+  remove,
+  updateGroup,
+  type DockId,
+  type DockTree,
+  type Edge,
+  type Rect,
+} from "./docking";
+export type PanelId = Exclude<DockId, "chat">;
+const panels: Record<DockId, { title: string; icon: string }> = {
+  chat: { title: "Чат", icon: "chat" },
+  files: { title: "IDE", icon: "code" },
   plan: { title: "План задачи", icon: "todo" },
   browser: { title: "Браузер", icon: "browser" },
   terminal: { title: "Терминал", icon: "terminal" },
@@ -30,20 +39,42 @@ const panels: Record<PanelId, { title: string; icon: string }> = {
   changes: { title: "Изменения", icon: "diff" },
   workers: { title: "Исполнители", icon: "agents" },
 };
-interface Layout {
-  right: PanelId[];
-  bottom: PanelId[];
-  rightActive?: PanelId;
-  bottomActive?: PanelId;
-  rightWidth: number;
-  bottomHeight: number;
-}
-const initial: Layout = {
-  right: [],
-  bottom: [],
-  rightWidth: 450,
-  bottomHeight: 260,
+type Layout = {
+  version: 2;
+  tree: DockTree | null;
+  locations: Partial<
+    Record<DockId, { target: DockId; edge: Edge; ratio?: number }>
+  >;
 };
+function initial(): Layout {
+  try {
+    const value = JSON.parse(
+      localStorage.getItem("workbench.layout.v2") || "null",
+    );
+    if (value?.version === 2)
+      return {
+        version: 2,
+        tree: normalize(value.tree),
+        locations: value.locations || {},
+      };
+    const old = JSON.parse(
+      localStorage.getItem("workbench.layout.v1") || "null",
+    );
+    let tree: DockTree = group(["chat"]);
+    for (const side of ["right", "bottom"])
+      for (const id of old?.[side] || [])
+        if (id in panels && id !== "chat")
+          tree = dock(
+            tree,
+            id,
+            groups(tree)[0].id,
+            side === "right" ? "right" : "bottom",
+          );
+    return { version: 2, tree, locations: {} };
+  } catch {
+    return { version: 2, tree: group(["chat"]), locations: {} };
+  }
+}
 export function Workspace({
   children,
   panelProps,
@@ -55,483 +86,514 @@ export function Workspace({
   requested?: { id: PanelId; nonce: number };
   onRequested: (id: PanelId) => void;
 }) {
-  const area = useRef<HTMLDivElement>(null);
+  const viewport = useRef<HTMLDivElement>(null),
+    canvas = useRef<HTMLDivElement>(null);
+  const [layout, setLayout] = useStored<Layout>(
+    "workbench.layout.v2",
+    initial(),
+  );
   const [size, setSize] = useState({ width: 1000, height: 700 });
+  const [mounted, setMounted] = useState(() => new Set(ids(layout.tree)));
+  const [maximized, setMaximized] = useState<DockId>();
+  const [drag, setDrag] = useState<DockId>(),
+    [drop, setDrop] = useState<{ target: string; edge: Edge }>();
+  const [resizing, setResizing] = useState(false);
+  const cleanup = useRef<(() => void) | undefined>(undefined),
+    suppressClick = useRef(false);
+  const min = minimum(layout.tree);
+  const bounds = {
+    x: 0,
+    y: 0,
+    width: Math.max(size.width, min.width),
+    height: Math.max(size.height, min.height),
+  };
+  const positions = useMemo(
+    () => geometry(layout.tree, bounds),
+    [layout.tree, bounds.width, bounds.height],
+  );
+  const positionsRef = useRef(positions);
+  positionsRef.current = positions;
+  useLayer(Boolean(drag || resizing));
   useEffect(() => {
-    if (!area.current) return;
+    if (!viewport.current) return;
     const observer = new ResizeObserver(([entry]) =>
       setSize({
         width: entry.contentRect.width,
         height: entry.contentRect.height,
       }),
     );
-    observer.observe(area.current);
+    observer.observe(viewport.current);
     return () => observer.disconnect();
   }, []);
-  const [layout, setLayout] = useStored<Layout>("workbench.layout.v1", initial);
-  const [mounted, setMounted] = useState<Set<PanelId>>(
-    () => new Set([...layout.right, ...layout.bottom]),
-  );
-  const [drag, setDrag] = useState<PanelId>();
-  const [dropSide, setDropSide] = useState<Side>();
-  const cancelDrag = useRef<(() => void) | undefined>(undefined);
-  const suppressDragClick = useRef(false);
-  const [resizing, setResizing] = useState(false);
-  const [maximized, setMaximized] = useState<PanelId>();
-  useLayer(!!drag || resizing);
-  const move = (id: PanelId, side: Side) => {
-    setMounted((old) => new Set(old).add(id));
-    setLayout((old) => ({
-      ...old,
-      right: old.right.filter((x) => x !== id),
-      bottom: old.bottom.filter((x) => x !== id),
-      [side]: [...old[side].filter((x) => x !== id), id],
-      [`${side}Active`]: id,
-    }));
-    setDrag(undefined);
-  };
   useEffect(() => {
-    // A drag-generated click must not activate the old tab or a control under the drop.
-    // A fresh pointerdown always restores ordinary click behavior.
-    const resetClick = () => {
-      suppressDragClick.current = false;
+    const reset = () => {
+      suppressClick.current = false;
     };
-    const guardClick = (event: MouseEvent) => {
-      if (suppressDragClick.current && event.detail > 0) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
+    const click = (e: MouseEvent) => {
+      if (suppressClick.current && e.detail > 0) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
       }
-      suppressDragClick.current = false;
+      suppressClick.current = false;
     };
-    window.addEventListener("pointerdown", resetClick, true);
-    window.addEventListener("click", guardClick, true);
+    window.addEventListener("pointerdown", reset, true);
+    window.addEventListener("click", click, true);
     return () => {
-      cancelDrag.current?.();
-      window.removeEventListener("pointerdown", resetClick, true);
-      window.removeEventListener("click", guardClick, true);
+      cleanup.current?.();
+      window.removeEventListener("pointerdown", reset, true);
+      window.removeEventListener("click", click, true);
     };
   }, []);
-  const beginTabDrag = (
-    id: PanelId,
-    event: React.PointerEvent<HTMLButtonElement>,
-  ) => {
-    if (event.button !== 0 || !event.isPrimary) return;
-    cancelDrag.current?.();
-    const source = event.currentTarget;
-    const pointerId = event.pointerId;
-    const startX = event.clientX,
-      startY = event.clientY;
-    let active = false,
-      finished = false;
-    const hit = (x: number, y: number): Side | undefined => {
-      const target = document
-        .elementFromPoint(x, y)
-        ?.closest<HTMLElement>("[data-dock-side]");
-      if (!target || !area.current?.contains(target)) return undefined;
-      const side = target.dataset.dockSide;
-      return side === "right" || side === "bottom" ? side : undefined;
-    };
-    const finish = (side?: Side) => {
-      if (finished) return;
-      finished = true;
-      window.removeEventListener("pointermove", pointerMove, true);
-      window.removeEventListener("pointerup", pointerUp, true);
-      window.removeEventListener("pointercancel", pointerCancel, true);
-      window.removeEventListener("keydown", keyDown, true);
-      window.removeEventListener("blur", cancel);
-      source.removeEventListener("lostpointercapture", cancel);
-      try {
-        if (source.hasPointerCapture(pointerId))
-          source.releasePointerCapture(pointerId);
-      } catch {
-        /* Window may already be closing. */
+  const place = (id: DockId, target?: string, edge: Edge = "center") => {
+    setMounted((old) => new Set(old).add(id));
+    setMaximized(undefined);
+    setLayout((old) => ({ ...old, tree: dock(old.tree, id, target, edge) }));
+  };
+  const open = (id: DockId) => {
+    setMounted((old) => new Set(old).add(id));
+    setLayout((old) => {
+      const existing = groups(old.tree).find((value) =>
+        value.tabs.includes(id),
+      );
+      if (existing && old.tree)
+        return {
+          ...old,
+          tree: updateGroup(old.tree, existing.id, (value) => ({
+            ...value,
+            active: id,
+          })),
+        };
+      const remembered = old.locations[id],
+        target =
+          groups(old.tree).find((value) =>
+            value.tabs.includes(remembered?.target || "chat"),
+          ) || groups(old.tree)[0];
+      return {
+        ...old,
+        tree: dock(
+          old.tree,
+          id,
+          target?.id,
+          remembered?.edge || (id === "terminal" ? "bottom" : "right"),
+          remembered?.ratio ??
+            (id === "files" &&
+            ids(old.tree).length === 1 &&
+            ids(old.tree)[0] === "chat"
+              ? 0.34
+              : 0.5),
+        ),
+      };
+    });
+  };
+  const close = (id: DockId) => {
+    setLayout((old) => {
+      const remembered = location(old.tree, id);
+      return {
+        ...old,
+        tree: remove(old.tree, id),
+        locations: remembered
+          ? { ...old.locations, [id]: remembered }
+          : old.locations,
+      };
+    });
+    if (maximized === id) setMaximized(undefined);
+  };
+  useEffect(() => {
+    if (requested) open(requested.id);
+  }, [requested?.nonce]);
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMaximized(undefined);
+      if ((e.ctrlKey || e.metaKey) && e.altKey && e.key.toLowerCase() === "c") {
+        e.preventDefault();
+        ids(layout.tree).includes("chat") ? close("chat") : open("chat");
       }
-      cancelDrag.current = undefined;
-      if (active) suppressDragClick.current = true;
+    };
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
+  }, [layout.tree]);
+  function beginDrag(id: DockId, event: React.PointerEvent) {
+    if (event.button !== 0 || !event.isPrimary) return;
+    cleanup.current?.();
+    const sx = event.clientX,
+      sy = event.clientY,
+      pointer = event.pointerId;
+    let active = false;
+    const hit = (x: number, y: number) => {
+      const rect = canvas.current!.getBoundingClientRect();
+      x -= rect.x;
+      y -= rect.y;
+      const target = positionsRef.current.groups.find(
+        ({ rect: r }) =>
+          x >= r.x && x <= r.x + r.width && y >= r.y && y <= r.y + r.height,
+      );
+      if (!target) return undefined;
+      const r = target.rect,
+        nx = (x - r.x) / r.width,
+        ny = (y - r.y) / r.height;
+      const edges: [Edge, number][] = [
+        ["left", nx],
+        ["right", 1 - nx],
+        ["top", ny],
+        ["bottom", 1 - ny],
+      ];
+      edges.sort((a, b) => a[1] - b[1]);
+      return {
+        target: target.group.id,
+        edge: edges[0][1] < 0.24 ? edges[0][0] : ("center" as Edge),
+      };
+    };
+    const finish = (target?: ReturnType<typeof hit>) => {
+      window.removeEventListener("pointermove", move, true);
+      window.removeEventListener("pointerup", up, true);
+      window.removeEventListener("pointercancel", cancel, true);
+      window.removeEventListener("keydown", key, true);
+      window.removeEventListener("blur", cancel);
+      cleanup.current = undefined;
+      if (active) suppressClick.current = true;
       setDrag(undefined);
-      setDropSide(undefined);
-      if (active && side) move(id, side);
+      setDrop(undefined);
+      if (active && target) place(id, target.target, target.edge);
+    };
+    const move = (e: PointerEvent) => {
+      if (e.pointerId !== pointer) return;
+      if (!active && Math.hypot(e.clientX - sx, e.clientY - sy) >= 6) {
+        active = true;
+        setDrag(id);
+      }
+      if (active) {
+        e.preventDefault();
+        setDrop(hit(e.clientX, e.clientY));
+      }
+    };
+    const up = (e: PointerEvent) => {
+      if (e.pointerId === pointer)
+        finish(active ? hit(e.clientX, e.clientY) : undefined);
     };
     const cancel = () => finish();
-    const pointerCancel = (e: PointerEvent) => {
-      if (e.pointerId === pointerId) finish();
-    };
-    const keyDown = (e: KeyboardEvent) => {
+    const key = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
         e.stopImmediatePropagation();
         finish();
       }
     };
-    const pointerMove = (e: PointerEvent) => {
-      if (e.pointerId !== pointerId) return;
-      if (!active) {
-        if (Math.hypot(e.clientX - startX, e.clientY - startY) <= 6) return;
-        active = true;
-        // Commit hit targets before measuring them, even for a single long pointer move.
-        flushSync(() => setDrag(id));
-      }
-      e.preventDefault();
-      setDropSide(hit(e.clientX, e.clientY));
-    };
-    const pointerUp = (e: PointerEvent) => {
-      if (e.pointerId !== pointerId) return;
-      if (active) e.preventDefault();
-      finish(active ? hit(e.clientX, e.clientY) : undefined);
-    };
-    cancelDrag.current = cancel;
-    window.addEventListener("pointermove", pointerMove, true);
-    window.addEventListener("pointerup", pointerUp, true);
-    window.addEventListener("pointercancel", pointerCancel, true);
-    window.addEventListener("keydown", keyDown, true);
+    window.addEventListener("pointermove", move, true);
+    window.addEventListener("pointerup", up, true);
+    window.addEventListener("pointercancel", cancel, true);
+    window.addEventListener("keydown", key, true);
     window.addEventListener("blur", cancel);
-    source.addEventListener("lostpointercapture", cancel);
-    try {
-      source.setPointerCapture(pointerId);
-    } catch {
-      /* Window listeners remain the fallback. */
-    }
-  };
-  const close = (id: PanelId) => {
-    setLayout((old) => ({
-      ...old,
-      right: old.right.filter((x) => x !== id),
-      bottom: old.bottom.filter((x) => x !== id),
-    }));
-    if (maximized === id) setMaximized(undefined);
-  };
-  const toggle = (id: PanelId) => {
-    const side = layout.right.includes(id)
-      ? "right"
-      : layout.bottom.includes(id)
-        ? "bottom"
-        : undefined;
-    if (
-      side &&
-      ((side === "right" ? layout.rightActive : layout.bottomActive) ||
-        layout[side][0]) === id
-    )
-      close(id);
-    else if (side) setLayout((old) => ({ ...old, [`${side}Active`]: id }));
-    else move(id, id === "terminal" ? "bottom" : "right");
-  };
-  useEffect(() => {
-    if (!requested) return;
-    const id = requested.id;
-    const side = layout.right.includes(id)
-      ? "right"
-      : layout.bottom.includes(id)
-        ? "bottom"
-        : undefined;
-    if (side) setLayout((old) => ({ ...old, [`${side}Active`]: id }));
-    else move(id, id === "terminal" ? "bottom" : "right");
-  }, [requested?.nonce]);
-  useEffect(() => {
-    const key = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && maximized) {
-        setMaximized(undefined);
-      }
-    };
-    window.addEventListener("keydown", key);
-    return () => window.removeEventListener("keydown", key);
-  }, [maximized]);
-  const rightActive = layout.right.includes(layout.rightActive!)
-    ? layout.rightActive
-    : layout.right[0];
-  const bottomActive = layout.bottom.includes(layout.bottomActive!)
-    ? layout.bottomActive
-    : layout.bottom[0];
-  const rightWidth = layout.right.length
-      ? Math.min(layout.rightWidth, Math.max(240, size.width - 245))
-      : 0,
-    bottomHeight = layout.bottom.length
-      ? Math.min(layout.bottomHeight, Math.max(130, size.height - 220))
-      : 0;
-  const resize = (side: Side, e: React.PointerEvent) => {
-    e.preventDefault();
+    cleanup.current = cancel;
+  }
+  function resize(
+    split: (typeof positions.splits)[number],
+    event: React.PointerEvent,
+  ) {
+    event.preventDefault();
+    cleanup.current?.();
     setResizing(true);
-    const sx = e.clientX,
-      sy = e.clientY,
-      rw = layout.rightWidth,
-      bh = layout.bottomHeight;
-    const onMove = (event: PointerEvent) =>
+    const rect = canvas.current!.getBoundingClientRect();
+    const move = (e: PointerEvent) =>
       setLayout((old) => ({
         ...old,
-        rightWidth:
-          side === "right"
-            ? Math.max(
-                300,
-                Math.min(window.innerWidth - 340, rw + sx - event.clientX),
-              )
-            : old.rightWidth,
-        bottomHeight:
-          side === "bottom"
-            ? Math.max(
-                150,
-                Math.min(window.innerHeight - 230, bh + sy - event.clientY),
-              )
-            : old.bottomHeight,
+        tree:
+          old.tree &&
+          ratio(
+            old.tree,
+            split.id,
+            split.axis === "x"
+              ? (e.clientX - rect.x - split.parent.x) / split.parent.width
+              : (e.clientY - rect.y - split.parent.y) / split.parent.height,
+          ),
       }));
-    const stop = () => {
+    const done = () => {
       setResizing(false);
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", stop);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", done);
+      window.removeEventListener("pointercancel", done);
+      window.removeEventListener("blur", done);
+      cleanup.current = undefined;
     };
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", stop);
-  };
-  const header = (side: Side) => {
-    const ids = layout[side],
-      active = side === "right" ? rightActive : bottomActive;
-    if (!ids.length) return null;
-    return (
-      <div
-        className={`dock-header dock-${side}`}
-        style={
-          side === "right"
-            ? { width: rightWidth, right: 0, top: 0 }
-            : {
-                left: 0,
-                right: rightWidth ? rightWidth + 5 : 0,
-                bottom: bottomHeight - 36,
-              }
-        }
-      >
-        {ids.map((id) => (
-          <div className={`dock-tab ${active === id ? "active" : ""}`} key={id}>
-            <button
-              className="dock-tab-label"
-              title={`${panels[id].title} · перетащите для перемещения`}
-              onPointerDown={(event) => beginTabDrag(id, event)}
-              onDragStart={(event) => event.preventDefault()}
-              onClick={() =>
-                setLayout((old) => ({ ...old, [`${side}Active`]: id }))
-              }
-            >
-              <Icon name={panels[id].icon} size={15} />
-              <span>{panels[id].title}</span>
-            </button>
-            <IconButton
-              icon="close"
-              label={`Скрыть ${panels[id].title}`}
-              onClick={() => close(id)}
-            />
-          </div>
-        ))}
-        <div className="dock-spacer" />
-        {active && (
-          <>
-            <IconButton
-              icon="window-maximize"
-              label="Развернуть панель"
-              onClick={() => setMaximized(active)}
-            />
-            <Menu
-              label="Переместить панель"
-              items={[
-                {
-                  label:
-                    side === "right"
-                      ? "Переместить вниз"
-                      : "Переместить вправо",
-                  action: () =>
-                    move(active, side === "right" ? "bottom" : "right"),
-                },
-                { label: "Скрыть панель", action: () => close(active) },
-                {
-                  label: "Сбросить расположение",
-                  action: () => setLayout(initial),
-                },
-              ]}
-            />
-          </>
-        )}
-      </div>
-    );
-  };
-  const render = (id: PanelId, visible: boolean) => {
-    const props = { ...panelProps, visible };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", done);
+    window.addEventListener("pointercancel", done);
+    window.addEventListener("blur", done);
+    cleanup.current = done;
+  }
+  function render(id: PanelId, visible: boolean) {
+    const p = { ...panelProps, visible };
     switch (id) {
-      case "browser":
-        return <BrowserPanel {...props} />;
-      case "terminal":
-        return <TerminalPanel {...props} />;
       case "files":
-        return <FilesPanel {...props} />;
+        return <IdePanel {...p} />;
+      case "browser":
+        return <BrowserPanel {...p} />;
+      case "terminal":
+        return <TerminalPanel {...p} />;
       case "plan":
-        return <PlanPanel {...props} />;
+        return <PlanPanel {...p} />;
       case "artifacts":
-        return <ArtifactsPanel {...props} />;
+        return <ArtifactsPanel {...p} />;
       case "changes":
-        return <ChangesPanel {...props} />;
+        return <ChangesPanel {...p} />;
       case "workers":
-        return <WorkersPanel {...props} />;
+        return <WorkersPanel {...p} />;
     }
-  };
+  }
+  const style = (r: Rect) => ({
+    left: r.x,
+    top: r.y,
+    width: r.width,
+    height: r.height,
+  });
+  const shown = ids(layout.tree);
   return (
-    <div className="workspace-shell">
-      <div
-        className="workspace"
-        ref={area}
-        style={
-          {
-            "--dock-right": `${rightWidth}px`,
-            "--dock-bottom": `${bottomHeight}px`,
-          } as React.CSSProperties
-        }
-      >
-        <main
-          className="conversation-area"
-          style={{
-            right: rightWidth ? rightWidth + 5 : 0,
-            bottom: bottomHeight ? bottomHeight + 5 : 0,
-            visibility: maximized ? "hidden" : "visible",
-          }}
-        >
-          {children}
-        </main>
-        {!maximized && (
-          <>
-            {header("right")}
-            {header("bottom")}
-            {rightWidth > 0 && (
-              <div
-                role="separator"
-                aria-label="Ширина панели"
-                aria-orientation="vertical"
-                tabIndex={0}
-                className="resize-handle resize-right"
-                style={{ right: rightWidth }}
-                onPointerDown={(e) => resize("right", e)}
-                onKeyDown={(e) => {
-                  if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-                    e.preventDefault();
-                    setLayout((old) => ({
-                      ...old,
-                      rightWidth: Math.max(
-                        300,
-                        old.rightWidth + (e.key === "ArrowLeft" ? 20 : -20),
-                      ),
-                    }));
-                  }
-                }}
-              />
-            )}{" "}
-            {bottomHeight > 0 && (
-              <div
-                role="separator"
-                aria-label="Высота панели"
-                aria-orientation="horizontal"
-                tabIndex={0}
-                className="resize-handle resize-bottom"
-                style={{
-                  bottom: bottomHeight,
-                  right: rightWidth ? rightWidth + 5 : 0,
-                }}
-                onPointerDown={(e) => resize("bottom", e)}
-                onKeyDown={(e) => {
-                  if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                    e.preventDefault();
-                    setLayout((old) => ({
-                      ...old,
-                      bottomHeight: Math.max(
-                        150,
-                        old.bottomHeight + (e.key === "ArrowUp" ? 20 : -20),
-                      ),
-                    }));
-                  }
-                }}
-              />
-            )}
-          </>
-        )}
-        {maximized && (
-          <div className="maximized-header">
-            <Icon name={panels[maximized].icon} />
-            <strong>{panels[maximized].title}</strong>
-            <span />
-            <IconButton
-              icon="window-restore"
-              label="Вернуть расположение · Escape"
-              onClick={() => setMaximized(undefined)}
-            />
-            <IconButton
-              icon="close"
-              label="Скрыть панель"
-              onClick={() => close(maximized)}
-            />
-          </div>
-        )}
-        {Array.from(mounted).map((id) => {
-          const side = layout.right.includes(id)
-            ? "right"
-            : layout.bottom.includes(id)
-              ? "bottom"
-              : undefined;
-          const visible = maximized
-            ? maximized === id
-            : side === "right"
-              ? rightActive === id
-              : side === "bottom"
-                ? bottomActive === id
-                : false;
-          const style: React.CSSProperties =
-            maximized === id
-              ? { left: 0, right: 0, top: 36, bottom: 0 }
-              : side === "right"
-                ? { right: 0, width: rightWidth, top: 36, bottom: 0 }
-                : {
-                    left: 0,
-                    right: rightWidth ? rightWidth + 5 : 0,
-                    bottom: 0,
-                    height: bottomHeight - 36,
-                  };
-          return (
-            <section
-              key={id}
-              className="dock-content"
-              aria-label={panels[id].title}
-              style={{ ...style, display: visible ? "flex" : "none" }}
-            >
-              {render(id, visible)}
-            </section>
-          );
-        })}
-        {drag && (
-          <div className="dock-drop-overlay">
-            <div
-              data-dock-side="right"
-              className={dropSide === "right" ? "drop-target-active" : ""}
-            >
-              Поместить справа
-            </div>
-            <div
-              data-dock-side="bottom"
-              className={dropSide === "bottom" ? "drop-target-active" : ""}
-            >
-              Поместить снизу
-            </div>
-          </div>
-        )}
-      </div>
+    <div className="workspace-shell desktop-workspace">
       <aside className="tool-rail" aria-label="Рабочие панели">
-        {(Object.keys(panels) as PanelId[]).map((id) => (
-          <IconButton
-            key={id}
-            icon={panels[id].icon}
-            label={panels[id].title}
-            className={
-              layout.right.includes(id) || layout.bottom.includes(id)
-                ? "selected"
-                : ""
-            }
-            onClick={() => {
-              toggle(id);
-              onRequested(id);
-            }}
-          />
+        {(Object.keys(panels) as DockId[]).map((id) => (
+          <div key={id} onPointerDown={(e) => beginDrag(id, e)}>
+            <IconButton
+              icon={panels[id].icon}
+              label={panels[id].title}
+              className={shown.includes(id) ? "selected" : ""}
+              onClick={() => {
+                shown.includes(id) &&
+                groups(layout.tree).some((g) => g.active === id)
+                  ? close(id)
+                  : open(id);
+                if (id !== "chat") onRequested(id);
+              }}
+            />
+          </div>
         ))}
+        <div className="dock-rail-spacer" />
+        <Menu
+          label="Расположение панелей"
+          items={[
+            {
+              label: "Чат и IDE рядом",
+              action: () => {
+                const chat = group(["chat"]);
+                setLayout({
+                  version: 2,
+                  tree: dock(chat, "files", chat.id, "right"),
+                  locations: {},
+                });
+                setMounted((old) => new Set(old).add("files"));
+                setMaximized(undefined);
+              },
+            },
+            {
+              label: "Сбросить расположение",
+              action: () => {
+                setLayout({ version: 2, tree: group(["chat"]), locations: {} });
+                setMaximized(undefined);
+              },
+            },
+          ]}
+        />
       </aside>
+      <div className="dock-viewport" ref={viewport}>
+        <div
+          className="dock-canvas"
+          ref={canvas}
+          style={{ width: bounds.width, height: bounds.height }}
+        >
+          {!shown.length && (
+            <div className="dock-empty">
+              <Icon name="code" size={30} />
+              <p>Выберите инструмент слева</p>
+              <button onClick={() => open("chat")}>Открыть чат</button>
+              <button onClick={() => open("files")}>Открыть IDE</button>
+            </div>
+          )}
+          {positions.groups.map(({ group: g, rect }) => (
+            <div
+              key={g.id}
+              data-dock-group={g.id}
+              className="desktop-dock-header"
+              style={{
+                ...style(
+                  maximized
+                    ? { x: 0, y: 0, width: size.width, height: 34 }
+                    : rect,
+                ),
+                height: 34,
+                display:
+                  maximized && !g.tabs.includes(maximized) ? "none" : undefined,
+              }}
+            >
+              <div className="desktop-dock-tabs" role="tablist">
+                {g.tabs.map((id) => (
+                  <div
+                    className={`desktop-dock-tab ${g.active === id ? "active" : ""}`}
+                    key={id}
+                  >
+                    <button
+                      role="tab"
+                      aria-selected={g.active === id}
+                      title={
+                        panels[id].title +
+                        " · перетащите для разделения или объединения"
+                      }
+                      onPointerDown={(e) => beginDrag(id, e)}
+                      onClick={() =>
+                        setLayout((old) => ({
+                          ...old,
+                          tree:
+                            old.tree &&
+                            updateGroup(old.tree, g.id, (v) => ({
+                              ...v,
+                              active: id,
+                            })),
+                        }))
+                      }
+                    >
+                      <Icon name={panels[id].icon} size={14} />
+                      <span>{panels[id].title}</span>
+                    </button>
+                    <IconButton
+                      icon="close"
+                      label={`Скрыть ${panels[id].title}`}
+                      onClick={() => close(id)}
+                    />
+                  </div>
+                ))}
+              </div>
+              <IconButton
+                icon={maximized ? "window-restore" : "window-maximize"}
+                label={maximized ? "Вернуть расположение" : "Развернуть панель"}
+                onClick={() => setMaximized(maximized ? undefined : g.active)}
+              />
+              <Menu
+                label="Разместить панель"
+                items={[
+                  ...(
+                    ["left", "right", "top", "bottom", "center"] as Edge[]
+                  ).flatMap((edge) =>
+                    positions.groups
+                      .filter(
+                        (target) =>
+                          target.group.id !== g.id || g.tabs.length > 1,
+                      )
+                      .map((target) => ({
+                        label: `${{ left: "Слева", right: "Справа", top: "Сверху", bottom: "Снизу", center: "Во вкладку" }[edge]} · ${panels[target.group.active].title}`,
+                        action: () => place(g.active, target.group.id, edge),
+                      })),
+                  ),
+                  { label: "Скрыть панель", action: () => close(g.active) },
+                ]}
+              />
+            </div>
+          ))}
+          {!maximized &&
+            positions.splits.map((split) => (
+              <div
+                key={split.id}
+                className={`desktop-dock-divider ${split.axis}`}
+                style={style(split.rect)}
+                role="separator"
+                tabIndex={0}
+                aria-label="Размер панелей"
+                aria-orientation={
+                  split.axis === "x" ? "vertical" : "horizontal"
+                }
+                onPointerDown={(e) => resize(split, e)}
+                onKeyDown={(e) => {
+                  if (
+                    [
+                      "ArrowLeft",
+                      "ArrowRight",
+                      "ArrowUp",
+                      "ArrowDown",
+                    ].includes(e.key)
+                  ) {
+                    e.preventDefault();
+                    setLayout((old) => ({
+                      ...old,
+                      tree:
+                        old.tree &&
+                        ratio(
+                          old.tree,
+                          split.id,
+                          (findRatio(old.tree, split.id) || 0.5) +
+                            (["ArrowRight", "ArrowDown"].includes(e.key)
+                              ? 0.03
+                              : -0.03),
+                        ),
+                    }));
+                  }
+                }}
+              />
+            ))}
+          {(
+            [
+              "chat",
+              ...Array.from(mounted).filter((id) => id !== "chat"),
+            ] as DockId[]
+          ).map((id) => {
+            const location = positions.groups.find((value) =>
+                value.group.tabs.includes(id),
+              ),
+              visible = Boolean(
+                location &&
+                (maximized ? maximized === id : location.group.active === id),
+              );
+            const r = maximized
+              ? { x: 0, y: 34, width: size.width, height: size.height - 34 }
+              : location
+                ? {
+                    ...location.rect,
+                    y: location.rect.y + 34,
+                    height: location.rect.height - 34,
+                  }
+                : { x: 0, y: 0, width: 0, height: 0 };
+            return (
+              <section
+                key={id}
+                className={`dock-content ${id === "chat" ? "conversation-area" : ""}`}
+                aria-label={panels[id].title}
+                style={{ ...style(r), display: visible ? "flex" : "none" }}
+              >
+                {id === "chat" ? children : render(id, visible)}
+              </section>
+            );
+          })}
+          {drag &&
+            drop &&
+            (() => {
+              const target = positions.groups.find(
+                (g) => g.group.id === drop.target,
+              );
+              if (!target) return null;
+              const r = { ...target.rect };
+              if (drop.edge === "left" || drop.edge === "right") {
+                r.width /= 2;
+                if (drop.edge === "right") r.x += r.width;
+              }
+              if (drop.edge === "top" || drop.edge === "bottom") {
+                r.height /= 2;
+                if (drop.edge === "bottom") r.y += r.height;
+              }
+              return (
+                <div className="desktop-dock-drop" style={style(r)}>
+                  <Icon name={panels[drag].icon} />
+                  <span>
+                    {drop.edge === "center"
+                      ? "Объединить во вкладки"
+                      : "Разделить область"}
+                  </span>
+                </div>
+              );
+            })()}
+        </div>
+      </div>
     </div>
   );
+}
+function findRatio(tree: DockTree, id: string): number | undefined {
+  return tree.kind === "group"
+    ? undefined
+    : tree.id === id
+      ? tree.ratio
+      : (findRatio(tree.a, id) ?? findRatio(tree.b, id));
 }

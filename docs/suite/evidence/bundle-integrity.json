@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "scriptsChecked": 12,
+  "manifestChecked": 239,
+  "linksChecked": 62,
+  "suite": {
+    "ok": true,
+    "planCardsChecked": 71,
+    "acceptanceChecked": 226,
+    "rolesChecked": 14,
+    "workflowsChecked": 29,
+    "uiKitFilesChecked": 35,
+    "prototypeMarkersChecked": 3
+  },
+  "legacyIssues": [],
+  "suiteIssues": [],
+  "issues": []
+}

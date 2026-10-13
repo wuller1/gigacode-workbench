@@ -1,0 +1,322 @@
+{
+  "scope": "Actual prototype DATA section executed in Node VM with fake DOM, controlled timers and modal callbacks. Assertions cover document state and target ownership only. No database, real file transfer, MCP, driver, rendering or application-runtime parity is claimed.",
+  "sourceHashes": {
+    "design/suite-prototype-data-ide.js": "cc11ea1ced75bc3a1f9fb0fc78e50a31c21088b1e73218cac01f1337f7a2281c"
+  },
+  "passed": 78,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Object navigation preserves an existing unsaved SQL draft",
+      "pass": true
+    },
+    {
+      "name": "Opening a database object keeps the object explorer visible",
+      "pass": true
+    },
+    {
+      "name": "Reopening the same object reuses its tab and staged changes",
+      "pass": true
+    },
+    {
+      "name": "Independent documents retain their rows, filters, paging and staged cells",
+      "pass": true
+    },
+    {
+      "name": "Read-only mode belongs to its object document",
+      "pass": true
+    },
+    {
+      "name": "Reconfigured connection identity cannot reuse an object tab pinned to the old server",
+      "pass": true
+    },
+    {
+      "name": "An in-flight query completes into its original console after tab switch",
+      "pass": true
+    },
+    {
+      "name": "Repeated execution in one console does not duplicate history",
+      "pass": true
+    },
+    {
+      "name": "Unsupported projection cannot fabricate a successful result for another table",
+      "pass": true
+    },
+    {
+      "name": "Cancelling one running console cannot cancel a second console",
+      "pass": true
+    },
+    {
+      "name": "Closing a running console preserves its active operation",
+      "pass": true
+    },
+    {
+      "name": "Closing a dirty SQL console first offers a decision without deleting it",
+      "pass": true
+    },
+    {
+      "name": "Closing a clean middle active console chooses its neighbour",
+      "pass": true
+    },
+    {
+      "name": "Closing an inactive console preserves the active selection",
+      "pass": true
+    },
+    {
+      "name": "Removed connection rejects a new query while keeping the SQL draft",
+      "pass": true
+    },
+    {
+      "name": "Changing the endpoint cannot silently redirect a new query",
+      "pass": true
+    },
+    {
+      "name": "A new unfamiliar connection has no invented catalog or old rows",
+      "pass": true
+    },
+    {
+      "name": "Background job retains a detached copy of its connection target",
+      "pass": true
+    },
+    {
+      "name": "Cancelled background job remains cancelled after subsequent progress ticks",
+      "pass": true
+    },
+    {
+      "name": "A deserialized project reinstalls document ownership without shared snapshots",
+      "pass": true
+    },
+    {
+      "name": "Execution mode selection runs only the selected SQL fragment",
+      "pass": true
+    },
+    {
+      "name": "Execution mode selection refuses to run the full file when nothing is selected",
+      "pass": true
+    },
+    {
+      "name": "SQL statement splitter preserves quoted and nested-comment semicolons",
+      "pass": true
+    },
+    {
+      "name": "SQL statement splitter retains complete Unicode dollar-quoted routine bodies",
+      "pass": true
+    },
+    {
+      "name": "Parameter detection ignores quoted literals, identifiers, casts and comments",
+      "pass": true
+    },
+    {
+      "name": "Export uses the actual selected object, page, order and settings",
+      "pass": true
+    },
+    {
+      "name": "Export background job snapshots options instead of aliasing caller state",
+      "pass": true
+    },
+    {
+      "name": "Export cannot begin after the captured connection endpoint is reconfigured",
+      "pass": true
+    },
+    {
+      "name": "Import defaults and mapping belong to the chosen table",
+      "pass": true
+    },
+    {
+      "name": "Import back navigation keeps chosen source settings",
+      "pass": true
+    },
+    {
+      "name": "Import duplicate destination mapping cannot advance or create a job",
+      "pass": true
+    },
+    {
+      "name": "Import cannot begin after the captured connection disappears",
+      "pass": true
+    },
+    {
+      "name": "413 recovery retains the original transfer options after reconciliation",
+      "pass": true
+    },
+    {
+      "name": "Table edits stage first and manual rollback restores this table only",
+      "pass": true
+    },
+    {
+      "name": "An apply preview cannot write to a different active document or consume its drafts",
+      "pass": true
+    },
+    {
+      "name": "An apply preview rejects changed drafts and changed endpoint bindings while preserving the staged work",
+      "pass": true
+    },
+    {
+      "name": "A selected-row delete remains a draft until apply and supports discard",
+      "pass": true
+    },
+    {
+      "name": "Read-only result rejects edit and write actions without mutating rows",
+      "pass": true
+    },
+    {
+      "name": "NULL and empty text are distinct staged cell values",
+      "pass": true
+    },
+    {
+      "name": "Enter accepts an inline cell draft without mutating committed table rows or opening a dialog",
+      "pass": true
+    },
+    {
+      "name": "Escape cancels only the active editor and preserves a previous staged cell value",
+      "pass": true
+    },
+    {
+      "name": "Restoring the original value removes an obsolete pending cell change",
+      "pass": true
+    },
+    {
+      "name": "Invalid integer \"1.5\" leaves the inline editor open without overwriting a pending value",
+      "pass": true
+    },
+    {
+      "name": "Invalid integer \"not a number\" leaves the inline editor open without overwriting a pending value",
+      "pass": true
+    },
+    {
+      "name": "Invalid integer \"2147483648\" leaves the inline editor open without overwriting a pending value",
+      "pass": true
+    },
+    {
+      "name": "A required cell rejects NULL and retains the editor instead of staging it",
+      "pass": true
+    },
+    {
+      "name": "Decimal cell text remains exact while table data remains unchanged until apply",
+      "pass": true
+    },
+    {
+      "name": "Large bigint foreign key values are not rounded by JavaScript",
+      "pass": true
+    },
+    {
+      "name": "Numeric editing never converts precise decimal text to Number when an earlier fixture value was numeric",
+      "pass": true
+    },
+    {
+      "name": "Bigint outside the signed PostgreSQL range 9223372036854775808 stays in the editor",
+      "pass": true
+    },
+    {
+      "name": "Bigint outside the signed PostgreSQL range -9223372036854775809 stays in the editor",
+      "pass": true
+    },
+    {
+      "name": "A newly added row stays visible under a restrictive filter and edits remain in its draft",
+      "pass": true
+    },
+    {
+      "name": "Inline editors and pending values stay attached to their original document",
+      "pass": true
+    },
+    {
+      "name": "An invalid cell cannot be silently lost by switching documents",
+      "pass": true
+    },
+    {
+      "name": "Tab accepts a cell and opens the adjacent editor without invoking a modal",
+      "pass": true
+    },
+    {
+      "name": "Discard clears an invalid open editor together with all unsubmitted grid drafts",
+      "pass": true
+    },
+    {
+      "name": "Applying a new row with an incomplete numeric field focuses that inline cell and preserves the draft",
+      "pass": true
+    },
+    {
+      "name": "Deleting a newly inserted draft row removes it without scheduling a server delete",
+      "pass": true
+    },
+    {
+      "name": "Plan estimate and ANALYZE are exclusive and retain the SQL snapshot",
+      "pass": true
+    },
+    {
+      "name": "A result keeps dispatch-time SQL provenance even when the draft is edited in flight",
+      "pass": true
+    },
+    {
+      "name": "A failed query leaves older rows clearly labelled as a previous result",
+      "pass": true
+    },
+    {
+      "name": "Estimate plan contains no fabricated actual time and starts empty",
+      "pass": true
+    },
+    {
+      "name": "Numeric parameter precision and explicit NULL survive per-document storage",
+      "pass": true
+    },
+    {
+      "name": "Invalid integer parameter does not save a partial parameter set",
+      "pass": true
+    },
+    {
+      "name": "Closing the final document leaves an empty workspace and New opens a fresh console",
+      "pass": true
+    },
+    {
+      "name": "The object explorer remains usable after closing the final document",
+      "pass": true
+    },
+    {
+      "name": "One table draft can combine update, insert and delete before a single apply",
+      "pass": true
+    },
+    {
+      "name": "Column chooser rejects hiding everything but applies a non-empty selection",
+      "pass": true
+    },
+    {
+      "name": "A fresh console has no invented source object, rows or previous table columns",
+      "pass": true
+    },
+    {
+      "name": "Schema comparison pins the selected target ID even when environment labels are identical",
+      "pass": true
+    },
+    {
+      "name": "Schema comparison rejects selecting the same source and target ID",
+      "pass": true
+    },
+    {
+      "name": "Migration preview rejects a changed source endpoint without creating a console",
+      "pass": true
+    },
+    {
+      "name": "Migration preview rejects a changed target endpoint without creating a console",
+      "pass": true
+    },
+    {
+      "name": "Migration preview rejects a target that was removed from the project",
+      "pass": true
+    },
+    {
+      "name": "Schema comparison requires two available IDs instead of inferring an environment",
+      "pass": true
+    },
+    {
+      "name": "Migration preview cannot add a console to a different project owner",
+      "pass": true
+    },
+    {
+      "name": "Idle documents have no persistent technical status strip",
+      "pass": true
+    },
+    {
+      "name": "Dismissing an error preserves SQL, drafts, transaction and query history",
+      "pass": true
+    }
+  ]
+}

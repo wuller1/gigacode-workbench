@@ -1,0 +1,144 @@
+{
+  "name": "Workbench Dark",
+  "type": "dark",
+  "semanticHighlighting": true,
+  "colors": {
+    "foreground": "#eff3ec",
+    "focusBorder": "#b7d7c0",
+    "errorForeground": "#ffb4ab",
+    "editor.background": "#272822",
+    "editor.foreground": "#eff3ec",
+    "editor.lineHighlightBackground": "#282e29",
+    "editor.selectionBackground": "#2e3c33",
+    "editor.inactiveSelectionBackground": "#2e3c33",
+    "editorCursor.foreground": "#b7d7c0",
+    "editorLineNumber.foreground": "#adb9ac",
+    "editorLineNumber.activeForeground": "#eff3ec",
+    "editorIndentGuide.background1": "#3b453d",
+    "editorWidget.background": "#1f2320",
+    "editorWidget.border": "#3b453d",
+    "editorSuggestWidget.background": "#1f2320",
+    "editorSuggestWidget.border": "#3b453d",
+    "editorSuggestWidget.selectedBackground": "#2e3c33",
+    "editorGroup.border": "#3b453d",
+    "editorGroupHeader.tabsBackground": "#181b19",
+    "editorGroupHeader.noTabsBackground": "#181b19",
+    "tab.activeBackground": "#1f2320",
+    "tab.inactiveBackground": "#181b19",
+    "tab.activeForeground": "#eff3ec",
+    "tab.inactiveForeground": "#adb9ac",
+    "tab.border": "#181b19",
+    "tab.activeBorderTop": "#b7d7c0",
+    "sideBar.background": "#181b19",
+    "sideBar.foreground": "#eff3ec",
+    "sideBar.border": "#3b453d",
+    "sideBarSectionHeader.background": "#181b19",
+    "sideBarSectionHeader.foreground": "#adb9ac",
+    "activityBar.background": "#181b19",
+    "activityBar.foreground": "#eff3ec",
+    "activityBar.inactiveForeground": "#adb9ac",
+    "activityBar.border": "#3b453d",
+    "statusBar.background": "#181b19",
+    "statusBar.foreground": "#adb9ac",
+    "statusBar.border": "#3b453d",
+    "titleBar.activeBackground": "#181b19",
+    "titleBar.activeForeground": "#eff3ec",
+    "menu.background": "#1f2320",
+    "menu.foreground": "#eff3ec",
+    "menu.selectionBackground": "#2e3c33",
+    "menu.border": "#3b453d",
+    "input.background": "#1f2320",
+    "input.foreground": "#eff3ec",
+    "input.border": "#3b453d",
+    "dropdown.background": "#1f2320",
+    "dropdown.foreground": "#eff3ec",
+    "dropdown.border": "#3b453d",
+    "button.background": "#b7d7c0",
+    "button.foreground": "#181b19",
+    "button.secondaryBackground": "#282e29",
+    "list.activeSelectionBackground": "#2e3c33",
+    "list.activeSelectionForeground": "#eff3ec",
+    "list.inactiveSelectionBackground": "#2e3c33",
+    "list.hoverBackground": "#282e29",
+    "list.focusBackground": "#2e3c33",
+    "panel.background": "#1f2320",
+    "panel.border": "#3b453d",
+    "panelTitle.activeForeground": "#eff3ec",
+    "panelTitle.inactiveForeground": "#adb9ac",
+    "panelTitle.activeBorder": "#b7d7c0",
+    "terminal.background": "#272822",
+    "terminal.foreground": "#eff3ec",
+    "breadcrumb.background": "#1f2320",
+    "breadcrumb.foreground": "#adb9ac",
+    "peekViewResult.background": "#1f2320",
+    "peekViewEditor.background": "#272822",
+    "scrollbarSlider.background": "#83928155",
+    "gitDecoration.modifiedResourceForeground": "#80b6e2",
+    "gitDecoration.untrackedResourceForeground": "#a6c88b",
+    "gitDecoration.deletedResourceForeground": "#e8948c",
+    "gitDecoration.ignoredResourceForeground": "#adb9ac"
+  },
+  "tokenColors": [
+    {
+      "scope": [
+        "comment"
+      ],
+      "settings": {
+        "foreground": "#858575"
+      }
+    },
+    {
+      "scope": [
+        "keyword",
+        "storage"
+      ],
+      "settings": {
+        "foreground": "#f92672"
+      }
+    },
+    {
+      "scope": [
+        "string"
+      ],
+      "settings": {
+        "foreground": "#e6db74"
+      }
+    },
+    {
+      "scope": [
+        "constant.numeric",
+        "constant.language"
+      ],
+      "settings": {
+        "foreground": "#ae81ff"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.type",
+        "support.type",
+        "support.class"
+      ],
+      "settings": {
+        "foreground": "#66d9ef"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.function",
+        "support.function"
+      ],
+      "settings": {
+        "foreground": "#a6e22e"
+      }
+    },
+    {
+      "scope": [
+        "variable.parameter"
+      ],
+      "settings": {
+        "foreground": "#fd971f"
+      }
+    }
+  ]
+}

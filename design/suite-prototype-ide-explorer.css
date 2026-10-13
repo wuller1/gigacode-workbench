@@ -1,0 +1,26 @@
+#di-ide .ex-explorer{position:relative;min-width:150px;padding:0;background:var(--panel);overflow:auto;max-width:45%;flex-shrink:0;font-size:11px}
+.ex-header{display:flex;align-items:center;gap:0;padding:4px 7px;position:sticky;top:0;background:var(--panel);z-index:2;border-bottom:1px solid var(--line)}
+.ex-header>b{font-weight:550;font-size:11px}.ex-header>.di-button{width:25px;height:25px;min-height:25px;padding:2px;font-size:16px}
+#di-ide .ex-explorer input{margin:6px 8px 3px;width:calc(100% - 16px);padding:4px 7px;height:26px;font-size:11px}
+#di-ide .ex-explorer #di-project-caption{font-size:10px;color:var(--muted);padding:5px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#di-ide .ex-folder{margin:0}#di-ide .ex-folder>summary{padding:0 7px 0 calc(8px + var(--ex-depth)*12px);height:23px;line-height:23px;white-space:nowrap;overflow:hidden;color:var(--text);font-size:11px;border-radius:0}#di-ide .ex-folder>summary:hover{background:var(--hover)}
+.ex-row{display:flex;align-items:center;min-width:0;height:23px;position:relative}.ex-row.selected{background:var(--hover)}
+#di-ide .ex-file{gap:6px;padding:0 6px 0 calc(20px + var(--ex-depth)*12px);height:23px;font-size:11px;border-radius:0;min-width:0;flex:1;color:var(--muted)}
+#di-ide .ex-file[aria-current=true]{color:var(--text)}#di-ide .ex-file .ex-filetype{width:17px;text-align:center;flex-shrink:0;font:9px var(--mono);color:var(--muted)}#di-ide .ex-file [data-ext=java]{color:var(--amber)}#di-ide .ex-file [data-ext=py]{color:var(--blue)}#di-ide .ex-file [data-ext=tsx],#di-ide .ex-file [data-ext=ts]{color:var(--mint)}
+.ex-row>.di-button{position:absolute;right:2px;height:22px;min-height:22px;width:21px;padding:0;background:var(--panel);opacity:0;pointer-events:none}.ex-row:hover>.di-button,.ex-row:focus-within>.di-button{opacity:1;pointer-events:auto}.ex-row:hover .ex-file{padding-right:24px}
+.ex-selection{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:3px;background:var(--panel);border-top:1px solid var(--line);font-size:9px;color:var(--muted);padding:5px 8px;margin-top:8px}.ex-selection>.di-button{font-size:10px;min-height:20px;padding:2px 3px}.ex-resizer{position:absolute;right:0;top:0;bottom:0;width:5px;cursor:ew-resize;touch-action:none;z-index:5}.ex-resizer:hover,.ex-resizer:focus-visible{background:var(--mintbg);outline:1px solid var(--mint)}
+.ex-menu{display:grid;gap:4px}.ex-menu>.di-button{text-align:left;justify-content:flex-start;padding:7px 10px}.ex-path{font:11px/1.8 var(--mono);overflow-wrap:anywhere}.ex-rename-list{display:flex;flex-direction:column;gap:5px;margin:10px 0;max-height:300px;overflow:auto}.ex-rename-list>div{display:grid;grid-template-columns:minmax(0,1fr) 14px minmax(0,1fr);gap:8px;padding:8px;border-bottom:1px solid var(--line);font-size:11px;overflow-wrap:anywhere}.ex-empty{padding:10px}
+
+/* Filename colors reflect the shared Git snapshot, never the dirty-buffer flag. */
+#di-ide,.di-dialog{--git-modified:#8bbbea;--git-added:#91bf94;--git-untracked:#c8aa86;--git-renamed:#82bbb7;--git-ignored:#b2af87;--git-conflict:#e29b9b;--git-deleted:#e29b9b}
+[data-theme="light"] #di-ide,[data-theme="light"] .di-dialog{--git-modified:#275f9c;--git-added:#326f3b;--git-untracked:#825421;--git-renamed:#216d68;--git-ignored:#6e6d46;--git-conflict:#a02c36;--git-deleted:#a02c36}
+.ex-file[data-git-state=modified],.ex-git-legend [data-git-state=modified]{--git-name:var(--git-modified)}
+.ex-file[data-git-state=added],.ex-git-legend [data-git-state=added]{--git-name:var(--git-added)}
+.ex-file[data-git-state=untracked],.ex-git-legend [data-git-state=untracked]{--git-name:var(--git-untracked)}
+.ex-file[data-git-state=renamed],.ex-git-legend [data-git-state=renamed]{--git-name:var(--git-renamed)}
+.ex-file[data-git-state=ignored],.ex-git-legend [data-git-state=ignored]{--git-name:var(--git-ignored)}
+.ex-file[data-git-state=conflict],.ex-git-legend [data-git-state=conflict]{--git-name:var(--git-conflict)}
+.ex-file[data-git-state=deleted]{--git-name:var(--git-deleted)}
+#di-ide .ex-file .ex-filename{color:var(--git-name,var(--text));min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#di-ide .ex-git-mark{margin-left:auto;color:var(--git-name,var(--muted));font:9px var(--mono);flex-shrink:0}
+.ex-git-legend{display:flex;flex-wrap:wrap;gap:8px 18px;padding:10px 0}.ex-git-legend span{color:var(--git-name,var(--text));font-size:12px}

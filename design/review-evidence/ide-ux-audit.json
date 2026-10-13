@@ -1,0 +1,56 @@
+{
+  "scope": "Actual prototype action/context helpers in a Node VM. Checks local state transitions and bounded request context, not browser rendering or application runtime.",
+  "sourceHash": "cc11ea1ced75bc3a1f9fb0fc78e50a31c21088b1e73218cac01f1337f7a2281c",
+  "passed": 12,
+  "total": 12,
+  "tests": [
+    {
+      "name": "Search action reveals a previously collapsed panel and focuses its input",
+      "pass": true
+    },
+    {
+      "name": "Closing the middle active tab selects its right-hand neighbour",
+      "pass": true
+    },
+    {
+      "name": "Closing the last active tab selects its left-hand neighbour",
+      "pass": true
+    },
+    {
+      "name": "Closing an inactive tab keeps the active document",
+      "pass": true
+    },
+    {
+      "name": "Closing the final tab leaves a genuine empty editor",
+      "pass": true
+    },
+    {
+      "name": "Unsaved close keeps the document until the user makes a decision",
+      "pass": true
+    },
+    {
+      "name": "Explicit panel selection opens it while toggling preserves the chosen section",
+      "pass": true
+    },
+    {
+      "name": "Agent context uses the selected draft and its actual starting line",
+      "pass": true
+    },
+    {
+      "name": "Agent context does not apply selection from another open document",
+      "pass": true
+    },
+    {
+      "name": "Long agent context is bounded and clearly marked as a fragment",
+      "pass": true
+    },
+    {
+      "name": "Empty-editor context cannot reference an old active file",
+      "pass": true
+    },
+    {
+      "name": "Git context uses selected diff and branch rather than stale editor contents",
+      "pass": true
+    }
+  ]
+}

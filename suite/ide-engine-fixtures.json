@@ -1,0 +1,581 @@
+{
+  "schemaVersion": 1,
+  "researchedAt": "2026-10-14",
+  "purpose": "Executable-scenario specifications for the engine spike and later IDE acceptance; not test results or supplied fixture projects.",
+  "approvalGate": "UX-PROTOTYPE-APPROVAL",
+  "parityMatrix": "suite/ide-ultimate-parity.json",
+  "selectionPolicy": {
+    "required_core": "S4-00 proves a minimal real workflow for the candidate; later owner-card acceptance still requires complete integration. A failure needs repair or a different candidate, not fake success.",
+    "depth_probe": "S4-00 may record supported/partial/unsupported with actual evidence; full acceptance belongs to ownerCard and gaps remain open.",
+    "later_acceptance": "Not required for engine admission; specified now for the named future card.",
+    "windows": "Use the actual workplace OS/architecture. A macOS result cannot close the Windows requirement.",
+    "measurements": "Record exact hardware, cold/warm state, dataset, engine/extensions, times and resource usage. No invented scores.",
+    "conditional_backend_probe": "Run when the corresponding backend is an admissible candidate. Without a usable license/package record explicit not_available with reason; this does not block the OSS path. If selected for integration, its conditions become mandatory."
+  },
+  "fixtures": [
+    {
+      "id": "IEF-01",
+      "title": "Extensions lifecycle",
+      "ownerCard": "S4-00",
+      "spikeMode": "required_core",
+      "parityIds": [
+        "IUP-001",
+        "IUP-002",
+        "IUP-003",
+        "IUP-004",
+        "IUP-005",
+        "IUP-006",
+        "IUP-007",
+        "IUP-008"
+      ],
+      "projectSpecification": "Пакеты Java/Spring/Maven, Python и frontend из разрешённого источника; фиксированные версии и Windows arch.",
+      "spikeAction": "Установить → activate → вызвать реальную language/debug/test функцию → update/rollback; проверить API compatibility и licenses выбранных архивов.",
+      "negativePath": "Несовместимый VSIX, missing dependency, native binary другой arch и registry offline не дают фиктивной activation.",
+      "evidenceRequired": "Точные package hashes, API/engine versions, capability receipts и host logs.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-00"
+      ]
+    },
+    {
+      "id": "IEF-02",
+      "title": "Buffer authority proof",
+      "ownerCard": "S4-01",
+      "spikeMode": "required_core",
+      "parityIds": [
+        "IUP-009",
+        "IUP-010",
+        "IUP-011",
+        "IUP-012",
+        "IUP-013",
+        "IUP-014",
+        "IUP-015",
+        "IUP-016"
+      ],
+      "projectSpecification": "Две editor views и Workbench bridge одного файла с dirty buffer.",
+      "spikeAction": "Extension edit и agent edit проходят одну version chain; внешнее изменение порождает конфликт, корректный undo возвращает исходное.",
+      "negativePath": "Stale expectedVersion и dirty external write не перезаписывают текст.",
+      "evidenceRequired": "До/после buffer/disk revisions, event chain и conflict screenshot.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-01"
+      ]
+    },
+    {
+      "id": "IEF-03",
+      "title": "Java Maven project model",
+      "ownerCard": "S4-03",
+      "spikeMode": "required_core",
+      "parityIds": [
+        "IUP-050",
+        "IUP-051",
+        "IUP-052",
+        "IUP-053",
+        "IUP-054",
+        "IUP-055",
+        "IUP-056",
+        "IUP-057"
+      ],
+      "projectSpecification": "Multimodule Maven fixture: API/service/application, generated sources, annotation processing, project JDK, server JDK. Открытый JDT и допустимый IntelliJ backend сравниваются отдельно, одновременно не запускаются.",
+      "spikeAction": "Import → completion/navigation между модулями → build → добавить dependency и reimport → проверить scopes.",
+      "negativePath": "Broken POM, offline mirror и несовместимый JDK показывают разные причины; индекс не объявлен ready преждевременно.",
+      "evidenceRequired": "Project model dump, diagnostics, Maven result и toolchain identity.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-03"
+      ]
+    },
+    {
+      "id": "IEF-04",
+      "title": "Java test/debug loop",
+      "ownerCard": "S4-03",
+      "spikeMode": "required_core",
+      "parityIds": [
+        "IUP-056",
+        "IUP-058",
+        "IUP-083",
+        "IUP-085",
+        "IUP-088",
+        "IUP-093"
+      ],
+      "projectSpecification": "Maven fixture с failing parameterized JUnit test и реальным Java process.",
+      "spikeAction": "Run selected test → assertion → source → breakpoint → variables/stack → rerun failed → cancel process tree.",
+      "negativePath": "Неизвестный launch target и exited DAP process не дают false running/success.",
+      "evidenceRequired": "Structured test result, breakpoint/stack receipts, exit/process-tree evidence.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-03"
+      ]
+    },
+    {
+      "id": "IEF-05",
+      "title": "Python loop",
+      "ownerCard": "S4-03",
+      "spikeMode": "required_core",
+      "parityIds": [
+        "IUP-094",
+        "IUP-095",
+        "IUP-096",
+        "IUP-097",
+        "IUP-098",
+        "IUP-099"
+      ],
+      "projectSpecification": "Venv Python fixture с typing error, Ruff finding и pytest failure.",
+      "spikeAction": "Выбрать venv → diagnostics/fix → pytest → debugpy breakpoint → rerun failed.",
+      "negativePath": "Смена venv и удалённый interpreter не оставляют результаты от старого target как актуальные.",
+      "evidenceRequired": "Interpreter/version, diagnostic sources, test IDs и DAP receipts.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-03"
+      ]
+    },
+    {
+      "id": "IEF-06",
+      "title": "React TypeScript loop",
+      "ownerCard": "S4-03",
+      "spikeMode": "required_core",
+      "parityIds": [
+        "IUP-104",
+        "IUP-105",
+        "IUP-106",
+        "IUP-107",
+        "IUP-108",
+        "IUP-109",
+        "IUP-110"
+      ],
+      "projectSpecification": "React/TypeScript monorepo с path aliases, ESLint, formatter, Vitest и source map.",
+      "spikeAction": "Cross-package navigation/rename → test → dev server → TSX browser breakpoint.",
+      "negativePath": "Broken source map, invalid import и stopped dev server показываются честно.",
+      "evidenceRequired": "Resolved TS config, diagnostics/test result, Browser target и source/stack mapping.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-03"
+      ]
+    },
+    {
+      "id": "IEF-07",
+      "title": "Extension host recovery",
+      "ownerCard": "S4-00",
+      "spikeMode": "required_core",
+      "parityIds": [
+        "IUP-007",
+        "IUP-010",
+        "IUP-016",
+        "IUP-141"
+      ],
+      "projectSpecification": "Working language host и extension host, dirty document и два проекта.",
+      "spikeAction": "Принудительно остановить host → restart/reconcile → восстановить provider без потери текста и cross-project events.",
+      "negativePath": "Restart loop ограничен; provider unavailable виден; процессы не дублируются.",
+      "evidenceRequired": "Process IDs/generations, restart receipts, dirty hash и scoped events.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-00",
+        "S4-01",
+        "S4-04"
+      ]
+    },
+    {
+      "id": "IEF-08",
+      "title": "Desktop shell integration",
+      "ownerCard": "S4-02",
+      "spikeMode": "required_core",
+      "parityIds": [
+        "IUP-017",
+        "IUP-018",
+        "IUP-019",
+        "IUP-020",
+        "IUP-021",
+        "IUP-022",
+        "IUP-023",
+        "IUP-024",
+        "IUP-025",
+        "IUP-026",
+        "IUP-027",
+        "IUP-028",
+        "IUP-151"
+      ],
+      "projectSpecification": "Existing Workbench shell, IDE editor groups, Browser и chat; light/dark, 1280×720 и 1920×1080.",
+      "spikeAction": "Keyboard/mouse open/search/close/split/move/resize; compact tree, context menus, selection/focus восстановлены. Read-only inventory существующих IDE configs; полный импорт принимается в S4-02.",
+      "negativePath": "Global shortcuts не перехватывают editor/terminal input; частые действия не скрываются мобильным UI.",
+      "evidenceRequired": "Live screenshots, action/focus trace, dimensions и measured latency.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-02"
+      ]
+    },
+    {
+      "id": "IEF-09",
+      "title": "Windows corporate environment",
+      "ownerCard": "S4-04",
+      "spikeMode": "depth_probe",
+      "parityIds": [
+        "IUP-005",
+        "IUP-013",
+        "IUP-014",
+        "IUP-050",
+        "IUP-140",
+        "IUP-142"
+      ],
+      "projectSpecification": "Windows выбранной версии/arch, PowerShell 5.1, кириллица/пробелы/CRLF, proxy/CA/mirrors.",
+      "spikeAction": "Offline install/import из проверенного cache; отдельные trust stores и Java server/project runtimes.",
+      "negativePath": "Недоверенный CA, wrong arch, file lock и case-only rename имеют понятные recovery states без отключения TLS.",
+      "evidenceRequired": "Packaged Windows trace, cache hashes и redacted toolchain/network config.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-00",
+        "S4-01",
+        "S4-03",
+        "S4-04"
+      ]
+    },
+    {
+      "id": "IEF-10",
+      "title": "Java semantic refactoring",
+      "ownerCard": "S4-05",
+      "spikeMode": "depth_probe",
+      "parityIds": [
+        "IUP-029",
+        "IUP-030",
+        "IUP-031",
+        "IUP-032",
+        "IUP-033",
+        "IUP-034",
+        "IUP-035",
+        "IUP-036",
+        "IUP-037",
+        "IUP-038",
+        "IUP-039",
+        "IUP-040",
+        "IUP-041",
+        "IUP-042",
+        "IUP-043",
+        "IUP-044",
+        "IUP-045",
+        "IUP-046",
+        "IUP-047",
+        "IUP-048",
+        "IUP-049",
+        "IUP-148",
+        "IUP-150"
+      ],
+      "projectSpecification": "Overloads, generics, inheritance, reflection/string references и связанные XML/YAML files.",
+      "spikeAction": "Rename/move/extract/change signature/safe delete с reference preview → apply → compile/tests → undo. Diagram/dependency graph сверить с реальными references и известным cycle.",
+      "negativePath": "Collision, uncertain dynamic reference и dirty stale file не пропускаются тихо.",
+      "evidenceRequired": "Reference set, exact workspace edits, warnings, build/tests и undo hash.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-05"
+      ]
+    },
+    {
+      "id": "IEF-11",
+      "title": "Spring intelligence",
+      "ownerCard": "S4-06",
+      "spikeMode": "depth_probe",
+      "parityIds": [
+        "IUP-062",
+        "IUP-063",
+        "IUP-064",
+        "IUP-065",
+        "IUP-066",
+        "IUP-067",
+        "IUP-068",
+        "IUP-069",
+        "IUP-070",
+        "IUP-071",
+        "IUP-072",
+        "IUP-073",
+        "IUP-074",
+        "IUP-147"
+      ],
+      "projectSpecification": "Spring Boot fixture: profiles, qualifiers, ambiguous/missing injection, controller и transaction/cache path.",
+      "spikeAction": "Properties → bean → usage → endpoint → run profile → runtime bean/transaction inspection по adapter capability. Проверить SQL/regex injection и обратное source mapping в строку.",
+      "negativePath": "Intentional injection/config error обнаружен; static guess не выдаётся за runtime proof.",
+      "evidenceRequired": "Framework capability table, diagnostics, source links и runtime receipts.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-06"
+      ]
+    },
+    {
+      "id": "IEF-12",
+      "title": "JPA Hibernate depth",
+      "ownerCard": "S4-06",
+      "spikeMode": "depth_probe",
+      "parityIds": [
+        "IUP-075",
+        "IUP-076",
+        "IUP-077",
+        "IUP-078",
+        "IUP-079",
+        "IUP-080",
+        "IUP-081",
+        "IUP-082"
+      ],
+      "projectSpecification": "Entities/relations, derived repository query, JPQL/HQL join, migrations и PostgreSQL test DB.",
+      "spikeAction": "Completion/navigation → query validation/execution на project classpath → schema/entity comparison → migration preview.",
+      "negativePath": "Broken entity field, N+1/transaction negative example и disconnected DB не дают false validity.",
+      "evidenceRequired": "ORM model revision, query target/results, SQL trace и migration diff.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-06"
+      ]
+    },
+    {
+      "id": "IEF-13",
+      "title": "Mixed JVM languages",
+      "ownerCard": "S4-03",
+      "spikeMode": "depth_probe",
+      "parityIds": [
+        "IUP-053",
+        "IUP-054",
+        "IUP-059",
+        "IUP-060",
+        "IUP-061"
+      ],
+      "projectSpecification": "Mixed Kotlin/Java Gradle fixture; additional JVM languages отдельными capability entries.",
+      "spikeAction": "Java↔Kotlin navigation, compile/test/debug и rename с использованием выбранных providers.",
+      "negativePath": "Unsupported language/refactor явно отмечен; generated sources не редактируются как authoritative originals.",
+      "evidenceRequired": "Language/provider versions, reference results, build/debug evidence.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-03"
+      ]
+    },
+    {
+      "id": "IEF-14",
+      "title": "API client workflow",
+      "ownerCard": "S4-06",
+      "spikeMode": "depth_probe",
+      "parityIds": [
+        "IUP-114",
+        "IUP-115",
+        "IUP-116",
+        "IUP-117",
+        "IUP-118",
+        "IUP-119"
+      ],
+      "projectSpecification": "Local fixture server: REST/OpenAPI, GraphQL, WebSocket/SSE и gRPC/proto.",
+      "spikeAction": "HTTP file/environment → send/cancel → response/source navigation; import collection и request history.",
+      "negativePath": "Timeout, invalid schema, HTML error, binary и large response имеют bounded viewer; secrets не попадают в artifacts.",
+      "evidenceRequired": "Request target/hash, redacted response receipts и cancellation.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-06"
+      ]
+    },
+    {
+      "id": "IEF-15",
+      "title": "Advanced debugger",
+      "ownerCard": "S4-03",
+      "spikeMode": "depth_probe",
+      "parityIds": [
+        "IUP-083",
+        "IUP-084",
+        "IUP-085",
+        "IUP-086",
+        "IUP-087",
+        "IUP-088",
+        "IUP-089",
+        "IUP-090",
+        "IUP-091",
+        "IUP-092",
+        "IUP-093",
+        "IUP-149"
+      ],
+      "projectSpecification": "Java/Python/Node fixtures с async frames, conditions и remote attach target.",
+      "spikeAction": "Conditional/log/exception breakpoints, watch/evaluate, threads, compound runs, hot replace по capabilities. Scratch/REPL использует выбранный SDK/classpath и crash recovery.",
+      "negativePath": "Unsupported data breakpoint/hot swap, disconnect и wrong source path не замаскированы.",
+      "evidenceRequired": "DAP capabilities, verified stop reasons, path mapping и process identity.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-03"
+      ]
+    },
+    {
+      "id": "IEF-16",
+      "title": "Profiling and large dumps",
+      "ownerCard": "S4-07",
+      "spikeMode": "depth_probe",
+      "parityIds": [
+        "IUP-120",
+        "IUP-121",
+        "IUP-122",
+        "IUP-123",
+        "IUP-124",
+        "IUP-125",
+        "IUP-126",
+        "IUP-127"
+      ],
+      "projectSpecification": "Windows JFR/JVM metrics, HPROF fixture и Python/Node profile; Linux async-profiler отдельный host.",
+      "spikeAction": "Capture → analyze → source → compare; heap retainers/deadlock и large file cancellation.",
+      "negativePath": "Unsupported OS, corrupt dump и memory budget показывают причину; JFR не выдаётся за HPROF.",
+      "evidenceRequired": "OS/JDK/tool versions, file size/hash, observed RAM, profiler findings и source link.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-07"
+      ]
+    },
+    {
+      "id": "IEF-17",
+      "title": "Git and Data shared owners",
+      "ownerCard": "S3-02",
+      "spikeMode": "depth_probe",
+      "parityIds": [
+        "IUP-128",
+        "IUP-129",
+        "IUP-130",
+        "IUP-131",
+        "IUP-132",
+        "IUP-133",
+        "IUP-134",
+        "IUP-135",
+        "IUP-136"
+      ],
+      "projectSpecification": "Working repo/worktree, staged/dirty conflict и PostgreSQL connection с shared project binding.",
+      "spikeAction": "IDE changes/review используют тот же Git snapshot; SQL/entity navigation открывает общую Data resource.",
+      "negativePath": "Branch switch с dirty buffer и stale Data target не меняют фонового агента/запрос без проверки.",
+      "evidenceRequired": "Shared owner IDs, revision chain, Git operations и Data target receipt.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S3-02",
+        "S3-03",
+        "S7-03"
+      ]
+    },
+    {
+      "id": "IEF-18",
+      "title": "Remote execution boundary",
+      "ownerCard": "S4-04",
+      "spikeMode": "depth_probe",
+      "parityIds": [
+        "IUP-137",
+        "IUP-138",
+        "IUP-139",
+        "IUP-140",
+        "IUP-141",
+        "IUP-142"
+      ],
+      "projectSpecification": "Remote workspace/container fixture; project-local extensions и port/debug mapping.",
+      "spikeAction": "Local view → remote import/build/test/debug; переключить другой проект и вернуться, сохранить процессы.",
+      "negativePath": "Connection loss, stale process и missing remote SDK восстанавливаются без запуска на неверном host.",
+      "evidenceRequired": "Host/root IDs, adapter locations, process receipts и reconnect evidence.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-04"
+      ]
+    },
+    {
+      "id": "IEF-19",
+      "title": "Python and frontend frameworks",
+      "ownerCard": "S4-06",
+      "spikeMode": "later_acceptance",
+      "parityIds": [
+        "IUP-100",
+        "IUP-101",
+        "IUP-102",
+        "IUP-103",
+        "IUP-111",
+        "IUP-112",
+        "IUP-113"
+      ],
+      "projectSpecification": "Django/FastAPI, notebook kernel и React/Next/Vue/Angular fixtures отдельно по выбранному scope.",
+      "spikeAction": "Framework route/template/import navigation, refactor preview, actual tests, notebook execution/source mapping.",
+      "negativePath": "Unsupported framework/version и missing kernel честно ограничивают capability.",
+      "evidenceRequired": "Per-framework result records; успех React не закрывает Django/Vue/notebooks.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-03",
+        "S4-06"
+      ]
+    },
+    {
+      "id": "IEF-20",
+      "title": "Agent and concurrent edits",
+      "ownerCard": "S8-09",
+      "spikeMode": "later_acceptance",
+      "parityIds": [
+        "IUP-143",
+        "IUP-144",
+        "IUP-145",
+        "IUP-146"
+      ],
+      "projectSpecification": "Две Task/session, два проекта, IDE dirty buffer и agent command bus.",
+      "spikeAction": "Агент читает live revision, предлагает semantic edit, запускает видимый тест/debug, сохраняет evidence; crash/restart.",
+      "negativePath": "Stale edit rejected; reconnect не повторяет неизвестный external action; сессии не меняют чужой target.",
+      "evidenceRequired": "Command IDs, revisions, visible diff/test result, checkpoint и replay/reconciliation evidence.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S8-09"
+      ]
+    },
+    {
+      "id": "IEF-21",
+      "title": "Official IntelliJ Java/Kotlin backend admission",
+      "ownerCard": "S4-00",
+      "spikeMode": "conditional_backend_probe",
+      "parityIds": [
+        "IUP-001",
+        "IUP-004",
+        "IUP-007",
+        "IUP-016",
+        "IUP-050",
+        "IUP-058",
+        "IUP-059",
+        "IUP-085"
+      ],
+      "projectSpecification": "Тот же Maven/Gradle fixture в двух окнах, выбранный Windows package JetBrains.intellij-server и допустимая activation.",
+      "spikeAction": "Проверить source/EULA/expiry/activation и API; import/diagnostics/refactor/debug; один backend lease на workspace, несколько UI views; build-tool test adapter без JDT duplication.",
+      "negativePath": "Expiry/offline activation failure/second backend/root lock и unsupported test discovery не превращаются в false success. Не обходить license/EULA.",
+      "evidenceRequired": "Exact package/hash/OS/API/license mode; documented single-backend constraint; observed index/activation/debug/test bridge and process count.",
+      "fixtureProjectStatus": "specified_not_created",
+      "runtimeStatus": "not_run",
+      "evidence": [],
+      "relatedCards": [
+        "S4-00",
+        "S4-01",
+        "S4-03"
+      ]
+    }
+  ]
+}

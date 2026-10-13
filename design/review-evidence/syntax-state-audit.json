@@ -1,0 +1,141 @@
+{
+  "source": "design/suite-prototype-syntax.js",
+  "sourceSha256": "4de8e403c4a9dc546f52cf4fff048f8c60ce4d4b80e66292a1be62f84b25ec25",
+  "method": "Actual shared core and actual vendored lexers in Node VM with minimal DOM. Does not verify browser layout, IME/caret alignment, screen readers or native ResizeObserver timing.",
+  "passed": 33,
+  "failed": 0,
+  "results": [
+    {
+      "name": "render preserves text and tokens: json",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: java",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: sql",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: yaml",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: typescript",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: tsx",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: python",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: bash",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: powershell",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: xml",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: log",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: diff",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: promql",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: markdown",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: properties",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: dockerfile",
+      "status": "passed"
+    },
+    {
+      "name": "render preserves text and tokens: http",
+      "status": "passed"
+    },
+    {
+      "name": "large input skips highlighting and preserves text",
+      "status": "passed"
+    },
+    {
+      "name": "unknown language and missing hljs use escaped plain text",
+      "status": "passed"
+    },
+    {
+      "name": "language aliases resolve to registered lexers",
+      "status": "passed"
+    },
+    {
+      "name": "read-only highlighting preserves exact text and scrolling",
+      "status": "passed"
+    },
+    {
+      "name": "diff wrappers and line text survive highlighting",
+      "status": "passed"
+    },
+    {
+      "name": "mutation observer settles after cached highlight pass",
+      "status": "passed"
+    },
+    {
+      "name": "editor retains node value handlers, direct assignment, input and scroll",
+      "status": "passed"
+    },
+    {
+      "name": "editor repaint does not recursively observe its own syntax layer",
+      "status": "passed"
+    },
+    {
+      "name": "updated editor metrics retain CSS white-space and flex fill",
+      "status": "passed"
+    },
+    {
+      "name": "ANSI timestamp and nested multiline JSON preserve text and token keys",
+      "status": "passed"
+    },
+    {
+      "name": "all lexers preserve Unicode tabs trailing newlines and escaped HTML",
+      "status": "passed"
+    },
+    {
+      "name": "detached/reinserted editor restarts resize observation",
+      "status": "passed"
+    },
+    {
+      "name": "CRLF and lone CR survive highlighted render via HTML parser",
+      "status": "passed"
+    },
+    {
+      "name": "CRLF survives unknown-language and missing-library fallback",
+      "status": "passed"
+    },
+    {
+      "name": "CRLF survives large-source plain fallback",
+      "status": "passed"
+    },
+    {
+      "name": "CRLF readonly highlighting retains source and diff line wrappers",
+      "status": "passed"
+    }
+  ]
+}

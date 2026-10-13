@@ -16,3 +16,12 @@ work/
 app/runtime/*
 !app/runtime/README.md
 app/.runtime-*
+
+# Reproducible IDE sources/locks are tracked; platform downloads and generated bundles are not.
+ide/lib/
+ide/src-gen/
+ide/plugins/
+ide/plugin-cache/
+ide/extensions/*/lib/
+ide/.theia/
+ide/data/

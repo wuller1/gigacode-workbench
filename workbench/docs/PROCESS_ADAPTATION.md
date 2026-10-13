@@ -1,6 +1,6 @@
 # Адаптация действующего процесса ко всем профилям Workbench
 
-Пользователь уже работает со своим SDD-процессом и другими правилами разработки. Задача — сохранить полезные договорённости и связать их с новой обвязкой, усилив проверку фактов, конструктивную критику и работу непосредственно в Task UI. Это относится ко **всем девяти профилям**. Основная задача analyst — помогать составлять описание функциональности и самому писать конечный материал. SDD — один из режимов, наряду с brief, DOCX, user stories, сценариями и review/refine существующего документа. Критическая самопроверка нужна во всех режимах; десятый профиль и обязательный второй автор не нужны. Spec даёт дополнительную формальную проверку/контракты либо выполняет явно выбранный formal workflow.
+Пользователь уже работает со своим SDD-процессом и другими правилами разработки. Задача — сохранить полезные договорённости и связать их с новой обвязкой, усилив проверку фактов, конструктивную критику и работу непосредственно в Task UI. Это относится ко **всем встроенным профилям**. Основная задача analyst — помогать составлять описание функциональности и самому писать конечный материал. SDD — один из режимов, наряду с brief, DOCX, user stories, сценариями и review/refine существующего документа. Критическая самопроверка нужна во всех режимах; обязательный второй автор не нужен. Spec даёт дополнительную формальную проверку/контракты либо выполняет явно выбранный formal workflow.
 
 Фактический старый процесс на целевой машине в этом документе не прочитан и не объявлен перенесённым. Приведённые ниже поля и сервисы — проектный контракт native адаптации, не дополнительные поля JSON legacy controller или ACP. Рабочие источники, разрешения и версии устанавливаются при выполнении. Общие правила: [MAIN_WORK_PROCESS](MAIN_WORK_PROCESS.md), [TASK_WORKSPACE](TASK_WORKSPACE.md), [NATIVE_WORKBENCH_MIGRATION](NATIVE_WORKBENCH_MIGRATION.md), [CHANGE_SAFETY](CHANGE_SAFETY.md).
 
@@ -63,15 +63,20 @@ Submit сохраняет run/workflow/stage/revision/attempt_id checks. Task/re
 
 Исключения записываются с причиной, затронутой областью, источником полномочий и условием пересмотра. Не переносить исключение одного проекта в глобальное правило.
 
-## 5. Все девять профилей: что сопоставить
+## 5. Все встроенные профили: что сопоставить
 
 | Профиль | Найти в действующем процессе | Связать с Task/workflow и сохранить |
 |---|---|---|
 | analyst | Правила составления описания, форматы brief/SDD/DOCX/stories/scenarios, роли, discovery и вопросы | Сам конечный материал, цель/scope, факты/гипотезы, варианты/recommendation и критическая проверка; никаких выдуманных бизнес-решений или реализации кода |
 | spec | Принятый SDD/формальный процесс, requirement IDs, consistency/contract review, критерий готовности | Дополнительная проверка/доработка по потребности или выбранному workflow, versioned requirements/decisions/delta; не обязательный новый автор |
+| architect | ADR, межсистемные границы, quality attributes, ownership и migration strategy | Короткое проверяемое решение, trade-offs, contract/recovery/observability и порядок совместимых изменений; без архитектуры ради документа |
 | backend | Архитектура, API/data contracts, ошибки/права, migration policy, реальные build/test commands | Область кода/потребители, совместимость, релевантные проверки и receipt на изменённой revision; stub не выдавать за интеграцию |
+| database | Schema source of truth, DDL/ORM/query conventions, migration/recovery, privacy и performance baselines | Инварианты, versioned migration/query plan, rehearsal, integrity/plan measurements и передача devops; чтение данных не разрешает mutation |
+| designer | Product/UX процесс, tokens/themes/components/assets, state matrix, accessibility и corporate kit governance | Versioned brief/design contract/prototype, оригинальные assets, измеримый audit, handoff и изменения UI kit через review/release |
 | frontend | Дизайн-процесс, tokens/components, UX-сценарии, accessibility/state/viewport критерии | Design contract, настоящий diff/UI evidence, измерения отдельно от expert review; без единого beauty score или копирования чужого look |
+| security | Threat model, dependency/SBOM/Sprut policy, exceptions и remediation ownership | Применимые findings и SCA evidence для точной revision, исправления/повторная проверка и остаточный риск; provider label не заменяет binding |
 | devops | Environments, CI/CD, rollout/rollback, доступы и approvals | Actual Jenkins/OpenShift tools, target/environment, operation ID, pre/post и unknown reconciliation; чтение не разрешает apply |
+| technical-writer | Аудитории, docs sources, style/glossary, DOCX/PDF/knowledge publish и version policy | Точный delta, проверенные примеры/ссылки/render и receipt публикации; не переписывать незатронутое и не публиковать по наличию tool |
 | qa | Test strategy, критичные сценарии, fixtures/data, существующая приёмка | Requirement→test→evidence, scope/denominator/environment, clean/bad/empty различение; empty/not_run не passed |
 | reviewer | Checklist, владельцы контрактов, допустимость независимого review и принятие замечаний | Конкретное finding/source/impact, blocking versus recommendation, change revision; без искусственного второго цикла согласования |
 | diagnostics | Incident/debug процесс, доступные logs/metrics, severity/recovery и передача | Hypothesis→discriminating probe→cause→fix evidence; unknown operation видим, no blind replay; retro по событию |
@@ -151,7 +156,7 @@ Stage report questions/blockers содержит только препятств
 
 ## 8. Приёмка адаптации на целевой машине
 
-Это сценарии **для выполнения**, здесь они не объявляются пройденными. Записать реальную модель/версию GigaCode, process-source version, вход, выход и evidence. Начать с применимой пары сценариев; все девять строк матрицы должны получить verified mapping либо явный пробел, не ложный общий pass.
+Это сценарии **для выполнения**, здесь они не объявляются пройденными. Записать реальную модель/версию GigaCode, process-source version, вход, выход и evidence. Начать с применимой пары сценариев; все встроенные строки матрицы должны получить verified mapping либо явный пробел, не ложный общий pass.
 
 | Сценарий | Ожидаемый результат | Провал |
 |---|---|---|

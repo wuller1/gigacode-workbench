@@ -1,0 +1,196 @@
+{
+  "scope": "Node VM tests of actual prototype Git models, callbacks and exported history helpers. Only audit evidence files are written; Git commands, application disk writes, repository backend and browser UI were not executed. History annotation expectations apply to the explicit demo fixtures, not to general Git blame semantics.",
+  "sourceHash": "3de8ceadd5432bb35591e0c0e65a914faf160b79451a1c68feb007de570ad1f7",
+  "sources": {
+    "suite-prototype-ide-git.js": "3de8ceadd5432bb35591e0c0e65a914faf160b79451a1c68feb007de570ad1f7",
+    "suite-prototype-git-history.js": "3b16d572631b4822128eaca37dae1e26a419a19e086ad43563bb68ab845f10f9"
+  },
+  "passed": 46,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Hunks retain two separately selectable groups",
+      "pass": true
+    },
+    {
+      "name": "Selected lines deduplicate and reject context or invalid indices",
+      "pass": true
+    },
+    {
+      "name": "Selecting all changed rows becomes full staging; unstage removes selection",
+      "pass": true
+    },
+    {
+      "name": "Partial commit preserves unstaged remainder and unrelated file",
+      "pass": true
+    },
+    {
+      "name": "Full commit removes only fully staged file from changes",
+      "pass": true
+    },
+    {
+      "name": "Empty commit and message do not mutate history",
+      "pass": true
+    },
+    {
+      "name": "Commit callback blocks dirty editor buffers",
+      "pass": true
+    },
+    {
+      "name": "Staging detects later working-copy edits rather than silently committing new content",
+      "pass": true
+    },
+    {
+      "name": "Amend replaces HEAD without adding a second commit or duplicating a path",
+      "pass": true
+    },
+    {
+      "name": "Message-only amend preserves prior commit file snapshot",
+      "pass": true
+    },
+    {
+      "name": "Snapshot is a deep copy including stage selection",
+      "pass": true
+    },
+    {
+      "name": "Stash callback captures diff and index then removes matching changes",
+      "pass": true
+    },
+    {
+      "name": "Apply keeps original stash and restores exact captured index and diff",
+      "pass": true
+    },
+    {
+      "name": "Pop deletes stash only after successful restoration",
+      "pass": true
+    },
+    {
+      "name": "Conflicting pop retains saved source and working copy unchanged",
+      "pass": true
+    },
+    {
+      "name": "Dirty editor collision blocks restore without deleting source",
+      "pass": true
+    },
+    {
+      "name": "Shelf is independent of Git stash; keep preserves working copy",
+      "pass": true
+    },
+    {
+      "name": "Legacy metadata-only stash is not reported as restored",
+      "pass": true
+    },
+    {
+      "name": "Operation callback rejects changed project",
+      "pass": true
+    },
+    {
+      "name": "Operation callback rejects changed branch",
+      "pass": true
+    },
+    {
+      "name": "Operation callback rejects changed HEAD between preview and apply",
+      "pass": true
+    },
+    {
+      "name": "New branch with checkout respects dirty-buffer guard",
+      "pass": true
+    },
+    {
+      "name": "Invalid references and duplicate branches are rejected",
+      "pass": true
+    },
+    {
+      "name": "History-transform plans leave graph unchanged",
+      "pass": true
+    },
+    {
+      "name": "Project models and drafts are independent instances",
+      "pass": true
+    },
+    {
+      "name": "Icon buttons contain a single class attribute",
+      "pass": true
+    },
+    {
+      "name": "Stage-visible respects search and preserves an already staged hidden file",
+      "pass": true
+    },
+    {
+      "name": "Stage-visible respects author and changelist filters",
+      "pass": true
+    },
+    {
+      "name": "Empty file filter stages nothing",
+      "pass": true
+    },
+    {
+      "name": "Filtered history cannot show the hidden selected commit detail",
+      "pass": true
+    },
+    {
+      "name": "No matching history results leave no stale detail action",
+      "pass": true
+    },
+    {
+      "name": "Operation callback rejects changed repository",
+      "pass": true
+    },
+    {
+      "name": "Restored stash retains staging fingerprint so later changes require restage",
+      "pass": true
+    },
+    {
+      "name": "Operation text and unchecked-checkbox draft survive a model rerender",
+      "pass": true
+    },
+    {
+      "name": "Returning from operation preview retains entered values",
+      "pass": true
+    },
+    {
+      "name": "Stale index view shows the saved snapshot and blocks misleading current content",
+      "pass": true
+    },
+    {
+      "name": "Index-view hunk action maps back to original selected row indices",
+      "pass": true
+    },
+    {
+      "name": "Both reference validators reject control bytes and DEL",
+      "pass": true
+    },
+    {
+      "name": "History branch validation accepts useful names and rejects malformed references",
+      "pass": true
+    },
+    {
+      "name": "History diff reconstructs both original inputs with consistent row numbers",
+      "pass": true
+    },
+    {
+      "name": "History identical revisions show no additions or removals",
+      "pass": true
+    },
+    {
+      "name": "History fixture annotations retain source revisions and one-based rows",
+      "pass": true
+    },
+    {
+      "name": "History capture is stable after the live model changes",
+      "pass": true
+    },
+    {
+      "name": "History scope matching rejects each changed identity component",
+      "pass": true
+    },
+    {
+      "name": "History scope normalizes empty project and unborn HEAD without mutation",
+      "pass": true
+    },
+    {
+      "name": "Default diff adapts to width without overwriting explicit user choice",
+      "pass": true
+    }
+  ]
+}

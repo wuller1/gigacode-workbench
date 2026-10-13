@@ -1,0 +1,21 @@
+/* Integration only: Git and editor share the Code panel. */
+#di-ide>.di-body[hidden],#igIDEHost[hidden],#di-ide .di-bar button[hidden]{display:none}
+#igIDEHost{flex:1;min-width:0;min-height:0;display:flex;overflow:hidden}
+.di-git-modes{display:flex;align-items:center;gap:2px;padding:2px;border:1px solid var(--line);border-radius:7px}
+.di-git-modes button{font:inherit;color:var(--muted);border:0;border-radius:4px;padding:4px 10px;background:transparent;cursor:pointer;min-height:28px}
+.di-git-modes button[aria-pressed=true]{color:var(--text);background:var(--hover)}
+.di-git-modes button:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+.di-git-handoff{padding:24px;max-width:660px;margin:auto}
+.di-git-handoff h3{font-size:17px;font-weight:550;margin:0 0 8px}.di-git-handoff p{color:var(--muted);line-height:1.65}
+
+.sto-conflict-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}.sto-conflict-three h3{font-size:12px;color:var(--muted)}.sto-conflict-three pre{max-height:250px;overflow:auto;font-size:11px}
+@media(max-width:800px){.sto-conflict-three{grid-template-columns:1fr}.sto-conflict-three pre{max-height:140px}}
+
+.di-symbol-result{display:flex;flex-direction:column;gap:4px;width:100%;padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;background:transparent;color:var(--text);font:12px var(--ui)}.di-symbol-result:hover{background:var(--hover)}.di-symbol-result small{color:var(--muted);font-size:10px;overflow-wrap:anywhere}
+.di-bottom{position:relative;flex:0 1 auto;max-height:none;min-height:80px}
+#di-ide .di-code-editor{min-height:90px}
+.di-bottom-resizer{position:absolute;left:0;right:0;top:-4px;height:7px;z-index:4;cursor:ns-resize;touch-action:none}
+.di-bottom-resizer:hover,.di-bottom-resizer:focus-visible{background:var(--mintbg);outline:1px solid var(--mint)}
+.di-bottom.collapsed{min-height:37px;max-height:37px}
+.di-bottom.collapsed>.di-content{display:none}
+.di-bottom.collapsed>.di-bottom-resizer{display:none}

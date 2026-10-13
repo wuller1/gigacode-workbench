@@ -39,6 +39,10 @@ async function setup() {
     path.join(bundle, "profiles/analyst.md"),
     "# Analyst\nUse current evidence.",
   );
+  await fs.writeFile(
+    path.join(bundle, "profiles/designer.md"),
+    "# Designer\nDesign accessible UI and validate UX with evidence.",
+  );
   const events: any[] = [];
   const service = new WorkbenchService({
     dataDir: data,
@@ -458,8 +462,20 @@ describe("durable backend", () => {
     );
     expect(x.service.snapshot().tasks).toHaveLength(0);
   });
-  it("uses actual permission options, not a free-text approval", async () => {
+  it("auto-allows an actual bound permission option without a modal by default", async () => {
     const x = await setup();
+    await x.service.invoke("session.send", { id: x.a.id, text: "permission" });
+    await until(() => x.service.snapshot().sessions[0].status === "completed");
+    expect(x.service.snapshot().questions).toHaveLength(0);
+    expect(
+      (await logs(x.project)).find((l) => l.type === "permission").result,
+    ).toEqual({ outcome: { outcome: "selected", optionId: "once" } });
+  });
+  it("can require an actual permission option when ask-each mode is selected", async () => {
+    const x = await setup();
+    await x.service.invoke("settings.update", {
+      patch: { permissionMode: "ask_each" },
+    });
     await x.service.invoke("session.send", { id: x.a.id, text: "permission" });
     await until(() => x.service.snapshot().questions.length === 1);
     const q = x.service.snapshot().questions[0];
@@ -471,6 +487,34 @@ describe("durable backend", () => {
     expect(
       (await logs(x.project)).find((l) => l.type === "permission").result,
     ).toEqual({ outcome: { outcome: "selected", optionId: "once" } });
+  });
+  it("routes roles automatically from request and project context", async () => {
+    const x = await setup();
+    await x.service.invoke("session.send", {
+      id: x.a.id,
+      text: "Спроектируй UI/UX макет и проверь удобство интерфейса.",
+    });
+    await until(() => x.service.snapshot().sessions[0].status === "completed");
+    const session = x.service.snapshot().sessions[0];
+    expect(session.profileId).toBe("designer");
+    expect(session.profileConfidence).toBeGreaterThanOrEqual(0.55);
+    expect(session.profileReason).toContain("UI/UX");
+  });
+  it("does not expose manual role selection through session updates", async () => {
+    const x = await setup();
+    await expect(
+      x.service.invoke("session.create", {
+        taskId: x.t.id,
+        title: "Manual role",
+        profileId: "analyst",
+      }),
+    ).rejects.toThrow("selected automatically");
+    await expect(
+      x.service.invoke("session.update", {
+        id: x.a.id,
+        profileId: "analyst",
+      }),
+    ).rejects.toThrow("selected automatically");
   });
   it("preserves free answers through the real host tool without queuing a duplicate", async () => {
     const x = await setup();

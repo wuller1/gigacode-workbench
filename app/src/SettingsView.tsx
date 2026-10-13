@@ -1,3 +1,4 @@
+import { IdeSettings } from './IdeSettings';
 import { useEffect, useState } from "react";
 import type { AppState, Profile, Settings } from "../shared/types";
 import { profileName } from "./labels";
@@ -101,6 +102,7 @@ export function SettingsView({
   const sections = [
     ["general", "Внешний вид", "settings"],
     ["runtime", "CLI и модели", "terminal"],
+    ["ide", "IDE", "code"],
     ["execution", "Выполнение", "agents"],
     ["profiles", "Роли", "branch"],
     ["memory", "Память", "memory"],
@@ -159,6 +161,7 @@ export function SettingsView({
                     })
                   ) {
                     localStorage.removeItem("workbench.layout.v1");
+                    localStorage.removeItem("workbench.layout.v2");
                   }
                 }}
               >
@@ -166,6 +169,7 @@ export function SettingsView({
               </button>
             </>
           )}
+          {section === "ide" && <IdeSettings state={state} run={run}/>}
           {section === "runtime" && (
             <>
               <h3>CLI и модели</h3>
@@ -238,6 +242,31 @@ export function SettingsView({
           {section === "execution" && (
             <>
               <h3>Выполнение</h3>
+              <label className="field">
+                Доступ к инструментам CLI и MCP
+                <select
+                  value={draft.permissionMode}
+                  onChange={(e) =>
+                    update(
+                      "permissionMode",
+                      e.target.value as Settings["permissionMode"],
+                    )
+                  }
+                >
+                  <option value="auto_allow_bound">
+                    Разрешать всё подключённое к проекту
+                  </option>
+                  <option value="ask_each">
+                    Спрашивать для каждого вызова
+                  </option>
+                </select>
+              </label>
+              <p className="fine-print">
+                По умолчанию подключение CLI или MCP к проекту уже считается
+                разрешением. Сессии и субагенты наследуют этот доступ, поэтому
+                отдельные окна подтверждения не появляются. Вызовы и результаты
+                остаются видимыми в истории и диагностике.
+              </p>
               <label className="field">
                 Одновременно активных сессий
                 <input

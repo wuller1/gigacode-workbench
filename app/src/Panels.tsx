@@ -39,6 +39,8 @@ interface BrowserTab {
   error?: string;
   projectId?: string;
   sessionId?: string;
+  active?: boolean;
+  lastActiveAt?: number;
 }
 export function BrowserPanel({
   project,
@@ -55,20 +57,54 @@ export function BrowserPanel({
     [h, setH] = useState("844"),
     [preset, setPreset] = useState("adaptive"),
     [zoom, setZoom] = useState("1"),
-    [actual, setActual] = useState<any>();
+    [actual, setActual] = useState<any>(),
+    [creating, setCreating] = useState(false);
   const area = useRef<HTMLDivElement>(null);
   const projectRef = useRef(project?.id);
   projectRef.current = project?.id;
   const tabRef = useRef("");
+  const refreshGeneration = useRef(0),
+    selectionIntent = useRef<string | undefined>(undefined);
   const covered = useCovered();
   const ask = useAsk();
   const tab = tabs.find((t) => t.id === selected) || tabs[0];
   const refresh = useCallback(async () => {
+    const generation = ++refreshGeneration.current,
+      expectedProject = project?.id;
     const data = await run("browser.list");
-    if (projectRef.current === project?.id && Array.isArray(data))
-      setTabs(data.filter((t: BrowserTab) => t.projectId === project?.id));
+    if (
+      generation === refreshGeneration.current &&
+      projectRef.current === expectedProject &&
+      Array.isArray(data)
+    ) {
+      const own = data.filter(
+        (candidate: BrowserTab) => candidate.projectId === expectedProject,
+      );
+      setTabs(own);
+      setSelected((current) => {
+        const intended = selectionIntent.current;
+        if (
+          intended &&
+          own.some((candidate: BrowserTab) => candidate.id === intended)
+        )
+          return intended;
+        // Explicit backend activation (create, reuse or another UI surface)
+        // is authoritative. The array itself remains in backend tab-strip
+        // order; never sort it merely to choose a fallback.
+        const backendActive = own.find(
+          (candidate: BrowserTab) => candidate.active,
+        );
+        if (backendActive) return backendActive.id;
+        if (own.some((candidate: BrowserTab) => candidate.id === current))
+          return current;
+        return own[0]?.id || "";
+      });
+    }
   }, [project?.id, run]);
   useEffect(() => {
+    ++refreshGeneration.current;
+    selectionIntent.current = undefined;
+    setTabs([]);
     setSelected("");
     void refresh();
   }, [refresh]);
@@ -76,19 +112,25 @@ export function BrowserPanel({
     () =>
       window.workbench?.subscribe((e) => {
         if (e.type === "browser.changed") {
-          const p = e.payload as BrowserTab & { closed?: boolean };
-          if (p.closed) setTabs((old) => old.filter((t) => t.id !== p.id));
-          else if (p.projectId === projectRef.current)
-            setTabs((old) =>
-              old.some((t) => t.id === p.id)
-                ? old.map((t) => (t.id === p.id ? { ...t, ...p } : t))
-                : [...old, p],
-            );
+          // Re-read the owner-scoped list. A request generation below prevents
+          // a slower, older full-list response from replacing newer state.
+          void refresh();
         }
         if (e.type === "browser.closed") void refresh();
       }),
     [refresh],
   );
+  const activateTab = async (id: string) => {
+    selectionIntent.current = id;
+    ++refreshGeneration.current;
+    setSelected(id);
+    try {
+      await run("browser.activate", { id });
+    } finally {
+      if (selectionIntent.current === id) selectionIntent.current = undefined;
+    }
+    await refresh();
+  };
   useEffect(() => {
     if (!editing) setAddress(tab?.url || "");
   }, [tab?.id, tab?.url, editing]);
@@ -147,15 +189,21 @@ export function BrowserPanel({
     };
   }, [tab?.id, visible, covered, run, inspect]);
   const create = async () => {
-    if (!project) return;
-    const t = await run("browser.create", {
-      projectId: project.id,
-      sessionId: session?.id,
-      url: "about:blank",
-    });
-    if (t) {
-      await refresh();
-      setSelected(t.id);
+    if (!project || creating) return;
+    setCreating(true);
+    try {
+      const t = await run("browser.create", {
+        projectId: project.id,
+        sessionId: session?.id,
+        url: "about:blank",
+        requestId: crypto.randomUUID(),
+      });
+      if (t) {
+        await refresh();
+        setSelected(t.id);
+      }
+    } finally {
+      setCreating(false);
     }
   };
   const action = async (
@@ -196,7 +244,7 @@ export function BrowserPanel({
             className={`resource-tab ${tab?.id === t.id ? "active" : ""}`}
           >
             <button
-              onClick={() => setSelected(t.id)}
+              onClick={() => void activateTab(t.id)}
               onDoubleClick={async () => {
                 const name = await ask("Название вкладки", { value: t.title });
                 if (name)
@@ -233,7 +281,7 @@ export function BrowserPanel({
         <IconButton
           icon="plus"
           label="Новая вкладка браузера"
-          disabled={!project}
+          disabled={!project || creating}
           onClick={() => void create()}
         />
       </div>
@@ -398,8 +446,8 @@ export function BrowserPanel({
       ) : (
         <Empty icon="browser" title="Браузер проекта">
           <p>Вкладки сохраняют своё состояние при скрытии панели.</p>
-          <button disabled={!project} onClick={() => void create()}>
-            Открыть вкладку
+          <button disabled={!project || creating} onClick={() => void create()}>
+            {creating ? "Открывается…" : "Открыть вкладку"}
           </button>
         </Empty>
       )}
@@ -1116,6 +1164,7 @@ export function ArtifactsPanel({
                     title: selected.name,
                     projectId: task?.projectId,
                     sessionId: session?.id,
+                    reuseKey: `artifact:${selected.id}`,
                   });
                   if (tab) openBrowser?.();
                 }}
@@ -1179,7 +1228,6 @@ export function WorkersPanel({
             const s = await run("session.create", {
               taskId: task.id,
               parentId: session.id,
-              profileId: session.profileId,
               title: title.slice(0, 60),
             });
             if (s) await run("session.send", { id: s.id, text: title });

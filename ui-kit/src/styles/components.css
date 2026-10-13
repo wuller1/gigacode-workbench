@@ -1,0 +1,54 @@
+.gc-button {
+  min-height: var(--ui-control-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-space-2);
+  padding: 0 var(--ui-space-3);
+  border: 1px solid transparent;
+  border-radius: var(--ui-radius-control);
+  font: 550 13px/1 var(--ui-font);
+  cursor: pointer;
+  transition: background var(--ui-motion-fast) var(--ui-ease-standard), border-color var(--ui-motion-fast) var(--ui-ease-standard);
+}
+.gc-button:focus-visible { outline: 2px solid var(--ui-border-focus); outline-offset: 2px; }
+.gc-button:disabled { cursor: not-allowed; opacity: .55; }
+.gc-button--primary { color: var(--ui-action-on-primary); background: var(--ui-action-primary); }
+.gc-button--primary:hover:not(:disabled) { background: var(--ui-action-primary-hover); }
+.gc-button--secondary { color: var(--ui-text-primary); background: var(--ui-surface-raised); border-color: var(--ui-border-subtle); }
+.gc-button--secondary:hover:not(:disabled) { background: var(--ui-surface-hover); border-color: var(--ui-border-strong); }
+.gc-button--quiet { color: var(--ui-text-secondary); background: transparent; }
+.gc-button--quiet:hover:not(:disabled) { color: var(--ui-text-primary); background: var(--ui-surface-hover); }
+.gc-button--danger { color: var(--ui-text-inverse); background: var(--ui-status-danger); }
+.gc-button__spinner { width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: gc-spin .75s linear infinite; }
+
+.gc-icon-button { width: var(--ui-control-md); padding: 0; }
+.gc-icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.gc-visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+.gc-status { display: inline-flex; align-items: center; gap: 6px; color: var(--ui-text-secondary); font: 550 11px/1.2 var(--ui-font); }
+.gc-status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.gc-status--success { color: var(--ui-status-success); }
+.gc-status--info { color: var(--ui-status-info); }
+.gc-status--warning { color: var(--ui-status-warning); }
+.gc-status--danger { color: var(--ui-status-danger); }
+.gc-status--neutral { color: var(--ui-text-secondary); }
+
+.gc-card { border: 1px solid var(--ui-border-subtle); border-radius: var(--ui-radius-card); background: var(--ui-surface-panel); color: var(--ui-text-primary); }
+.gc-card__header { min-height: 40px; display: flex; align-items: center; gap: var(--ui-space-2); padding: 0 var(--ui-space-3); border-bottom: 1px solid var(--ui-border-subtle); }
+
+.gc-lifecycle { list-style: none; margin: 0; padding: var(--ui-space-2); display: grid; gap: 2px; }
+.gc-lifecycle__step { min-height: 30px; display: grid; grid-template-columns: 18px 1fr auto; gap: var(--ui-space-2); align-items: center; padding: 0 var(--ui-space-2); border-radius: var(--ui-radius-control); color: var(--ui-text-secondary); }
+.gc-lifecycle__step[data-state="current"] { color: var(--ui-text-primary); background: var(--ui-surface-selected); }
+.gc-lifecycle__step[data-state="complete"] { color: var(--ui-text-disabled); }
+.gc-lifecycle__step[data-state="complete"] .gc-lifecycle__label { text-decoration: line-through; }
+.gc-lifecycle__mark { width: 14px; height: 14px; display: grid; place-items: center; border: 1px solid var(--ui-border-strong); border-radius: 50%; font-size: 9px; }
+.gc-lifecycle__step[data-state="complete"] .gc-lifecycle__mark { color: var(--ui-action-on-primary); border-color: var(--ui-action-primary); background: var(--ui-action-primary); }
+
+.gc-publication { padding: var(--ui-space-3); }
+.gc-publication__meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ui-space-2); margin: var(--ui-space-3) 0; }
+.gc-publication__meta > div { padding: var(--ui-space-2); border-radius: var(--ui-radius-control); background: var(--ui-surface-sunken); }
+.gc-publication__meta small { display: block; color: var(--ui-text-secondary); margin-bottom: 3px; }
+
+@keyframes gc-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .gc-button__spinner { animation: none; border-right-color: currentColor; } }

@@ -1,0 +1,67 @@
+{
+  "scope": "IDE Ultimate research and plan structure only",
+  "reviewedAt": "2026-10-14",
+  "ok": true,
+  "parityRows": 151,
+  "primarySources": 66,
+  "repositorySnapshots": 18,
+  "extensionMetadataRecords": 14,
+  "fixtureSpecifications": 21,
+  "groupedAcceptanceGates": 9,
+  "localLinksChecked": 244,
+  "fixtureReferencedParityRows": 151,
+  "remainingRowsUseOwnAcceptance": [],
+  "runtimeImplemented": false,
+  "windowsLiveTestsPerformed": false,
+  "upstreamTestsExecuted": false,
+  "prototypeApprovalGateUnchanged": true,
+  "critiqueIterations": [
+    {
+      "iteration": 1,
+      "finding": "Monaco/LSP alone and extension installation do not establish Ultimate depth.",
+      "resolution": "Separate engine/extension host decision, 151 capabilities, concrete per-feature acceptance and gap owners."
+    },
+    {
+      "iteration": 2,
+      "finding": "Some refactorings previously treated as custom already exist in JDT source.",
+      "resolution": "Change signature/extract interface reclassified to reuse-first with pinned source/test references."
+    },
+    {
+      "iteration": 3,
+      "finding": "Official IntelliJ Java/Kotlin extension exists but has license, expiry, test and single-backend limits.",
+      "resolution": "Separate conditional backend candidate; IEF-21; no duplicate JDT backend, own test adapters and multi-window proof."
+    },
+    {
+      "iteration": 4,
+      "finding": "Language injections, UML/dependency analysis, scratches and settings migration were not separately addressable.",
+      "resolution": "Added IUP-147…151 mapped into existing cards; preserved approval gate and DAG."
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "No engine selected or installed by this research.",
+    "No Windows, license activation, extension runtime or full Ultimate parity live test performed.",
+    "Actual fixture projects are specified, not generated/executed.",
+    "Registry metadata does not establish exact package license/redistribution rights or compatibility."
+  ],
+  "bundleValidation": {
+    "overallOk": false,
+    "baselineIssueCount": 67,
+    "finalIssueCount": 67,
+    "newIssues": [],
+    "remainingByScope": {
+      "legacy": 61,
+      "suite": 6
+    },
+    "suiteAcceptanceChecked": {
+      "ok": false,
+      "planCardsChecked": 71,
+      "acceptanceChecked": 224,
+      "rolesChecked": 14,
+      "workflowsChecked": 29,
+      "uiKitFilesChecked": 35,
+      "prototypeMarkersChecked": 2
+    },
+    "note": "Global checker failed before this research and still fails on the same legacy manifest and pre-existing acceptance/motion checks. No new issues introduced. See report scope: structural research validation only."
+  }
+}

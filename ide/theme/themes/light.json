@@ -1,0 +1,144 @@
+{
+  "name": "Workbench Light",
+  "type": "light",
+  "semanticHighlighting": true,
+  "colors": {
+    "foreground": "#252923",
+    "focusBorder": "#303b35",
+    "errorForeground": "#a32c2d",
+    "editor.background": "#fcfcfa",
+    "editor.foreground": "#252923",
+    "editor.lineHighlightBackground": "#f0f0ec",
+    "editor.selectionBackground": "#e7ede6",
+    "editor.inactiveSelectionBackground": "#e7ede6",
+    "editorCursor.foreground": "#303b35",
+    "editorLineNumber.foreground": "#636c60",
+    "editorLineNumber.activeForeground": "#252923",
+    "editorIndentGuide.background1": "#dce0d7",
+    "editorWidget.background": "#fcfcfa",
+    "editorWidget.border": "#dce0d7",
+    "editorSuggestWidget.background": "#fcfcfa",
+    "editorSuggestWidget.border": "#dce0d7",
+    "editorSuggestWidget.selectedBackground": "#e7ede6",
+    "editorGroup.border": "#dce0d7",
+    "editorGroupHeader.tabsBackground": "#f7f7f5",
+    "editorGroupHeader.noTabsBackground": "#f7f7f5",
+    "tab.activeBackground": "#fcfcfa",
+    "tab.inactiveBackground": "#f7f7f5",
+    "tab.activeForeground": "#252923",
+    "tab.inactiveForeground": "#636c60",
+    "tab.border": "#f7f7f5",
+    "tab.activeBorderTop": "#303b35",
+    "sideBar.background": "#f7f7f5",
+    "sideBar.foreground": "#252923",
+    "sideBar.border": "#dce0d7",
+    "sideBarSectionHeader.background": "#f7f7f5",
+    "sideBarSectionHeader.foreground": "#636c60",
+    "activityBar.background": "#f7f7f5",
+    "activityBar.foreground": "#252923",
+    "activityBar.inactiveForeground": "#636c60",
+    "activityBar.border": "#dce0d7",
+    "statusBar.background": "#f7f7f5",
+    "statusBar.foreground": "#636c60",
+    "statusBar.border": "#dce0d7",
+    "titleBar.activeBackground": "#f7f7f5",
+    "titleBar.activeForeground": "#252923",
+    "menu.background": "#fcfcfa",
+    "menu.foreground": "#252923",
+    "menu.selectionBackground": "#e7ede6",
+    "menu.border": "#dce0d7",
+    "input.background": "#fcfcfa",
+    "input.foreground": "#252923",
+    "input.border": "#dce0d7",
+    "dropdown.background": "#fcfcfa",
+    "dropdown.foreground": "#252923",
+    "dropdown.border": "#dce0d7",
+    "button.background": "#303b35",
+    "button.foreground": "#f7f7f5",
+    "button.secondaryBackground": "#f0f0ec",
+    "list.activeSelectionBackground": "#e7ede6",
+    "list.activeSelectionForeground": "#252923",
+    "list.inactiveSelectionBackground": "#e7ede6",
+    "list.hoverBackground": "#f0f0ec",
+    "list.focusBackground": "#e7ede6",
+    "panel.background": "#fcfcfa",
+    "panel.border": "#dce0d7",
+    "panelTitle.activeForeground": "#252923",
+    "panelTitle.inactiveForeground": "#636c60",
+    "panelTitle.activeBorder": "#303b35",
+    "terminal.background": "#fcfcfa",
+    "terminal.foreground": "#252923",
+    "breadcrumb.background": "#fcfcfa",
+    "breadcrumb.foreground": "#636c60",
+    "peekViewResult.background": "#fcfcfa",
+    "peekViewEditor.background": "#fcfcfa",
+    "scrollbarSlider.background": "#7d877b44",
+    "gitDecoration.modifiedResourceForeground": "#28699a",
+    "gitDecoration.untrackedResourceForeground": "#3d6f25",
+    "gitDecoration.deletedResourceForeground": "#a32c2d",
+    "gitDecoration.ignoredResourceForeground": "#636c60"
+  },
+  "tokenColors": [
+    {
+      "scope": [
+        "comment"
+      ],
+      "settings": {
+        "foreground": "#687463"
+      }
+    },
+    {
+      "scope": [
+        "keyword",
+        "storage"
+      ],
+      "settings": {
+        "foreground": "#9b2c79"
+      }
+    },
+    {
+      "scope": [
+        "string"
+      ],
+      "settings": {
+        "foreground": "#795e26"
+      }
+    },
+    {
+      "scope": [
+        "constant.numeric",
+        "constant.language"
+      ],
+      "settings": {
+        "foreground": "#6b46a2"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.type",
+        "support.type",
+        "support.class"
+      ],
+      "settings": {
+        "foreground": "#006a77"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.function",
+        "support.function"
+      ],
+      "settings": {
+        "foreground": "#3d6f25"
+      }
+    },
+    {
+      "scope": [
+        "variable.parameter"
+      ],
+      "settings": {
+        "foreground": "#905300"
+      }
+    }
+  ]
+}

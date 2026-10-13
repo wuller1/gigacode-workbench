@@ -103,7 +103,7 @@ function Get-WorkbenchInstallPlan {
         }
         $entries.Add([ordered]@{ source = Join-Path $source 'adapters/gigacode/commands/workbench.md'; relative_target = 'commands/workbench.md'; render_adapter = $true; purpose = 'native_command' })
         if ($IncludeAgents) {
-            foreach ($role in @('analyst', 'backend', 'devops', 'diagnostics', 'frontend', 'qa', 'reviewer', 'spec', 'gigacode-ui')) {
+            foreach ($role in @('analyst', 'architect', 'backend', 'database', 'designer', 'devops', 'diagnostics', 'frontend', 'qa', 'reviewer', 'security', 'spec', 'technical-writer', 'gigacode-ui')) {
                 $entries.Add([ordered]@{ source = Join-Path $source ('adapters/gigacode/agents/workbench-' + $role + '.md'); relative_target = 'agents/workbench-' + $role + '.md'; render_adapter = $true; purpose = 'native_agent' })
             }
         }

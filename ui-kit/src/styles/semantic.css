@@ -1,0 +1,99 @@
+:root,
+[data-ui-theme="light"] {
+  color-scheme: light;
+  --ui-surface-canvas: #f7f7f5;
+  --ui-surface-panel: #fcfcfa;
+  --ui-surface-raised: #fcfcfa;
+  --ui-surface-sunken: #f0f0ec;
+  --ui-surface-hover: #e9ebe5;
+  --ui-surface-selected: #e7ede6;
+  --ui-surface-overlay: #252923a8;
+  --ui-text-primary: #252923;
+  --ui-text-secondary: #636c60;
+  --ui-text-disabled: #7c8779;
+  --ui-text-inverse: #fafcf8;
+  --ui-text-link: #526a78;
+  --ui-border-subtle: #dde1d9;
+  --ui-border-strong: #7c8779;
+  --ui-border-focus: #465a4b;
+  --ui-action-primary: #303b35;
+  --ui-action-primary-hover: #465a4b;
+  --ui-action-on-primary: #fafcf8;
+  --ui-status-success: #275b39;
+  --ui-status-info: #526a78;
+  --ui-status-warning: #745019;
+  --ui-status-danger: #8a4346;
+  --ui-space-1: 4px;
+  --ui-space-2: 8px;
+  --ui-space-3: 12px;
+  --ui-space-4: 16px;
+  --ui-space-6: 24px;
+  --ui-radius-control: 6px;
+  --ui-radius-card: 9px;
+  --ui-radius-sheet: 12px;
+  --ui-control-sm: 28px;
+  --ui-control-md: 32px;
+  --ui-control-lg: 40px;
+  --ui-target-min: 44px;
+  --ui-font: Inter, "Segoe UI", Arial, sans-serif;
+  --ui-mono: "Cascadia Mono", Consolas, monospace;
+  --ui-motion-fast: 120ms;
+  --ui-motion-normal: 180ms;
+  --ui-ease-standard: cubic-bezier(.2, 0, 0, 1);
+}
+
+[data-ui-theme="dark"] {
+  color-scheme: dark;
+  --ui-surface-canvas: #181b19;
+  --ui-surface-panel: #1f2320;
+  --ui-surface-raised: #282e29;
+  --ui-surface-sunken: #151815;
+  --ui-surface-hover: #354037;
+  --ui-surface-selected: #2e3c33;
+  --ui-surface-overlay: #0d0f0ddd;
+  --ui-text-primary: #eff3ec;
+  --ui-text-secondary: #adb9ac;
+  --ui-text-disabled: #7f8b7f;
+  --ui-text-inverse: #202820;
+  --ui-text-link: #9fb7c8;
+  --ui-border-subtle: #3e4940;
+  --ui-border-strong: #566259;
+  --ui-border-focus: #bbcbb6;
+  --ui-action-primary: #cdd5ca;
+  --ui-action-primary-hover: #bbcbb6;
+  --ui-action-on-primary: #202820;
+  --ui-status-success: #aacba7;
+  --ui-status-info: #9fb7c8;
+  --ui-status-warning: #dcc492;
+  --ui-status-danger: #dfa5a8;
+}
+
+[data-ui-theme="high-contrast"] {
+  color-scheme: dark;
+  --ui-surface-canvas: #000000;
+  --ui-surface-panel: #090909;
+  --ui-surface-raised: #141414;
+  --ui-surface-sunken: #000000;
+  --ui-surface-hover: #252525;
+  --ui-surface-selected: #123a63;
+  --ui-surface-overlay: #000000df;
+  --ui-text-primary: #ffffff;
+  --ui-text-secondary: #e3e3e3;
+  --ui-text-disabled: #a8a8a8;
+  --ui-text-inverse: #000000;
+  --ui-text-link: #80bfff;
+  --ui-border-subtle: #8f8f8f;
+  --ui-border-strong: #ffffff;
+  --ui-border-focus: #ffdf70;
+  --ui-action-primary: #74f0bd;
+  --ui-action-primary-hover: #a7ffd9;
+  --ui-action-on-primary: #000000;
+  --ui-status-success: #74f0bd;
+  --ui-status-info: #80bfff;
+  --ui-status-warning: #ffd37a;
+  --ui-status-danger: #ff9ba4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --ui-motion-fast: 0ms; --ui-motion-normal: 0ms; }
+}

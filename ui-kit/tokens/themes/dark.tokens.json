@@ -1,0 +1,43 @@
+{
+  "$schema": "https://tr.designtokens.org/format/",
+  "$description": "Dark semantic theme; resolve aliases after merging with core.tokens.json.",
+  "semantic": {
+    "surface": {
+      "$type": "color",
+      "canvas": { "$value": "{core.color.neutral.950}" },
+      "panel": { "$value": "{core.color.neutral.900}" },
+      "raised": { "$value": "{core.color.neutral.800}" },
+      "sunken": { "$value": "#151815" },
+      "hover": { "$value": "#354037" },
+      "selected": { "$value": "#2e3c33" },
+      "overlay": { "$value": "#0d0f0ddd" }
+    },
+    "text": {
+      "$type": "color",
+      "primary": { "$value": "#eff3ec" },
+      "secondary": { "$value": "{core.color.neutral.400}" },
+      "disabled": { "$value": "#7f8b7f" },
+      "inverse": { "$value": "#202820" },
+      "link": { "$value": "{core.color.blue.400}" }
+    },
+    "border": {
+      "$type": "color",
+      "subtle": { "$value": "{core.color.neutral.750}" },
+      "strong": { "$value": "#566259" },
+      "focus": { "$value": "#bbcbb6" }
+    },
+    "action": {
+      "$type": "color",
+      "primary": { "$value": "{core.color.emerald.400}" },
+      "primary-hover": { "$value": "#bbcbb6" },
+      "on-primary": { "$value": "#202820" }
+    },
+    "status": {
+      "$type": "color",
+      "success": { "$value": "#aacba7" },
+      "info": { "$value": "{core.color.blue.400}" },
+      "warning": { "$value": "{core.color.amber.500}" },
+      "danger": { "$value": "{core.color.red.500}" }
+    }
+  }
+}

@@ -107,6 +107,10 @@ function Application() {
   useEffect(() => {
     if (session?.id) void run("session.attach", { id: session.id });
   }, [session?.id, run]);
+  useEffect(() => window.workbench?.subscribe(event => {
+    if (event.type === 'ide.reveal' && (event.payload as any).projectId === project?.id)
+      setRequested({ id: 'files', nonce: Date.now() });
+  }), [project?.id]);
   const selectedSessionId = session?.id;
   const draftKey = selectedSessionId || `project:${project?.id || "none"}`;
   const draft = drafts[draftKey] || emptyDraft;
@@ -210,7 +214,6 @@ function Application() {
     const s = await run("session.create", {
       taskId: activeTask.id,
       title: "Новый разговор",
-      profileId: session?.profileId,
     });
     if (s?.id) {
       selectSession(s.id);
@@ -817,7 +820,9 @@ function Chat({
     [contextOpen, setContextOpen] = useState(false),
     [nearBottom, setNearBottom] = useState(true),
     [questionId, setQuestionId] = useState<string>(),
-    [dismissed, setDismissed] = useState<Set<string>>(() => new Set());
+    [dismissed, setDismissed] = useState<Set<string>>(() => new Set()),
+    [branch, setBranch] = useState("");
+  const branchRequest = useRef(0);
   const scroll = useRef<HTMLDivElement>(null),
     composer = useRef<HTMLTextAreaElement>(null),
     ask = useAsk();
@@ -907,6 +912,28 @@ function Chat({
   );
   const configs = session.configOptions || [];
   const materials = state.artifacts.filter((a) => a.taskId === task.id);
+  const project = state.projects.find((p) => p.id === task.projectId);
+  useEffect(() => {
+    const request = ++branchRequest.current;
+    setBranch("");
+    if (!project) return;
+    void call("git.status", { projectId: project.id })
+      .then((result) => {
+        if (request === branchRequest.current)
+          setBranch(result?.branch || "Без ветки");
+      })
+      .catch(() => {
+        if (request === branchRequest.current) setBranch("Не Git");
+      });
+  }, [project?.id, session.status === "completed"]);
+  const contextLimit =
+    session.context.limitTokens || state.settings.contextLimit || undefined;
+  const contextLabel =
+    session.context.usedTokens != null && contextLimit
+      ? `${session.context.estimated ? "≈" : ""}${Math.min(999, Math.round((session.context.usedTokens / contextLimit) * 100))}%`
+      : session.context.usedTokens != null
+        ? `${session.context.estimated ? "≈" : ""}${Math.round(session.context.usedTokens / 1000)}k`
+        : "Контекст —";
   return (
     <>
       <div
@@ -1177,29 +1204,24 @@ function Chat({
               label="Приложить файлы проекта"
               onClick={() => void attach()}
             />
-            <label
-              className="composer-select"
-              title="Профиль следующего запроса"
+            <span
+              className="composer-meta"
+              title={`${session.profileReason || "Роль выбрана автоматически"}${session.profileConfidence ? ` · уверенность ${Math.round(session.profileConfidence * 100)}%` : ""}`}
+              aria-label={`${profileName(
+                state.profiles.find((p) => p.id === session.profileId),
+                session.profileId,
+              )}. ${session.profileReason || "Роль выбрана автоматически"}`}
             >
               <Icon name="branch" size={14} />
-              <select
-                aria-label="Роль"
-                value={session.profileId}
-                disabled={busy(session.status)}
-                onChange={(e) =>
-                  void run("session.update", {
-                    id: session.id,
-                    profileId: e.target.value,
-                  })
-                }
-              >
-                {state.profiles.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {profileName(p)}
-                  </option>
-                ))}
-              </select>
-            </label>
+              <span>
+                {session.profileConfidence === 0
+                  ? "Роль · авто"
+                  : profileName(
+                      state.profiles.find((p) => p.id === session.profileId),
+                      session.profileId,
+                    )}
+              </span>
+            </span>
             {configs.length ? (
               configs.map((c) => (
                 <label key={c.id} className="composer-select" title={c.name}>
@@ -1241,12 +1263,18 @@ function Chat({
             <span className="composer-spacer" />
             <button
               className="context-button"
+              title={`Git-ветка: ${branch || "определяется"}`}
+              onClick={() => onPanel("changes")}
+            >
+              <Icon name="branch" size={13} />
+              {branch || "Ветка…"}
+            </button>
+            <button
+              className="context-button"
               title="Контекст и восстановление"
               onClick={() => setContextOpen(true)}
             >
-              {session.context.usedTokens != null
-                ? `${session.context.estimated ? "≈" : ""}${Math.round(session.context.usedTokens / 1000)}k`
-                : "Контекст"}
+              {contextLabel}
             </button>
             {busy(session.status) && (
               <IconButton

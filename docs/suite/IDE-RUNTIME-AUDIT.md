@@ -1,0 +1,31 @@
+# Аудит реализации IDE
+
+14.10.2026. Критика выполнялась итерациями с проверкой кода, реальных процессов и UI. Итоговые наблюдения: [live evidence](evidence/ide-live-macos.json), [целостность пакета](evidence/bundle-integrity.json). Отчёт относится к macOS ARM64; Windows/ВАРМ и корпоративные подключения не подменяются этим прогоном.
+
+## Исправлено по результатам проверки
+
+| Перспектива | Обнаруженный дефект | Исправление и проверка |
+| --- | --- | --- |
+| Разработчик | Архивы VSIX находились в каталоге, но языковые расширения не запускались | Безопасная распаковка; readiness ждёт plugin host. Проверены 70 расширений и настоящий TypeScript grammar, JDT и Pyright |
+| Разработчик | Готовность backend принималась за готовность IDE | Отдельный authenticated startup handshake и ожидание frontend/plugin host; ранний exit и timeout имеют failure state |
+| Разработчик | Повтор запроса мог изменить buffer второй раз | Write-ahead operation receipts и сверка содержимого запроса; повтор возвращает receipt, pending требует reconciliation |
+| Разработчик | Номер версии мог совпасть после перезапуска | Revision включает lifetime редактора; старый lifetime отвергается даже при совпавшем numeric version |
+| Разработчик | Перезапуск терял dirty text и раскладку Theia из-за нового HTTP origin | Черновики и StorageService сохраняются на диске по проекту. Проверены штатный restart, внешний disk edit и принудительный crash backend |
+| Разработчик | После crash новая backend instance могла остаться со старой view | Сверяется identity engine; live buffer спасается до замены surface; процессы/view переподключаются |
+| Разработчик | Отладчик возвращал пустые threads родительской сессии | Передаются parent/current/thread count; проверен остановленный дочерний DAP со стеком исходного файла |
+| Аналитик/QA | `Ran 0 tests; OK` мог выглядеть как успех | Приёмка требует конкретные завершённые test cases. Проверены нативные Python/Java tests, намеренный assertion failure и исправленный rerun |
+| Аналитик/QA | Состояние дерева тестов обновлялось одновременно с запуском | Приёмка ждёт завершения refresh и конкретного leaf; API возвращает выбранные пути/профиль и требует readback |
+| UI/UX | Дублирующиеся toolbar и две схемы размещения | Скрыта лишняя внешняя IDE toolbar; единое split/group дерево, drag к четырём краям/в центр, native editor groups внутри IDE |
+| UI/UX | Чат занимал половину экрана и возвращался с другой шириной | У IDE больше места по умолчанию; скрытие/возврат одной кнопкой, запоминаются сторона и proportion |
+| UI/UX | Светлая оболочка оставляла редактор тёмным | Тема вычисляется из настроек/OS signal, а не устаревшего DOM attribute. Проверены theme readback и обе реальные surfaces |
+| Аналитик | Большие tool results расходовали контекст | Bounded output, read offset/limit, пагинация тестов/задач, ограниченные previews; полный рефакторинг проверяет пути внутри host |
+| Перенос | Локальный Node ABI и глобальные SDK делали сборку зависимой от компьютера | Независимый закреплённый Node, platform VSIX, managed JDK/Maven, hashes, installer staging, Windows workflow |
+| Перенос | Старые manifest hashes и acceptance IDs ломали общий checker | Обновлены реальные хеши/PS1 mapping, согласованы ID, проверяется фактическая motion policy, а не декоративный marker |
+
+## Границы результата
+
+Это рабочая интеграция полноценного open-source IDE engine, а не сертификат полного совпадения с IntelliJ IDEA Ultimate. Глубокие Spring/JPA/JPQL/ORM inspections, все advanced refactorings, profiler/heap analyzer, точное plugin parity, удалённые SDK/контейнеры и все 151 acceptance unit требуют отдельных сценариев. Реестр [IDE-ULTIMATE-PARITY](IDE-ULTIMATE-PARITY.md) сохраняет незакрытые проверки.
+
+Установленные плагины сообщают об отдельных неподдержанных VS Code activation/API (в частности чужие AI tools и часть Python terminal-shell API); это не маскируется fake capability. Используются собственный agent bridge и проверенные реальные language/test/debug сценарии. Неиспытанные plugin workflows нельзя объявлять работающими автоматически.
+
+Два окна могут работать с разными проектами. Один корень имеет одну живую авторитетную IDE surface с переносом между окнами; одновременные независимые dirty buffers одного файла в двух native surfaces не заявляются. Для Windows штатное завершение дерева предусмотрено; принудительный crash containment потомков и ВАРМ проверяются на целевом окружении отдельно.

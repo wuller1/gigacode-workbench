@@ -61,7 +61,7 @@ Native `.gigacode/agents/*.md` описывает именованных суб�
 
 ## 4. RoleCatalog и воспроизводимая сборка
 
-RoleCatalog — представление существующего каталога, не ещё один registry с расходящимися копиями. Источники builtins: [profiles](../profiles/analyst.md), `bundle.json`, workflow snapshots, [profile-capabilities.json](../config/profile-capabilities.json). Портативный пакет 1.2 проверяет девять известных IDs и пути; произвольный custom ID не становится поддержанным его controller. Native пользовательские версии регистрируются по [CUSTOM_PROFILES](CUSTOM_PROFILES.md) в M4.9/D5. ProfileRegistry — ответственность того же CatalogService/InstructionRegistry, PromptComposer — того же PromptAssembler; новые имена не требуют второго store или framework. Custom draft, published version и активный execution binding различаются. Недоступный профиль не заменять молча «похожим».
+RoleCatalog — представление существующего каталога, не ещё один registry с расходящимися копиями. Источники builtins: [profiles](../profiles/analyst.md), `bundle.json`, workflow snapshots, [profile-capabilities.json](../config/profile-capabilities.json). Портативный пакет 1.3 проверяет четырнадцать известных IDs и пути; произвольный custom ID не становится поддержанным его controller. Native пользовательские версии регистрируются по [CUSTOM_PROFILES](CUSTOM_PROFILES.md) в M4.9/D5. ProfileRegistry — ответственность того же CatalogService/InstructionRegistry, PromptComposer — того же PromptAssembler; новые имена не требуют второго store или framework. Custom draft, published version и активный execution binding различаются. Недоступный профиль не заменять молча «похожим».
 
 Предлагаемые **внутренние DTO host, не поля ACP**:
 
@@ -103,17 +103,22 @@ Fingerprint вычислять детерминированно по верси�
 
 Никакой генерации всей базы моделью при каждом ходе. Одни и те же версии дают одни и те же байты. Проверить, не доставляет ли native project context тот же `CORE` или профиль: одна authoritative доставка каждого блока, а не удвоение через append + `@file` + сообщение. Если полная native сборка неизвестна, отметить риск дублирования, исследовать доступный inventory и не объявлять гарантированную дедупликацию.
 
-## 5. Девять ролей: конкретное назначение
+## 5. Встроенные роли: конкретное назначение
 
-Матрица сокращает выбор; полный профиль остаётся источником инструкций. В каждый turn передавать текущий overlay и только источники по его read triggers, а не всю таблицу и все девять файлов. Любая роль помогает и конструктивно критикует собственный результат; независимый reviewer нужен по workflow/риску, а не обязательным вторым вызовом каждой микрозадачи.
+Матрица сокращает выбор; полный профиль остаётся источником инструкций. В каждый turn передавать текущий overlay и только источники по его read triggers, а не всю таблицу и весь каталог. Любая роль помогает и конструктивно критикует собственный результат; независимый reviewer нужен по workflow/риску, а не обязательным вторым вызовом каждой микрозадачи.
 
 | Роль / источник | Ответственность и результат | Не входит автоматически | Когда дочитать / кому передать |
 |---|---|---|---|
 | [analyst](../profiles/analyst.md) | Совместно с пользователем понять функциональность, предложить варианты, самому написать brief, SDD, stories, сценарии, DOCX либо улучшить существующий текст; проверить цель, правила, ошибки и acceptance | Production-код, scaffold, deployment; полный SDD для каждого вопроса; фиктивный DOCX из переименованного MD | Читать принятый проектный формат/источники только затронутых требований. Spec — при нужной формальной проверке; реализация — разработчику после достаточной постановки и действующего поручения |
 | [spec](../profiles/spec.md) | Формальная непротиворечивость и проверяемость назначенных требований/контрактов, адресный delta и readiness | Обязательное повторное авторство после analyst, новое интервью, молчаливое продуктовое решение, реализация | Читать конфликтующие положения и версии API/данных/прав. Существенное решение — пользователю через Task questions; принятая версия — назначенному исполнителю |
+| [architect](../profiles/architect.md) | Межсистемные границы, ownership, ADR, compatibility/migration/recovery и реализуемая декомпозиция | Архитектура ради документа, молчаливое продуктовое решение, реализация всех частей | Читать фактические компоненты и quality attributes. Продуктовое решение — analyst/spec; реализация — профильным разработчикам; операция — devops |
 | [backend](../profiles/backend.md) | Реализация серверной/внутренней логики в принятом scope, совместимость и адресная валидация | Непорученные upgrades, миграция данных, расширение функции, пересмотр бизнес-правил | Читать затронутый код, контракты и релевантные тесты. Неясное правило — вопрос/analyst; готовый diff — QA/reviewer по маршруту; инфраструктура — devops |
+| [database](../profiles/database.md) | Схемы, запросы, индексы, migrations, data integrity и измеряемая производительность | Применение к общей БД без поручения, выдуманные данные, обещание отката необратимого преобразования | Читать DDL/ORM/plan и статистику только по влиянию. Применение — devops; бизнес-инвариант — analyst/spec; API — backend |
+| [designer](../profiles/designer.md) | UX flow, design contract, responsive states, tokens/components, оригинальные assets и корпоративный UI kit | Копирование чужого trade dress/assets, публикация draft как корпоративной нормы, декоративный happy path без states | Читать brief, текущую систему и измерения. Реализация — frontend; audit — QA/reviewer; публикация kit — через forge/release workflow |
 | [frontend](../profiles/frontend.md) | UX-поток, иерархия, состояния, реализация UI; применимые измерения и экспертная визуальная проверка | Копирование чужого стиля/assets, единый «балл качества», полная матрица для каждой подписи | Читать действующие tokens/components и рецепт изменяемого сценария, design contract по влиянию. Затронутый backend contract — соответствующему владельцу; independent review только когда назначен |
+| [security](../profiles/security.md) | Threat model, применимые findings, Sprut/SCA dependency evidence, remediation и residual risk | Общий checklist как finding, destructive exploit, приписывание Sprut неподтверждённых функций | Читать точную revision/SBOM/report и затронутые trust boundaries. Исправление — владельцу кода/данных/окружения; повторная проверка — QA/security |
 | [devops](../profiles/devops.md) | Сборка, окружение, delivery/config, разрешённая операция в точной среде, внешний operation ID, health/smoke и условия восстановления | Новые полномочия на deploy/данные, глобальная перенастройка, повтор неизвестного write, гарантированный rollback данных | Читать фактический job/cluster/resource schema и текущее состояние. Pending outcome — reconcile; сбой причины — diagnostics; изменение требований — явный delta |
+| [technical-writer](../profiles/technical-writer.md) | Адресная документация, проверенные примеры, links/render и versioned knowledge/repository publish | Переписывание незатронутого, фиктивный DOCX, публикация только из-за наличия tool | Читать source of truth и формат аудитории. Неустановленное поведение — владельцу; публикация — только назначенному target с receipt |
 | [qa](../profiles/qa.md) | Проверить поведение против версии требований, воспроизвести плохой случай, сохранить реальные результаты и дефекты | Автоматическое исправление продукта/ослабление assertions, pass по наличию тестового файла, live verdict по mock | Читать acceptance, diff, build/runtime provenance и нужные данные. Дефект — владельцу области; неоднозначная норма — analyst/spec; повторять затронутые проверки на исправленной версии |
 | [reviewer](../profiles/reviewer.md) | Независимая оценка назначенного документа/diff/evidence, конкретные findings, важность и основание verdict | Самостоятельный patch/merge/publish без поручения; объявление авторской самопроверки независимым review | Читать точную ревизию, требования и зависимые evidence; дополнительный источник только для проверки finding. Возврат — существующий rework target, без нового run ради обхода budget |
 | [diagnostics](../profiles/diagnostics.md) | Воспроизведение, различение гипотез, причинная цепочка, минимальное предлагаемое исправление | Любой произвольный patch, повтор неизвестной внешней операции, объявление гипотезы фактом | Читать адресные логи/метрики/код и выполнить различающий эксперимент. Подтверждённая причина — назначенному backend/frontend/devops; unknown — честный следующий probe |
@@ -121,11 +126,11 @@ Fingerprint вычислять детерминированно по верси�
 
 Не превращать «может читать» в обязательное полное чтение. Для изменения текста кнопки достаточно текущего компонента, краткого критерия и применимого UI состояния. Для гонки ACP нужны реальный lifecycle, source/build identity и перекрывающийся сценарий; сокращение prompt не отменяет эти факты.
 
-Profile overlay и stage должны совпадать с текущим workflow snapshot. Если ручной выбор роли ему противоречит, сначала показать несовместимость и применимый вариант изменения маршрута; не отправлять конфликтующие инструкции. Переименование backend в reviewer не доказывает независимость, а подключение spec не превращает brief в обязательный SDD.
+Profile overlay и stage должны совпадать с текущим workflow snapshot. Если automatic router выбрал несовместимый профиль, host отклоняет decision, пересчитывает маршрут с причиной и не отправляет конфликтующие инструкции. Пользователь уточняет цель/результат, но не выбирает роль вручную. Переименование backend в reviewer не доказывает независимость, а подключение spec не превращает brief в обязательный SDD.
 
 ## 6. Активация и смена роли без потери Task
 
-Порядок выполняет host; модель лишь предлагает переходы. Политики `assisted`, `automaticWithinScope`, `manual` определены в [ROLE_ROUTING](ROLE_ROUTING.md). Применять уже выданную авторизацию без повторных вопросов. Поручение только подготовить описание не становится поручением менять код при выборе development роли.
+Порядок выполняет host; модель выдаёт bounded routing candidate, host валидирует и автоматически применяет его на safe boundary. Политики действий `assisted` и `automaticWithinScope` определены в [ROLE_ROUTING](ROLE_ROUTING.md); в обеих роль выбирается автоматически. Применять уже выданную авторизацию без повторных вопросов. Поручение только подготовить описание не становится поручением менять код при выборе development роли.
 
 1. Сохранить desired role и activation plan через Task writer с expected revisions и operation ID. Повторное нажатие возвращает тот же receipt. Другое окно не может применить устаревший план поверх принятого изменения.
 2. При active turn показать «После текущего шага». Не переписывать launch env/argv, текущий task packet или уже отправленный prompt. Cancel request не означает terminal: дождаться ответа исходного prompt; pending effects сверить до зависящего от них исполнения. При disconnect состояние unknown/recovery, не новый автоматический prompt.
@@ -146,28 +151,28 @@ Profile overlay и stage должны совпадать с текущим workf
 
 Роль может перечислять потенциально нужные capabilities. Host определяет применимые действия и действующие разрешения по [MCP_PROTOCOL](MCP_PROTOCOL.md) и [MCP_PROFILE_SETUP](MCP_PROFILE_SETUP.md). Capability label — не actual tool name и не разрешение на любой MCP вызов.
 
-- Собственные MCP/PTY/browser dispatch host реально проверяет по Task/project/role/resource/environment и действующей авторизации; отсутствие обязательного доступа блокирует действие.
+- Собственные MCP/PTY/browser dispatch host реально проверяет по Task/project binding/resource/environment, exact target и central disables; отсутствие обязательного доступа блокирует действие. Роль выбирает контекст/workflow, но не расширяет и не урезает уже привязанный набор tools.
 - Для внутренних tools CLI нельзя обещать enforcement со стороны UI, если они не проходят через подтверждённый контролируемый интерфейс. «Reviewer не пишет файлы» в prompt не делает процесс технически read-only. Когда изоляция обязательна, нужны проверенные runtime allowlists/sandbox/права либо честный unsupported/blocker.
-- Native subagent не наследует роль, prompt и узкую allowlist автоматически. Его фактический контекст/tools/approval проверяются отдельно; нельзя выдавать весь shell/MCP набор ради удобства делегирования.
+- Native subagent не наследует роль и prompt автоматически. Managed child получает captured project binding revision, parent assignment scope и central target rules; все bound capabilities остаются доступными без per-call modal, но child не добавляет новый connection/environment/target. Для opaque CLI child честно показывать неизвестную полноту enforcement.
 - Checks, evidence, immutable history, CAS, rework и pending операции сохраняются при смене роли. Завершение stream или текст «готово» не подтверждает приёмку.
 
 `personal_fast`/`established_strict` — режим проекта; `quick/standard/deep` — глубина; профиль — ответственность; workflow — последовательность/checks; модель/reasoning — настройки исполнения. Ни одна ось не подменяет остальные. Более рискованный участок personal UI получает адресные критичные проверки без автоматического превращения проекта в production-процесс.
 
 ## 8. Компактное отображение в UI
 
-Основное место — компактный selector текущей роли в Task/composer context согласно действующему дизайн-контракту. Он не открывает девять отдельных чатов. При automaticWithinScope обычный разрешённый переход сопровождается коротким статусом; дополнительное подтверждение только при действительно новом решении/scope, без постоянных modal.
+Основное место — компактный read-only role chip в нижней строке Task/composer context согласно действующему дизайн-контракту. Он не открывает отдельный чат и не позволяет вручную назначить профиль. Обычный разрешённый переход сопровождается коротким статусом; дополнительный вопрос нужен только при действительно новом продуктовом решении/scope, без постоянных modal.
 
-Selector показывает доступные опубликованные версии встроенных и пользовательских ролей в разрешённом scope; создание/помощь/история ведут в Settings → Роли по [CUSTOM_PROFILES](CUSTOM_PROFILES.md). Сохранение draft и рекомендация не меняют selector active. «Создать и выбрать для этой задачи» может быть одним пользовательским действием с отдельными publish/activation receipts; не вводить повторный approval каждого обратимого шага.
+Chip показывает selected → captured → actual роль/version, reason, confidence, factors/evidence и pending safe-boundary handoff. Создание/помощь/история профилей доступны в Settings → Роли по [CUSTOM_PROFILES](CUSTOM_PROFILES.md), но publish/default не назначают роль текущей Task вручную: router учитывает новую версию на следующем пересчёте. Рядом в той же нижней строке всегда видны model, reasoning, context и branch/worktree.
 
 По раскрытию **«Инструкции роли»** показать:
 
-- текущую и ожидающую роль, применимость к stage; кто/что выбрал и следующий результат;
+- текущую и ожидающую роль, применимость к stage; какие request/project/task/resource factors выбрал router, reason/confidence и следующий результат;
 - базу, project policy, overlay и task packet отдельными вкладками/секциями on demand, их версии и фактический diff перед изменением;
 - механизм: verified native append/override, native agent либо context-only; runtime version, известные и неизвестные слои; время/основание проверки;
 - status requested/prepared/pending idle/active/failed/unknown, причину новой session/process и честные возможности инструментов;
 - объём/usage: actual, estimated или unknown по [MODEL_AND_CONTEXT_CONTROLS](MODEL_AND_CONTEXT_CONTROLS.md), без полного dump секретов и окружения.
 
-Preview показывает то, что host собирается передать, а не необозримый «весь system prompt модели». После отправки дать доступ к сохранённому receipt/безопасному manifest. Различие requested и active должно быть видно при очереди, retry, ошибке запуска и смене вкладки. Выбор в A не меняет B. Перемещение/скрытие панели не запускает активацию роли и не завершает её session.
+Preview показывает то, что host собирается передать, а не необозримый «весь system prompt модели». После отправки дать доступ к сохранённому receipt/безопасному manifest. Различие selected/captured/actual должно быть видно при очереди, retry, ошибке запуска и смене вкладки. Route A не меняет B. Перемещение/скрытие панели не запускает активацию роли и не завершает её session.
 
 ## 9. Контекст и стоимость переключений
 
@@ -195,16 +200,17 @@ Preview показывает то, что host собирается переда
 | Disconnect с неизвестным write | Сохранены pending/operation ID и recovery; нет автоматического повторного write или сброса бюджета под новой ролью |
 | New session / restart | Сохраняются Task/run/attempt, scope, accepted decisions, вопросы, evidence и drafts; не повторяются выполненные действия; auth либо подтверждён, либо показана точная проблема |
 | Scope/tools/memory | Reviewer prompt не выдаётся за технический sandbox; запрещённый host tool отклонён. Task A не получает память другого project, приватные payloads/permissions или window/browser/PTY authority B. Global и разрешённая общая память текущего project доступны обеим Task; найденное в памяти разрешение B не выдаёт авторизацию A |
-| Недостаточный контекст | Считается весь наблюдаемый input; unknown overhead виден; нет молчаливого удаления обязательных правил. Quick не читает все девять profiles и весь журнал |
-| Native subagent | Main role и child overlay проверены отдельно; tools не расширяются через наследование без разрешённого подтверждённого mapping; возврат child не завершает run сам |
+| Недостаточный контекст | Считается весь наблюдаемый input; unknown overhead виден; нет молчаливого удаления обязательных правил. Quick не читает весь каталог profiles и весь журнал |
+| Автоматический выбор роли | Request/Project/Task/stage/resource factors дают объяснимый profile/version и confidence; в UI нет ручного selector. Коррекция цели пересчитывает pending role, текущий turn сохраняет capture, permissions не меняются |
+| Native subagent | Main role и child overlay проверены отдельно; child не выходит за captured project binding, parent assignment и central target rules; возврат child не завершает run сам |
 | Реальная целевая сборка | Зафиксированы runtime/config/hash, поддержанный механизм, A/B запуск и scope наблюдения. Успех mock/Qwen source probe не назван доказательством Giga hot switch |
 
 ## 11. Небольшие шаги реализации
 
-1. **RP1 — catalog и compiler:** прочитать существующие девять профилей, snapshots и текущие services; реализовать deterministic composition, manifest и cache. Проверить duplicate/missing/conflicting inputs и Unicode/переводы строк без изменения legacy hashes.
+1. **RP1 — catalog и compiler:** прочитать существующие встроенные профили, snapshots и текущие services; реализовать deterministic composition, manifest и cache. Проверить duplicate/missing/conflicting inputs и Unicode/переводы строк без изменения legacy hashes.
 2. **RP2 — runtime probe и delivery adapter:** зафиксировать supported surface целевой версии, отдельные append/override/context-only стратегии и безопасный child launch. Вернуть фактический receipt; неизвестное не маскировать.
 3. **RP3 — activation transaction:** подключить существующий Task writer/SessionService, revisions, idempotency, idle boundary, checkpoint и process/session generation. Проверить A/B, cancel, stale plan и pending recovery.
-4. **RP4 — role preview и очередь:** один selector, desired/active status, on-demand diff/версии/ограничения, без обязательного wizard и без перечитывания каталога при каждом клике.
+4. **RP4 — role chip и очередь:** read-only reason/confidence/factors, selected/captured/actual status, on-demand diff/версии/ограничения, без role picker, обязательного wizard и перечитывания каталога при каждом клике.
 5. **RP5 — целевая живая приёмка:** пройти короткий brief → уже разрешённую реализацию → адресную проверку; отдельно analysis-only, конфликт, role switch при 429 и restart. Сохранить actual build/runtime evidence и ограничения; выдать небольшой пригодный результат по [DELIVERY_AND_DOGFOOD_PLAN](DELIVERY_AND_DOGFOOD_PLAN.md).
 
 Эти карточки уточняют существующие M4/M5 и RRole1–RRole5; не создают отдельный workflow engine или обязательный новый run. Первый полезный срез может честно использовать verified context-only доставку, если её достаточно для порученной работы, сохраняя отдельным невыполненным требование настоящего системного binding. В финальной native реализации не запускать PowerShell на каждый turn ради сборки текста.

@@ -1,0 +1,1432 @@
+{
+  "schemaVersion": 1,
+  "engine": "1.76.0",
+  "vscodeApi": "1.139.0",
+  "entries": [
+    {
+      "key": "charliermarsh.ruff@2026.86.0:darwin-arm64",
+      "id": "charliermarsh.ruff",
+      "version": "2026.86.0",
+      "platform": "darwin-arm64",
+      "url": "https://open-vsx.org/api/charliermarsh/ruff/darwin-arm64/2026.86.0/file/charliermarsh.ruff-2026.86.0@darwin-arm64.vsix",
+      "source": "https://open-vsx.org/api/charliermarsh/ruff/darwin-arm64/2026.86.0",
+      "sha256": "04a5e6bed3ce7b480acd4fd482dfe28f2907754c8f4a6de164eedd21a04411c6",
+      "bytes": 10214577,
+      "license": "MIT",
+      "licenseFiles": 2,
+      "engines": {
+        "vscode": "^1.91.0",
+        "npm": ">=11.10.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "2026.86.0",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "charliermarsh.ruff@2026.86.0:win32-x64",
+      "id": "charliermarsh.ruff",
+      "version": "2026.86.0",
+      "platform": "win32-x64",
+      "url": "https://open-vsx.org/api/charliermarsh/ruff/win32-x64/2026.86.0/file/charliermarsh.ruff-2026.86.0@win32-x64.vsix",
+      "source": "https://open-vsx.org/api/charliermarsh/ruff/win32-x64/2026.86.0",
+      "sha256": "c333a1c3bd7cea1e55fb37a9251a2844a1563cb1000acd5c8cb2cb6b5aa58568",
+      "bytes": 11040435,
+      "license": "MIT",
+      "licenseFiles": 2,
+      "engines": {
+        "vscode": "^1.91.0",
+        "npm": ">=11.10.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "2026.86.0",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "dbaeumer.vscode-eslint@3.0.34:universal",
+      "id": "dbaeumer.vscode-eslint",
+      "version": "3.0.34",
+      "platform": "universal",
+      "url": "https://open-vsx.org/api/dbaeumer/vscode-eslint/3.0.34/file/dbaeumer.vscode-eslint-3.0.34.vsix",
+      "source": "https://open-vsx.org/api/dbaeumer/vscode-eslint/3.0.34",
+      "sha256": "ca5334d46f6a39079e751ef4601bfc9f86bc3a46483e87291ec609239d161308",
+      "bytes": 264365,
+      "license": "MIT",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.90.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "3.0.34",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "esbenp.prettier-vscode@12.4.0:universal",
+      "id": "esbenp.prettier-vscode",
+      "version": "12.4.0",
+      "platform": "universal",
+      "url": "https://open-vsx.org/api/esbenp/prettier-vscode/12.4.0/file/esbenp.prettier-vscode-12.4.0.vsix",
+      "source": "https://open-vsx.org/api/esbenp/prettier-vscode/12.4.0",
+      "sha256": "fb730ea4306d09cdc0a3aaa9e9baae28058cc97a4fbfce8b056b377a0639a9fe",
+      "bytes": 3643663,
+      "license": "MIT",
+      "licenseFiles": 3,
+      "engines": {
+        "vscode": "^1.101.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "12.4.0",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "ms-pyright.pyright@1.1.402:universal",
+      "id": "ms-pyright.pyright",
+      "version": "1.1.402",
+      "platform": "universal",
+      "url": "https://open-vsx.org/api/ms-pyright/pyright/1.1.402/file/ms-pyright.pyright-1.1.402.vsix",
+      "source": "https://open-vsx.org/api/ms-pyright/pyright/1.1.402",
+      "sha256": "7ffa5a8649fa800b282c25ad70ce290367e036238d52727da7cdcac3d57439e9",
+      "bytes": 5608916,
+      "license": "MIT",
+      "licenseFiles": 2,
+      "engines": {
+        "vscode": "^1.99.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.1.402",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "ms-python.debugpy@2026.6.0:darwin-arm64",
+      "id": "ms-python.debugpy",
+      "version": "2026.6.0",
+      "platform": "darwin-arm64",
+      "url": "https://open-vsx.org/api/ms-python/debugpy/darwin-arm64/2026.6.0/file/ms-python.debugpy-2026.6.0@darwin-arm64.vsix",
+      "source": "https://open-vsx.org/api/ms-python/debugpy/darwin-arm64/2026.6.0",
+      "sha256": "3425b5251b0f0642b569e64397effe72ab141d138abd966b567041baa5609b4b",
+      "bytes": 4700835,
+      "license": "MIT",
+      "licenseFiles": 5,
+      "engines": {
+        "vscode": "^1.92.0"
+      },
+      "dependencies": [
+        "ms-python.python"
+      ],
+      "manifestVersion": "2026.6.0",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "ms-python.debugpy@2026.6.0:win32-x64",
+      "id": "ms-python.debugpy",
+      "version": "2026.6.0",
+      "platform": "win32-x64",
+      "url": "https://open-vsx.org/api/ms-python/debugpy/win32-x64/2026.6.0/file/ms-python.debugpy-2026.6.0@win32-x64.vsix",
+      "source": "https://open-vsx.org/api/ms-python/debugpy/win32-x64/2026.6.0",
+      "sha256": "f4a8ba033acc9a1e14bf53f124d8d0848318702bbb161f2a5e47ae3d3d756a67",
+      "bytes": 4700834,
+      "license": "MIT",
+      "licenseFiles": 5,
+      "engines": {
+        "vscode": "^1.92.0"
+      },
+      "dependencies": [
+        "ms-python.python"
+      ],
+      "manifestVersion": "2026.6.0",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "ms-python.python@2026.4.0:universal",
+      "id": "ms-python.python",
+      "version": "2026.4.0",
+      "platform": "universal",
+      "url": "https://open-vsx.org/api/ms-python/python/2026.4.0/file/ms-python.python-2026.4.0.vsix",
+      "source": "https://open-vsx.org/api/ms-python/python/2026.4.0",
+      "sha256": "232aeafb01f069824fdd92d3e628c1c442bbcfa1d3cc945ff97076340bb2b4a6",
+      "bytes": 6826731,
+      "license": "MIT",
+      "licenseFiles": 23,
+      "engines": {
+        "vscode": "^1.95.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "2026.4.0",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": [
+        "ms-python.vscode-pylance",
+        "ms-python.debugpy",
+        "ms-python.vscode-python-envs"
+      ]
+    },
+    {
+      "key": "ms-toolsai.jupyter@2025.9.1:universal",
+      "id": "ms-toolsai.jupyter",
+      "version": "2025.9.1",
+      "platform": "universal",
+      "url": "https://open-vsx.org/api/ms-toolsai/jupyter/2025.9.1/file/ms-toolsai.jupyter-2025.9.1.vsix",
+      "source": "https://open-vsx.org/api/ms-toolsai/jupyter/2025.9.1",
+      "sha256": "110660656944c4ab0ff687db488c2e8c59c67ec121dcf09bcaa54b6edd9ce71f",
+      "bytes": 12619012,
+      "license": "MIT",
+      "licenseFiles": 7,
+      "engines": {
+        "vscode": "^1.105.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "2025.9.1",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": [
+        "ms-toolsai.jupyter-keymap",
+        "ms-toolsai.jupyter-renderers",
+        "ms-toolsai.vscode-jupyter-slideshow",
+        "ms-toolsai.vscode-jupyter-cell-tags"
+      ]
+    },
+    {
+      "key": "ms-vscode.js-debug-companion@1.108.2:universal",
+      "id": "ms-vscode.js-debug-companion",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/ms-vscode.js-debug-companion.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "7380a890787452f14b2db7835dfa94de538caf358ebc263f9d46dd68ac52de93",
+      "bytes": 52784,
+      "license": "MIT",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.90.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.1.3",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "ms-vscode.js-debug@1.108.2:universal",
+      "id": "ms-vscode.js-debug",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/ms-vscode.js-debug.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "0c45b90342e8aafd4ff2963b4006de64208ca58c2fd01fea7a710fe61dcfd12a",
+      "bytes": 1314222,
+      "license": "MIT",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.80.0",
+        "node": ">=10"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.105.0",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "ms-vscode.vscode-js-profile-table@1.108.2:universal",
+      "id": "ms-vscode.vscode-js-profile-table",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/ms-vscode.vscode-js-profile-table.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "7361748ddf9fd09d8a2ed1f2a2d7376a2cf9aae708692820b799708385c38e08",
+      "bytes": 350996,
+      "license": "MIT",
+      "licenseFiles": 0,
+      "engines": {
+        "vscode": "^1.74.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.0.10",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "redhat.java@1.56.0:universal",
+      "id": "redhat.java",
+      "version": "1.56.0",
+      "platform": "universal",
+      "url": "https://open-vsx.org/api/redhat/java/1.56.0/file/redhat.java-1.56.0.vsix",
+      "source": "https://open-vsx.org/api/redhat/java/1.56.0",
+      "sha256": "3c6a821d7612eb879fa40280b6c585342eec82d6b1b3e8dcfe4d0395e0624343",
+      "bytes": 53949678,
+      "license": "EPL-2.0",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.77.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.56.0",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vitest.explorer@1.52.2:universal",
+      "id": "vitest.explorer",
+      "version": "1.52.2",
+      "platform": "universal",
+      "url": "https://open-vsx.org/api/vitest/explorer/1.52.2/file/vitest.explorer-1.52.2.vsix",
+      "source": "https://open-vsx.org/api/vitest/explorer/1.52.2",
+      "sha256": "fcae41a6f584b7b0b19b84e52235082f8af12acfe8589930687161733003d331",
+      "bytes": 1326249,
+      "license": "MIT",
+      "licenseFiles": 2,
+      "engines": {
+        "vscode": "^1.88.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.52.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "VMware.vscode-spring-boot@2.4.0:universal",
+      "id": "VMware.vscode-spring-boot",
+      "version": "2.4.0",
+      "platform": "universal",
+      "url": "https://open-vsx.org/api/VMware/vscode-spring-boot/2.4.0/file/VMware.vscode-spring-boot-2.4.0.vsix",
+      "source": "https://open-vsx.org/api/VMware/vscode-spring-boot/2.4.0",
+      "sha256": "7743e50a9028a6c1ba8f82986576a95c613dd6222650f8e9795ecf7a1aaebb79",
+      "bytes": 83287467,
+      "license": "EPL-1.0",
+      "licenseFiles": 1,
+      "engines": {
+        "npm": ">=6.0.0",
+        "vscode": "^1.92.0"
+      },
+      "dependencies": [
+        "redhat.java",
+        "vscjava.vscode-maven"
+      ],
+      "manifestVersion": "2.4.0",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscjava.vscode-gradle@3.18.0:universal",
+      "id": "vscjava.vscode-gradle",
+      "version": "3.18.0",
+      "platform": "universal",
+      "url": "https://open-vsx.org/api/vscjava/vscode-gradle/3.18.0/file/vscjava.vscode-gradle-3.18.0.vsix",
+      "source": "https://open-vsx.org/api/vscjava/vscode-gradle/3.18.0",
+      "sha256": "a0466d8e44b873d2a4e83155d4b7b68d4ff7d989a618f2f54513ae9d7c686dfa",
+      "bytes": 33041439,
+      "license": "SEE LICENSE IN LICENSE.md",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.76.0",
+        "node": ">=20.0.0",
+        "npm": "^10.7.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "3.18.0",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscjava.vscode-java-debug@0.59.0:universal",
+      "id": "vscjava.vscode-java-debug",
+      "version": "0.59.0",
+      "platform": "universal",
+      "url": "https://open-vsx.org/api/vscjava/vscode-java-debug/0.59.0/file/vscjava.vscode-java-debug-0.59.0.vsix",
+      "source": "https://open-vsx.org/api/vscjava/vscode-java-debug/0.59.0",
+      "sha256": "87627e24dbb5b01137decc0265f043cb08adad22af3c195f1ba39898dafb1588",
+      "bytes": 3479669,
+      "license": "SEE LICENSE IN LICENSE.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.95.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "0.59.0",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscjava.vscode-java-test@0.46.0:universal",
+      "id": "vscjava.vscode-java-test",
+      "version": "0.46.0",
+      "platform": "universal",
+      "url": "https://open-vsx.org/api/vscjava/vscode-java-test/0.46.0/file/vscjava.vscode-java-test-0.46.0.vsix",
+      "source": "https://open-vsx.org/api/vscjava/vscode-java-test/0.46.0",
+      "sha256": "56c1e14dc73a30e9574c47042106fa52893bf8325b580f47c14ace07d5eef255",
+      "bytes": 4987746,
+      "license": null,
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.88.0"
+      },
+      "dependencies": [
+        "redhat.java",
+        "vscjava.vscode-java-debug"
+      ],
+      "manifestVersion": "0.46.0",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscjava.vscode-maven@0.45.3:universal",
+      "id": "vscjava.vscode-maven",
+      "version": "0.45.3",
+      "platform": "universal",
+      "url": "https://open-vsx.org/api/vscjava/vscode-maven/0.45.3/file/vscjava.vscode-maven-0.45.3.vsix",
+      "source": "https://open-vsx.org/api/vscjava/vscode-maven/0.45.3",
+      "sha256": "2d7b30676793604e0c140ab0e5cc5a649d6af2fd9e0b2797911f86a9164654b0",
+      "bytes": 11010465,
+      "license": "MIT",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.75.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "0.45.3",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.bat@1.108.2:universal",
+      "id": "vscode.bat",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.bat.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "1c3ebe597986b356ebeeac769dece98e9d6a455c1afdeb55f6a001c99a9a8548",
+      "bytes": 8116,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.52.0"
+      },
+      "dependencies": [],
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.builtin-notebook-renderers@1.108.2:universal",
+      "id": "vscode.builtin-notebook-renderers",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.builtin-notebook-renderers.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "f3294537dee6e3af1f27902085436c01c9d6fc6802e75ca388386459fbc0187b",
+      "bytes": 24250,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.57.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.clojure@1.108.2:universal",
+      "id": "vscode.clojure",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.clojure.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "0664eb43e5e9dd7fa75c7da2128abedd1f4d0a7dc5e4213d1b6104c867c7d9ab",
+      "bytes": 5972,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.coffeescript@1.108.2:universal",
+      "id": "vscode.coffeescript",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.coffeescript.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "dc8728627dda18784d3b7c0c8aab49277db071f06c7a3d42eeadd9a3f4269b63",
+      "bytes": 11546,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.configuration-editing@1.108.2:universal",
+      "id": "vscode.configuration-editing",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.configuration-editing.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "f032cfdb08e2c7a5cd5aec94eefbfa98cdb4cd8fe55d9057d4bf49f7cbdf514b",
+      "bytes": 238685,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.0.0"
+      },
+      "dependencies": [],
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.cpp@1.108.2:universal",
+      "id": "vscode.cpp",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.cpp.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "bee1b6c0bab4c3cc1442c26c19dba85c1f6c60c56e2305a90b56eb163fdb7a6e",
+      "bytes": 298442,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.csharp@1.108.2:universal",
+      "id": "vscode.csharp",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.csharp.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "56236529cd274b264fcc2772c83dada6049e675ca91f6e0e8cef344e74491d26",
+      "bytes": 16177,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "0.10.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.css-language-features@1.108.2:universal",
+      "id": "vscode.css-language-features",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.css-language-features.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "a52e4d7414bec10b3f3c1dd36d09e980c1722e89953e1d25efe93b4c31998182",
+      "bytes": 2241547,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.77.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.css@1.108.2:universal",
+      "id": "vscode.css",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.css.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "3a1be6b1bbf70090f677d3c560d997f11f8ec57a70ac5189d9cea73dc2359aa6",
+      "bytes": 19062,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "0.10.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.debug-auto-launch@1.108.2:universal",
+      "id": "vscode.debug-auto-launch",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.debug-auto-launch.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "f817183e1b464f536765434db22532d73a40e8681f2200281eb571e6c641bf0d",
+      "bytes": 22312,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.5.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.debug-server-ready@1.108.2:universal",
+      "id": "vscode.debug-server-ready",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.debug-server-ready.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "33eaf2cd0bbdba5f9bb507f31e1c03d9225193f15691b7543310e437c8ee07fc",
+      "bytes": 23367,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.32.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.diff@1.108.2:universal",
+      "id": "vscode.diff",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.diff.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "d3c814f9a98feb15a153e405bafd8ee931b9a30d4fcbe118629491f3326a3449",
+      "bytes": 5107,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "0.10.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "Theia-published pinned built-in with legacy minimum engine field; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.docker@1.108.2:universal",
+      "id": "vscode.docker",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.docker.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "7dad5a4d9794badd39147972b21230130f501c51986ac782557ed50673b195d9",
+      "bytes": 5176,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.emmet@1.108.2:universal",
+      "id": "vscode.emmet",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.emmet.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "1cc4cc1461f284105a80548e298dc99a7ff0853169fb88b77d483418b11b8578",
+      "bytes": 693864,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.13.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.git-base@1.108.2:universal",
+      "id": "vscode.git-base",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.git-base.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "125b5871f050caff28ed2ee95940aefb6d740c6de43cf7d21fdae7c8747cecb3",
+      "bytes": 37601,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "0.10.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "Theia-published pinned built-in with legacy minimum engine field; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.git@1.108.2:universal",
+      "id": "vscode.git",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.git.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "99750e0905b13db132ed8c60d887c81806d6250da7ba51413095df0c97ee176b",
+      "bytes": 1002128,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.5.0"
+      },
+      "dependencies": [
+        "vscode.git-base"
+      ],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.groovy@1.108.2:universal",
+      "id": "vscode.groovy",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.groovy.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "e045234751d7294eca2c919ecf6e758c7cc4924f121c07c62cddc77ea061808d",
+      "bytes": 9781,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.html-language-features@1.108.2:universal",
+      "id": "vscode.html-language-features",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.html-language-features.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "b207c989067762b213e4f01c2aecee35c741a2fb5a932cc512d35a35ea9614f9",
+      "bytes": 10656484,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.77.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.html@1.108.2:universal",
+      "id": "vscode.html",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.html.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "e98a3af3c3c01fa44b790ec4adb5a16e6bc9e1594bf47b01f668efc1aa083ad8",
+      "bytes": 18308,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "0.10.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.ini@1.108.2:universal",
+      "id": "vscode.ini",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.ini.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "b98c11f10842100159e8b6074b1abc214b540c086cddfae62266d4774a332a7e",
+      "bytes": 5421,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.ipynb@1.108.2:universal",
+      "id": "vscode.ipynb",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.ipynb.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "9a23b2ddfafa20bdfc021ff6f4748cea8f8c8e3c170b32ac2783ef69acb79592",
+      "bytes": 234047,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.57.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.java@1.108.2:universal",
+      "id": "vscode.java",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.java.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "2c4466b974a91e517abdbcb706c112feb4e3afd59c2629e06628ab7af6c1036c",
+      "bytes": 9639,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.javascript@1.108.2:universal",
+      "id": "vscode.javascript",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.javascript.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "22cce50bcce5af634f120cd45cb2b67ae8a603044523055e4b1ac37555041259",
+      "bytes": 43189,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "0.10.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "Theia-published pinned built-in with legacy minimum engine field; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.json-language-features@1.108.2:universal",
+      "id": "vscode.json-language-features",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.json-language-features.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "61ced0c93e8fd19152caaa15725a10593decd4efa25c35f7afc589cd2e515863",
+      "bytes": 1950574,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.77.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.json@1.108.2:universal",
+      "id": "vscode.json",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.json.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "12ea6e358033b3b86a0e456a1c6362fab1d116ff4e24cbd12a1549699acf89d4",
+      "bytes": 21408,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "0.10.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "Theia-published pinned built-in with legacy minimum engine field; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.less@1.108.2:universal",
+      "id": "vscode.less",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.less.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "51c5d68df74f8a70bb1acd281f2f4d9d6839190c8145d96a9ddf7e3fc13be409",
+      "bytes": 20228,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.log@1.108.2:universal",
+      "id": "vscode.log",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.log.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "f2cb8d913115d0b82c33491b80f4bfd6355adc17fb422dc06f490bcb9869d62a",
+      "bytes": 4945,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.lua@1.108.2:universal",
+      "id": "vscode.lua",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.lua.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "4520f19d447ebdec5f2f714b86530e2b5765f48ea394af63abf885ee2c522cc4",
+      "bytes": 7680,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.make@1.108.2:universal",
+      "id": "vscode.make",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.make.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "ba98b9b4c29658121f9d4253df0602cbc83db9814c19d2e6d22eeca951d27648",
+      "bytes": 6284,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.markdown-language-features@1.108.2:universal",
+      "id": "vscode.markdown-language-features",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.markdown-language-features.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "edd2ed15ba0cdb837075e72196823aa4b5912a6e300bbc0d69eb93fd62d11b95",
+      "bytes": 4226649,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.70.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.markdown-math@1.108.2:universal",
+      "id": "vscode.markdown-math",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.markdown-math.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "eaff4541b3d7a4f54704a613e9174a0696130fc6b1152c746429a205a5a2a0c3",
+      "bytes": 1002923,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.54.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.markdown@1.108.2:universal",
+      "id": "vscode.markdown",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.markdown.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "f1253537b6f33df4e8c685fd864bb7d72b98b63934fb4d395b50358e60b5b328",
+      "bytes": 11783,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.20.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.media-preview@1.108.2:universal",
+      "id": "vscode.media-preview",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.media-preview.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "d92238c1ac3e4167e77373d7215d9262b8a7a9adc60038f195ca32eda4daf75c",
+      "bytes": 72309,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.70.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.merge-conflict@1.108.2:universal",
+      "id": "vscode.merge-conflict",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.merge-conflict.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "20a8b989b5a809c9b694487cb3eee27d5e33ba7fb766fcb0cc787ea67deceee1",
+      "bytes": 882203,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.5.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.npm@1.108.2:universal",
+      "id": "vscode.npm",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.npm.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "ca4026e93e878c37f9ad1d06432040adb4e365da8f98c620ec87d2f431f33384",
+      "bytes": 459015,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "0.10.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "Theia-published pinned built-in with legacy minimum engine field; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.perl@1.108.2:universal",
+      "id": "vscode.perl",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.perl.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "1415c48a5538df777347bab4a4201543296c3d07e9fc98a391a6a1da3dedb14e",
+      "bytes": 13090,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.php@1.108.2:universal",
+      "id": "vscode.php",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.php.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "5cbd6b1571e212f3ce2cc335d8c4ed97d41d7ec93d30b0b699b81735fac69669",
+      "bytes": 37560,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "0.10.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "Theia-published pinned built-in with legacy minimum engine field; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.powershell@1.108.2:universal",
+      "id": "vscode.powershell",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.powershell.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "f171376dbd17c2300cab9f3a0855b924225903ec4170c9bdd2e1819ae4c9bf4f",
+      "bytes": 9299,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.python@1.108.2:universal",
+      "id": "vscode.python",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.python.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "e986d6621abbba525f6eb7fc58a8da75bc1cd63b9e19edb0e4e89518b380917e",
+      "bytes": 17770,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.r@1.108.2:universal",
+      "id": "vscode.r",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.r.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "f72a3aae2716b52402c5bea9f47f921ea230ba912caec965776a203e351d9444",
+      "bytes": 19433,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.references-view@1.108.2:universal",
+      "id": "vscode.references-view",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.references-view.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "c9f2adde5a810974c67d159b6fb16e41448cd6e8a0c2e775a164f646b62c7eb3",
+      "bytes": 437579,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.67.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.ruby@1.108.2:universal",
+      "id": "vscode.ruby",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.ruby.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "94f90d6f06e2f0ec27ce4d84ba445cd37cf37512cbe9338e119c363e28988a7c",
+      "bytes": 11860,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.rust@1.108.2:universal",
+      "id": "vscode.rust",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.rust.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "7f8ac38e089b704390cc2ae4fdb58e60716a9969742027dba20437c67a13209d",
+      "bytes": 7975,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.scss@1.108.2:universal",
+      "id": "vscode.scss",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.scss.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "113e2c36f31451957a7a7e8f2586aa94eb23bc045b59facfe3f3566ca1da8c74",
+      "bytes": 11361,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.search-result@1.108.2:universal",
+      "id": "vscode.search-result",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.search-result.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "b78821165426892d0bb31c0610ffba5ad5efec85d3247fbb9a3e0df240ed1feb",
+      "bytes": 20162,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.39.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.shellscript@1.108.2:universal",
+      "id": "vscode.shellscript",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.shellscript.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "d0b39991b7f3f298b54b8df489206440a6c8883b122bee902768b68174e64f45",
+      "bytes": 11318,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.sql@1.108.2:universal",
+      "id": "vscode.sql",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.sql.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "dbc3633b527ad6c66cc2b3d7d2b438bc0737268df54ff8d20926ef81846d4a75",
+      "bytes": 12197,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.theme-monokai@1.108.2:universal",
+      "id": "vscode.theme-monokai",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.theme-monokai.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "0529b4eb24ac6e03c5a50770b8c5957d48624b02de21af6716ea5f9caf8f2fc7",
+      "bytes": 5931,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.typescript-language-features@1.108.2:universal",
+      "id": "vscode.typescript-language-features",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.typescript-language-features.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "616bdc301fd96b060081f5d9c303b39ee032dbd00b89b55c212dffe3e68807a9",
+      "bytes": 11931970,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "^1.30.0"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": false,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.typescript@1.108.2:universal",
+      "id": "vscode.typescript",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.typescript.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "efae51165edddf8bbd2269d4daee0fded26f0d49b4670fa7526a4cbff913f1f6",
+      "bytes": 41948,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.xml@1.108.2:universal",
+      "id": "vscode.xml",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.xml.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "a9c8f66349a95f98e107f96376dd0aa33a1d56c2dc35bc6a36ffcdb473b025b7",
+      "bytes": 7486,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    },
+    {
+      "key": "vscode.yaml@1.108.2:universal",
+      "id": "vscode.yaml",
+      "version": "1.108.2",
+      "platform": "universal",
+      "url": "https://github.com/eclipse-theia/vscode-builtin-extensions/releases/download/1.108.2/vscode.yaml.vsix",
+      "source": "eclipse-theia/vscode-builtin-extensions/1.108.2",
+      "sha256": "d187dfe253e01ab812ca343d3c660c9c85a9073b991666af0e915abdac385571",
+      "bytes": 22980,
+      "license": "SEE LICENSE IN LICENSE-vscode.txt",
+      "licenseFiles": 1,
+      "engines": {
+        "vscode": "*"
+      },
+      "dependencies": [],
+      "manifestVersion": "1.108.2",
+      "staticResourcesOnly": true,
+      "compatibilityBasis": "declared API range; live verification still required",
+      "extensionPackNotAutomaticallyInstalled": []
+    }
+  ]
+}

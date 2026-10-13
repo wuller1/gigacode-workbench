@@ -1,0 +1,107 @@
+{
+  "$schema": "https://tr.designtokens.org/format/",
+  "$description": "Original primitive tokens. Product code consumes semantic theme aliases instead.",
+  "core": {
+    "color": {
+      "$type": "color",
+      "neutral": {
+        "0": { "$value": "#fcfcfa" },
+        "50": { "$value": "#f7f7f5" },
+        "100": { "$value": "#f0f0ec" },
+        "200": { "$value": "#dde1d9" },
+        "400": { "$value": "#adb9ac" },
+        "600": { "$value": "#636c60" },
+        "750": { "$value": "#3e4940" },
+        "800": { "$value": "#282e29" },
+        "900": { "$value": "#1f2320" },
+        "950": { "$value": "#181b19" }
+      },
+      "emerald": {
+        "100": { "$value": "#e7ede6" },
+        "400": { "$value": "#cdd5ca" },
+        "600": { "$value": "#303b35" },
+        "800": { "$value": "#202820" }
+      },
+      "blue": {
+        "100": { "$value": "#e5edf1" },
+        "400": { "$value": "#9fb7c8" },
+        "600": { "$value": "#526a78" },
+        "800": { "$value": "#344957" }
+      },
+      "amber": {
+        "100": { "$value": "#f6efdf" },
+        "500": { "$value": "#dcc492" },
+        "700": { "$value": "#745019" }
+      },
+      "red": {
+        "100": { "$value": "#f8e7e7" },
+        "500": { "$value": "#dfa5a8" },
+        "700": { "$value": "#8a4346" }
+      }
+    },
+    "space": {
+      "$type": "dimension",
+      "0": { "$value": { "value": 0, "unit": "px" } },
+      "1": { "$value": { "value": 4, "unit": "px" } },
+      "2": { "$value": { "value": 8, "unit": "px" } },
+      "3": { "$value": { "value": 12, "unit": "px" } },
+      "4": { "$value": { "value": 16, "unit": "px" } },
+      "6": { "$value": { "value": 24, "unit": "px" } },
+      "8": { "$value": { "value": 32, "unit": "px" } }
+    },
+    "size": {
+      "$type": "dimension",
+      "control-sm": { "$value": { "value": 28, "unit": "px" } },
+      "control-md": { "$value": { "value": 32, "unit": "px" } },
+      "control-lg": { "$value": { "value": 40, "unit": "px" } },
+      "target-min": { "$value": { "value": 44, "unit": "px" } },
+      "icon-sm": { "$value": { "value": 14, "unit": "px" } },
+      "icon-md": { "$value": { "value": 18, "unit": "px" } },
+      "icon-lg": { "$value": { "value": 20, "unit": "px" } }
+    },
+    "radius": {
+      "$type": "dimension",
+      "control": { "$value": { "value": 6, "unit": "px" } },
+      "card": { "$value": { "value": 9, "unit": "px" } },
+      "sheet": { "$value": { "value": 12, "unit": "px" } },
+      "pill": { "$value": { "value": 999, "unit": "px" } }
+    },
+    "border": {
+      "$type": "dimension",
+      "thin": { "$value": { "value": 1, "unit": "px" } },
+      "focus": { "$value": { "value": 2, "unit": "px" } }
+    },
+    "font": {
+      "family": {
+        "$type": "fontFamily",
+        "ui": { "$value": ["Inter", "Segoe UI", "Arial", "sans-serif"] },
+        "mono": { "$value": ["Cascadia Mono", "Consolas", "monospace"] }
+      },
+      "size": {
+        "$type": "dimension",
+        "caption": { "$value": { "value": 11, "unit": "px" } },
+        "body": { "$value": { "value": 13, "unit": "px" } },
+        "prose": { "$value": { "value": 14, "unit": "px" } },
+        "title": { "$value": { "value": 18, "unit": "px" } }
+      },
+      "weight": {
+        "$type": "fontWeight",
+        "regular": { "$value": 400 },
+        "medium": { "$value": 550 },
+        "semibold": { "$value": 650 }
+      }
+    },
+    "motion": {
+      "duration": {
+        "$type": "duration",
+        "fast": { "$value": { "value": 120, "unit": "ms" } },
+        "normal": { "$value": { "value": 180, "unit": "ms" } },
+        "deliberate": { "$value": { "value": 240, "unit": "ms" } }
+      },
+      "easing": {
+        "$type": "cubicBezier",
+        "standard": { "$value": [0.2, 0, 0, 1] }
+      }
+    }
+  }
+}

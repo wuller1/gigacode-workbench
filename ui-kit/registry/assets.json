@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "catalogStatus": "reference-starter",
+  "assets": [
+    {
+      "id": "workbench-mark",
+      "kind": "brand-mark",
+      "source": "brand/workbench-mark.svg",
+      "sha256": "a0ebc98a3bbdc3f311c33e5616ef4406902a775de8042a78ea6abbd85dd523fd",
+      "origin": "original",
+      "licenseSpdx": "MIT",
+      "authoringContext": "Original work-surface, legs and W-brace mark created for this starter; no competitor or vendor geometry was traced or imported.",
+      "review": "Requires organization brand and trademark review before public release."
+    },
+    {
+      "id": "workbench-mark-inverse",
+      "kind": "brand-mark",
+      "source": "brand/workbench-mark-inverse.svg",
+      "sha256": "5885f64cb3e7c12bb4cef725fa4bc318c744605d02bed936c467436fd7c55e44",
+      "origin": "original",
+      "licenseSpdx": "MIT",
+      "authoringContext": "Inverse color variant of the original workbench mark.",
+      "review": "Requires organization brand and trademark review before public release."
+    },
+    {
+      "id": "workbench-mark-24",
+      "kind": "brand-mark-optical",
+      "source": "brand/workbench-mark-24.svg",
+      "sha256": "d1a114ec28d12588e459e3f552e322c72af09cfaa428efc5a5c04175b24dac52",
+      "origin": "original",
+      "licenseSpdx": "MIT",
+      "authoringContext": "Optically simplified 16–24 px variant of the original workbench mark.",
+      "review": "Requires 16, 18, 20 and 24 px visual review before production wiring."
+    },
+    {
+      "id": "workbench-mark-24-inverse",
+      "kind": "brand-mark-optical",
+      "source": "brand/workbench-mark-24-inverse.svg",
+      "sha256": "bc3ef926e3da009232c203c58a2e6245cc0ed85c37f988c75fd4b97110027992",
+      "origin": "original",
+      "licenseSpdx": "MIT",
+      "authoringContext": "Inverse optical variant of the original workbench mark.",
+      "review": "Requires dark-surface 16, 18, 20 and 24 px visual review before production wiring."
+    },
+    {
+      "id": "workbench-app-icon",
+      "kind": "application-icon-source",
+      "source": "brand/workbench-app-icon.svg",
+      "sha256": "e62daa91a7c3b73acc873e6287f63f7cb3631af5c4f9475f95d414ac236bef97",
+      "origin": "original",
+      "licenseSpdx": "MIT",
+      "authoringContext": "Original scalable application-icon source derived from the Workbench mark.",
+      "review": "Export platform PNG/ICO/ICNS files from this source only after optical and organization brand review."
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+/* Shared Monokai palette, adapted for readable small text. No external theme assets.
+ * Reference: microsoft/vscode extensions/theme-monokai/themes/monokai-color-theme.json.
+ * Dark uses Monokai; light uses an original companion palette with matching token families.
+ * UI chrome and Git file colors stay independent.
+ */
+:root{--syn-background:#272822;--syn-foreground:#f8f8f2;--syn-keyword:#ff5793;--syn-string:#e6db74;--syn-number:#ae81ff;--syn-property:#a6e22e;--syn-type:#66d9ef;--syn-parameter:#fd971f;--syn-comment:#a5a18f;--syn-meta:#a5a18f;--syn-error:#ff5793;--syn-warning:#fd971f;--syn-info:#66d9ef;--syn-added-bg:#2b2e23;--syn-removed-bg:#302628;--syn-current-bg:#1e1f1c;--syn-selection:#17181399}
+:root[data-theme=light]{--syn-background:#fcfcfa;--syn-foreground:#30362f;--syn-keyword:#a5265c;--syn-string:#75620f;--syn-number:#7750a4;--syn-property:#3e701d;--syn-type:#146c82;--syn-parameter:#a35512;--syn-comment:#686e63;--syn-meta:#686e63;--syn-error:#ab234a;--syn-warning:#8c5909;--syn-info:#146c82;--syn-added-bg:#ecf3e6;--syn-removed-bg:#f9ebee;--syn-current-bg:#e9eee5;--syn-selection:#b0c9ec66}
+.wb-syntax{color:var(--syn-foreground)!important;background:var(--syn-background)!important;tab-size:2;--text:var(--syn-foreground);--muted:var(--syn-comment);--faint:var(--syn-comment)}
+.wb-chat-code{font:12px/1.7 var(--mono);white-space:pre;overflow:auto;padding:12px 14px;border:1px solid var(--line);border-radius:8px;max-height:400px}
+.wb-syntax .hljs-keyword,.wb-syntax .hljs-selector-tag,.wb-syntax .hljs-name,.wb-syntax .hljs-tag{color:var(--syn-keyword)}
+.wb-syntax .hljs-string,.wb-syntax .hljs-regexp,.wb-syntax .hljs-bullet{color:var(--syn-string)}
+.wb-syntax .hljs-number,.wb-syntax .hljs-symbol,.wb-syntax .hljs-literal{color:var(--syn-number)}
+.wb-syntax .hljs-attr,.wb-syntax .hljs-attribute,.wb-syntax .hljs-title,.wb-syntax .hljs-selector-class,.wb-syntax .hljs-selector-id,.wb-syntax .hljs-addition{color:var(--syn-property)}
+.wb-syntax .hljs-type,.wb-syntax .hljs-built_in,.wb-syntax .hljs-code{color:var(--syn-type)}
+.wb-syntax .hljs-variable.language_,.wb-syntax .hljs-template-variable{color:var(--syn-parameter)}
+.wb-syntax .hljs-subst,.wb-syntax .hljs-params{color:var(--syn-foreground)}
+.wb-syntax .hljs-comment,.wb-syntax .hljs-quote{color:var(--syn-comment)}
+.wb-syntax .hljs-meta{color:var(--syn-meta)}
+.wb-syntax .hljs-log-error,.wb-syntax .hljs-deletion{color:var(--syn-error);font-weight:600}
+.wb-syntax .hljs-log-warn{color:var(--syn-warning);font-weight:600}
+.wb-syntax .hljs-log-info{color:var(--syn-info);font-weight:600}
+.wb-syntax .hljs-section,.wb-syntax .hljs-strong{font-weight:650}.wb-syntax .hljs-emphasis{font-style:italic}
+.wb-syntax .hljs-ansi{display:none}
+.wb-syntax :is(.add,.di-line-added){background:var(--syn-added-bg);color:var(--syn-foreground)}
+.wb-syntax :is(.remove,.di-line-removed){background:var(--syn-removed-bg);color:var(--syn-foreground)}
+.wb-code-editor{position:relative;min-width:0;isolation:isolate;background:var(--syn-background)!important;border-radius:6px}
+/* Gutters, editable layers, previews and diffs follow the application theme together. */
+.di-studio .di-code-editor,.di-studio .di-editor,.di-studio .di-gutter,.bt-source-code,.bt-console-log,.bt-dom,.ig-diff-lines{background:var(--syn-background)!important;color:var(--syn-foreground)}
+.di-studio .di-gutter,.di-studio .di-bp-button,.bt-source-line>button,.ig-line-no{color:var(--syn-comment)}
+.di-studio .di-bp-button.on,.bt-source-line>button[aria-pressed=true]{color:var(--syn-error)}
+.bt-source-line.current,.bt-dom>button.selected{background:var(--syn-current-bg)!important}
+.bt-source-line code.wb-syntax,.bt-dom code.wb-syntax,.ig-diff-line code.wb-syntax,.bt-console-log code.wb-syntax{background:transparent!important}
+.ig-diff-line.added{background:var(--syn-added-bg)!important}.ig-diff-line.removed{background:var(--syn-removed-bg)!important}
+.bt-console-log .bt-console-error{color:var(--syn-error)}.bt-console-log .bt-console-warn{color:var(--syn-warning)}
+.wb-code-editor>pre.wb-editor-layer{position:absolute;top:0;left:0;z-index:0;pointer-events:none;margin:0;max-width:none;max-height:none;overflow:hidden;box-shadow:none;border-style:solid;border-color:transparent;background:transparent!important;contain:paint}
+.wb-code-editor>textarea.wb-editor-input{display:block;position:relative;z-index:1;box-sizing:border-box;background:transparent!important;color:transparent!important;-webkit-text-fill-color:transparent;caret-color:var(--syn-foreground);text-shadow:none;min-width:0}
+.wb-code-editor>textarea.wb-editor-input::selection{background:var(--syn-selection);color:transparent}
+.wb-code-editor>textarea.wb-editor-input::placeholder{-webkit-text-fill-color:var(--syn-comment);color:var(--syn-comment)}
+@media(forced-colors:active){.wb-code-editor>pre.wb-editor-layer{display:none}.wb-code-editor>textarea.wb-editor-input{color:CanvasText!important;-webkit-text-fill-color:CanvasText}}
+
+@media(forced-colors:active){.wb-syntax,.wb-code-editor,.di-studio .di-editor,.di-studio .di-code-editor,.di-studio .di-gutter{background:Canvas!important;color:CanvasText!important}.wb-code-editor>textarea.wb-editor-input{caret-color:CanvasText}.wb-code-editor>textarea.wb-editor-input::selection{background:Highlight}.wb-syntax [class*=hljs-]{color:CanvasText!important}}

@@ -1,0 +1,74 @@
+{
+  "checkedAt": "2026-10-13T13:21:11.112Z",
+  "scope": "Prototype-only Node VM regression; does not prove live MCP behavior",
+  "source": "design/suite-prototype-tasks-ops.js",
+  "sha256": "10ad078c8e9b1318e834b74f34353f35ce8604c0dcde0b6ca20bec6e04872c07",
+  "passed": 16,
+  "total": 16,
+  "tests": [
+    {
+      "name": "Multiline tracker criteria transfer as whole criteria, not characters",
+      "pass": true
+    },
+    {
+      "name": "Structured criteria and empty input normalize consistently",
+      "pass": true
+    },
+    {
+      "name": "Agent context preserves task object, acceptance and project identifiers",
+      "pass": true
+    },
+    {
+      "name": "Context preserves immutable resource identifiers and selected document version",
+      "pass": true
+    },
+    {
+      "name": "Large context is explicitly bounded rather than silently implying full attachment",
+      "pass": true
+    },
+    {
+      "name": "Captured Jenkins target excludes credential references and is independent",
+      "pass": true
+    },
+    {
+      "name": "Removed Jenkins binding blocks replay without falling back to another available server",
+      "pass": true
+    },
+    {
+      "name": "Changed Jenkins address blocks replay",
+      "pass": true
+    },
+    {
+      "name": "Changed namespace blocks replay",
+      "pass": true
+    },
+    {
+      "name": "Replay opens original target and prior parameters even while another server is selected",
+      "pass": true
+    },
+    {
+      "name": "Target revalidation rejects configuration changes while launch form is open",
+      "pass": true
+    },
+    {
+      "name": "Unavailable replay target exposes blocked dialog instead of launch form",
+      "pass": true
+    },
+    {
+      "name": "Tracker filters are isolated and restored across projects",
+      "pass": true
+    },
+    {
+      "name": "Sprint registry retains custom and empty planned sprints within its project",
+      "pass": true
+    },
+    {
+      "name": "Task metadata events preserve whole criteria and archive state",
+      "pass": true
+    },
+    {
+      "name": "My open issues filter excludes completed tasks without hiding active work",
+      "pass": true
+    }
+  ]
+}

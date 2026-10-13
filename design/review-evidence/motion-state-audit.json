@@ -1,0 +1,70 @@
+{
+  "kind": "prototype-model-audit",
+  "source": "design/suite-prototype-motion.js",
+  "sourceSha256": "79a0783d00d00a919873b5a062faba995157e8d2d3f51e7c74634c036f7ffd49",
+  "passed": 15,
+  "failed": 0,
+  "limitation": "VM with fake DOM, media signal and timers. Does not verify real browser painting, OS policies, RDP frame delivery, Electron or runtime app/.",
+  "results": [
+    {
+      "name": "Default Always overrides the OS reduced-motion signal",
+      "status": "pass"
+    },
+    {
+      "name": "System follows changing OS preference; explicit Reduced always disables movement",
+      "status": "pass"
+    },
+    {
+      "name": "Direct spinner rotation changes despite animation:none and transition:none",
+      "status": "pass"
+    },
+    {
+      "name": "Completed indicator restores previous inline style and stops scheduling",
+      "status": "pass"
+    },
+    {
+      "name": "Removed indicator releases owned styles and timer",
+      "status": "pass"
+    },
+    {
+      "name": "Explicit Reduced cleans active inline rotation; Always resumes",
+      "status": "pass"
+    },
+    {
+      "name": "Hidden document stops all timers; showing resumes current indicators",
+      "status": "pass"
+    },
+    {
+      "name": "Interrupted cursor tween continues from its present position without old-target jump",
+      "status": "pass"
+    },
+    {
+      "name": "Removed cursor releases tween and restores transition",
+      "status": "pass"
+    },
+    {
+      "name": "Idle document has no repeating timer after initial scan",
+      "status": "pass"
+    },
+    {
+      "name": "One shared scheduler stays at or below 12 frames per second for many indicators",
+      "status": "pass"
+    },
+    {
+      "name": "Discovery stops geometry checks after 64 visible targets",
+      "status": "pass"
+    },
+    {
+      "name": "Stored and cross-window modes apply; storage failure does not block current preference",
+      "status": "pass"
+    },
+    {
+      "name": "Reduced-mode change finishes in-progress cursor promptly",
+      "status": "pass"
+    },
+    {
+      "name": "An absolute cursor interpolates in its parent coordinates, not viewport coordinates",
+      "status": "pass"
+    }
+  ]
+}

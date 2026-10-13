@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "catalogStatus": "reference-starter",
+  "templates": [
+    {
+      "id": "enterprise.application-shell",
+      "title": "Enterprise application shell",
+      "source": "templates/enterprise-application-shell.template.json",
+      "useWhen": "A multi-surface desktop or web tool needs stable project/task/target context.",
+      "doNotUseWhen": "A focused one-page workflow does not need persistent navigation."
+    },
+    {
+      "id": "enterprise.task-detail",
+      "title": "Task detail with evidence",
+      "source": "templates/task-detail.template.json",
+      "useWhen": "A team tracks owner, status, dependencies, agent sessions, artifacts and acceptance.",
+      "doNotUseWhen": "The item is a short personal reminder."
+    },
+    {
+      "id": "enterprise.data-workspace",
+      "title": "Data workspace",
+      "source": "templates/data-workspace.template.json",
+      "useWhen": "A user explores connections, schemas, queries, plans and result grids.",
+      "doNotUseWhen": "A simple read-only table is sufficient."
+    },
+    {
+      "id": "enterprise.review-and-execute",
+      "title": "Review and execute",
+      "source": "templates/review-and-execute.template.json",
+      "useWhen": "A reversible or risky operation needs target, diff, validation, execution and readback evidence.",
+      "doNotUseWhen": "The action is a safe idempotent read."
+    },
+    {
+      "id": "enterprise.design-library",
+      "title": "Design library workspace",
+      "source": "templates/design-library.template.json",
+      "useWhen": "A team browses tokens, components, icons, templates, provenance and consumer adoption.",
+      "doNotUseWhen": "Only a one-off mockup is being produced."
+    },
+    {
+      "id": "enterprise.agent-assisted-publication",
+      "title": "Agent-assisted kit publication",
+      "source": "templates/agent-assisted-publication.template.json",
+      "useWhen": "An agent proposes, previews, executes and verifies a reviewed design-system release.",
+      "doNotUseWhen": "A release lacks repository binding, required review or evidence."
+    }
+  ]
+}

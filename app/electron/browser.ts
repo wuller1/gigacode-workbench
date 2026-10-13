@@ -13,6 +13,9 @@ type Tab = {
   view: WebContentsView;
   customTitle?: string;
   loading: boolean;
+  error?: string;
+  lastActiveAt: number;
+  reuseKey?: string;
   emulation?: {
     width: number;
     height: number;
@@ -20,6 +23,37 @@ type Tab = {
     mobile: boolean;
   };
 };
+const BROWSER_ERROR_LIMIT = 500;
+
+/** Convert provider/Electron failures, including HTML gateway pages, to safe UI text. */
+export function normalizeBrowserError(
+  value: unknown,
+  fallback = "Неизвестная ошибка страницы",
+) {
+  const source =
+    value instanceof Error
+      ? value.message
+      : typeof value === "string"
+        ? value
+        : value && typeof value === "object" && "message" in value
+          ? String((value as { message?: unknown }).message || "")
+          : value == null
+            ? ""
+            : String(value);
+  const normalized = source
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;|&#160;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/[\u0000-\u001f\u007f]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return (normalized || fallback).slice(0, BROWSER_ERROR_LIMIT);
+}
+
 export function safeWebUrl(value: string) {
   const u = new URL(value);
   if (!["http:", "https:"].includes(u.protocol) && value !== "about:blank")
@@ -30,6 +64,8 @@ export function safeWebUrl(value: string) {
 }
 export class BrowserService {
   private tabs = new Map<string, Tab>();
+  private active = new Map<string, string>();
+  private createRequests = new Map<string, string>();
   constructor(
     private dataDir: string,
     private emit: (e: HostEvent) => void,
@@ -45,9 +81,58 @@ export class BrowserService {
       title: t.customTitle || t.title,
       url: t.url,
       loading: t.loading,
+      error: t.error,
       projectId: t.projectId,
       sessionId: t.sessionId,
+      active: this.activeId(t.owner, t.projectId) === t.id,
+      lastActiveAt: t.lastActiveAt,
     };
+  }
+  private group(owner: number, projectId?: string) {
+    return `${owner}:${projectId || ""}`;
+  }
+  private requestKey(
+    owner: number,
+    projectId: string | undefined,
+    requestId: string,
+  ) {
+    return `${owner}:${encodeURIComponent(projectId || "")}:${encodeURIComponent(requestId)}`;
+  }
+  private activeId(owner: number, projectId?: string) {
+    const key = this.group(owner, projectId),
+      stored = this.active.get(key),
+      candidates = this.groupTabs(owner, projectId);
+    if (stored && candidates.some((tab) => tab.id === stored)) return stored;
+    // Map iteration is the tab-strip order. Never sort here: doing so made a
+    // refresh silently reorder the fallback selection.
+    const fallback = candidates[0]?.id;
+    if (fallback) this.active.set(key, fallback);
+    else this.active.delete(key);
+    return fallback;
+  }
+  private groupTabs(owner: number, projectId?: string) {
+    return [...this.tabs.values()].filter(
+      (tab) => tab.owner === owner && tab.projectId === projectId,
+    );
+  }
+  private activate(t: Tab) {
+    t.lastActiveAt = Date.now();
+    this.active.set(this.group(t.owner, t.projectId), t.id);
+  }
+  private changed(t: Tab, payload: unknown = this.meta(t)) {
+    this.emit({
+      type: "browser.changed",
+      payload,
+      targetWindowId: t.owner,
+    });
+  }
+  private clearError(t: Tab) {
+    t.error = undefined;
+  }
+  private fail(t: Tab, value: unknown, fallback: string) {
+    t.loading = false;
+    t.error = normalizeBrowserError(value, fallback);
+    this.changed(t);
   }
   private get(id: string) {
     const t = this.tabs.get(id);
@@ -61,6 +146,50 @@ export class BrowserService {
   async invoke(method: string, p: any, window: BrowserWindow) {
     if (method === "browser.list") return this.list(window.id);
     if (method === "browser.create") {
+      const requestId =
+        typeof p.requestId === "string" ? p.requestId.trim().slice(0, 120) : "";
+      // Idempotency is project-scoped as well as window-scoped. Reusing a
+      // caller request id in another project must never return that project's
+      // native tab or switch its active selection.
+      const requestKey = requestId
+        ? this.requestKey(window.id, p.projectId, requestId)
+        : "";
+      if (requestKey) {
+        const previous = this.createRequests.get(requestKey),
+          existing = previous ? this.tabs.get(previous) : undefined;
+        if (
+          existing &&
+          existing.owner === window.id &&
+          !existing.view.webContents.isDestroyed()
+        ) {
+          this.activate(existing);
+          this.changed(existing);
+          return this.meta(existing);
+        }
+        this.createRequests.delete(requestKey);
+      }
+      const reuseKey =
+        typeof p.reuseKey === "string" ? p.reuseKey.trim().slice(0, 240) : "";
+      if (reuseKey) {
+        const existing = [...this.tabs.values()].find(
+          (tab) =>
+            tab.owner === window.id &&
+            tab.projectId === p.projectId &&
+            tab.reuseKey === reuseKey &&
+            !tab.view.webContents.isDestroyed(),
+        );
+        if (existing) {
+          if (requestKey) this.createRequests.set(requestKey, existing.id);
+          this.activate(existing);
+          if (p.url) {
+            const nextUrl = safeWebUrl(String(p.url));
+            if (nextUrl !== existing.url)
+              await existing.view.webContents.loadURL(nextUrl);
+          }
+          this.changed(existing);
+          return this.meta(existing);
+        }
+      }
       if (this.tabs.size >= 16)
         throw new Error("Открыто 16 вкладок. Закройте неиспользуемую");
       const url = safeWebUrl(String(p.url || "about:blank"));
@@ -90,27 +219,59 @@ export class BrowserService {
         owner: window.id,
         view,
         loading: false,
+        lastActiveAt: Date.now(),
+        reuseKey: reuseKey || undefined,
       };
       this.tabs.set(id, tab);
+      if (requestKey) this.createRequests.set(requestKey, id);
+      this.activate(tab);
       view.setVisible(false);
       window.contentView.addChildView(view);
       const update = () => {
         if (view.webContents.isDestroyed()) return;
         tab.url = view.webContents.getURL() || url;
         tab.title = view.webContents.getTitle() || "Новая вкладка";
-        this.emit({ type: "browser.changed", payload: this.meta(tab) });
+        this.changed(tab);
       };
       view.webContents.on("did-start-loading", () => {
         tab.loading = true;
+        this.clearError(tab);
         update();
       });
       view.webContents.on("did-stop-loading", () => {
         tab.loading = false;
         update();
       });
+      view.webContents.on("did-finish-load", () => {
+        tab.loading = false;
+        this.clearError(tab);
+        update();
+      });
       view.webContents.on("page-title-updated", update);
-      view.webContents.on("did-navigate", update);
-      view.webContents.on("did-navigate-in-page", update);
+      view.webContents.on("did-navigate", () => {
+        this.clearError(tab);
+        update();
+      });
+      view.webContents.on("did-navigate-in-page", () => {
+        this.clearError(tab);
+        update();
+      });
+      view.webContents.on(
+        "did-fail-load",
+        (_event, errorCode, errorDescription, _validatedURL, isMainFrame) => {
+          // Subframe failures do not mean that the visible page failed. An
+          // aborted load is the expected result when another navigation wins.
+          if (!isMainFrame || errorCode === -3) return;
+          const detail = normalizeBrowserError(errorDescription, "");
+          this.fail(
+            tab,
+            detail
+              ? `Не удалось загрузить страницу: ${detail} (${errorCode})`
+              : `Не удалось загрузить страницу (${errorCode})`,
+            "Не удалось загрузить страницу",
+          );
+        },
+      );
       view.webContents.on("will-navigate", (event, dest) => {
         try {
           safeWebUrl(dest);
@@ -135,23 +296,17 @@ export class BrowserService {
         (_wc, _permission, callback) => callback(false),
       );
       view.webContents.on("render-process-gone", (_e, details) => {
-        this.emit({
-          type: "browser.changed",
-          payload: {
-            ...this.meta(tab),
-            error: "Процесс страницы завершился: " + details.reason,
-          },
-        });
+        this.fail(
+          tab,
+          `Процесс страницы завершился: ${normalizeBrowserError(
+            details.reason,
+            "причина неизвестна",
+          )}`,
+          "Процесс страницы завершился",
+        );
       });
       await view.webContents.loadURL(url).catch((error) => {
-        tab.loading = false;
-        this.emit({
-          type: "browser.changed",
-          payload: {
-            ...this.meta(tab),
-            error: String(error.message).slice(0, 500),
-          },
-        });
+        this.fail(tab, error, "Не удалось загрузить страницу");
       });
       update();
       return this.meta(tab);
@@ -160,10 +315,17 @@ export class BrowserService {
       return;
     const t = this.get(p.id),
       wc = t.view.webContents;
+    // A tab is a native child view of exactly one BrowserWindow. Validate the
+    // owner once before every operation so a stale renderer cannot navigate,
+    // inspect, capture or close a different window's tab.
+    if (window.id !== t.owner)
+      throw new Error("Вкладка принадлежит другому окну");
+    if (method === "browser.activate") {
+      this.activate(t);
+      this.changed(t);
+      return this.meta(t);
+    }
     if (method === "browser.bounds") {
-      // Every window owns its views; observer windows cannot steal another window's tab by resizing.
-      if (window.id !== t.owner)
-        throw new Error("Вкладка принадлежит другому окну");
       const size = window.getContentBounds();
       const x = Math.max(0, Math.round(Number(p.x) || 0)),
         y = Math.max(0, Math.round(Number(p.y) || 0));
@@ -175,6 +337,9 @@ export class BrowserService {
           1,
           Math.min(size.height - y, Math.round(Number(p.height) || 1)),
         );
+      // Layout is deliberately not an activation signal. A delayed
+      // ResizeObserver callback from the old tab must not steal selection
+      // after browser.create/browser.activate selected another one.
       t.view.setBounds({ x, y, width, height });
       t.view.setVisible(!!p.visible && width > 1 && height > 1);
       return;
@@ -188,23 +353,35 @@ export class BrowserService {
         String(p.title || p.name || "")
           .trim()
           .slice(0, 120) || undefined;
-      this.emit({ type: "browser.changed", payload: this.meta(t) });
+      this.changed(t);
       return this.meta(t);
     }
     if (method === "browser.navigate") {
-      await wc.loadURL(safeWebUrl(String(p.url || "")));
+      const destination = safeWebUrl(String(p.url || ""));
+      this.clearError(t);
+      await wc.loadURL(destination);
       return this.meta(t);
     }
     if (method === "browser.back") {
-      if (wc.navigationHistory.canGoBack()) wc.navigationHistory.goBack();
+      if (wc.navigationHistory.canGoBack()) {
+        this.clearError(t);
+        wc.navigationHistory.goBack();
+        this.changed(t);
+      }
       return;
     }
     if (method === "browser.forward") {
-      if (wc.navigationHistory.canGoForward()) wc.navigationHistory.goForward();
+      if (wc.navigationHistory.canGoForward()) {
+        this.clearError(t);
+        wc.navigationHistory.goForward();
+        this.changed(t);
+      }
       return;
     }
     if (method === "browser.reload") {
+      this.clearError(t);
       wc.reload();
+      this.changed(t);
       return;
     }
     if (method === "browser.stop") {
@@ -301,26 +478,158 @@ export class BrowserService {
       ),
     };
   }
+  private remove(t: Tab) {
+    BrowserWindow.fromId(t.owner)?.contentView.removeChildView(t.view);
+    if (!t.view.webContents.isDestroyed()) t.view.webContents.close();
+    this.tabs.delete(t.id);
+    for (const [request, tabId] of this.createRequests)
+      if (tabId === t.id) this.createRequests.delete(request);
+  }
   close(id: string) {
     const t = this.tabs.get(id);
     if (!t) return;
-    BrowserWindow.fromId(t.owner)?.contentView.removeChildView(t.view);
-    if (!t.view.webContents.isDestroyed()) t.view.webContents.close();
-    this.tabs.delete(id);
-    this.emit({ type: "browser.changed", payload: { id, closed: true } });
+    const key = this.group(t.owner, t.projectId),
+      ordered = this.groupTabs(t.owner, t.projectId),
+      index = ordered.findIndex((candidate) => candidate.id === id),
+      wasActive = this.activeId(t.owner, t.projectId) === id,
+      adjacent = wasActive
+        ? ordered[index + 1] || ordered[index - 1]
+        : undefined;
+    this.remove(t);
+    if (wasActive) {
+      if (adjacent) this.active.set(key, adjacent.id);
+      else this.active.delete(key);
+    }
+    const next = this.activeId(t.owner, t.projectId);
+    this.changed(t, { id, closed: true, activeId: next });
+    if (wasActive && next) {
+      const active = this.tabs.get(next);
+      if (active) this.changed(active);
+    }
   }
   closeWindow(id: number) {
     for (const t of this.tabs.values()) if (t.owner === id) this.close(t.id);
   }
   transferWindow(from: BrowserWindow, to: BrowserWindow) {
-    for (const t of this.tabs.values())
-      if (t.owner === from.id) {
+    const moving = [...this.tabs.values()].filter((t) => t.owner === from.id);
+    if (!moving.length) return;
+
+    const movingIds = new Set(moving.map((t) => t.id)),
+      groups = new Map<
+        string,
+        {
+          projectId?: string;
+          sourceActive?: string;
+          targetActive?: string;
+          mappedSourceActive?: string;
+        }
+      >(),
+      requestsByTab = new Map<string, string[]>(),
+      sourcePrefix = `${from.id}:`;
+
+    for (const t of moving) {
+      const projectKey = t.projectId || "";
+      if (!groups.has(projectKey))
+        groups.set(projectKey, {
+          projectId: t.projectId,
+          sourceActive: this.activeId(from.id, t.projectId),
+          targetActive: this.activeId(to.id, t.projectId),
+        });
+    }
+
+    // Request ids are scoped to owner window + project. Move their mappings
+    // with the tabs; if the destination already has that scoped request id,
+    // its existing idempotency record wins.
+    for (const [requestKey, tabId] of this.createRequests) {
+      if (!requestKey.startsWith(sourcePrefix) || !movingIds.has(tabId))
+        continue;
+      const suffix = requestKey.slice(sourcePrefix.length),
+        entries = requestsByTab.get(tabId) || [];
+      entries.push(suffix);
+      requestsByTab.set(tabId, entries);
+      this.createRequests.delete(requestKey);
+    }
+
+    for (const t of moving) {
+      const projectKey = t.projectId || "",
+        group = groups.get(projectKey)!,
+        duplicate = t.reuseKey
+          ? [...this.tabs.values()].find(
+              (candidate) =>
+                candidate.owner === to.id &&
+                candidate.projectId === t.projectId &&
+                candidate.reuseKey === t.reuseKey &&
+                !candidate.view.webContents.isDestroyed(),
+            )
+          : undefined;
+      let destination = duplicate;
+      if (duplicate) {
+        // A reusable artifact/browser surface already exists in the target.
+        // Keep the target instance and discard the duplicate native view.
+        this.remove(t);
+      } else {
         t.view.setVisible(false);
         from.contentView.removeChildView(t.view);
         to.contentView.addChildView(t.view);
         t.owner = to.id;
-        this.emit({ type: "browser.changed", payload: this.meta(t) });
+        // Reinsert to append transferred tabs after the target window's
+        // existing strip while preserving the source order.
+        this.tabs.delete(t.id);
+        this.tabs.set(t.id, t);
+        destination = t;
       }
+      if (group.sourceActive === t.id)
+        group.mappedSourceActive = destination?.id;
+
+      for (const requestId of requestsByTab.get(t.id) || []) {
+        if (!destination) continue;
+        const targetRequest = `${to.id}:${requestId}`,
+          currentId = this.createRequests.get(targetRequest),
+          current = currentId ? this.tabs.get(currentId) : undefined;
+        if (
+          !current ||
+          current.owner !== to.id ||
+          current.view.webContents.isDestroyed()
+        )
+          this.createRequests.set(targetRequest, destination.id);
+      }
+    }
+
+    for (const group of groups.values()) {
+      const sourceKey = this.group(from.id, group.projectId),
+        targetKey = this.group(to.id, group.projectId),
+        retainedTarget = group.targetActive
+          ? this.tabs.get(group.targetActive)
+          : undefined,
+        movedActive = group.mappedSourceActive
+          ? this.tabs.get(group.mappedSourceActive)
+          : undefined;
+      this.active.delete(sourceKey);
+      if (
+        retainedTarget &&
+        retainedTarget.owner === to.id &&
+        retainedTarget.projectId === group.projectId
+      )
+        this.active.set(targetKey, retainedTarget.id);
+      else if (
+        movedActive &&
+        movedActive.owner === to.id &&
+        movedActive.projectId === group.projectId
+      )
+        this.active.set(targetKey, movedActive.id);
+      else this.active.delete(targetKey);
+
+      const activeId = this.activeId(to.id, group.projectId),
+        activeTab = activeId ? this.tabs.get(activeId) : undefined;
+      if (activeTab) this.changed(activeTab);
+    }
+    // The source renderer also needs to drop the moved tabs. It may already be
+    // closing, so this owner-targeted refresh is intentionally best effort.
+    this.emit({
+      type: "browser.changed",
+      payload: { transferred: true, count: moving.length },
+      targetWindowId: from.id,
+    });
   }
   windowForContents(id: number) {
     const tab = [...this.tabs.values()].find(

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "repository": {
+    "provider": "corporate-forge",
+    "connectionId": "replace-with-non-secret-connection-id",
+    "workspace": "replace-with-corporate-space",
+    "repository": "enterprise-ui-kit",
+    "defaultBranch": "main",
+    "packageRegistry": "replace-with-registry-binding-id"
+  },
+  "permissions": {
+    "mode": "allow-bound-capabilities",
+    "enabledCapabilities": ["repo.read", "repo.branch", "repo.write", "pull-request.create", "review.read", "checks.read", "package.read"],
+    "disabledByDefault": ["branch.force-push", "tag.delete", "package.delete"],
+    "releaseCapabilities": ["tag.create", "package.publish", "release.promote"],
+    "notes": "No per-call MCP modal after binding. Central administrators can disable any connection/capability; service accounts remain least-privilege."
+  },
+  "protection": {
+    "branches": ["main", "release/*"],
+    "requiredChecksContract": "governance/ci-contract.json",
+    "minimumApprovals": 2,
+    "requiredOwnerGroups": ["replace-design-system-owners", "replace-accessibility-owners"],
+    "dismissStaleApprovals": true,
+    "requireSignedCommitsOrEquivalentProvenance": true,
+    "allowForcePush": false,
+    "allowBranchDelete": false
+  },
+  "retention": {
+    "releaseEvidenceDays": 730,
+    "canaryArtifactsDays": 30,
+    "visualBaselines": "retain-for-every-supported-stable-line"
+  }
+}

@@ -34,7 +34,7 @@ function New-InstallFixture {
     Write-InstallTestFile (Join-Path $script:ISource 'README.md') 'Readme with Unicode: описание.'
     Write-InstallTestFile (Join-Path $script:ISource 'docs/описание файла.md') 'Preserve raw UTF-8 bytes.'
     Write-InstallTestFile (Join-Path $script:ISource 'adapters/gigacode/commands/workbench.md') "---`ndescription: Workbench`n---`nRead ``gigacode-workbench/BOOTSTRAP.md``."
-    foreach ($role in @('analyst', 'backend', 'devops', 'diagnostics', 'frontend', 'qa', 'reviewer', 'spec', 'gigacode-ui')) {
+    foreach ($role in @('analyst', 'architect', 'backend', 'database', 'designer', 'devops', 'diagnostics', 'frontend', 'qa', 'reviewer', 'security', 'spec', 'technical-writer', 'gigacode-ui')) {
         Write-InstallTestFile (Join-Path $script:ISource ('adapters/gigacode/agents/workbench-' + $role + '.md')) ("---`nname: workbench-" + $role + "`ndescription: Test role`ntools: [Read]`n---`nRead ``gigacode-workbench/CORE.md``.")
     }
     $script:IOptions = @{ TargetRoot = $script:ITarget; SourceRoot = $script:ISource }
@@ -93,9 +93,9 @@ $tests = [ordered]@{
         $without = Get-InstallTestPlan
         $script:IOptions.IncludeAgents = $true
         $with = Get-InstallTestPlan
-        Assert-InstallTest ($without.plan_hash -ne $with.plan_hash -and @($with.files | Where-Object { $_.purpose -eq 'native_agent' }).Count -eq 9) 'Agent opt-in not represented in plan'
+        Assert-InstallTest ($without.plan_hash -ne $with.plan_hash -and @($with.files | Where-Object { $_.purpose -eq 'native_agent' }).Count -eq 14) 'Agent opt-in not represented in plan'
         $null = Apply-InstallTestPlan $with
-        Assert-InstallTest (@(Get-ChildItem -LiteralPath (Join-Path $script:ITarget 'agents') -File).Count -eq 9) 'Nine native agents were not installed'
+        Assert-InstallTest (@(Get-ChildItem -LiteralPath (Join-Path $script:ITarget 'agents') -File).Count -eq 14) 'Fourteen native agents were not installed'
         $text = [IO.File]::ReadAllText((Join-Path $script:ITarget 'agents/workbench-analyst.md'))
         Assert-InstallTest (-not $text.Contains('gigacode-workbench/')) 'Agent path was not rendered'
     }
