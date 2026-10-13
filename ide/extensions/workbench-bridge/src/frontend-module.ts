@@ -14,6 +14,7 @@ import { DebugSessionManager } from '@theia/debug/lib/browser/debug-session-mana
 import type { TextEdit } from '@theia/core/shared/vscode-languageserver-protocol';
 import { FrontendApplicationStateService } from '@theia/core/lib/browser/frontend-application-state';
 import { revision } from './revision';
+import { installFrameClock } from './frame-clock';
 import { SemanticService } from './semantic';
 import { RecoveryService } from './recovery';
 import { ExecutionService } from './execution';
@@ -49,6 +50,7 @@ class WorkbenchFrontend implements FrontendApplicationContribution {
     @inject(ExecutionService) protected readonly execution!: ExecutionService;
 
     onStart(): void {
+        installFrameClock(window);
         window.workbenchIDE = { version: 1, invoke: (method, params = {}) => this.invoke(method, params) };
         const style = document.createElement('style');
         style.textContent = `
