@@ -166,8 +166,15 @@ jobs:
       - name: Stage the self-contained IDE runtime
         run: npm run prepare:ide-package
 
-      - name: Build NSIS and portable (never publish)
-        run: npm exec --offline -- electron-builder --win nsis portable --x64 --publish never
+      - name: Build unpacked Windows application
+        run: npm exec --offline -- electron-builder --win --dir --x64 --publish never
+
+      - name: Launch and verify actual packaged IDE languages and recovery
+        timeout-minutes: 12
+        run: node tools/test-ide-live.mjs --packaged --languages
+
+      - name: Build NSIS and portable from verified application (never publish)
+        run: npm exec --offline -- electron-builder --win nsis portable --x64 --prepackaged release/win-unpacked --publish never
 
       - name: Verify packaged CLI and self-hosting references, then calculate artifact hashes
         run: |
@@ -205,10 +212,6 @@ jobs:
           if ($artifacts.Count -lt 2) { throw 'Expected both NSIS and portable executables' }
           $hashes = $artifacts | ForEach-Object { '{0}  {1}' -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $_.Name }
           $hashes | Set-Content -Encoding utf8 'release/SHA256SUMS.txt'
-
-      - name: Launch and verify actual packaged IDE runtime
-        timeout-minutes: 8
-        run: node tools/test-ide-live.mjs --packaged
 
       - name: Collect isolated IDE test diagnostics
         if: always()

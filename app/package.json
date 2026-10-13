@@ -119,16 +119,11 @@
         ]
       },
       {
-        "from": "runtime/.ide-package/ide",
-        "to": "ide"
-      },
-      {
-        "from": "runtime/.ide-package/ide-node",
-        "to": "ide-node"
-      },
-      {
-        "from": "runtime/.ide-package/ide-tools",
-        "to": "ide-tools"
+        "from": "runtime/.ide-package",
+        "to": ".",
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "asarUnpack": [
