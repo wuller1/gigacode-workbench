@@ -38,15 +38,22 @@
   ],
   "evidence": "docs/suite/evidence/ide-live-macos.json",
   "latestTests": {
-    "unitPassed": 85,
+    "unitPassed": 90,
     "paidSkipped": 2,
     "modalFocusPassed": 10,
-    "liveElectronPassed": 41
+    "liveElectronPassed": 41,
+    "composerUiPassed": 6
   },
   "windowsFirstRun": {
     "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38451576506",
     "passed": "setup, legacy PS5.1, unit/build, native editor/semantic/Markdown/tasks/Node-debug",
     "failed": "IDE frontend timeout after backend restart",
     "fix": "backend-epoch terminal lifetime recovery; needs next Windows run"
+  },
+  "windowsThirdRun": {
+    "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38460402756",
+    "passed": "Java/Python/React, native build/test/debug, dirty-buffer backend restart and stale lifetime rejection",
+    "failed": "conflict draft lookup used non-normalized Windows drive URI",
+    "fix": "normalize recovery read/discard with Theia URI; next CI required"
   }
 }

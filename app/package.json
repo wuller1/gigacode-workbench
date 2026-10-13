@@ -18,7 +18,7 @@
     "test:live": "vitest run --config vitest.live.config.ts",
     "bundle:cli": "node tools/bundle-cli.mjs",
     "format": "prettier --write src electron shared tests *.ts *.mjs",
-    "test:ui": "node tools/test-modal-ui.mjs",
+    "test:ui": "node tools/test-modal-ui.mjs && node tools/test-composer-ui.mjs",
     "setup:ide": "node tools/setup-ide.mjs",
     "test:ide": "npm run build && node tools/test-ide-live.mjs",
     "prepare:ide-package": "node tools/package-ide.mjs",

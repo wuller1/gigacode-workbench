@@ -110,8 +110,8 @@ export class RecoveryService {
     }
     export() { if (this.restoring) throw new Error('RECOVERY_NOT_READY'); return { drafts: this.drafts, receipts: this.receipts }; }
     status() { return { error: this.error, drafts: Object.values(this.drafts).map(({ text, base, ...draft }) => ({ ...draft, characters: text.length })) }; }
-    read(uri: string) { const draft = this.drafts[uri]; if (!draft) throw new Error('DRAFT_NOT_FOUND'); return draft; }
-    async discard(uri: string) { delete this.drafts[uri]; await this.flush(); return this.status(); }
+    read(uri: string) { const draft = this.drafts[new URI(uri).toString()]; if (!draft) throw new Error('DRAFT_NOT_FOUND'); return draft; }
+    async discard(uri: string) { delete this.drafts[new URI(uri).toString()]; await this.flush(); return this.status(); }
     receipt(id: string, request: string): unknown {
         const receipt = this.receipts[id]; if (!receipt) return undefined;
         if (receipt.request !== request) throw new Error('OPERATION_ID_REUSED');

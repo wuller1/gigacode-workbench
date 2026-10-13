@@ -6,9 +6,9 @@
 
 Это ранняя версия приложения, а не готовая реализация всего плана из `workbench/`. Автор проекта — [wuller1](https://github.com/wuller1). Приложение не является официальным продуктом Qwen или GigaCode.
 
-## Текущий этап: согласование полного макета
+## Текущий этап: рабочая IDE и расширение desktop-приложения
 
-Runtime-разработка приостановлена по указанию пользователя до согласования полного интерактивного прототипа. [Макет](design/suite-workspace-prototype.html), [маршрут просмотра](docs/suite/PROTOTYPE-WALKTHROUGH.md), [полная карта сценариев](docs/suite/FINAL-PROTOTYPE-SCOPE.md), [результаты аудита](docs/suite/FULL-PROTOTYPE-AUDIT.md). Проводник файлов находится только внутри IDE, слева и виден по умолчанию. Все действия внешних систем в макете являются демонстрацией.
+14.10.2026 пользователь разрешил реализацию и самостоятельное улучшение UI/UX. `app/` содержит рабочий desktop runtime; `ide/` — независимый движок Theia с расширениями. Полный Browser/Design/Tracker/Operations/Data suite остаётся планом пофункционального расширения, а [макет](design/suite-workspace-prototype.html) — интерактивным описанием целевого продукта. Демонстрационные внешние системы в макете не являются подключёнными MCP.
 
 ## Один файл для рабочего компьютера
 
@@ -32,7 +32,7 @@ Runtime-разработка приостановлена по указанию 
 
 ## Получить код для рабочего компьютера
 
-Клонируйте репозиторий либо скачайте [`gigacode-workbench-full-source.zip`](https://github.com/wuller1/gigacode-workbench/releases/download/v0.1.0-preview.2/gigacode-workbench-full-source.zip). Откройте код в GigaCode и направьте агента на `WORK-COMPUTER-BOOTSTRAP.md`. Готовое приложение для этого процесса не требуется: агент работает с существующей заготовкой пользователя и переносит в неё подходящие части небольшими проверяемыми изменениями. Предыдущий код **`de0b6df`** прошёл [Windows CI](https://github.com/wuller1/gigacode-workbench/actions/runs/37965731926); текущий browser/suite-срез имеет локальные build/unit/UI-проверки, а его отдельный Windows CI и живой GigaCode 26.9.75 остаются самостоятельными уровнями evidence.
+Клонируйте текущий `main` либо скачайте исходники соответствующего [релиза](https://github.com/wuller1/gigacode-workbench/releases). Откройте код в GigaCode и направьте агента на [WORK-COMPUTER-BOOTSTRAP.md](WORK-COMPUTER-BOOTSTRAP.md). Агент сначала сравнит существующую оболочку с этим кодом и сохранит лучшее; инструкции по переносу IDE находятся в [IDE-RUNTIME-HANDOFF](docs/suite/IDE-RUNTIME-HANDOFF.md). Авторизация, MCP credentials и пользовательская история в исходники не включены. Совместимость рабочего GigaCode 26.9.75 проверяется на месте.
 
 [Снимок настоящего приложения с работающим исполнителем](docs/images/live-workers.jpg) · [Отчёт проверок и оставшиеся ограничения](docs/LIVE_TEST_REPORT.md).
 
@@ -95,7 +95,7 @@ npm run dist:win -- --publish never
 ## Проверки и ограничения
 
 - `npm run test:ui` из `app/` проверяет закрытие диалогов и восстановление фокуса в отдельном Electron без CLI и обращений к модели. Проверка включена и в Windows CI.
-- Последний локальный `npm test`: 54 passed и 2 Windows-only skips; build прошёл. [App tests](app/tests) используют управляемые fixtures и не требуют API-ключа. Windows CI предыдущего опубликованного среза отдельно подтвердил PowerShell 5.1 suites, реальные PTY/Sharp и упаковку; новый browser/runtime срез ещё должен пройти этот CI и живую Windows-проверку.
+- Локальные проверки текущего IDE/composer среза: **90 unit/protocol**, **16 Electron UI/focus**, **41 языковой live IDE сценарий**; дополнительно повторён базовый IDE прогон после исправления clock. Два платных probe пропущены. [Наблюдения IDE](docs/suite/evidence/ide-live-macos.json), [аудит](docs/suite/IDE-RUNTIME-AUDIT.md). Fixture-проверка протокола не подменяет реальный language server или рабочий GigaCode.
 - Отдельно были выполнены короткие реальные ACP-проверки Qwen 0.25.0 через OpenRouter на macOS: независимые одновременные сессии, отмена одной сессии и чтение/смена reasoning. Приватные credentials, harness и трассы этих запусков в репозиторий не включены.
 - В настоящем Electron на macOS проверены browser click/viewport/docking, вопросы, материалы, модель/reasoning, дочерний агент, два окна, архив/восстановление, focus/Escape и завершение PTY. Полные результаты — в [отчёте](docs/LIVE_TEST_REPORT.md). Ручная установка Windows NSIS/portable, GigaCode 26.9.75 и весь roadmap пока не проверены.
 - Передача краткого контекста создаёт новую ACP-сессию с host checkpoint. Она не редактирует непрозрачную историю CLI и не является его нативной командой сжатия.

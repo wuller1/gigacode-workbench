@@ -404,6 +404,96 @@ describe("durable backend", () => {
         .map((l) => l.command),
     ).toEqual(["hold first", "third edited"]);
   });
+  it("send now waits for cancellation terminal, prioritizes once and preserves remaining queue", async () => {
+    const x = await setup();
+    await x.service.invoke("session.send", {
+      id: x.a.id,
+      text: "hold current",
+    });
+    await until(async () =>
+      (await logs(x.project)).some((l) => l.type === "prompt"),
+    );
+    await x.service.invoke("session.send", { id: x.a.id, text: "later" });
+    const urgent = await x.service.invoke("session.send", {
+      id: x.a.id,
+      text: "urgent",
+    });
+    await x.service.invoke("queue.sendNow", {
+      sessionId: x.a.id,
+      id: urgent.id,
+    });
+    expect(x.service.snapshot().sessions[0].status).toBe("cancelling");
+    await new Promise((r) => setTimeout(r, 60));
+    expect(
+      (await logs(x.project)).filter((l) => l.type === "prompt"),
+    ).toHaveLength(1);
+    await until(
+      async () =>
+        (await logs(x.project)).filter((l) => l.type === "prompt").length ===
+          3 && x.service.snapshot().sessions[0].status === "completed",
+    );
+    expect(
+      (await logs(x.project))
+        .filter((l) => l.type === "prompt")
+        .map((l) => l.command),
+    ).toEqual(["hold current", "urgent", "later"]);
+    expect(
+      x.service
+        .snapshot()
+        .sessions[0].messages.filter((m) => m.role === "assistant")
+        .map((m) => m.outcome),
+    ).toEqual(["cancelled", "completed", "completed"]);
+    expect(
+      x.service.snapshot().sessions[0].messages.at(-1)?.elapsedMs,
+    ).toBeGreaterThanOrEqual(0);
+    expect(x.service.snapshot().sessions[0].queue).toHaveLength(0);
+  });
+  it("manual stop overrides send now and unknown execution never admits it", async () => {
+    const x = await setup();
+    await x.service.invoke("session.send", {
+      id: x.a.id,
+      text: "hold current",
+    });
+    await until(async () =>
+      (await logs(x.project)).some((l) => l.type === "prompt"),
+    );
+    const urgent = await x.service.invoke("session.send", {
+      id: x.a.id,
+      text: "urgent",
+    });
+    await x.service.invoke("queue.sendNow", {
+      sessionId: x.a.id,
+      id: urgent.id,
+    });
+    await x.service.invoke("session.cancel", { id: x.a.id });
+    await until(() => x.service.snapshot().sessions[0].status === "idle");
+    await new Promise((r) => setTimeout(r, 100));
+    expect(
+      (await logs(x.project)).filter((l) => l.type === "prompt"),
+    ).toHaveLength(1);
+    expect(x.service.snapshot().sessions[0].queue[0].id).toBe(urgent.id);
+    await x.service.invoke("queue.update", {
+      sessionId: x.a.id,
+      id: urgent.id,
+      text: "exit",
+    });
+    await x.service.invoke("queue.sendNow", {
+      sessionId: x.a.id,
+      id: urgent.id,
+    });
+    await until(() => x.service.snapshot().sessions[0].status === "unknown");
+    const remaining = await x.service.invoke("session.send", {
+      id: x.a.id,
+      text: "preserved",
+    });
+    await expect(
+      x.service.invoke("queue.sendNow", {
+        sessionId: x.a.id,
+        id: remaining.id,
+      }),
+    ).rejects.toThrow("unknown");
+    expect(x.service.snapshot().sessions[0].queue[0].id).toBe(remaining.id);
+  });
   it("does not replay a prompt after connection loss or restart", async () => {
     const x = await setup();
     await x.service.invoke("session.send", { id: x.a.id, text: "exit" });

@@ -35,6 +35,7 @@ type PeerReceipt = {
 };
 type Control = {
   paused: boolean;
+  resumeAfterCancel?: boolean;
   generation: number;
   handoff?: string;
   pendingConfig: Record<string, string>;
@@ -491,6 +492,7 @@ export class WorkbenchService {
           pendingConfig: {},
         };
         const control = state._controls[session.id];
+        delete control.resumeAfterCancel;
         if (active(session) || control.inflight) {
           session.status = "unknown";
           session.error =
@@ -834,6 +836,15 @@ export class WorkbenchService {
           entry.text = text(params.text, "message");
           return entry;
         });
+      case "queue.sendNow": {
+        const sessionId = text(params.sessionId, "session id", 100);
+        await this.cancel(sessionId, true, params.id);
+        this.schedulePump();
+        return {
+          prioritized: params.id,
+          delivery: "after_current_terminal_response",
+        };
+      }
       case "queue.delete":
         return this.change((state) => {
           const session = present(state.sessions, params.sessionId, "Session");
@@ -1367,6 +1378,13 @@ export class WorkbenchService {
         s.updatedAt = now();
         s.unread = true;
         c.lastStopReason = String(result?.stopReason || "terminal");
+        const message = s.messages.find((m) => m.id === live!.assistantId);
+        if (message) {
+          message.elapsedMs = Math.max(0, Date.now() - Date.parse(message.at));
+          message.outcome = live!.cancelled ? "cancelled" : "completed";
+        }
+        if (c.resumeAfterCancel) c.paused = false;
+        delete c.resumeAfterCancel;
         const receipt = state._peerReceipts?.find(
           (r) => r.id === c.inflight?.queueId,
         );
@@ -1385,6 +1403,10 @@ export class WorkbenchService {
           s.status = dispatched ? "unknown" : "failed";
           s.error = redact(error instanceof Error ? error.message : error);
           c.paused = true;
+          if (!dispatched && c.resumeAfterCancel) c.paused = false;
+          delete c.resumeAfterCancel;
+          const message = s.messages.find((m) => m.id === live?.assistantId);
+          if (dispatched && message) message.outcome = "unknown";
           const receipt = state._peerReceipts?.find(
             (r) => r.id === c.inflight?.queueId,
           );
@@ -2064,16 +2086,48 @@ export class WorkbenchService {
         }).catch(() => undefined);
       }
   }
-  private async cancel(sessionId: string): Promise<any> {
-    await this.change((state) => {
+  private async cancel(
+    sessionId: string,
+    resumeAfterCancel = false,
+    queuedId?: unknown,
+  ): Promise<any> {
+    const cancellation = await this.change((state) => {
       const session = present(state.sessions, sessionId, "Session");
-      state._controls[sessionId].paused = true;
-      if (["starting", "running", "waiting"].includes(session.status))
-        session.status = "cancelling";
+      const control = state._controls[sessionId];
+      if (resumeAfterCancel) {
+        this.ensureWritable(session, state);
+        if (session.status === "unknown")
+          throw new Error(
+            "Reconcile the unknown execution before sending now.",
+          );
+        const entry = present(session.queue, queuedId, "Queued message");
+        if (control.inflight?.queueId === entry.id)
+          throw new Error("This message is already captured for dispatch.");
+        // Reordering and admission pause are one durable update: the pump cannot
+        // capture the priority entry between these two operations.
+        session.queue = [
+          entry,
+          ...session.queue.filter((item) => item.id !== entry.id),
+        ];
+      }
+      const running = ["starting", "running", "waiting", "cancelling"].includes(
+        session.status,
+      );
+      control.paused = running || !resumeAfterCancel;
+      control.resumeAfterCancel = running && resumeAfterCancel;
+      if (running) session.status = "cancelling";
+      return { running, queueId: control.inflight?.queueId };
     });
     const live = this.live.get(sessionId);
     this.cancelPermissionWaiters(sessionId);
-    if (live) {
+    if (
+      live &&
+      cancellation.running &&
+      this.store.read()._controls[sessionId].inflight?.queueId ===
+        cancellation.queueId &&
+      this.store.read().sessions.find((s) => s.id === sessionId)?.status ===
+        "cancelling"
+    ) {
       live.cancelled = true;
       if (live.remoteId)
         try {

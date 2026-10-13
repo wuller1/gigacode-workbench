@@ -22,9 +22,13 @@
 | Перенос | Локальный Node ABI и глобальные SDK делали сборку зависимой от компьютера | Независимый закреплённый Node, platform VSIX, managed JDK/Maven, hashes, installer staging, Windows workflow |
 | Перенос | Старые manifest hashes и acceptance IDs ломали общий checker | Обновлены реальные хеши/PS1 mapping, согласованы ID, проверяется фактическая motion policy, а не декоративный marker |
 
-Дополнительная итерация: реальные React TSX diagnostics → исправление → сборка TypeScript 6 → React DOM render; запрет скрытого saveAll перед агентским запуском; native refactoring preview возвращается как pending, а не applied; opaque revision привязан к жизни document model, включая close/reopen при одинаковом numeric version. Текущий локальный результат: 85 unit/protocol checks, 10 modal/focus cases и 41 live Electron/IDE checks.
+Дополнительная итерация: реальные React TSX diagnostics → исправление → сборка TypeScript 6 → React DOM render; запрет скрытого saveAll перед агентским запуском; native refactoring preview возвращается как pending, а не applied; opaque revision привязан к жизни document model, включая close/reopen при одинаковом numeric version. Текущий локальный результат: 90 unit/protocol checks, 16 modal/composer/focus cases и 41 live Electron/IDE checks. После frame-clock исправления повторно прошёл базовый live прогон.
 
 Первый Windows CI прошёл установку, legacy PowerShell 5.1, unit/build, Markdown, TypeScript/semantic edits, tasks и Node DAP, затем обнаружил timeout после backend restart. Добавлены backend epoch для layout, свежие интерактивные терминалы вместо чужих process IDs, исключение task terminals из повторного запуска и диагностические artifacts. Подтверждение исправления на Windows ожидается отдельно.
+
+Последующие Windows прогоны подтвердили Java/Spring Maven/JUnit, Python native tests с настоящим assertion failure и исправлением, React TSX compile/render. Логи локализовали timeout до `attached_shell`: Theia ожидала animationFrame до чтения layout. Native-first frame clock с cancellable timer устранил зависание; Windows подтвердил восстановление dirty buffer. Следующий обнаруженный дефект — несовпадение Node `file:///C:/` с Theia `file:///c%3A/` при чтении/удалении конфликтного черновика — исправлен нормализацией через URI. Полный CI повторяется после этой правки.
+
+UI/UX итерация: объединены model/reasoning, контекст перенесён в цветное кольцо; добавлены прямые Send now/Edit/Delete и inline редактор. Редактируемый текст сохраняется, если строка ушла в работу. Проверены порядок ACP после отмены, запрет unknown, приоритет явного Stop, focus/Escape, узкая desktop панель и статус при OS reduced-motion. UI kit собирается TypeScript 6 и упаковывает CSS/JS/types/LICENSE; весь каталог из 26 требований не объявлен реализованным.
 
 ## Границы результата
 

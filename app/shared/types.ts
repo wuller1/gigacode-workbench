@@ -36,6 +36,8 @@ export interface Message {
   content: string;
   at: string;
   tools?: ToolCall[];
+  elapsedMs?: number;
+  outcome?: "completed" | "cancelled" | "unknown";
 }
 export interface QueueItem {
   id: string;

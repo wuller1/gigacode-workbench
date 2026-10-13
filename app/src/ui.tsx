@@ -1,3 +1,4 @@
+import { installWorkingMotion } from "./motion";
 import {
   createContext,
   useContext,
@@ -90,6 +91,7 @@ const LayerContext = createContext({
   change: (_id: string, _show: boolean) => {},
 });
 export function LayerProvider({ children }: { children: ReactNode }) {
+  useEffect(() => installWorkingMotion(document), []);
   const [ids, setIds] = useState<Set<string>>(() => new Set());
   const changeRef = useRef((id: string, show: boolean) =>
     setIds((old) => {

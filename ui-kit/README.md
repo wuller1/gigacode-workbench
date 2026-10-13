@@ -56,7 +56,7 @@ Each release carries a changelog, migration notes when needed, package manifest,
 
 ## Local reference checks
 
-The package declares `typecheck` and `check:catalog` commands. They validate source and catalog shape; they do not replace browser, visual, accessibility, or consumer tests. A corporate CI implementation should satisfy `governance/ci-contract.json` before publishing.
+The package declares `build`, `typecheck` and `check:catalog` commands. `npm pack` builds the typed exports and checks the catalog; exported CSS, tokens, original icons and LICENSE are included. The package stays private until a corporate owner chooses its scope and release policy. They validate source and catalog shape; they do not replace browser, visual, accessibility, or consumer tests. A corporate CI implementation should satisfy `governance/ci-contract.json` before publishing.
 
 ## Copyright boundary
 

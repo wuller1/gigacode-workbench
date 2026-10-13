@@ -1,3 +1,5 @@
+import { QueueMessages } from "./QueueMessages";
+import { ModelPicker, ContextSend } from "./ModelPicker";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   AppState,
@@ -107,10 +109,17 @@ function Application() {
   useEffect(() => {
     if (session?.id) void run("session.attach", { id: session.id });
   }, [session?.id, run]);
-  useEffect(() => window.workbench?.subscribe(event => {
-    if (event.type === 'ide.reveal' && (event.payload as any).projectId === project?.id)
-      setRequested({ id: 'files', nonce: Date.now() });
-  }), [project?.id]);
+  useEffect(
+    () =>
+      window.workbench?.subscribe((event) => {
+        if (
+          event.type === "ide.reveal" &&
+          (event.payload as any).projectId === project?.id
+        )
+          setRequested({ id: "files", nonce: Date.now() });
+      }),
+    [project?.id],
+  );
   const selectedSessionId = session?.id;
   const draftKey = selectedSessionId || `project:${project?.id || "none"}`;
   const draft = drafts[draftKey] || emptyDraft;
@@ -816,7 +825,6 @@ function Chat({
   refresh: () => Promise<void>;
 }) {
   const [sending, setSending] = useState(false),
-    [queueOpen, setQueueOpen] = useState(false),
     [contextOpen, setContextOpen] = useState(false),
     [nearBottom, setNearBottom] = useState(true),
     [questionId, setQuestionId] = useState<string>(),
@@ -928,12 +936,6 @@ function Chat({
   }, [project?.id, session.status === "completed"]);
   const contextLimit =
     session.context.limitTokens || state.settings.contextLimit || undefined;
-  const contextLabel =
-    session.context.usedTokens != null && contextLimit
-      ? `${session.context.estimated ? "≈" : ""}${Math.min(999, Math.round((session.context.usedTokens / contextLimit) * 100))}%`
-      : session.context.usedTokens != null
-        ? `${session.context.estimated ? "≈" : ""}${Math.round(session.context.usedTokens / 1000)}k`
-        : "Контекст —";
   return (
     <>
       <div
@@ -966,15 +968,18 @@ function Chat({
         ) : (
           <div className="message-list">
             {session.messages.map((m) => (
-              <article key={m.id} className={`message message-${m.role}`}>
+              <article
+                key={m.id}
+                aria-label={
+                  m.role === "user"
+                    ? "Сообщение пользователя"
+                    : m.role === "assistant"
+                      ? "Ответ агента"
+                      : "Системное сообщение"
+                }
+                className={`message message-${m.role}`}
+              >
                 <header>
-                  <strong>
-                    {m.role === "user"
-                      ? "Вы"
-                      : m.role === "assistant"
-                        ? "GigaCode"
-                        : "Система"}
-                  </strong>
                   <time title={new Date(m.at).toLocaleString()}>
                     {new Date(m.at).toLocaleTimeString([], {
                       hour: "2-digit",
@@ -991,6 +996,15 @@ function Chat({
                 </header>
                 {m.content && <Markdown text={m.content} />}{" "}
                 {!!m.tools?.length && <ToolRows tools={m.tools} />}
+                {m.outcome && (
+                  <footer className="turn-outcome">
+                    {m.outcome === "completed" && m.elapsedMs !== undefined
+                      ? `Выполнено за ${m.elapsedMs < 60000 ? `${Math.max(1, Math.round(m.elapsedMs / 1000))} с` : `${Math.floor(m.elapsedMs / 60000)} мин ${Math.round((m.elapsedMs % 60000) / 1000)} с`}`
+                      : m.outcome === "cancelled"
+                        ? "Остановлено"
+                        : "Результат требует проверки"}
+                  </footer>
+                )}
               </article>
             ))}
           </div>
@@ -1084,78 +1098,24 @@ function Chat({
             )}
           </div>
         )}
-        {session.queue.length > 0 && (
-          <div className="queue-area">
-            <button
-              className="queue-heading"
-              onClick={() => setQueueOpen(!queueOpen)}
-            >
-              <Icon name="clock" size={15} />
-              {session.queue.length} в очереди · после текущего ответа
-              <Icon
-                name={queueOpen ? "chevron-down" : "chevron-right"}
-                size={14}
-              />
-            </button>
-            {queueOpen && (
-              <div className="queue-list">
-                {session.queue.map((q, i) => (
-                  <div key={q.id}>
-                    <span>{q.text}</span>
-                    <Menu
-                      label="Действия сообщения в очереди"
-                      items={[
-                        {
-                          label: "Изменить",
-                          action: async () => {
-                            const text = await ask("Сообщение в очереди", {
-                              value: q.text,
-                              multiline: true,
-                            });
-                            if (text)
-                              await run("queue.update", {
-                                sessionId: session.id,
-                                id: q.id,
-                                text,
-                              });
-                          },
-                        },
-                        {
-                          label: "Выше",
-                          disabled: i === 0,
-                          action: () =>
-                            void run("queue.move", {
-                              sessionId: session.id,
-                              id: q.id,
-                              index: i - 1,
-                            }),
-                        },
-                        {
-                          label: "Убрать из очереди",
-                          danger: true,
-                          action: () =>
-                            void run("queue.delete", {
-                              sessionId: session.id,
-                              id: q.id,
-                            }),
-                        },
-                      ]}
-                    />
-                  </div>
-                ))}
-                {!busy(session.status) && (
-                  <button
-                    onClick={() =>
-                      void run("queue.resume", { sessionId: session.id })
-                    }
-                  >
-                    Продолжить очередь
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+        <QueueMessages
+          items={session.queue}
+          sessionId={session.id}
+          running={busy(session.status)}
+          unknown={session.status === "unknown"}
+          invoke={async (method, params) => {
+            const result = await call(method, params);
+            await refresh();
+            return result;
+          }}
+          onRestore={(text) => {
+            setDraft((old) => ({
+              ...old,
+              text: [old.text, text].filter(Boolean).join("\n\n"),
+            }));
+            composer.current?.focus();
+          }}
+        />
         <div className="composer">
           {draft.attachments.length > 0 && (
             <div className="attachment-list">
@@ -1204,78 +1164,43 @@ function Chat({
               label="Приложить файлы проекта"
               onClick={() => void attach()}
             />
+            <button
+              className="composer-branch"
+              title={`Git-ветка: ${branch || "определяется"}`}
+              onClick={() => onPanel("changes")}
+            >
+              <Icon name="branch" size={13} />
+              <span>{branch || "Ветка…"}</span>
+            </button>
+            <span className="composer-spacer" />
             <span
-              className="composer-meta"
-              title={`${session.profileReason || "Роль выбрана автоматически"}${session.profileConfidence ? ` · уверенность ${Math.round(session.profileConfidence * 100)}%` : ""}`}
-              aria-label={`${profileName(
+              className="composer-auto-profile"
+              title={`${profileName(
                 state.profiles.find((p) => p.id === session.profileId),
                 session.profileId,
-              )}. ${session.profileReason || "Роль выбрана автоматически"}`}
+              )} · ${session.profileReason || "Роль выбрана автоматически"}`}
             >
-              <Icon name="branch" size={14} />
+              <Icon name="profile" size={14} />
               <span>
                 {session.profileConfidence === 0
-                  ? "Роль · авто"
+                  ? "Авто"
                   : profileName(
                       state.profiles.find((p) => p.id === session.profileId),
                       session.profileId,
                     )}
               </span>
             </span>
-            {configs.length ? (
-              configs.map((c) => (
-                <label key={c.id} className="composer-select" title={c.name}>
-                  <select
-                    aria-label={c.name}
-                    disabled={busy(session.status) || !c.options.length}
-                    value={c.currentValue}
-                    onChange={(e) =>
-                      void run("session.config", {
-                        id: session.id,
-                        configId: c.id,
-                        value: e.target.value,
-                      })
-                    }
-                  >
-                    {!c.options.some((o) => o.value === c.currentValue) && (
-                      <option value={c.currentValue}>
-                        {c.currentValue || c.name}
-                      </option>
-                    )}
-                    {c.options.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              ))
-            ) : (
-              <button
-                className="model-label"
-                title="Настройки модели; доступные параметры появятся после ответа CLI"
-                onClick={onSettings}
-              >
-                {session.model || state.settings.model || "Модель CLI"}
-                {session.reasoning ? ` · ${session.reasoning}` : ""}
-              </button>
-            )}
-            <span className="composer-spacer" />
-            <button
-              className="context-button"
-              title={`Git-ветка: ${branch || "определяется"}`}
-              onClick={() => onPanel("changes")}
-            >
-              <Icon name="branch" size={13} />
-              {branch || "Ветка…"}
-            </button>
-            <button
-              className="context-button"
-              title="Контекст и восстановление"
-              onClick={() => setContextOpen(true)}
-            >
-              {contextLabel}
-            </button>
+            <ModelPicker
+              configs={configs}
+              model={session.model || state.settings.model || "Модель CLI"}
+              reasoning={session.reasoning}
+              disabled={busy(session.status)}
+              onSettings={onSettings}
+              onContext={() => setContextOpen(true)}
+              onSelect={(configId, value) =>
+                run("session.config", { id: session.id, configId, value })
+              }
+            />
             {busy(session.status) && (
               <IconButton
                 icon="stop"
@@ -1284,26 +1209,19 @@ function Chat({
                 onClick={() => void run("session.cancel", { id: session.id })}
               />
             )}
-            <button
-              className="send-button"
-              aria-label={
-                busy(session.status) ? "Добавить в очередь" : "Отправить"
+            <ContextSend
+              used={session.context.usedTokens}
+              limit={contextLimit}
+              estimated={
+                session.context.estimated ||
+                session.context.limitTokens === undefined
               }
-              title={
-                busy(session.status)
-                  ? "В очередь · Ctrl+Enter"
-                  : "Отправить · Ctrl+Enter"
-              }
-              disabled={
-                sending || (!draft.text.trim() && !draft.attachments.length)
-              }
-              onClick={() => void send()}
-            >
-              <Icon
-                name={busy(session.status) ? "plus" : "arrow-up"}
-                size={18}
-              />
-            </button>
+              busy={busy(session.status)}
+              sending={sending}
+              disabled={!draft.text.trim() && !draft.attachments.length}
+              onContext={() => setContextOpen(true)}
+              onSend={() => void send()}
+            />
           </div>
         </div>
         <div className="composer-footnote">
@@ -1312,7 +1230,6 @@ function Chat({
               ? "Новое сообщение встанет в очередь. Текущий запрос не подменяется."
               : "Ctrl / ⌘ + Enter — отправить"}
           </span>
-          <span>Проверяйте важные изменения</span>
         </div>
       </div>
       {question && (
