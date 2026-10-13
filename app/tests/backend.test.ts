@@ -621,6 +621,56 @@ describe("durable backend", () => {
     expect(x.service.snapshot().questions[0].answer).toBe("A custom answer");
     expect(x.service.snapshot().sessions[0].queue).toHaveLength(0);
   });
+  it("discovers model/reasoning before any prompt and preserves one ACP session", async () => {
+    const x = await setup();
+    const results = await Promise.all([
+      x.service.invoke("session.prepare", { id: x.a.id }),
+      x.service.invoke("session.prepare", { id: x.a.id }),
+    ]);
+    expect(results[0].find((c: any) => c.id === "model").currentValue).toBe(
+      "fixture-fast",
+    );
+    expect(
+      (await logs(x.project)).filter((l) => l.type === "prompt"),
+    ).toHaveLength(0);
+    expect(x.service.snapshot().sessions[0].messages).toHaveLength(0);
+    expect(
+      (await logs(x.project)).filter((l) => l.type === "session_new"),
+    ).toHaveLength(1);
+    await x.service.invoke("session.config", {
+      id: x.a.id,
+      configId: "model",
+      value: "fixture-reasoning",
+    });
+    await x.service.invoke("session.config", {
+      id: x.a.id,
+      configId: "reasoning_effort",
+      value: "low",
+    });
+    await x.service.invoke("session.send", {
+      id: x.a.id,
+      text: "first instruction",
+    });
+    await until(() => x.service.snapshot().sessions[0].status === "completed");
+    const prompts = (await logs(x.project)).filter((l) => l.type === "prompt");
+    expect(prompts).toHaveLength(1);
+    expect(prompts[0].model).toBe("fixture-reasoning");
+    expect(prompts[0].reasoning).toBe("low");
+    expect(
+      (await logs(x.project)).filter((l) => l.type === "session_new"),
+    ).toHaveLength(1);
+  });
+  it("model catalog discovery refuses unknown results without modifying the queue", async () => {
+    const x = await setup();
+    await x.service.invoke("session.send", { id: x.a.id, text: "exit" });
+    await until(() => x.service.snapshot().sessions[0].status === "unknown");
+    await expect(
+      x.service.invoke("session.prepare", { id: x.a.id }),
+    ).rejects.toThrow("current operation");
+    expect(
+      (await logs(x.project)).filter((l) => l.type === "prompt"),
+    ).toHaveLength(1);
+  });
   it("uses discovered config values and refreshes reasoning after model switch", async () => {
     const x = await setup();
     await x.service.invoke("session.send", { id: x.a.id, text: "hello" });

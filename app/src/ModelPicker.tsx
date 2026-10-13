@@ -11,6 +11,7 @@ export function ModelPicker({
   onSelect,
   onSettings,
   onContext,
+  onPrepare,
 }: {
   configs: ConfigOption[];
   model: string;
@@ -19,10 +20,12 @@ export function ModelPicker({
   onSelect(id: string, value: string): Promise<unknown>;
   onSettings(): void;
   onContext(): void;
+  onPrepare?(): Promise<unknown>;
 }) {
   const [open, setOpen] = useState(false),
     [query, setQuery] = useState(""),
     [pending, setPending] = useState(false),
+    [error, setError] = useState(""),
     [position, setPosition] = useState({ left: 0, top: 0 });
   const button = useRef<HTMLButtonElement>(null),
     popup = useRef<HTMLDivElement>(null),
@@ -88,6 +91,8 @@ export function ModelPicker({
     setPending(true);
     try {
       await onSelect(id, value);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
     } finally {
       setPending(false);
     }
@@ -105,14 +110,21 @@ export function ModelPicker({
             ? "Модель можно изменить после текущего запроса"
             : [label, depth].filter(Boolean).join(" · ")
         }
-        disabled={disabled}
-        onClick={() => {
-          if (!configs.length) {
-            onSettings();
-            return;
-          }
+        disabled={disabled || pending}
+        onClick={async () => {
           setQuery("");
           setOpen((v) => !v);
+          if (!configs.length && onPrepare) {
+            setPending(true);
+            setError("");
+            try {
+              await onPrepare();
+            } catch (e) {
+              setError(e instanceof Error ? e.message : String(e));
+            } finally {
+              setPending(false);
+            }
+          }
         }}
       >
         <span className="model-name">{label}</span>
@@ -136,6 +148,27 @@ export function ModelPicker({
               onChange={(e) => setQuery(e.target.value)}
             />
             <div className="model-picker-options">
+              {pending && !configs.length && (
+                <p className="model-picker-notice">Подключение к CLI…</p>
+              )}
+              {error && (
+                <p className="model-picker-notice" role="alert">
+                  {error}
+                </p>
+              )}
+              {!pending && !configs.length && (
+                <div className="model-picker-notice">
+                  CLI не предоставил список моделей.
+                  <button
+                    onClick={() => {
+                      close();
+                      onSettings();
+                    }}
+                  >
+                    Настроить подключение
+                  </button>
+                </div>
+              )}
               {configs.map((config) => {
                 const options =
                   config === modelConfig

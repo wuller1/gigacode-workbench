@@ -10,6 +10,7 @@ Backend WorkbenchService constructor options {dataDir, bundleDir, emit, mcpServe
 - project.create {name,path}; project.update {id,name?,archived?}; project.delete {id} (metadata only, no source deletion; reject active descendants)
 - task.create {projectId,title,description?}; task.update {id,title?,description?,archived?}; task.delete {id}
 - session.create {taskId,title?,parentId?}; session.update {id,title?,model?,reasoning?,archived?,unread?}; session.delete {id}; session.send {id,text}; session.cancel {id}; session.recover {id,summary?} (explicit new ACP session, previous history preserved); session.compact {id} (host-owned short handoff/new session, never claim rewrite opaque CLI history). Public UI/IPC never accepts `profileId`; an internal coordinator assignment captures router-selected profile/version and delivery receipt.
+- queue.sendNow {sessionId,id}: atomically prioritize, cancel current prompt and wait for its terminal response; never send concurrent ACP prompts or admit unknown. Explicit Stop overrides auto-resume; queued input survives failure/restart.
 - queue.update {sessionId,id,text}; queue.delete {sessionId,id}; queue.move {sessionId,id,index}; queue.resume {sessionId}
 - settings.update {patch:Partial<Settings>}; profile.save {id?,name,description,prompt}; profile.delete {id} (custom only)
 
@@ -18,6 +19,7 @@ Backend WorkbenchService constructor options {dataDir, bundleDir, emit, mcpServe
 The user never selects or pins a role manually, including for a child worker. At each safe dispatch boundary the host routes from the user request, Project purpose/stack/rules, Task goal/workflow stage/accepted decisions, active workspace and attached resource, current continuity, risk and enabled published profile metadata. It stores profile/version, factors/evidence, confidence and concise reason before composing the prompt. An orchestrator-created child captures that host decision in its assignment. A role change restarts the ACP context with a handoff checkpoint and never changes tool permissions, model or reasoning. The composer exposes selected→captured→actual read-only together with model, reasoning, context usage, and Git branch.
 
 - question.answer {id,optionId?,text?} is the legacy baseline only; todo.replace {sessionId,items:Todo[]}; artifact.register {taskId,path,name?,kind?}; artifact.list {taskId}
+- session.prepare {id}: initialize a real ACP process/new session and discover its actual catalog before the first prompt; deduplicate, preserve empty context, reject active/unknown, never send a model prompt to discover options.
 - session.config {id,configId,value}: only actual discovered ACP config option, preserve busy capture
 - diagnostics.export {} => {path}; memory.read {} => {text}; memory.write {text}
 

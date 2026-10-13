@@ -223,7 +223,19 @@ return <LayerProvider><section className="composer-region" style={{width:390,mar
       "Explicit app reduced-motion setting ignored",
     );
   });
-  await p.screenshot({ path: path.join(temp, "composer.png") });
+  const png = await app.evaluate(async ({ BrowserWindow }) => {
+    const image =
+      await BrowserWindow.getAllWindows()[0].webContents.capturePage(
+        undefined,
+        { stayHidden: true, stayAwake: true },
+      );
+    if (image.isEmpty()) throw Error("Empty native composer capture");
+    return image.toPNG().toString("base64");
+  });
+  await fs.writeFile(
+    path.join(temp, "composer.png"),
+    Buffer.from(png, "base64"),
+  );
   console.log(
     JSON.stringify({ passed: results.length, results, evidence: temp }),
   );

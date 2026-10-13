@@ -41,9 +41,30 @@ jobs:
       - name: Install locked dependencies including native optional packages
         run: npm ci --include=optional
 
+      - name: Restore verified IDE download archives
+        id: ide-downloads
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ide/plugin-cache/*.vsix
+            app/runtime/ide-node/*.zip
+            app/runtime/ide-tools/cache/*
+          key: ide-downloads-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('ide/node-runtime-lock.json', 'ide/toolchains-lock.json', 'ide/plugins-lock.json') }}
+
       - name: Install pinned IDE engine, extensions and Java/Maven toolchain
+        id: ide-setup
         timeout-minutes: 20
         run: npm run setup:ide
+
+      - name: Save verified IDE downloads before acceptance tests
+        if: steps.ide-downloads.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ide/plugin-cache/*.vsix
+            app/runtime/ide-node/*.zip
+            app/runtime/ide-tools/cache/*
+          key: ${{ steps.ide-downloads.outputs.cache-primary-key }}
 
       - name: Verify Workbench script hashes, manifest and entry links
         run: node ../tools/check-bundle.mjs
@@ -133,6 +154,10 @@ jobs:
       - name: Offline Electron modal and focus regression
         timeout-minutes: 2
         run: npm run test:ui
+
+      - name: Full application model catalog, queue and cancellation workflow
+        timeout-minutes: 2
+        run: node tools/test-chat-live.mjs
 
       - name: Real IDE language, edit, refactor, task, debug and recovery checks
         timeout-minutes: 12

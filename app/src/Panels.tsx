@@ -1049,7 +1049,11 @@ export function ChangesPanel({ project, run }: PanelProps) {
         </div>
       ) : (
         <p className="muted inset">
-          {status ? "Изменений не обнаружено." : "Git-состояние не получено."}
+          {status?.repository === false
+            ? "В этой папке Git ещё не настроен."
+            : status
+              ? "Изменений не обнаружено."
+              : "Git-состояние не получено."}
         </p>
       )}
       <pre className="diff-content">

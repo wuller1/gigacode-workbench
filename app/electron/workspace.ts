@@ -282,6 +282,7 @@ export class Workspace {
         maxBuffer: 4 * 1024 * 1024,
         timeout: 15000,
         windowsHide: true,
+        env: { ...process.env, LC_ALL: "C" },
       });
       return r.stdout;
     };
@@ -293,7 +294,17 @@ export class Workspace {
       }
       return { text: await run(args) };
     }
-    const raw = await run(["status", "--porcelain=v1", "-z"]);
+    let raw: string;
+    try {
+      raw = await run(["status", "--porcelain=v1", "-z"]);
+    } catch (error) {
+      if (
+        Number((error as any).code) === 128 &&
+        /not a git repository/i.test(String((error as any).stderr))
+      )
+        return { repository: false, branch: "", changes: [], diff: "" };
+      throw error;
+    }
     const parts = raw.split("\0");
     const changes = [];
     for (let i = 0; i < parts.length; i++) {
@@ -307,6 +318,7 @@ export class Workspace {
     const branch =
       (await run(["branch", "--show-current"])).trim() || "detached HEAD";
     return {
+      repository: true,
       branch,
       changes,
       diff: await run(["diff", "--stat", "--no-ext-diff"]),

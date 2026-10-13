@@ -22,7 +22,8 @@
     "setup:ide": "node tools/setup-ide.mjs",
     "test:ide": "npm run build && node tools/test-ide-live.mjs",
     "prepare:ide-package": "node tools/package-ide.mjs",
-    "test:ide:languages": "npm run build && node tools/test-ide-live.mjs --languages"
+    "test:ide:languages": "npm run build && node tools/test-ide-live.mjs --languages",
+    "test:chat": "npm run build && node tools/test-chat-live.mjs"
   },
   "dependencies": {
     "@lydell/node-pty": "1.2.0-beta.15",

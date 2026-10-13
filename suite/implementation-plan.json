@@ -14,7 +14,7 @@
     "document": "docs/suite/PROTOTYPE-REVIEW-GATE.md",
     "reviewArtifact": "design/suite-workspace-prototype.html",
     "blocksRuntimeImplementation": false,
-    "releaseCondition": "Explicit user approval of a complete identified prototype revision after walkthrough; partial screen feedback does not unlock runtime",
+    "releaseCondition": "Runtime and proactive UI/UX work explicitly authorized by the user on 2026-10-14; preserve tests and evidence, do not reinstate the superseded prototype approval gate.",
     "scopeDocument": "docs/suite/FINAL-PROTOTYPE-SCOPE.md",
     "authorization": {
       "date": "2026-10-14",
@@ -458,7 +458,7 @@
     {
       "id": "S4-00",
       "title": "IDE engine / extension host compatibility spike",
-      "status": "planned",
+      "status": "in_progress",
       "dependsOn": [
         "S1-03"
       ],
@@ -483,7 +483,12 @@
         "IDEX-12",
         "IUQ-00"
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/suite/IDE-RUNTIME-AUDIT.md",
+        "docs/suite/IDE-RUNTIME-HANDOFF.md",
+        "docs/suite/evidence/ide-live-macos.json",
+        "suite/ide-runtime-progress.json"
+      ],
       "ultimateParityRows": [
         "IUP-001",
         "IUP-002",

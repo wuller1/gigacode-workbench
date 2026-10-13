@@ -85,3 +85,11 @@ export function shortToolTitle(title: string) {
       .slice(0, 64)
   );
 }
+
+export function elapsedLabel(milliseconds: number): string {
+  if (milliseconds < 1000) return "меньше 1 с";
+  const seconds = Math.round(milliseconds / 1000);
+  return seconds < 60
+    ? `${seconds} с`
+    : `${Math.floor(seconds / 60)} мин ${seconds % 60} с`;
+}

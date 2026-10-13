@@ -2864,3 +2864,33 @@ kbd {
   animation: none !important;
   transform: rotate(var(--workbench-angle, 0deg));
 }
+.model-picker-notice {
+  font-size: 12px;
+  color: var(--secondary);
+  padding: 7px 9px;
+  line-height: 1.5;
+}
+.model-picker-notice > button {
+  margin-top: 6px;
+}
+/* Message metadata floats on hover instead of reserving an empty row. */
+.message {
+  position: relative;
+  margin-bottom: 26px;
+}
+.message header {
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translateY(-100%);
+  margin: 0;
+  padding: 2px 3px;
+  border-radius: 5px;
+}
+.message-user header {
+  display: flex;
+}
+.message:hover header,
+.message:focus-within header {
+  background: var(--surface);
+}

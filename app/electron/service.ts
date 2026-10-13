@@ -62,6 +62,7 @@ type Live = {
   remoteId?: string;
   generation: number;
   fingerprint: string;
+  transportFingerprint: string;
   hasContext: boolean;
   intentionalClose: boolean;
   assistantId?: string;
@@ -411,6 +412,7 @@ export class WorkbenchService {
   private retiring = new Set<Promise<void>>();
   private launches = new Set<string>();
   private configuring = new Set<string>();
+  private preparations = new Map<string, Promise<ConfigOption[]>>();
   private permissionWaiters = new Map<
     string,
     { sessionId: string; resolve: (result: any) => void }
@@ -932,6 +934,16 @@ export class WorkbenchService {
         });
       case "session.config":
         return this.setConfig(params);
+      case "session.prepare": {
+        const sessionId = text(params.id, "session id", 100);
+        const existing = this.preparations.get(sessionId);
+        if (existing) return existing;
+        const preparing = this.prepare(sessionId).finally(() =>
+          this.preparations.delete(sessionId),
+        );
+        this.preparations.set(sessionId, preparing);
+        return preparing;
+      }
       case "question.create":
         return this.createQuestion(params);
       case "question.wait": {
@@ -1125,7 +1137,11 @@ export class WorkbenchService {
       });
     }
   }
-  private fingerprint(state: Persisted, session: Session): string {
+  private fingerprint(
+    state: Persisted,
+    session: Session,
+    includeProfile = true,
+  ): string {
     const profile = state.profiles.find((p) => p.id === session.profileId);
     return createHash("sha256")
       .update(
@@ -1136,8 +1152,7 @@ export class WorkbenchService {
             : undefined,
           state.settings.cliArgs,
           session.model,
-          session.profileId,
-          profile?.prompt,
+          ...(includeProfile ? [session.profileId, profile?.prompt] : []),
         ]),
       )
       .digest("hex");
@@ -1196,6 +1211,17 @@ export class WorkbenchService {
         throw new Error("Project folder is unavailable.");
       const fingerprint = this.fingerprint(captured, session);
       live = this.live.get(sessionId);
+      // First-turn automatic routing does not invalidate an empty ACP session.
+      // Its role instructions have not been sent yet; preserve the discovered catalog.
+      if (
+        live &&
+        !live.hasContext &&
+        live.client.alive &&
+        live.transportFingerprint ===
+          this.fingerprint(captured, session, false) &&
+        !captured._controls[sessionId].handoff
+      )
+        live.fingerprint = fingerprint;
       if (
         live &&
         (!live.client.alive ||
@@ -1251,6 +1277,7 @@ export class WorkbenchService {
             client: connection,
             generation,
             fingerprint,
+            transportFingerprint: this.fingerprint(captured, session, false),
             hasContext: false,
             intentionalClose: false,
             cancelled: false,
@@ -1612,6 +1639,114 @@ export class WorkbenchService {
     });
     for (const [configId, value] of Object.entries(desired))
       if (!models.has(configId)) await applyOne(configId, value);
+  }
+  /** Initialize a real ACP session/catalog without sending a model prompt. */
+  private async prepare(sessionId: string): Promise<ConfigOption[]> {
+    const state = this.store.read(),
+      session = present(state.sessions, sessionId, "Session");
+    this.ensureWritable(session, state);
+    if (
+      active(session) ||
+      this.launches.has(sessionId) ||
+      this.configuring.has(sessionId)
+    )
+      throw new Error(
+        "Wait for the current operation before connecting the model catalog.",
+      );
+    this.configuring.add(sessionId);
+    let live: Live | undefined;
+    try {
+      const executable =
+        state.settings.cliPath === "@bundled"
+          ? this.options.bundledCliPath
+          : state.settings.cliPath;
+      if (!executable)
+        throw new Error("Select an available CLI in Settings first.");
+      const task = present(state.tasks, session.taskId, "Task"),
+        project = present(state.projects, task.projectId, "Project");
+      const cwd = await fs.realpath(project.path),
+        fingerprint = this.fingerprint(state, session);
+      live = this.live.get(sessionId);
+      if (
+        live?.client.alive &&
+        live.remoteId &&
+        live.fingerprint === fingerprint
+      )
+        return (
+          present(this.store.read().sessions, sessionId, "Session")
+            .configOptions || []
+        );
+      if (live) {
+        live.intentionalClose = true;
+        this.live.delete(sessionId);
+        await live.client.dispose();
+      }
+      if (this.disposed) throw new Error("Application is closing.");
+      const generation = await this.change(
+        (s) => ++s._controls[sessionId].generation,
+      );
+      const args = [...state.settings.cliArgs];
+      if (
+        session.model &&
+        !args.some(
+          (a) => a === "--model" || a === "-m" || a.startsWith("--model="),
+        )
+      )
+        args.push("--model", session.model);
+      const connection = new AcpConnection({
+        executable,
+        args,
+        cwd,
+        onUpdate: (p) => this.acceptUpdate(sessionId, generation, p),
+        onPermission: (p) => this.requestPermission(sessionId, generation, p),
+        onDiagnostic: (t) => {
+          void this.diagnostic(t);
+        },
+        onClose: (e) => {
+          const current = this.live.get(sessionId);
+          if (current?.generation === generation && !current.intentionalClose)
+            void this.connectionClosed(sessionId, generation, e);
+        },
+      });
+      live = {
+        client: connection,
+        generation,
+        fingerprint,
+        transportFingerprint: this.fingerprint(state, session, false),
+        hasContext: false,
+        intentionalClose: false,
+        cancelled: false,
+      };
+      this.live.set(sessionId, live);
+      await connection.start();
+      const servers =
+        (await this.options.mcpServersForSession?.(sessionId)) || [];
+      if (!Array.isArray(servers))
+        throw new Error("Invalid host MCP server registry.");
+      const created = await connection.newSession({ cwd, mcpServers: servers });
+      if (this.disposed) throw new Error("Application is closing.");
+      live.remoteId = created.sessionId;
+      await this.change((s) => {
+        const current = present(s.sessions, sessionId, "Session");
+        current.configOptions = configOptions(created.configOptions);
+        current.context = {};
+      });
+      await this.applyConfig(sessionId, live, session.reasoning);
+      return (
+        present(this.store.read().sessions, sessionId, "Session")
+          .configOptions || []
+      );
+    } catch (error) {
+      if (live) {
+        live.intentionalClose = true;
+        await live.client.dispose();
+        if (this.live.get(sessionId) === live) this.live.delete(sessionId);
+      }
+      throw error;
+    } finally {
+      this.configuring.delete(sessionId);
+      this.schedulePump();
+    }
   }
   private async setConfig(params: Record<string, any>): Promise<any> {
     const result = await this.change((state) => {

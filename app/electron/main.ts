@@ -27,7 +27,10 @@ import type { HostEvent } from "../shared/types";
 if (process.env.WORKBENCH_DATA_DIR)
   app.setPath("userData", path.resolve(process.env.WORKBENCH_DATA_DIR));
 // Keep IDE preview origins isolated while resolving their reserved local subdomains.
-app.commandLine.appendSwitch('host-resolver-rules', 'MAP *.webview.localhost 127.0.0.1');
+app.commandLine.appendSwitch(
+  "host-resolver-rules",
+  "MAP *.webview.localhost 127.0.0.1",
+);
 const single = app.requestSingleInstanceLock();
 if (!single) app.quit();
 let service: WorkbenchService,
@@ -52,8 +55,7 @@ const emit = (event: HostEvent) => {
   for (const window of windows)
     if (
       !window.isDestroyed() &&
-      (event.targetWindowId === undefined ||
-        event.targetWindowId === window.id)
+      (event.targetWindowId === undefined || event.targetWindowId === window.id)
     )
       window.webContents.send("workbench:event", event);
 };
@@ -195,8 +197,7 @@ async function invoke(
   window: BrowserWindow,
   agentSession?: string,
 ): Promise<any> {
-  if (method === "workbench.reference")
-    return readReference(resourceRoot, p);
+  if (method === "workbench.reference") return readReference(resourceRoot, p);
   if (method === "session.attach") {
     sessionProject(p.id);
     const owner = sessionOwners.get(p.id);
@@ -204,7 +205,10 @@ async function invoke(
       sessionOwners.set(p.id, window.id);
     return { ownerWindowId: sessionOwners.get(p.id) };
   }
-  if (!agentSession && ["session.send", "session.config"].includes(method)) {
+  if (
+    !agentSession &&
+    ["session.send", "session.config", "session.prepare"].includes(method)
+  ) {
     sessionProject(p.id);
     sessionOwners.set(p.id, window.id);
   }
@@ -230,22 +234,34 @@ async function invoke(
       });
     return result;
   }
-  if (method.startsWith('ide.')) {
+  if (method.startsWith("ide.")) {
     if (agentSession) {
       const owner = sessionProject(agentSession);
-      if (p.projectId && p.projectId !== owner.id) throw new Error('Нельзя управлять IDE другого проекта');
+      if (p.projectId && p.projectId !== owner.id)
+        throw new Error("Нельзя управлять IDE другого проекта");
       p = { ...p, projectId: owner.id };
-      if (method === 'ide.list') return ide.pool.snapshot().filter(entry => entry.projectIds.includes(owner.id));
+      if (method === "ide.list")
+        return ide.pool
+          .snapshot()
+          .filter((entry) => entry.projectIds.includes(owner.id));
     }
-    if (method === 'ide.reveal') {
+    if (method === "ide.reveal") {
       project(p.projectId);
-      emit({ type: 'ide.reveal', targetWindowId: window.id, payload: { projectId: p.projectId } });
+      emit({
+        type: "ide.reveal",
+        targetWindowId: window.id,
+        payload: { projectId: p.projectId },
+      });
       return { requested: true };
     }
     const result = await ide.invoke(method, p, window);
-    if (method === 'ide.capture' && p.taskId) await service.invoke('artifact.register', {
-      taskId: p.taskId, path: result.path, kind: 'image', name: 'Снимок IDE',
-    });
+    if (method === "ide.capture" && p.taskId)
+      await service.invoke("artifact.register", {
+        taskId: p.taskId,
+        path: result.path,
+        kind: "image",
+        name: "Снимок IDE",
+      });
     return result;
   }
   if (agentSession) {
@@ -435,16 +451,32 @@ async function start() {
     mcpServersForSession: (id) => mcp.binding(id),
   });
   await service.init();
-  const ideRuntimeRoot = path.join(resourceRoot, 'ide');
-  const ideNodeLock = await fs.readFile(path.join(ideRuntimeRoot, 'node-runtime-lock.json'), 'utf8')
-    .then(value => JSON.parse(value)).catch(() => ({ version: '' }));
-  const nodePlatform = process.platform === 'win32' ? 'win' : process.platform;
+  const ideRuntimeRoot = path.join(resourceRoot, "ide");
+  const ideNodeLock = await fs
+    .readFile(path.join(ideRuntimeRoot, "node-runtime-lock.json"), "utf8")
+    .then((value) => JSON.parse(value))
+    .catch(() => ({ version: "" }));
+  const nodePlatform = process.platform === "win32" ? "win" : process.platform;
   const ideNodeDirectory = `node-${ideNodeLock.version}-${nodePlatform}-${process.arch}`;
-  const ideNodeRoot = app.isPackaged ? path.join(process.resourcesPath, 'ide-node') : path.resolve(__dirname, '../runtime/ide-node');
-  ide = new IdeService({ runtimeRoot: ideRuntimeRoot,
-    nodePath: process.env.WORKBENCH_IDE_NODE || path.join(ideNodeRoot, ideNodeDirectory, process.platform === 'win32' ? 'node.exe' : 'bin/node'),
-    toolchainsRoot: app.isPackaged ? path.join(process.resourcesPath, 'ide-tools') : path.resolve(__dirname, '../runtime/ide-tools'),
-    dataDir, project, emit });
+  const ideNodeRoot = app.isPackaged
+    ? path.join(process.resourcesPath, "ide-node")
+    : path.resolve(__dirname, "../runtime/ide-node");
+  ide = new IdeService({
+    runtimeRoot: ideRuntimeRoot,
+    nodePath:
+      process.env.WORKBENCH_IDE_NODE ||
+      path.join(
+        ideNodeRoot,
+        ideNodeDirectory,
+        process.platform === "win32" ? "node.exe" : "bin/node",
+      ),
+    toolchainsRoot: app.isPackaged
+      ? path.join(process.resourcesPath, "ide-tools")
+      : path.resolve(__dirname, "../runtime/ide-tools"),
+    dataDir,
+    project,
+    emit,
+  });
   mcp = new UiMcpServer(
     () => service.snapshot(),
     (method, p, sessionId) => {

@@ -5,6 +5,23 @@ import os from "node:os";
 import { Workspace, scopedPath, isWithin } from "../electron/workspace";
 
 describe("workspace boundary and concurrent changes", () => {
+  it("a new non-Git project returns explicit absence instead of a background error", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "wb-no-git-"));
+    try {
+      const w = new Workspace(
+        () => ({ id: "p", name: "New", path: root, createdAt: "" }),
+        async () => {},
+      );
+      const status = await w.invoke("git.status", { projectId: "p" });
+      expect(status).toMatchObject({
+        repository: false,
+        branch: "",
+        changes: [],
+      });
+    } finally {
+      await fs.rm(root, { recursive: true, force: true });
+    }
+  });
   it("rejects parent traversal and enforces optimistic save", async () => {
     const base = await fs.mkdtemp(path.join(os.tmpdir(), "wb-workspace-"));
     try {

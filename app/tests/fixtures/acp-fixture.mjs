@@ -13,7 +13,7 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
   if(request.id==='permission-fixture' && request.result){log({type:'permission',result:request.result}); if(pending){result(pending.id,{stopReason:'end_turn'});pending=undefined;}return;}
   switch(request.method){
     case 'initialize':result(request.id,{protocolVersion:1,agentCapabilities:{},agentInfo:{name:'fixture',version:'1'}});break;
-    case 'session/new':current='session-'+process.pid;result(request.id,{sessionId:current,configOptions:configs()});break;
+    case 'session/new':current='session-'+process.pid;log({type:'session_new',pid:process.pid});result(request.id,{sessionId:current,configOptions:configs()});break;
     case 'session/set_config_option':
       if(request.params.configId==='model')model=request.params.value;else reasoning=request.params.value;
       log({type:'config_start',id:request.params.configId});
@@ -38,7 +38,7 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
         update({...complete,toolCallId:'remote',_meta:{...complete._meta,artifacts:[{title:'Remote',storage:'external_url',url:'https://example.test'}]}});
         update({sessionUpdate:'tool_call_update',toolCallId:'title-only',title:'RecordArtifact: Recording artifact preview.html',status:'completed',rawInput:{workspacePath:'preview.html'}});
       }
-      setTimeout(()=>{if(pending?.id!==request.id)return;update({sessionUpdate:'agent_message_chunk',content:{type:'text',text:'done:'+command}});result(request.id,{stopReason:'end_turn'});pending=undefined;},command.startsWith('hold')?450:30);break;
+      setTimeout(()=>{if(pending?.id!==request.id)return;update({sessionUpdate:'agent_message_chunk',content:{type:'text',text:'done:'+command}});result(request.id,{stopReason:'end_turn'});pending=undefined;},command.startsWith('hold ui')?120000:command.startsWith('hold')?450:30);break;
     }
     case 'session/cancel':if(pending){const capture=pending;log({type:'cancel',command:capture.command});setTimeout(()=>{if(pending===capture){result(capture.id,{stopReason:'cancelled'});pending=undefined;}},140);}break;
   }

@@ -33,6 +33,7 @@ import {
 import { Workspace, type PanelId } from "./Workspace";
 import { ErrorBoundary } from "./ErrorBoundary";
 import {
+  elapsedLabel,
   profileName,
   shortToolTitle,
   toolComplete,
@@ -928,7 +929,11 @@ function Chat({
     void call("git.status", { projectId: project.id })
       .then((result) => {
         if (request === branchRequest.current)
-          setBranch(result?.branch || "Без ветки");
+          setBranch(
+            result?.repository === false
+              ? "Не Git"
+              : result?.branch || "Без ветки",
+          );
       })
       .catch(() => {
         if (request === branchRequest.current) setBranch("Не Git");
@@ -999,7 +1004,7 @@ function Chat({
                 {m.outcome && (
                   <footer className="turn-outcome">
                     {m.outcome === "completed" && m.elapsedMs !== undefined
-                      ? `Выполнено за ${m.elapsedMs < 60000 ? `${Math.max(1, Math.round(m.elapsedMs / 1000))} с` : `${Math.floor(m.elapsedMs / 60000)} мин ${Math.round((m.elapsedMs % 60000) / 1000)} с`}`
+                      ? `Выполнено за ${elapsedLabel(m.elapsedMs)}`
                       : m.outcome === "cancelled"
                         ? "Остановлено"
                         : "Результат требует проверки"}
@@ -1196,6 +1201,10 @@ function Chat({
               reasoning={session.reasoning}
               disabled={busy(session.status)}
               onSettings={onSettings}
+              onPrepare={async () => {
+                await call("session.prepare", { id: session.id });
+                await refresh();
+              }}
               onContext={() => setContextOpen(true)}
               onSelect={(configId, value) =>
                 run("session.config", { id: session.id, configId, value })
