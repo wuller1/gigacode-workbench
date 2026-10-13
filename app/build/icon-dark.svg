@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="GigaCode Workbench — тёмная тема">
+  <rect x="24" y="24" width="464" height="464" rx="116" fill="#17241e"/>
+  <rect x="25.5" y="25.5" width="461" height="461" rx="114.5" fill="none" stroke="#ffffff" stroke-opacity=".1" stroke-width="3"/>
+  <path d="M126 150 205 349c12 31 48 34 66 7l28-43" fill="none" stroke="#72a88a" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m386 150-79 199c-12 31-48 34-66 7l-28-43" fill="none" stroke="#c9edd4" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m234 263 22-28 22 28-22 29z" fill="#f6fbf7"/>
+</svg>

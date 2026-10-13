@@ -282,7 +282,7 @@ function Application() {
   if (!state)
     return (
       <div className="startup">
-        <Icon name="chat" size={32} />
+        <span className="brand-mark brand-mark-large" aria-hidden="true" />
         <h1>GigaCode Workbench</h1>
         {error ? (
           <>
@@ -303,6 +303,7 @@ function Application() {
             label={sidebar ? "Скрыть проекты" : "Показать проекты"}
             onClick={() => setSidebar(!sidebar)}
           />
+          <span className="brand-mark" aria-hidden="true" />
           <span className="wordmark">
             GigaCode <span>Workbench</span>
           </span>

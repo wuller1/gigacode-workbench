@@ -293,6 +293,19 @@ kbd {
 .window-controls {
   -webkit-app-region: no-drag;
 }
+.brand-mark {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  background: center / contain no-repeat url("/icons/brand-light.svg");
+}
+:root[data-theme="dark"] .brand-mark {
+  background-image: url("/icons/brand-dark.svg");
+}
+.brand-mark-large {
+  width: 64px;
+  height: 64px;
+}
 .wordmark {
   font-size: 12px;
   font-weight: 650;
