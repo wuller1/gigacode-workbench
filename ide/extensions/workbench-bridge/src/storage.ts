@@ -1,3 +1,4 @@
+import { recoverLayout } from './layout-recovery';
 import { injectable } from '@theia/core/shared/inversify';
 import { LocalStorageService } from '@theia/core/lib/browser/storage-service';
 /** Keep Theia's existing workspace-prefix semantics without tying state to an ephemeral HTTP port. */
@@ -9,7 +10,13 @@ export class DiskStorageService extends LocalStorageService {
         await this.writes;
         const response = await fetch('/workbench/storage?key=' + encodeURIComponent(key));
         if (!response.ok) throw new Error('IDE_STORAGE_READ_FAILED');
-        const envelope = await response.json(); return 'data' in envelope ? envelope.data : defaultValue;
+        const envelope = await response.json();
+        if (envelope.backendChanged && (key.endsWith(':layout') || key.endsWith(':perspective-layouts'))) {
+            const restored = recoverLayout(envelope.data);
+            if (restored.freshTerminals || restored.discardedTaskTerminals) console.warn('IDE_BACKEND_CHANGED_LAYOUT', JSON.stringify({ freshTerminals: restored.freshTerminals, discardedTaskTerminals: restored.discardedTaskTerminals }));
+            return restored.value === undefined ? defaultValue : restored.value as T;
+        }
+        return 'data' in envelope ? envelope.data : defaultValue;
     }
     override setData<T>(key: string, data?: T): Promise<void> {
         const body = JSON.stringify({ key, data });

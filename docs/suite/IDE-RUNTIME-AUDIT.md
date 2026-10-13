@@ -22,6 +22,10 @@
 | Перенос | Локальный Node ABI и глобальные SDK делали сборку зависимой от компьютера | Независимый закреплённый Node, platform VSIX, managed JDK/Maven, hashes, installer staging, Windows workflow |
 | Перенос | Старые manifest hashes и acceptance IDs ломали общий checker | Обновлены реальные хеши/PS1 mapping, согласованы ID, проверяется фактическая motion policy, а не декоративный marker |
 
+Дополнительная итерация: реальные React TSX diagnostics → исправление → сборка TypeScript 6 → React DOM render; запрет скрытого saveAll перед агентским запуском; native refactoring preview возвращается как pending, а не applied; opaque revision привязан к жизни document model, включая close/reopen при одинаковом numeric version. Текущий локальный результат: 85 unit/protocol checks, 10 modal/focus cases и 41 live Electron/IDE checks.
+
+Первый Windows CI прошёл установку, legacy PowerShell 5.1, unit/build, Markdown, TypeScript/semantic edits, tasks и Node DAP, затем обнаружил timeout после backend restart. Добавлены backend epoch для layout, свежие интерактивные терминалы вместо чужих process IDs, исключение task terminals из повторного запуска и диагностические artifacts. Подтверждение исправления на Windows ожидается отдельно.
+
 ## Границы результата
 
 Это рабочая интеграция полноценного open-source IDE engine, а не сертификат полного совпадения с IntelliJ IDEA Ultimate. Глубокие Spring/JPA/JPQL/ORM inspections, все advanced refactorings, profiler/heap analyzer, точное plugin parity, удалённые SDK/контейнеры и все 151 acceptance unit требуют отдельных сценариев. Реестр [IDE-ULTIMATE-PARITY](IDE-ULTIMATE-PARITY.md) сохраняет незакрытые проверки.

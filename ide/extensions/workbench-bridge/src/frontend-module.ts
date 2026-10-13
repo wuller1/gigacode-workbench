@@ -65,7 +65,7 @@ class WorkbenchFrontend implements FrontendApplicationContribution {
     }
     private snapshot(widget: EditorWidget, text = false): Record<string, unknown> {
         const doc = widget.editor.document;
-        return { id: widget.id, uri: doc.uri, version: doc.version, revision: revision(doc.version), languageId: doc.languageId,
+        return { id: widget.id, uri: doc.uri, version: doc.version, revision: revision(doc), languageId: doc.languageId,
             dirty: doc.dirty, lineCount: doc.lineCount, selection: widget.editor.selection,
             ...(text ? { text: doc.getText() } : {}) };
     }
@@ -139,7 +139,7 @@ class WorkbenchFrontend implements FrontendApplicationContribution {
                 const previous = this.recovery.receipt(p.operationId, request);
                 if (previous) { if ((previous as any).pending) throw new Error('OPERATION_OUTCOME_UNKNOWN: inspect current buffer before proceeding'); return { ...previous as any, alreadyApplied: true }; }
                 const widget = await this.editor(p);
-                if (!Number.isInteger(p.expectedVersion) || widget.editor.document.version !== p.expectedVersion || p.expectedRevision !== revision(widget.editor.document.version)) throw new Error('STALE_REVISION');
+                if (!Number.isInteger(p.expectedVersion) || widget.editor.document.version !== p.expectedVersion || p.expectedRevision !== revision(widget.editor.document)) throw new Error('STALE_REVISION');
                 const edits = this.validEdits(widget, p.edits);
                 await this.recovery.record(p.operationId, request, { pending: true });
                 if (!widget.editor.executeEdits(edits)) throw new Error('EDIT_REJECTED');
@@ -150,7 +150,7 @@ class WorkbenchFrontend implements FrontendApplicationContribution {
             }
             case 'save': {
                 const widget = await this.editor(p);
-                if (p.expectedVersion !== widget.editor.document.version || p.expectedRevision !== revision(widget.editor.document.version)) throw new Error('STALE_REVISION');
+                if (p.expectedVersion !== widget.editor.document.version || p.expectedRevision !== revision(widget.editor.document)) throw new Error('STALE_REVISION');
                 await widget.saveable.save();
                 return this.snapshot(widget);
             }

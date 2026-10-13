@@ -87,9 +87,17 @@ const mavenDirectory = path.join(directory, 'maven');
 const mavenArchive = await download(maven, 'sha512', maven.sha512);
 await extract(mavenArchive, mavenDirectory);
 const mavenHome = path.join(mavenDirectory, `apache-maven-${maven.version}`);
+let sourceArchive;
+if (java.correspondingSource) {
+    const source = { ...java.correspondingSource, name: decodeURIComponent(new URL(java.correspondingSource.url).pathname.split('/').at(-1)) };
+    const downloaded = await download(source, 'sha256', source.sha256);
+    const target = path.join(directory, 'sources', source.name);
+    await fs.mkdir(path.dirname(target), { recursive: true }); await fs.copyFile(downloaded,target);
+    sourceArchive = path.relative(directory,target);
+}
 const bindingsFile = path.join(directory, 'bindings.json');
 const bindings = JSON.parse(await fs.readFile(bindingsFile, 'utf8').catch(() => '{}'));
 bindings[platform] = { javaHome: path.relative(directory, javaHome), mavenHome: path.relative(directory, mavenHome),
-    javaVersion: java.version, mavenVersion: maven.version };
+    javaVersion: java.version, mavenVersion: maven.version, sourceArchive };
 await fs.writeFile(bindingsFile, JSON.stringify(bindings, null, 2) + '\n');
 console.log(`Managed Java ${java.version} and Maven ${maven.version} verified for ${platform}; system defaults unchanged.`);

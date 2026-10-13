@@ -1,4 +1,5 @@
 import { injectable, inject } from '@theia/core/shared/inversify';
+import { EditorManager } from '@theia/editor/lib/browser/editor-manager';
 import { TestService, TestItem, TestRunProfileKind } from '@theia/test/lib/browser/test-service';
 import { OutputChannelManager } from '@theia/output/lib/browser/output-channel';
 import { ResourceProvider } from '@theia/core/lib/common/resource';
@@ -11,6 +12,7 @@ import { DebugSessionManager } from '@theia/debug/lib/browser/debug-session-mana
 /** Structured views of the very same test/task/debug services used by the native IDE. */
 @injectable()
 export class ExecutionService {
+    @inject(EditorManager) private readonly editors!: EditorManager;
     @inject(OutputChannelManager) private readonly output!: OutputChannelManager;
     @inject(ResourceProvider) private readonly resources!: ResourceProvider;
     @inject(TerminalService) private readonly terminals!: TerminalService;
@@ -35,6 +37,7 @@ export class ExecutionService {
             const terminal = this.terminals.getById(p.terminalId); if (!terminal) throw new Error('TERMINAL_NOT_FOUND');
             return { id: terminal.id, label: terminal.title.label, output: terminal.buffer.getLines(Math.max(0, terminal.buffer.length - 200), 200, true).join('\n').slice(-Math.min(100_000,Number(p.limit)||20_000)) };
         }
+        if (['tests.run','tasks.run','debug.start'].includes(method)) { const dirty = this.editors.all.filter(widget => widget.editor.document.dirty); if (dirty.length) throw new Error('UNSAVED_DOCUMENTS: save only task-relevant files at their current revisions before running; never save unrelated edits to bypass this check. ' + JSON.stringify(dirty.slice(0,20).map(widget => widget.editor.document.uri))); }
         if (method === 'tests.list') return { refreshing: this.tests.isRefreshing, controllers: this.tests.getControllers().filter(controller => !p.controllerId || controller.id === p.controllerId).map(controller => ({
             id: controller.id, label: controller.label, profiles: controller.testRunProfiles.map(profile => ({ label: profile.label, kind: profile.kind, isDefault: profile.isDefault })),
             totalTests: this.allTests(controller.tests).length, offset: Math.max(0,Number(p.offset)||0), tests: this.allTests(controller.tests).slice(Math.max(0,Number(p.offset)||0),Math.max(0,Number(p.offset)||0)+this.pageLimit(p)).map(item => ({ id: item.id, label: item.label, uri: item.uri?.toString(), range: item.range, parentId: item.parent?.id, busy: item.busy, error: item.error })),
@@ -77,7 +80,8 @@ export class ExecutionService {
         if (method === 'debug.start') {
             const choices = [...await this.debugConfigurations.supported].filter(option => option.name === p.name);
             if (choices.length !== 1) throw new Error('DEBUG_CONFIGURATION_UNAVAILABLE: ' + JSON.stringify([...this.debugConfigurations.all].map(option => option.name)));
-            const session = await this.debug.start(choices[0]); return { started: Boolean(session), requiresReadback: true }; }
+            const selected = choices[0];
+            const session = await this.debug.start(selected.configuration ? { ...selected, configuration: { ...selected.configuration, suppressSaveBeforeStart: true } } : selected); return { started: Boolean(session), requiresReadback: true }; }
         const session = this.debug.getSession(p.sessionId) || (!p.sessionId ? this.debug.currentSession : undefined);
         if (!session) throw new Error('DEBUG_SESSION_NOT_FOUND');
         if (method === 'debug.stop') { await this.debug.terminateSession(session); return { stopped: true }; }

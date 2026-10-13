@@ -13,6 +13,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'workbench-ide-live-'));
 const fixture = path.join(temporary, 'project');
 await fs.mkdir(path.join(fixture, 'src'), { recursive: true });
+await fs.writeFile(path.join(fixture,'.gitignore'),'.venv/\nnode_modules/\ndist/\njava-maven/target/\n');
 await fs.writeFile(path.join(fixture, 'package.json'), JSON.stringify({ name: 'ide-fixture', private: true, type: 'module', scripts: { test: 'node --test' } }));
 await fs.writeFile(path.join(fixture, 'tsconfig.json'), JSON.stringify({ compilerOptions: { strict: true, target: 'ES2022', module: 'NodeNext', moduleResolution: 'NodeNext', noEmit: true }, include: ['src/**/*.ts'] }));
 await fs.writeFile(path.join(fixture, 'src/greet.ts'), 'export function greet(name: string): string {\n  return `Hello, ${name}`;\n}\n');
@@ -76,6 +77,15 @@ try {
     await fs.writeFile(path.join(temporary,'timeout-'+name.replaceAll(/[^a-zA-Z0-9]+/g,'-')+'.json'),JSON.stringify(value,null,2));
     throw new Error(name + ' timeout; last=' + JSON.stringify(value).slice(0, 3000));
   }
+  await fs.writeFile(path.join(fixture,'src/lifetime.ts'),'export const value = 1;\n');
+  const firstModel=await invoke('ide.open',{path:'src/lifetime.ts'});
+  const closeAction=(await invoke('ide.commands',{query:'close.tab',limit:100})).find(command=>command.enabled);
+  if(!closeAction)throw new Error('Native close editor command unavailable');await invoke('ide.command',{id:closeAction.id,args:[]});
+  const reopened=await invoke('ide.open',{path:'src/lifetime.ts'});
+  if(reopened.revision===firstModel.revision)throw new Error('Closed/reopened model reused a stale revision');
+  try { await invoke('ide.edit',{path:'src/lifetime.ts',expectedVersion:reopened.version,expectedRevision:firstModel.revision,operationId:'live-closed-model-01',edits:[{range:{start:{line:0,character:0},end:{line:0,character:0}},newText:'bad'}]});throw new Error('Stale closed-model edit accepted'); } catch(error){if(!String(error).includes('STALE_REVISION'))throw error;}
+  record('Actual close/reopen rejects old model revision at matching numeric version',true);
+  await invoke('ide.open',{path:'src/main.ts'});
   const diagnostics = await until('TypeScript diagnostic', () => invoke('ide.diagnostics'), value => value.some(item => item.message.includes('not assignable')));
   record('Actual TypeScript diagnostic detects intentional error', diagnostics);
   const line = read.text.split('\n')[1];
@@ -103,6 +113,17 @@ try {
   const renamed = await invoke('ide.read', { path: 'src/main.ts' });
   if (!renamed.text.includes('welcome(') || renamed.text.includes('greet(')) throw new Error('Semantic rename did not update actual usage buffer');
   record('Semantic rename updates actual usages', applied);
+  if (!renamed.dirty || !(await fs.readFile(path.join(fixture,'src/main.ts'),'utf8')).includes('greet(')) throw new Error('Semantic edit silently saved an open buffer');
+  record('Semantic rename preserves dirty-buffer state instead of silently saving',true);
+  try { await invoke('ide.debug.start',{name:'Fixture Node Debug'}); throw new Error('Debugger silently saved dirty files'); } catch(error) { if(!String(error).includes('UNSAVED_DOCUMENTS'))throw error;record('Agent execution refuses dirty buffers without silently saving unrelated edits',true); }
+  const renameBuffer=await invoke('ide.read',{path:'src/greet.ts'});
+  const reviewed=await invoke('ide.semantic.rename',{path:'src/greet.ts',line:1,column:18,newName:'reviewedWelcome',expectedVersion:renameBuffer.version,expectedRevision:renameBuffer.revision});
+  const previewResult=await invoke('ide.semantic.apply',{proposalId:reviewed.proposalId,review:true});
+  if(previewResult.applied!==false || !previewResult.previewOpened || (await invoke('ide.read',{path:'src/greet.ts'})).text.includes('reviewedWelcome'))throw new Error('Opening preview was misreported as an applied refactoring');
+  record('Native refactoring preview is explicitly pending, not reported as applied',previewResult);
+  const discard=(await invoke('ide.commands',{query:'bulk-edit',limit:100})).find(command=>/discard/i.test(command.id));
+  if(!discard)throw new Error('Native preview discard action is missing');await invoke('ide.command',{id:discard.id,args:[]});
+  for(const file of ['src/main.ts','src/greet.ts']) { const buffer=await invoke('ide.read',{path:file}); await invoke('ide.save',{path:file,expectedVersion:buffer.version,expectedRevision:buffer.revision}); }
   const again = await invoke('ide.semantic.apply', { proposalId: proposal.proposalId });
   if (!again.alreadyApplied) throw new Error('Semantic proposal applied twice');
   const git = await exec('git', ['-C', fixture, 'diff', '--stat']);
@@ -116,6 +137,21 @@ try {
   }),frames=>frames.some(frame=>frame.text.includes('Live IDE fixture')));
   record('Actual isolated Markdown webview renders project content',preview.map(frame=>({text:frame.text.slice(0,200),isolatedOrigin:true})));
   if(process.argv.includes('--languages')) {
+    for(const dependency of ['react','react-dom','scheduler','csstype','@types/react','@types/react-dom']) await fs.cp(path.join(root,'node_modules',dependency),path.join(fixture,'node_modules',dependency),{recursive:true});
+    await fs.writeFile(path.join(fixture,'tsconfig.json'),JSON.stringify({compilerOptions:{strict:true,target:'ES2022',module:'NodeNext',moduleResolution:'NodeNext',jsx:'react-jsx',rootDir:'src',noEmit:true},include:['src/**/*']}));
+    await fs.writeFile(path.join(fixture,'src/Counter.tsx'),'import { useState } from "react";\ntype Props = { initial: number };\nexport function Counter({ initial }: Props) {\n  const [count,setCount] = useState(initial);\n  return <button onClick={() => setCount(count + 1)}>{count}</button>;\n}\nconst preview = <Counter initial="intentional error" />;\n');
+    const component=await invoke('ide.open',{path:'src/Counter.tsx'});if(component.languageId!=='typescriptreact')throw new Error('TSX language not registered');
+    await until('React TSX prop diagnostic',()=>invoke('ide.diagnostics'),items=>items.some(item=>item.uri.endsWith('/src/Counter.tsx')&&item.code==='2322'));
+    const componentBuffer=await invoke('ide.read',{path:'src/Counter.tsx'}),last=componentBuffer.text.split('\n')[6];
+    const fixed=await invoke('ide.edit',{path:'src/Counter.tsx',expectedVersion:componentBuffer.version,expectedRevision:componentBuffer.revision,operationId:'live-react-prop-fix-01',edits:[{range:{start:{line:6,character:0},end:{line:6,character:last.length}},newText:'const preview = <Counter initial={1} />;'}]});
+    await invoke('ide.save',{path:'src/Counter.tsx',expectedVersion:fixed.version,expectedRevision:fixed.revision});
+    await until('React TSX diagnostic clears',()=>invoke('ide.diagnostics'),items=>!items.some(item=>item.uri.endsWith('/src/Counter.tsx')&&item.severity===1));
+    const runtimeLock=JSON.parse(await fs.readFile(path.resolve(root,'../ide/node-runtime-lock.json'),'utf8'));
+    const pinnedNode=path.join(root,'runtime/ide-node','node-'+runtimeLock.version+'-'+(process.platform==='win32'?'win':process.platform)+'-'+process.arch,process.platform==='win32'?'node.exe':'bin/node');
+    await exec(pinnedNode,[path.join(root,'node_modules/typescript/bin/tsc'),'--project',path.join(fixture,'tsconfig.json'),'--noEmit','false','--outDir','dist'],{cwd:fixture});
+    const rendered=await exec(pinnedNode,['--input-type=module','-e','import {renderToString} from "react-dom/server";import {createElement} from "react";import {Counter} from "./dist/Counter.js";console.log(renderToString(createElement(Counter,{initial:1})));'],{cwd:fixture});
+    if(!rendered.stdout.includes('<button>1</button>'))throw new Error('Actual React component did not render');
+    record('Real React TSX diagnostic, repair, TypeScript build and React DOM render',rendered.stdout.trim());
     await invoke('ide.open',{path:'python/main.py'});
     const py = await until('Actual Pyright type diagnostic',()=>invoke('ide.diagnostics'),items=>items.some(item=>item.uri.endsWith('/python/main.py') && item.source === 'Pyright' && item.code === 'reportAssignmentType'),180_000);
     record('Real Pyright detects incompatible Python assignment',py.filter(item=>item.uri.endsWith('.py')));
@@ -256,8 +292,8 @@ try {
   if(application) {
     const channels=await application.evaluate(async ({webContents})=>{const view=webContents.getAllWebContents().find(v=>v.getURL().startsWith('http://localhost:'));if(!view)return [];const channels=await view.executeJavaScript('window.workbenchIDE.invoke("output")');const logs=[];for(const channel of channels)logs.push(await view.executeJavaScript('window.workbenchIDE.invoke("output",'+JSON.stringify({channel:channel.name,limit:12000})+')'));return logs;}).catch(error=>({error:String(error)}));
     await fs.writeFile(path.join(temporary,'native-output.json'),JSON.stringify(channels,null,2));
-    const native = await application.evaluate(async ({webContents})=>{const view=webContents.getAllWebContents().find(v=>v.getURL().startsWith('http://localhost:'));return view ? {text: await view.executeJavaScript('document.body.innerText.slice(-10000)')} : {};}).catch(()=>({})); await fs.writeFile(path.join(temporary,'native-error.json'), JSON.stringify(native,null,2)); console.error('NATIVE_ERROR',JSON.stringify(native).slice(-4000)); }
-  console.error('LIVE_IDE_FAILED', String(error), 'data:', temporary);
+    const native = await application.evaluate(async ({webContents})=>{const view=webContents.getAllWebContents().find(v=>v.getURL().startsWith('http://localhost:'));return view ? {status:await view.executeJavaScript('window.workbenchIDE?.invoke("status")').catch(e=>String(e)), text: await view.executeJavaScript('document.body.innerText.slice(-10000)')} : {};}).catch(()=>({})); await fs.writeFile(path.join(temporary,'native-error.json'), JSON.stringify(native,null,2)); console.error('NATIVE_ERROR',JSON.stringify(native).slice(-4000)); }
+  console.error('LIVE_IDE_FAILED', String(error), String(error?.stdout||'').slice(-5000), String(error?.stderr||'').slice(-5000), 'data:', temporary);
   await fs.writeFile(path.join(temporary, 'result.json'), JSON.stringify({ results, errors, failure: String(error), temporary }, null, 2));
   process.exitCode = 1;
 } finally {

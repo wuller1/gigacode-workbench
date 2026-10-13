@@ -1,6 +1,6 @@
 import { ContainerModule, injectable, inject } from '@theia/core/shared/inversify';
 import { BackendApplicationContribution, EarlyExpressMiddleware } from '@theia/core/lib/node/backend-application';
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { json } from 'express';
@@ -23,6 +23,7 @@ class ProtectedEnvironment extends EnvVariablesServerImpl {
 class WorkbenchBackend implements BackendApplicationContribution {
     @inject(EarlyExpressMiddleware) protected readonly middleware!: EarlyExpressMiddleware;
     private token = process.env.WORKBENCH_IDE_TOKEN || '';
+    private epoch = randomUUID();
     private authorized(req: IncomingMessage): boolean {
         const received = String(req.headers['x-workbench-ide-token'] || '');
         const origin = req.headers.origin;
@@ -73,12 +74,12 @@ class WorkbenchBackend implements BackendApplicationContribution {
         const keyFile = (key: unknown) => { if (typeof key !== 'string' || key.length > 2000) throw new Error('INVALID_STORAGE_KEY'); return path.join(storageDirectory, createHash('sha256').update(key).digest('hex') + '.json'); };
         let storageWrites: Promise<unknown> = Promise.resolve();
         app.get('/workbench/storage', async (req, res) => {
-            try { const target = keyFile(req.query.key); await storageWrites; const data = await fs.readFile(target, 'utf8').catch(error => { if (error.code === 'ENOENT') return '{}'; throw error; }); res.type('application/json').send(data); }
+            try { const target = keyFile(req.query.key); await storageWrites; const data = await fs.readFile(target, 'utf8').catch(error => { if (error.code === 'ENOENT') return '{}'; throw error; }); const stored = JSON.parse(data); res.json({ ...stored, backendChanged: stored.backendEpoch !== this.epoch }); }
             catch { res.status(500).send('Storage read failed'); }
         });
         app.post('/workbench/storage', json({ limit: '20mb' }), async (req,res) => {
             let target: string; try { target = keyFile(req.body?.key); } catch { res.status(400).send('Invalid storage key'); return; }
-            const contents = JSON.stringify('data' in req.body ? { data: req.body.data } : {});
+            const contents = JSON.stringify('data' in req.body ? { data: req.body.data, backendEpoch: this.epoch } : { backendEpoch: this.epoch });
             const next = storageWrites.catch(() => {}).then(async () => { await fs.mkdir(storageDirectory,{recursive:true}); await fs.writeFile(target + '.partial', contents, {mode:0o600}); await fs.rename(target + '.partial',target); });
             storageWrites=next;
             try { await next; res.json({persisted:true}); } catch { res.status(500).send('Storage write failed'); }

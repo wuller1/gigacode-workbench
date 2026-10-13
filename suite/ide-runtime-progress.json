@@ -1,6 +1,6 @@
 {
   "date": "2026-10-14",
-  "phase": "Implementation and local acceptance complete; Windows distribution verification pending",
+  "phase": "Local acceptance passed; Windows restart regression under verification",
   "runtimeAuthorized": true,
   "engine": "Theia 1.76.0",
   "vscodeApi": "1.139.0",
@@ -36,5 +36,17 @@
     "Per-feature Ultimate depth parity remains individually tracked; no blanket certificate",
     "Two simultaneous editable native windows for one dirty model are not implemented; ownership transfer preserves it"
   ],
-  "evidence": "docs/suite/evidence/ide-live-macos.json"
+  "evidence": "docs/suite/evidence/ide-live-macos.json",
+  "latestTests": {
+    "unitPassed": 85,
+    "paidSkipped": 2,
+    "modalFocusPassed": 10,
+    "liveElectronPassed": 41
+  },
+  "windowsFirstRun": {
+    "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38451576506",
+    "passed": "setup, legacy PS5.1, unit/build, native editor/semantic/Markdown/tasks/Node-debug",
+    "failed": "IDE frontend timeout after backend restart",
+    "fix": "backend-epoch terminal lifetime recovery; needs next Windows run"
+  }
 }

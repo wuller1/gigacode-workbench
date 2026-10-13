@@ -19,7 +19,7 @@ import { Range } from '@theia/monaco-editor-core/esm/vs/editor/common/core/range
 type FileSnapshot = { uri: string; exists: boolean; hash?: string; version?: number; dirty?: boolean };
 type Proposal = { id: string; label: string; edit: WorkspaceEdit; files: FileSnapshot[];
     createdAt: number; applied?: unknown; applying?: Promise<unknown> };
-type Action = { id: string; action: CodeAction; provider: CodeActionProvider; uri: string; version: number; createdAt: number };
+type Action = { id: string; action: CodeAction; provider: CodeActionProvider; uri: string; version: number; revision: string; createdAt: number };
 async function sha(bytes: Uint8Array): Promise<string> {
     const data = new Uint8Array(bytes);
     return [...new Uint8Array(await crypto.subtle.digest('SHA-256', data))].map(value => value.toString(16).padStart(2, '0')).join('');
@@ -41,8 +41,8 @@ export class SemanticService {
         // The public editor API narrows the type; its pinned implementation is the same internal TextModel.
         const model = widget.editor.getControl().getModel() as ITextModel | null;
         if (!model) throw new Error('MODEL_UNAVAILABLE');
-        if (p.expectedVersion !== undefined && (p.expectedVersion !== widget.editor.document.version || p.expectedRevision !== revision(widget.editor.document.version))) throw new Error('STALE_REVISION');
-        const position = new Position(Number(p.line || widget.editor.cursor.line + 1), Number(p.column || widget.editor.cursor.character + 1));
+        if (p.expectedVersion !== undefined && (p.expectedVersion !== widget.editor.document.version || p.expectedRevision !== revision(widget.editor.document))) throw new Error('STALE_REVISION');
+        const position = new Position(Number(p.line ?? (widget.editor.cursor.line + 1)), Number(p.column ?? (widget.editor.cursor.character + 1)));
         if (!Number.isInteger(position.lineNumber) || !Number.isInteger(position.column)
             || position.lineNumber < 1 || position.lineNumber > model.getLineCount()
             || position.column < 1 || position.column > model.getLineMaxColumn(position.lineNumber)) throw new Error('INVALID_POSITION');
@@ -106,8 +106,12 @@ export class SemanticService {
                     if (before.exists !== current.exists || before.hash !== current.hash || before.version !== current.version) throw new Error('STALE_REFACTOR_PREVIEW: ' + before.uri);
                 }
                 const result = await this.bulk.apply(proposal.edit, { label: proposal.label, code: 'workbench.semantic',
-                    showPreview: p.review === true, respectAutoSaveConfig: true, confirmBeforeUndo: true });
+                    showPreview: p.review === true, respectAutoSaveConfig: false, confirmBeforeUndo: true });
                 if (!result.isApplied) throw new Error('REFACTOR_NOT_APPLIED');
+                if (p.review === true || proposal.edit.edits.some(item => item.metadata?.needsConfirmation)) return { proposalId: proposal.id, previewOpened: true, applied: false, requiresReadback: true, requiresUserAction: true };
+                let changed = false;
+                for (const before of proposal.files) { const after = await this.fingerprint(before.uri); if (before.exists !== after.exists || before.hash !== after.hash || before.version !== after.version) changed = true; }
+                if (!changed) throw new Error('REFACTOR_NO_OBSERVED_CHANGES');
                 const receipt = { proposalId: proposal.id, label: proposal.label, applied: true,
                     summary: result.ariaSummary, files: proposal.files.map(file => file.uri), requiresBuildAndTests: true };
                 proposal.applied = receipt; return receipt;
@@ -116,7 +120,7 @@ export class SemanticService {
         }
         if (method === 'action.preview' || method === 'action.run') {
             const record = this.actions.get(p.actionId); if (!record) throw new Error('CODE_ACTION_EXPIRED');
-            const { widget } = await this.target({ uri: record.uri, expectedVersion: record.version, expectedRevision: revision(record.version) });
+            const { widget } = await this.target({ uri: record.uri, expectedVersion: record.version, expectedRevision: record.revision });
             if (record.provider.resolveCodeAction) record.action = await record.provider.resolveCodeAction(record.action, CancellationToken.None) || record.action;
             if (widget.editor.document.version !== record.version) throw new Error('STALE_REVISION');
             if (record.action.edit) return this.proposal(record.action.edit, record.action.title);
@@ -173,7 +177,7 @@ export class SemanticService {
                 if (!list) continue;
                 this.actionLists.push(list);
                 for (const action of list.actions) {
-                    const id = crypto.randomUUID(); this.actions.set(id, { id, action, provider, uri: model.uri.toString(), version, createdAt: Date.now() });
+                    const id = crypto.randomUUID(); this.actions.set(id, { id, action, provider, uri: model.uri.toString(), version, revision: revision(widget.editor.document), createdAt: Date.now() });
                     output.push({ actionId: id, title: action.title, kind: action.kind, preferred: action.isPreferred,
                         disabled: action.disabled, hasEdit: Boolean(action.edit), commandId: action.command?.id });
                 }
