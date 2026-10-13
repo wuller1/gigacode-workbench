@@ -8,7 +8,10 @@
     "build:bridge": "tsc -p extensions/workbench-bridge",
     "build": "npm run build:bridge && theia build --mode production",
     "start": "theia start --hostname=127.0.0.1 --port=0 --plugins=local-dir:plugins",
-    "plugins": "node tools/install-plugins.mjs"
+    "plugins": "node tools/install-plugins.mjs",
+    "postinstall": "node tools/harden-dependencies.mjs",
+    "prebuild": "node tools/harden-dependencies.mjs",
+    "test:dependencies": "node --test tools/test-dependencies.mjs"
   },
   "dependencies": {
     "@theia/core": "1.76.0",
@@ -41,7 +44,8 @@
     "@theia/output": "1.76.0",
     "@theia/console": "1.76.0",
     "@theia/getting-started": "1.76.0",
-    "gigacode-ide-bridge": "file:extensions/workbench-bridge"
+    "gigacode-ide-bridge": "file:extensions/workbench-bridge",
+    "decompress": "file:extensions/decompress-compat"
   },
   "devDependencies": {
     "@theia/cli": "1.76.0",
@@ -68,6 +72,20 @@
           "terminal.integrated.fontSize": 13
         }
       }
+    }
+  },
+  "overrides": {
+    "decompress": "$decompress",
+    "dompurify": "3.4.17",
+    "react-tooltip": {
+      "uuid": "11.1.1"
+    },
+    "trash": {
+      "uuid": "11.1.1"
+    },
+    "mocha": {
+      "diff": "8.0.3",
+      "serialize-javascript": "7.1.2"
     }
   }
 }

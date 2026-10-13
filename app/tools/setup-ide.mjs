@@ -17,6 +17,7 @@ async function run(args) {
 if (process.argv.includes('--offline')) {
   await run([npm,'ci','--include=optional','--offline']);
 } else await run([npm,'ci','--include=optional']);
+await run([npm, 'run', 'test:dependencies']);
 await run(['tools/install-plugins.mjs']);
 await run(['tools/toolchains.mjs']);
 await run([npm,'run','build']);

@@ -1,0 +1,12 @@
+{
+  "name": "@gigacode-workbench/decompress-compat",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "description": "CommonJS compatibility adapter for the maintained archive extractor used by Theia",
+  "main": "index.cjs",
+  "files": ["index.cjs", "LICENSE"],
+  "dependencies": {
+    "@xhmikosr/decompress": "11.1.4"
+  }
+}

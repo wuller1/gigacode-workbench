@@ -2,7 +2,9 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { hardenIdeDependencies } from '../../ide/tools/harden-dependencies.mjs';
 const app = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'), ide=path.resolve(app,'../ide');
+await hardenIdeDependencies(ide);
 const stage=path.join(app,'runtime/.ide-package');
 const lock=JSON.parse(await fs.readFile(path.join(ide,'node-runtime-lock.json'),'utf8'));
 const platform=`${process.platform}-${process.arch}`;

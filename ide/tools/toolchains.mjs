@@ -85,8 +85,45 @@ if (candidates.length !== 1) throw new Error('Ambiguous managed JDK directory');
 const javaHome = path.join(javaDirectory, candidates[0], platform.startsWith('darwin-') ? 'Contents/Home' : '');
 const mavenDirectory = path.join(directory, 'maven');
 const mavenArchive = await download(maven, 'sha512', maven.sha512);
-await extract(mavenArchive, mavenDirectory);
 const mavenHome = path.join(mavenDirectory, `apache-maven-${maven.version}`);
+async function mavenHealthy(home) {
+    try {
+        const boot = path.join(home, 'boot');
+        const jars = (await fs.readdir(boot)).filter(name => /^plexus-classworlds-.*\.jar$/.test(name));
+        // Maven's launch script treats two matching JARs as one invalid classpath.
+        if (jars.length !== 1) return false;
+        if (platform !== `${process.platform}-${process.arch}`) return true;
+        return await new Promise(resolve => {
+            const executable = path.join(javaHome, 'bin', process.platform === 'win32' ? 'java.exe' : 'java');
+            const child = spawn(executable, ['-classpath', path.join(boot, jars[0]),
+                '-Dclassworlds.conf=' + path.join(home, 'bin/m2.conf'), '-Dmaven.home=' + home,
+                '-Dmaven.multiModuleProjectDirectory=' + home, '-Dstyle.color=never',
+                'org.codehaus.plexus.classworlds.launcher.Launcher', '--version'],
+                { cwd: home, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
+            let output = '';
+            child.stdout.on('data', chunk => { output = (output + chunk).slice(-16384); });
+            child.stderr.on('data', () => {});
+            const timer = setTimeout(() => { child.kill(); resolve(false); }, 20000);
+            child.once('error', () => { clearTimeout(timer); resolve(false); });
+            child.once('exit', code => { clearTimeout(timer); resolve(code === 0 && output.includes('Apache Maven ' + maven.version)); });
+        });
+    } catch { return false; }
+}
+if (!await mavenHealthy(mavenHome)) {
+    await fs.mkdir(mavenDirectory, { recursive: true });
+    const staging = await fs.mkdtemp(path.join(mavenDirectory, '.maven-stage-'));
+    const backup = staging + '-previous';
+    let moved = false;
+    try {
+        await extract(mavenArchive, staging);
+        const candidate = path.join(staging, `apache-maven-${maven.version}`);
+        if (!await mavenHealthy(candidate)) throw new Error('Extracted Maven failed its real launcher/version check');
+        try { await fs.rename(mavenHome, backup); moved = true; } catch (error) { if (error.code !== 'ENOENT') throw error; }
+        try { await fs.rename(candidate, mavenHome); }
+        catch (error) { if (moved) await fs.rename(backup, mavenHome); throw error; }
+        if (moved) await fs.rm(backup, { recursive: true, force: true });
+    } finally { await fs.rm(staging, { recursive: true, force: true }); }
+}
 let sourceArchive;
 if (java.correspondingSource) {
     const source = { ...java.correspondingSource, name: decodeURIComponent(new URL(java.correspondingSource.url).pathname.split('/').at(-1)) };
