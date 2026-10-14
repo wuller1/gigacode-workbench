@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-14T16:55:02.919Z",
+  "commitSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+  "runId": 38597526156,
+  "runUrl": "https://github.com/wuller1/gigacode-workbench/actions/runs/38597526156",
+  "status": "completed",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 115967966838,
+      "name": "database-x64",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-14T16:22:29Z",
+      "completedAt": "2026-10-14T16:24:27Z"
+    },
+    {
+      "id": 115968902473,
+      "name": "windows-x64",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-14T16:24:29Z",
+      "completedAt": "2026-10-14T16:50:52Z"
+    }
+  ],
+  "reports": [
+    {
+      "kind": "data-live",
+      "path": "data/live-win32.json",
+      "artifactId": 11910850540,
+      "artifactMember": "docs/suite/evidence/database-runtime-live-win32.json",
+      "sha256": "01654448cceb0cf2f18aa67bccbe998168f3f2aea84cdeefd3b4efaaefc9a633",
+      "copy": "original artifact member; unchanged bytes",
+      "passed": 44,
+      "errors": [],
+      "sourceHashVerification": {
+        "commitSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+        "pathPrefix": "",
+        "sourceCount": 41,
+        "sourceDrift": []
+      }
+    },
+    {
+      "kind": "data-source-ui",
+      "path": "data/ui-source-win32.json",
+      "artifactId": 11910850540,
+      "artifactMember": "docs/suite/evidence/database-runtime-ui-win32.json",
+      "sha256": "fe35314efb8782f94550bc124f804b357a8ff77ab083fcf94a8ad097688b0c75",
+      "copy": "original artifact member; unchanged bytes",
+      "passed": 25,
+      "errors": [],
+      "sourceHashVerification": {
+        "commitSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+        "pathPrefix": "",
+        "sourceCount": 41,
+        "sourceDrift": []
+      }
+    },
+    {
+      "kind": "data-packaged-ui",
+      "path": "data/ui-packaged-win32.json",
+      "artifactId": 11913159364,
+      "artifactMember": "docs/suite/evidence/database-runtime-ui-win32-packaged.json",
+      "sha256": "238f234ca599dcc45ed26d35a6dd21513433ec4e635cce90638a3644ca278dd5",
+      "copy": "original artifact member; unchanged bytes",
+      "passed": 25,
+      "errors": [],
+      "sourceHashVerification": {
+        "commitSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+        "pathPrefix": "",
+        "sourceCount": 41,
+        "sourceDrift": []
+      }
+    },
+    {
+      "kind": "ide-source",
+      "path": "ide/source-win32.json",
+      "artifactId": 11913936181,
+      "artifactMember": "workbench-ide-live-Gh4Qv7-1-result.json",
+      "sha256": "cad0d2d5937615838b2577238811f536a1739c1af218e76701e35e6d2dae0e66",
+      "copy": "original artifact member; unchanged bytes",
+      "passed": 44,
+      "errors": [],
+      "sourceHashVerification": {
+        "commitSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+        "pathPrefix": "",
+        "sourceCount": 0,
+        "sourceDrift": []
+      },
+      "mapping": {
+        "basis": "exact workflow job LIVE_IDE_REPORT line",
+        "step": "Real IDE language, edit, refactor, task, debug and recovery checks"
+      },
+      "engine": "1.76.0"
+    },
+    {
+      "kind": "ide-packaged",
+      "path": "ide/packaged-win32.json",
+      "artifactId": 11913936181,
+      "artifactMember": "workbench-ide-live-E4276F-1-result.json",
+      "sha256": "d9a36f00cc01c4adde194e5b43446d3db29cb84e18ff67a1bd60ccf326b32355",
+      "copy": "original artifact member; unchanged bytes",
+      "passed": 44,
+      "errors": [],
+      "sourceHashVerification": {
+        "commitSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+        "pathPrefix": "",
+        "sourceCount": 0,
+        "sourceDrift": []
+      },
+      "mapping": {
+        "basis": "exact workflow job LIVE_IDE_REPORT line",
+        "step": "Launch and verify actual packaged IDE languages and recovery"
+      },
+      "engine": "1.76.0"
+    },
+    {
+      "kind": "jenkins-source-api",
+      "path": "jenkins/api-source-win32.json",
+      "artifactId": 11912614599,
+      "artifactMember": "app/test-results/operations/result-win32.json",
+      "sha256": "556d882b28e3897ec27735227eb13a87e1a513c6071f46ebbb6e44b6f3ade117",
+      "copy": "original artifact member; unchanged bytes",
+      "passed": 11,
+      "errors": [],
+      "sourceHashVerification": {
+        "commitSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+        "pathPrefix": "app/",
+        "sourceCount": 26,
+        "sourceDrift": []
+      },
+      "scope": "--jenkins-only against an owned isolated Jenkins and MCP server; not corporate K8s/OpenShift endpoints"
+    },
+    {
+      "kind": "jenkins-source-ui",
+      "path": "jenkins/ui-source-win32.json",
+      "artifactId": 11912614599,
+      "artifactMember": "app/test-results/operations/result-ui-win32.json",
+      "sha256": "c05c797e67af3d15cecb1a157abbbfcfee86c0392aa4b1e2aee49b35f0cb9f52",
+      "copy": "original artifact member; unchanged bytes",
+      "passed": 12,
+      "errors": [],
+      "sourceHashVerification": {
+        "commitSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+        "pathPrefix": "app/",
+        "sourceCount": 0,
+        "sourceDrift": []
+      },
+      "scope": "--jenkins-only against an owned isolated Jenkins and MCP server; not corporate K8s/OpenShift endpoints"
+    },
+    {
+      "kind": "jenkins-packaged-api",
+      "path": "jenkins/api-packaged-win32.json",
+      "artifactId": 11912614599,
+      "artifactMember": "app/test-results/operations/result-win32-packaged.json",
+      "sha256": "f33cceb93811784aa916f29abf5c0e17bb7e601cc4f66ba2be1a9a55e135ba42",
+      "copy": "original artifact member; unchanged bytes",
+      "passed": 11,
+      "errors": [],
+      "sourceHashVerification": {
+        "commitSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+        "pathPrefix": "app/",
+        "sourceCount": 26,
+        "sourceDrift": []
+      },
+      "scope": "--jenkins-only against an owned isolated Jenkins and MCP server; not corporate K8s/OpenShift endpoints"
+    },
+    {
+      "kind": "jenkins-packaged-ui",
+      "path": "jenkins/ui-packaged-win32.json",
+      "artifactId": 11912614599,
+      "artifactMember": "app/test-results/operations/result-ui-win32-packaged.json",
+      "sha256": "80ade7d7fff8d46075e6e83d62a728877d87f6c98c7b2c4c9bebbb174aee36b9",
+      "copy": "original artifact member; unchanged bytes",
+      "passed": 12,
+      "errors": [],
+      "sourceHashVerification": {
+        "commitSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+        "pathPrefix": "app/",
+        "sourceCount": 0,
+        "sourceDrift": []
+      },
+      "scope": "--jenkins-only against an owned isolated Jenkins and MCP server; not corporate K8s/OpenShift endpoints"
+    }
+  ],
+  "platformVerification": {
+    "path": "platform-verification-from-job-log.json",
+    "basis": "Original exact workflow Windows job log and job step conclusions",
+    "sha256": "03f68bf291dffc48a11c8c73fbd44a6bd662f83d2d53b86c4e14a195e7a6f35d"
+  },
+  "artifacts": [
+    {
+      "id": 11913936181,
+      "name": "ide-diagnostics-windows-e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+      "bytes": 55983,
+      "sha256": "99d064d676a6a3c7b8876ab38dc1f10460595db904f8890be35c2b7c2ce0cd8a",
+      "downloaded": true,
+      "digestMatches": true,
+      "publicCopies": [
+        "ide/source-win32.json",
+        "ide/packaged-win32.json"
+      ]
+    },
+    {
+      "id": 11913159364,
+      "name": "database-evidence-windows-e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+      "bytes": 177374,
+      "sha256": "ec7f40cd1c270bd0e3d31f67e2464abe727313ccc870d7db7f194f4f1312b7cd",
+      "downloaded": true,
+      "digestMatches": true,
+      "publicCopies": [
+        "data/ui-packaged-win32.json"
+      ]
+    },
+    {
+      "id": 11912784446,
+      "name": "gigacode-workbench-windows-x64-e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+      "bytes": 1729412082,
+      "sha256": "ac3a8cfeae908b8111da323155166e210ebaeb0e81b29e067032d9ff966c7d7b",
+      "downloaded": false,
+      "localDigestVerified": false,
+      "reason": "User needs source code; large binary artifact intentionally not downloaded or published."
+    },
+    {
+      "id": 11912614599,
+      "name": "operations-evidence-windows-e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+      "bytes": 283555,
+      "sha256": "68399501a221c8c40997b9037cc315c119d545d84cd87aa30809c211309e3e40",
+      "downloaded": true,
+      "digestMatches": true,
+      "publicCopies": [
+        "jenkins/api-source-win32.json",
+        "jenkins/ui-source-win32.json",
+        "jenkins/api-packaged-win32.json",
+        "jenkins/ui-packaged-win32.json"
+      ]
+    },
+    {
+      "id": 11910850540,
+      "name": "database-source-evidence-windows-e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+      "bytes": 181096,
+      "sha256": "99051847b09fd2cc7dad9c8c7be62b88191886d59b11a891ebd41219ed785f17",
+      "downloaded": true,
+      "digestMatches": true,
+      "publicCopies": [
+        "data/live-win32.json",
+        "data/ui-source-win32.json"
+      ]
+    }
+  ],
+  "scope": [
+    "Original fresh Windows reports copied unchanged from SHA256-verified small artifacts for exact e9b047dc code.",
+    "Each available sourceHash was compared with git show of the exact tested commit; report summaries explicitly show sourceCount 0 when absent.",
+    "IDE artifact source/packaged mapping comes from their distinct LIVE_IDE_REPORT lines in this same Windows job.",
+    "Jenkins-only Operations checks use owned isolated upstream servers; no corporate K8s/OpenShift/Jenkins endpoint or model-intelligence proof.",
+    "Platform check metadata is explicitly derived from successful job logs, not fabricated raw reports."
+  ]
+}

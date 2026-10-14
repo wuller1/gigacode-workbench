@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-14T16:28:29.082993+00:00",
+  "candidateSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+  "platform": "darwin/arm64",
+  "node": "v26.8.1",
+  "api": {
+    "passed": 23,
+    "started": "2026-10-14T16:23:05.524Z",
+    "ended": "2026-10-14T16:23:53.922Z"
+  },
+  "actualApp": {
+    "apiPassed": 23,
+    "uiPassed": 23,
+    "started": "2026-10-14T16:24:21.875Z",
+    "ended": "2026-10-14T16:25:50.613Z",
+    "uiMode": "source App and its actual MCP provider",
+    "rendererErrors": [],
+    "loadedFixtureHash": "4cc3795b8a06671fbb3e89f1d5f8d84b84abd798bd07dcf42aba8c95d6a96dfe"
+  },
+  "sourceChecks": [
+    {
+      "path": "app/electron/operations/catalog.ts",
+      "sha256": "f508f4c44be21716a224189365ad9f8448453f130c6054e7378dd50baa632cb8",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/electron/operations/client.ts",
+      "sha256": "ed38b98dcacafeff7d74909adb35c9a0e364220673bacce6576df4faea566ac9",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/electron/operations/errors.ts",
+      "sha256": "4a93fa1b2d7e443dfc8283f52501fc30fb5289b0d3dd1a7c3a489eab065b902c",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/electron/operations/http.ts",
+      "sha256": "673045d68800078a76e6bcca909a8c62667b684c740dec3bdec3726bf1e13085",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/electron/operations/jenkins-logs.ts",
+      "sha256": "493e91611655ad59aba6026ecd7fc4b4c1d4dd9c5ed062266923253dea1cde0c",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/electron/operations/jenkins.ts",
+      "sha256": "3a104c3229d9901dfc493e5cd7b765d6a501a2021df04068557415a2ccbbcde0",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/electron/operations/kubernetes.ts",
+      "sha256": "0b370c3059e6167dd006125fe07c6bba3b0f527a03ce2c33f3a54b9cca3dec11",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/electron/operations/protocol.ts",
+      "sha256": "28a35878a8b9583b5256d4d7986f6963fa1115ebdd36a002d1bee264160440f7",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/electron/operations/provider.ts",
+      "sha256": "dda93ba26f10fb3e999d21600dee71a77517fe2c6ce33cbd04a707d10e80a1d1",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/electron/operations/service.ts",
+      "sha256": "9ae07292eb02c019b11c62f417af1c40da3b799d26fff85732d6adabcbe738d4",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/shared/operations.ts",
+      "sha256": "eff22761fde3e312835f63d8ad6dd907f1f2bf38714e72244f4a1ea1896a3d8f",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/tools/ops-test-assets.mjs",
+      "sha256": "dd46a48ee463005aad8a9835a52c246f4882e1a53895ec74796568797925e68f",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/tools/ops-test-servers.mjs",
+      "sha256": "9c73158d557b08f27c24af4c09187e8a96a0b09ebb764d3599dcfbaaa756706d",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/tools/test-operations-live.mjs",
+      "sha256": "fc91ca991985bf082c4c70b1a40c71a52aff4e3daf59690924e810c6de1b0820",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/tests/fixtures/ops-ui-checks.mjs",
+      "sha256": "4cc3795b8a06671fbb3e89f1d5f8d84b84abd798bd07dcf42aba8c95d6a96dfe",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/electron/main.ts",
+      "sha256": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/electron/mcp.ts",
+      "sha256": "7e1235fa6a3764e4616694c0d123bb6ff62cde01556536674e3c926b8491b5c0",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/src/App.tsx",
+      "sha256": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/src/Workspace.tsx",
+      "sha256": "d11e4f10208998c6afe9bb51b7612e0db6d5d6977b515f17fa373418a3271762",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/src/SettingsView.tsx",
+      "sha256": "22df05f952769ff01f0e020924703d7fa500f71528613527b9e2cb9921a07c66",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/src/JenkinsPanel.tsx",
+      "sha256": "94e0f864053be37ec2a85bb639376b4d2c7ceb03859c6debc152bd5b52874eb0",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/src/ClusterPanel.tsx",
+      "sha256": "ce2aa4b9cc808c94c86874e92b592640386989b26a80bbbfbb86522cbf60be1b",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/src/OperationsSettings.tsx",
+      "sha256": "d43aa156d1d68f95d4b8d7b797e38d024539eaee8615571625937bd322932566",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/src/ToolBoundary.tsx",
+      "sha256": "c5201b14523d6d8fb08ba944c49402a8bf766d87193ac3ccf7ae137b97f2b5c8",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/src/ops-ui.tsx",
+      "sha256": "3dad227d49fa638842878f8c7349121e509c480b8d05ce99a3608f1d13d31131",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    },
+    {
+      "path": "app/src/operations.css",
+      "sha256": "b9038c0975357f06516a9486a00a960e5095beb0ede08ae6e24a40fb9309c03e",
+      "reportMatchesCandidate": true,
+      "reportMatchesCurrent": true
+    }
+  ],
+  "compiledArtifactChecks": [
+    {
+      "path": "dist/assets/ClusterPanel-CbEPgavK.js",
+      "sha256": "1ac4e4825cc05a13fb579e4feef218ac7131b8d7343c3351fdeb08772bf13f90",
+      "matched": true
+    },
+    {
+      "path": "dist/assets/DatabasePanel-DKx5hzdU.css",
+      "sha256": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+      "matched": true
+    },
+    {
+      "path": "dist/assets/DatabasePanel-GkJq4AhZ.js",
+      "sha256": "c5a9c92119450189ee30abb37871bcf88e8ef497ad0cbbfcfc2a7f54ae902dfd",
+      "matched": true
+    },
+    {
+      "path": "dist/assets/JenkinsPanel-CaodMrQB.js",
+      "sha256": "04130077e31d5938de7958a1ef1fc545491134fc9a2b156b488bd50d3f0d06b6",
+      "matched": true
+    },
+    {
+      "path": "dist/assets/OperationsSettings-BK0bYkTt.js",
+      "sha256": "0645df338f60893550acc67ca332d04226124d187542796f04164106cf422307",
+      "matched": true
+    },
+    {
+      "path": "dist/assets/dist-NCTH-79-.js",
+      "sha256": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+      "matched": true
+    },
+    {
+      "path": "dist/assets/index-BXB_vQjQ.css",
+      "sha256": "eb17e2528789cd5acc914e8fa08fa9728f98434340de7573a972d68f2d222353",
+      "matched": true
+    },
+    {
+      "path": "dist/assets/index-htE_Fe71.js",
+      "sha256": "8069314856da216f5fc3f4e83c962c409cf48c6a4dda7c64206702f52374e496",
+      "matched": true
+    },
+    {
+      "path": "dist/assets/ops-ui-8eM9bX_B.css",
+      "sha256": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+      "matched": true
+    },
+    {
+      "path": "dist/assets/ops-ui-DcfkRURX.js",
+      "sha256": "421e6a01385e26a12aaedd3f91ecd9462832403f1b5d264a0a1c764a07e10e40",
+      "matched": true
+    },
+    {
+      "path": "dist/index.html",
+      "sha256": "a7cd0ec261e4c0fd56bff3165feb43d3eeb7fb5e9cc5695a794962335ea87009",
+      "matched": true
+    },
+    {
+      "path": "dist-electron/database-provider.cjs",
+      "sha256": "0be6d6f778fa715e6a37aa90c22a25b4c46c911a20e855b0ae24959ce306ef20",
+      "matched": true
+    },
+    {
+      "path": "dist-electron/main.cjs",
+      "sha256": "485f988a1a0d2d1bade5ec8fc7ddd8eebe870bb539394e2ad432c91db4b50de5",
+      "matched": true
+    },
+    {
+      "path": "dist-electron/operations-provider.cjs",
+      "sha256": "1ff87c73fb0acc0f6893f039bea02718a91913a37ddd5ea64c0e2482d1ecbc20",
+      "matched": true
+    },
+    {
+      "path": "dist-electron/preload.cjs",
+      "sha256": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
+      "matched": true
+    }
+  ],
+  "compiledHashMeaning": "Fresh actual App recorded artifact bytes match current built bytes, not another OS. No rebuild during checks.",
+  "cleanup": [
+    {
+      "status": "fulfilled"
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "pid": 22359,
+        "exited": true,
+        "exitCode": 143,
+        "signal": null
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": [
+        {
+          "pid": 22086,
+          "exited": true,
+          "exitCode": 143,
+          "signal": null
+        },
+        [
+          {
+            "pid": 22095,
+            "exited": true,
+            "exitCode": null,
+            "signal": "SIGKILL"
+          },
+          {
+            "pid": 22093,
+            "exited": true,
+            "exitCode": null,
+            "signal": "SIGKILL"
+          }
+        ]
+      ]
+    }
+  ],
+  "corporateEndpointsUsed": false,
+  "realModelCalls": 0,
+  "productSourceEdits": false,
+  "visualReview": [
+    "Jenkins dark 1440",
+    "Kubernetes light split 1440"
+  ],
+  "visualLimit": "Reviewed representative screenshots; actual UI scenarios are separately asserted by driver."
+}

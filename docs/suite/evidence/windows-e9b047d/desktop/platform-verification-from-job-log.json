@@ -1,0 +1,517 @@
+{
+  "schemaVersion": 1,
+  "kind": "derived from original successful Windows job log; not separate raw artifact reports",
+  "commitSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+  "runId": 38597526156,
+  "runUrl": "https://github.com/wuller1/gigacode-workbench/actions/runs/38597526156",
+  "jobId": 115968902473,
+  "jobName": "windows-x64",
+  "powershell": {
+    "step": "Legacy Workbench suites on Windows PowerShell 5.1",
+    "version": "5.1.20348.5622",
+    "suites": 5,
+    "checks": {
+      "controllerAndJournal": 35,
+      "docsImpact": 15,
+      "installUser": 16,
+      "sharedMemory": 19,
+      "designMetrics": 8
+    },
+    "totalChecks": 93,
+    "failures": 0,
+    "structuredObjectsFromLog": [
+      {
+        "suite": "workbench-controller-and-journal",
+        "total": 35,
+        "passed": 35,
+        "failed": 0,
+        "skipped": 0,
+        "runtime": "5.1.20348.5622",
+        "platform": "Microsoft Windows NT 10.0.20348.0",
+        "target": "Windows PowerShell 5.1; this output records the actual runtime, not an unperformed target-platform test",
+        "temporary_path": null,
+        "results": [
+          {
+            "name": "JSON codec preserves case-distinct keys arrays and date strings",
+            "status": "pass",
+            "milliseconds": 128,
+            "detail": ""
+          },
+          {
+            "name": "canonical digest matches independent Unicode and case golden vector",
+            "status": "pass",
+            "milliseconds": 25,
+            "detail": ""
+          },
+          {
+            "name": "unsupported floating-point digest rejects explicit migration need",
+            "status": "pass",
+            "milliseconds": 235,
+            "detail": ""
+          },
+          {
+            "name": "real workflow catalog and fourteen profiles validate",
+            "status": "pass",
+            "milliseconds": 646,
+            "detail": ""
+          },
+          {
+            "name": "successful multistage completion and Unicode paths",
+            "status": "pass",
+            "milliseconds": 515,
+            "detail": ""
+          },
+          {
+            "name": "missing evidence rejects without state mutation",
+            "status": "pass",
+            "milliseconds": 77,
+            "detail": ""
+          },
+          {
+            "name": "stale report after pause and resume is rejected",
+            "status": "pass",
+            "milliseconds": 184,
+            "detail": ""
+          },
+          {
+            "name": "changed accepted file blocks prompt and next completion",
+            "status": "pass",
+            "milliseconds": 118,
+            "detail": ""
+          },
+          {
+            "name": "rework invalidates successors and preserves history",
+            "status": "pass",
+            "milliseconds": 471,
+            "detail": ""
+          },
+          {
+            "name": "budget cannot be bypassed by cancel and resume",
+            "status": "pass",
+            "milliseconds": 204,
+            "detail": ""
+          },
+          {
+            "name": "needs_rework cannot be bypassed by cancel and resume",
+            "status": "pass",
+            "milliseconds": 298,
+            "detail": ""
+          },
+          {
+            "name": "path traversal and absolute evidence paths are denied",
+            "status": "pass",
+            "milliseconds": 158,
+            "detail": ""
+          },
+          {
+            "name": "symlink file and directory outside run are denied",
+            "status": "pass",
+            "milliseconds": 102,
+            "detail": ""
+          },
+          {
+            "name": "dot is not a valid artifact",
+            "status": "pass",
+            "milliseconds": 59,
+            "detail": ""
+          },
+          {
+            "name": "future stage cannot be selected by rework",
+            "status": "pass",
+            "milliseconds": 44,
+            "detail": ""
+          },
+          {
+            "name": "duplicate report cannot advance twice",
+            "status": "pass",
+            "milliseconds": 94,
+            "detail": ""
+          },
+          {
+            "name": "concurrent mutation preserves the other lock owner",
+            "status": "pass",
+            "milliseconds": 136,
+            "detail": ""
+          },
+          {
+            "name": "not_applicable cannot bypass a mandatory check",
+            "status": "pass",
+            "milliseconds": 64,
+            "detail": ""
+          },
+          {
+            "name": "context reuse omits only explicitly selected policy layers",
+            "status": "pass",
+            "milliseconds": 62,
+            "detail": ""
+          },
+          {
+            "name": "pending started action blocks completion",
+            "status": "pass",
+            "milliseconds": 95,
+            "detail": ""
+          },
+          {
+            "name": "journal pagination has no lost or duplicate events",
+            "status": "pass",
+            "milliseconds": 295,
+            "detail": ""
+          },
+          {
+            "name": "compact recovery selects latest checkpoint and its tail",
+            "status": "pass",
+            "milliseconds": 146,
+            "detail": ""
+          },
+          {
+            "name": "journal rejects invalid pagination",
+            "status": "pass",
+            "milliseconds": 62,
+            "detail": ""
+          },
+          {
+            "name": "unknown outcome cannot finish even when evidence exists",
+            "status": "pass",
+            "milliseconds": 172,
+            "detail": ""
+          },
+          {
+            "name": "verified outcome requires existing evidence",
+            "status": "pass",
+            "milliseconds": 108,
+            "detail": ""
+          },
+          {
+            "name": "verified outcome resolves pending and preserves original action",
+            "status": "pass",
+            "milliseconds": 182,
+            "detail": ""
+          },
+          {
+            "name": "changed finished-action evidence blocks completion and appears in recovery",
+            "status": "pass",
+            "milliseconds": 141,
+            "detail": ""
+          },
+          {
+            "name": "duplicate operation id denied pending and after completion",
+            "status": "pass",
+            "milliseconds": 147,
+            "detail": ""
+          },
+          {
+            "name": "stale expected revision rejects events without mutation",
+            "status": "pass",
+            "milliseconds": 111,
+            "detail": ""
+          },
+          {
+            "name": "cancel and resume preserve unresolved action",
+            "status": "pass",
+            "milliseconds": 227,
+            "detail": ""
+          },
+          {
+            "name": "full recovery returns all events and integrity issues read-only",
+            "status": "pass",
+            "milliseconds": 2023,
+            "detail": ""
+          },
+          {
+            "name": "journal records recovery fields and file fingerprints",
+            "status": "pass",
+            "milliseconds": 123,
+            "detail": ""
+          },
+          {
+            "name": "pending action prevents rework until outcome is reconciled",
+            "status": "pass",
+            "milliseconds": 162,
+            "detail": ""
+          },
+          {
+            "name": "CLI emits JSON and exit zero for status and full recovery",
+            "status": "pass",
+            "milliseconds": 1085,
+            "detail": ""
+          },
+          {
+            "name": "CLI rejected submission exits two without state mutation",
+            "status": "pass",
+            "milliseconds": 662,
+            "detail": ""
+          }
+        ]
+      },
+      {
+        "failed": 0,
+        "passed": 19,
+        "platform": "Microsoft Windows NT 10.0.20348.0",
+        "results": [
+          {
+            "detail": "",
+            "milliseconds": 328,
+            "name": "remember and get preserve Unicode, source provenance and revision",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 181,
+            "name": "identical remember is idempotent without history growth",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 245,
+            "name": "conflicting value creates proposal and preserves verified original",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 368,
+            "name": "search globals plus matching project only and get denies another project",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 112,
+            "name": "expired entry is not returned as a current verified fact",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 105,
+            "name": "legacy import never trusts verified status and repeat does not grow store",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 90,
+            "name": "stale expected revision rejects append without mutation",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 73,
+            "name": "concurrent write preserves existing lock and store bytes",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 290,
+            "name": "explicit replacement and retirement preserve immutable historical content",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 374,
+            "name": "proposal promotion requires resolving another verified value and uses current payload",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 139,
+            "name": "retired identical input does not silently reactivate a fact",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 117,
+            "name": "retire requires current revision and reason",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 328,
+            "name": "verified entries require source reference revision and observed date",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 78,
+            "name": "project facts cannot be global and project context cannot be crossed",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 245,
+            "name": "tampered memory fails closed without overwriting the corrupted store",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 277,
+            "name": "search is bounded and does not return full content",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 9,
+            "name": "default location requires explicit target root and never uses package root",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 301,
+            "name": "store size limit includes final newline and rejects before write",
+            "status": "pass"
+          },
+          {
+            "detail": "",
+            "milliseconds": 867,
+            "name": "CLI emits parseable JSON with zero status using prepared controller",
+            "status": "pass"
+          }
+        ],
+        "runtime": "5.1.20348.5622",
+        "skipped": 0,
+        "suite": "shared-memory",
+        "target": "Windows PowerShell 5.1; actual execution platform is reported separately",
+        "total": 19
+      },
+      {
+        "suite": "design-metrics",
+        "javascript_tests": 8,
+        "export_integrity": "passed",
+        "javascript_status": "passed",
+        "browser_dom": "not_run"
+      },
+      {
+        "powershell": "5.1.20348.5622",
+        "os": "Microsoft Windows NT 10.0.20348.0",
+        "failed": [],
+        "suites": 5
+      }
+    ],
+    "stdoutExcerpts": [
+      "Tests: 15; failures: 0",
+      "Tests: 16; failures: 0",
+      "# tests 8",
+      "# pass 8",
+      "# fail 0"
+    ],
+    "designBrowserDom": "not_run"
+  },
+  "unit": {
+    "step": "Unit and protocol fixture tests (no model credentials)",
+    "filesPassed": 43,
+    "filesSkipped": 2,
+    "passed": 385,
+    "skipped": 51,
+    "stdoutExcerpts": [
+      " Test Files  43 passed | 2 skipped (45)",
+      "      Tests  385 passed | 51 skipped (436)"
+    ]
+  },
+  "native": {
+    "step": "Verify Windows native dependencies",
+    "records": [
+      {
+        "phase": "native_loaded"
+      },
+      {
+        "phase": "spawn_returned"
+      },
+      {
+        "phase": "pty_exit",
+        "exitCode": 0,
+        "output": "\u001b[2J\u001b[m\u001b[HWORKBENCH_PTY_OK\r\n\u001b]0;C:\\Windows\\system32\\cmd.exe\u0007\u001b[?25h"
+      },
+      {
+        "phase": "cleanup_requested"
+      },
+      {
+        "phase": "cleanup_returned"
+      },
+      {
+        "phase": "natural_exit_ready"
+      }
+    ],
+    "actualSummary": "Windows PTY: actual output, exit code, explicit cleanup and natural Node exit verified. Sharp loaded."
+  },
+  "packaging": {
+    "stepConclusions": [
+      {
+        "name": "Stage the self-contained IDE runtime",
+        "number": 22,
+        "conclusion": "success",
+        "startedAt": "2026-10-14T16:38:28Z",
+        "completedAt": "2026-10-14T16:39:14Z"
+      },
+      {
+        "name": "Build unpacked Windows application",
+        "number": 23,
+        "conclusion": "success",
+        "startedAt": "2026-10-14T16:39:14Z",
+        "completedAt": "2026-10-14T16:40:03Z"
+      },
+      {
+        "name": "Packaged application database provider and desktop acceptance",
+        "number": 24,
+        "conclusion": "success",
+        "startedAt": "2026-10-14T16:40:03Z",
+        "completedAt": "2026-10-14T16:40:30Z"
+      },
+      {
+        "name": "Packaged application Jenkins and Operations desktop acceptance",
+        "number": 25,
+        "conclusion": "success",
+        "startedAt": "2026-10-14T16:40:30Z",
+        "completedAt": "2026-10-14T16:41:50Z"
+      },
+      {
+        "name": "Launch and verify actual packaged IDE languages and recovery",
+        "number": 26,
+        "conclusion": "success",
+        "startedAt": "2026-10-14T16:41:50Z",
+        "completedAt": "2026-10-14T16:43:57Z"
+      },
+      {
+        "name": "Build NSIS and portable from verified application (never publish)",
+        "number": 27,
+        "conclusion": "success",
+        "startedAt": "2026-10-14T16:43:57Z",
+        "completedAt": "2026-10-14T16:49:44Z"
+      },
+      {
+        "name": "Verify packaged CLI and self-hosting references, then calculate artifact hashes",
+        "number": 28,
+        "conclusion": "success",
+        "startedAt": "2026-10-14T16:49:44Z",
+        "completedAt": "2026-10-14T16:49:47Z"
+      }
+    ],
+    "qwenActualOutput": "Packaged Qwen: 0.25.1",
+    "installerBuildExcerpts": [
+      "  • building        target=nsis file=release\\GigaCode Workbench Setup 0.6.0-preview.1.exe archs=x64 oneClick=false perMachine=false",
+      "  • building        target=portable file=release\\GigaCode Workbench 0.6.0-preview.1.exe archs=x64"
+    ],
+    "referenceVerification": {
+      "basis": "Successful exact job verification script checks each resource file, bundled CLI version, at least two EXE outputs, and writes SHA256SUMS.txt",
+      "resourceFiles": [
+        "workbench/CORE.md",
+        "docs/suite/README.md",
+        "suite/implementation-plan.json",
+        "design/suite-workspace-prototype.html",
+        "ui-kit/package.json",
+        "ui-kit/src/index.ts",
+        "LICENSE",
+        "NOTICE",
+        "THIRD_PARTY_NOTICES.md",
+        "ide/src-gen/backend/main.js",
+        "ide/lib/frontend/index.html",
+        "ide/plugins-lock.json",
+        "ide-tools/bindings.json"
+      ],
+      "bundledCliVersion": "0.25.1",
+      "minimumBuiltExecutableCount": 2,
+      "hashManifest": "app/release/SHA256SUMS.txt"
+    },
+    "limitations": [
+      "Installer installation and installed-app launch were not executed; functional acceptance used the real unpacked packaged app.",
+      "Large build ZIP and SHA256SUMS.txt were not downloaded; archive digest is GitHub metadata, not a local binary verification.",
+      "CI artifact is labelled unsigned; no independent Authenticode signature verification was performed.",
+      "No VARM or workplace GigaCode 26.10.6 acceptance is claimed."
+    ]
+  }
+}

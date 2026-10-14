@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "recordedAt": "2026-10-14T16:25:34.195Z",
+  "platform": "win32",
+  "scope": "Actual App + deterministic owned ACP process; response-fault injection only in automation, actual native renderer crash and actual main fatal handler. No model intelligence, GigaCode or Windows claim.",
+  "passed": [
+    {
+      "name": "Wrong-typed local preferences and draft data cannot blank the actual App or overwrite their original bytes",
+      "elapsedMs": 79
+    },
+    {
+      "name": "Actual owned ACP request runs once; queued message and per-window drafts stay independent",
+      "elapsedMs": 1142
+    },
+    {
+      "name": "Missed host notifications and transient snapshot failures recover without user interaction",
+      "elapsedMs": 4065
+    },
+    {
+      "name": "Timed-out out-of-order IPC response cannot replace the newer screen",
+      "elapsedMs": 5859
+    },
+    {
+      "name": "Native renderer crash reloads the same window while host PID generation queue and draft survive",
+      "elapsedMs": 1775
+    },
+    {
+      "name": "Actual ErrorBoundary sanitizes a render failure and performs one bounded remount",
+      "elapsedMs": 455
+    },
+    {
+      "name": "Cancelling real application shutdown recovers a renderer that crashed during native preflight",
+      "elapsedMs": 338
+    },
+    {
+      "name": "Real main fatal path quiesces host and exposes persistent restart status without replay",
+      "elapsedMs": 441
+    }
+  ],
+  "total": 8,
+  "proofs": [
+    {
+      "stage": "before faults",
+      "pid": 6736,
+      "generation": 1,
+      "sessionId": "2bff539d-5e1b-48ac-bda2-693cb52d1746",
+      "taskId": "95301c33-9f00-4a31-b4f8-572ffdc81c3a",
+      "queue": [
+        {
+          "id": "b1df735c-e8d9-4f8f-9153-ff836261ed09",
+          "text": "Queued request must remain unsent during renderer recovery."
+        }
+      ],
+      "promptCount": 1,
+      "userMessages": 1,
+      "windowId": 1
+    },
+    {
+      "stage": "dark queue editor control contrast",
+      "theme": "dark",
+      "controls": [
+        {
+          "name": "Сохранить",
+          "foreground": "rgb(239, 243, 236)",
+          "background": "rgb(40, 46, 41)",
+          "opacity": "1",
+          "disabled": false,
+          "contrast": 12.36
+        },
+        {
+          "name": "Отменить правки",
+          "foreground": "rgb(239, 243, 236)",
+          "background": "rgb(40, 46, 41)",
+          "opacity": "1",
+          "disabled": false,
+          "contrast": 12.36
+        }
+      ]
+    },
+    {
+      "stage": "after actual renderer crash",
+      "pid": 6736,
+      "generation": 1,
+      "sessionId": "2bff539d-5e1b-48ac-bda2-693cb52d1746",
+      "taskId": "95301c33-9f00-4a31-b4f8-572ffdc81c3a",
+      "queue": [
+        {
+          "id": "b1df735c-e8d9-4f8f-9153-ff836261ed09",
+          "text": "Queued request must remain unsent during renderer recovery."
+        }
+      ],
+      "promptCount": 1,
+      "userMessages": 1,
+      "windowId": 1,
+      "crashEvents": [
+        {
+          "reason": "crashed",
+          "exitCode": 2
+        }
+      ],
+      "observation": "Native WebContents DOM after recovery; Playwright's old Page can retain a crashed target flag."
+    },
+    {
+      "stage": "light queue editor control contrast",
+      "theme": "light",
+      "controls": [
+        {
+          "name": "Сохранить",
+          "foreground": "rgb(37, 41, 35)",
+          "background": "rgb(240, 240, 236)",
+          "opacity": "1",
+          "disabled": false,
+          "contrast": 12.94
+        },
+        {
+          "name": "Отменить правки",
+          "foreground": "rgb(37, 41, 35)",
+          "background": "rgb(240, 240, 236)",
+          "opacity": "1",
+          "disabled": false,
+          "contrast": 12.94
+        }
+      ]
+    },
+    {
+      "stage": "after cancelled shutdown and actual renderer crash",
+      "pid": 6736,
+      "generation": 1,
+      "sessionId": "2bff539d-5e1b-48ac-bda2-693cb52d1746",
+      "taskId": "95301c33-9f00-4a31-b4f8-572ffdc81c3a",
+      "queue": [
+        {
+          "id": "b1df735c-e8d9-4f8f-9153-ff836261ed09",
+          "text": "Queued request must remain unsent during renderer recovery."
+        }
+      ],
+      "promptCount": 1,
+      "userMessages": 1
+    },
+    {
+      "stage": "dark stopped restart control contrast",
+      "theme": "dark",
+      "controls": [
+        {
+          "name": "Перезапустить",
+          "foreground": "rgb(239, 243, 236)",
+          "background": "rgb(40, 46, 41)",
+          "opacity": "1",
+          "disabled": false,
+          "contrast": 12.36
+        }
+      ]
+    },
+    {
+      "stage": "fatal stopped",
+      "persistence": "saved",
+      "promptCount": 1,
+      "queueRetained": true,
+      "draftRetained": true
+    }
+  ],
+  "captures": [
+    "recovered-dark-desktop.png",
+    "recovered-light-desktop.png",
+    "runtime-stopped-dark-desktop.png"
+  ],
+  "rendererErrors": [],
+  "sourceHashes": {
+    "src/App.tsx": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
+    "src/api.ts": "685ec5467aa5f97a6c4057cdb74174301138e8cab090c507f7de596a14e83433",
+    "src/snapshot-feed.ts": "a68c59d601beb5a75a705a34e82b2fca11c0448aeec5f10b412a884a78c825bd",
+    "src/local-state.ts": "964f4d86855f7694b3c8e7436040b8b1ccdcea58ed1ef3b15412bf7ed9b1292f",
+    "src/Workspace.tsx": "d11e4f10208998c6afe9bb51b7612e0db6d5d6977b515f17fa373418a3271762",
+    "src/ErrorBoundary.tsx": "e13f0a5d0b329145a8e38d82a22cdb7022e6ad95eb103049d15c33338fb70043",
+    "src/ToolBoundary.tsx": "c5201b14523d6d8fb08ba944c49402a8bf766d87193ac3ccf7ae137b97f2b5c8",
+    "src/QueueMessages.tsx": "def41a2ba59947f6c325721902f7eaaeb9034d886ddceed7e75a69a6d7282c79",
+    "src/queue-edit-journal.ts": "c556ca15922ef7cf8bf62bc957c280582f607da9d25bc90a29b979c66ac8e561",
+    "src/styles.css": "83d00d8fdb1cb4c9044547efcf52e7d049e462b81d3e0a590ad3fb4efda84605",
+    "electron/preload.ts": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
+    "electron/main.ts": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
+    "electron/service.ts": "571e6e6cb85c03d1cee80b73d6d2377c60a6e6d3cc2cbd47fabf693f81efcc70",
+    "electron/acp.ts": "01e8454f5fc63c15331b8e0f6f35570cd43c46532f251f618bce6f2afcc30156",
+    "electron/store.ts": "40382045034687e8a5af380cf6ed3a7c54a53a859f0c3a69d4e0f7d6e0ba04a5",
+    "electron/renderer-recovery.ts": "7be680151cc5bf3ab140d722bc9888f4113b51995a7a27e2a56ca8b547e640f3",
+    "shared/types.ts": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
+    "tests/fixtures/acp-fixture.mjs": "c6e8b243ac46a69329fddb33265c0eb86dc8052f7e801e4f78bc86dfb4b5e5d7",
+    "tools/test-renderer-resilience-ui.mjs": "31b22994f9d8e7548e215cb2213edb011f658645110cf9ec8d5e43a129e70c21",
+    "dist-electron/main.cjs": "485f988a1a0d2d1bade5ec8fc7ddd8eebe870bb539394e2ad432c91db4b50de5",
+    "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
+    "dist/assets/ClusterPanel-CbEPgavK.js": "1ac4e4825cc05a13fb579e4feef218ac7131b8d7343c3351fdeb08772bf13f90",
+    "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+    "dist/assets/DatabasePanel-GkJq4AhZ.js": "c5a9c92119450189ee30abb37871bcf88e8ef497ad0cbbfcfc2a7f54ae902dfd",
+    "dist/assets/JenkinsPanel-CaodMrQB.js": "04130077e31d5938de7958a1ef1fc545491134fc9a2b156b488bd50d3f0d06b6",
+    "dist/assets/OperationsSettings-BK0bYkTt.js": "0645df338f60893550acc67ca332d04226124d187542796f04164106cf422307",
+    "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+    "dist/assets/index-BXB_vQjQ.css": "eb17e2528789cd5acc914e8fa08fa9728f98434340de7573a972d68f2d222353",
+    "dist/assets/index-htE_Fe71.js": "8069314856da216f5fc3f4e83c962c409cf48c6a4dda7c64206702f52374e496",
+    "dist/assets/ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+    "dist/assets/ops-ui-DcfkRURX.js": "421e6a01385e26a12aaedd3f91ecd9462832403f1b5d264a0a1c764a07e10e40"
+  },
+  "sourceDrift": [],
+  "cleanup": {
+    "application": "closed",
+    "ownedData": "removed"
+  },
+  "externalProviderCalls": 0,
+  "realModelCalls": 0
+}

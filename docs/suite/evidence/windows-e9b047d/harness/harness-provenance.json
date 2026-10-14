@@ -1,0 +1,977 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-14T16:30:25.169766+00:00",
+  "repository": "wuller1/gigacode-workbench",
+  "commitSha": "e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+  "runId": 38597526003,
+  "runUrl": "https://github.com/wuller1/gigacode-workbench/actions/runs/38597526003",
+  "jobId": 115967965889,
+  "platform": "win32/x64",
+  "conclusion": "success",
+  "artifact": {
+    "id": 11910946907,
+    "name": "agent-harness-windows-e9b047dceb4c20d8e1035b36ba9c823d553b127b",
+    "bytes": 1519344,
+    "sha256": "0441a7db01f80e0250e0700a9399da240e0abc6c46d31c6404d1e9f11860bcd6",
+    "githubDigest": "sha256:0441a7db01f80e0250e0700a9399da240e0abc6c46d31c6404d1e9f11860bcd6",
+    "digestMatches": true
+  },
+  "unit": {
+    "numTotalTests": 436,
+    "numPassedTests": 385,
+    "numFailedTests": 0,
+    "numPendingTests": 51,
+    "success": true
+  },
+  "skippedTestsByFile": {
+    "database-live.test.ts": 36,
+    "database-routine-live.test.ts": 8,
+    "instruction-retention.test.ts": 4,
+    "terminal-lifecycle.test.ts": 1,
+    "transport-resilience.test.ts": 1,
+    "workspace-native.test.ts": 1
+  },
+  "skipClassification": "44 opt-in PostgreSQL +7 POSIX/platform exclusions",
+  "liveResults": {
+    "rolesUi": {
+      "passed": 8,
+      "total": 8
+    },
+    "roleTransitions": {
+      "passed": 6,
+      "total": 6
+    },
+    "rendererResilience": {
+      "passed": 8,
+      "total": 8
+    },
+    "chatUi": {
+      "passed": 3,
+      "total": 3,
+      "basis": "Three PASS lines and passed:3 JSON from exact Windows Actions step; original temporary report is not in artifact."
+    },
+    "qwenOffline": {
+      "passed": 13,
+      "total": 13,
+      "scope": "Local controlled protocol provider; guard/mechanism tests, not real model quality."
+    },
+    "systemPlacement": {
+      "passed": 2,
+      "total": 2,
+      "scope": "Two role system payloads captured through actual unmodified Qwen using controlled local provider."
+    }
+  },
+  "reports": {
+    "agent-runtime-ui/report.json": {
+      "status": "passed",
+      "platform": "win32",
+      "passed": 8,
+      "total": 8,
+      "trackedSourceChecks": 24,
+      "recordedHashCount": 36,
+      "cleanup": {
+        "application": "closed",
+        "ownedData": "removed"
+      }
+    },
+    "role-transitions-ui/report.json": {
+      "status": "passed",
+      "platform": "win32",
+      "passed": 6,
+      "total": 6,
+      "trackedSourceChecks": 27,
+      "recordedHashCount": 39,
+      "cleanup": {
+        "application": "closed",
+        "ownedData": "removed"
+      }
+    },
+    "renderer-resilience-ui/report.json": {
+      "status": "passed",
+      "platform": "win32",
+      "passed": 8,
+      "total": 8,
+      "trackedSourceChecks": 19,
+      "recordedHashCount": 31,
+      "cleanup": {
+        "application": "closed",
+        "ownedData": "removed"
+      }
+    }
+  },
+  "sourceHashChecks": [
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "app/src/App.tsx",
+      "sha256": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "app/src/SettingsView.tsx",
+      "sha256": "22df05f952769ff01f0e020924703d7fa500f71528613527b9e2cb9921a07c66",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "app/src/styles.css",
+      "sha256": "83d00d8fdb1cb4c9044547efcf52e7d049e462b81d3e0a590ad3fb4efda84605",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "app/electron/service.ts",
+      "sha256": "571e6e6cb85c03d1cee80b73d6d2377c60a6e6d3cc2cbd47fabf693f81efcc70",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "app/electron/prompt-binding.ts",
+      "sha256": "adb633393b38ca2bf82f8e36d24dea8089f878d129feaa36b3f846dc631a2dfc",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "app/electron/role-router.ts",
+      "sha256": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "app/electron/preload.ts",
+      "sha256": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "app/shared/types.ts",
+      "sha256": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/CORE.md",
+      "sha256": "1cea28b6fcf01f409ca2af06c92fdbc929fdc4e489c65d6e2de836e0a1beda27",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "app/tools/test-roles-ui.mjs",
+      "sha256": "4c8a7ae10a43a2b8337d22a675c5dd7a3fa564d7f3f14bc2cd2c0240be1c5977",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/analyst.md",
+      "sha256": "81437e3f1258b7fe5de3ff37d531a5b8b8c3d27c95f741b0c6d30d6cccbf11c2",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/architect.md",
+      "sha256": "e1c687701e8f3705888f45b05e7352fdf28a11e8a647b29e62ebefea22eb33ad",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/backend.md",
+      "sha256": "ed4cac535bb002fbaa5d82b7953e25a22ef35dc96ec629dd1edc1607a0c7d264",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/database.md",
+      "sha256": "619f87a555a9d3a6f834ad1dd92c24a5ec4a893c6fdd3a12cbec4f5da4391e5b",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/designer.md",
+      "sha256": "e9eb486894fd63e94297a8dac9584164da5d706074483a4e6732d34b98b25a79",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/devops.md",
+      "sha256": "05ca52297f9a191b9fe7b9de6affe0af8ab1d53e2c1841dfcbe197abc27fe74a",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/diagnostics.md",
+      "sha256": "ac294df40837a0dd8b226e213f7a7ddd9e0993252138d3a273872e0d71d8e2eb",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/frontend.md",
+      "sha256": "c2c147ec4391206a09da02cb6e4dd289d6dbe0cb09212892667610d94305d7aa",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/gigacode-ui.md",
+      "sha256": "f95c095102ef74fd64a107cca768e77b00d735effc4b562d32621bb0bdd11e06",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/qa.md",
+      "sha256": "5f8bf61325c4840908707cee85d5c0d19df03ab46dd4cadec5f25895f42bbf03",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/reviewer.md",
+      "sha256": "59d2adc726726bb7461b9ba6e3c40f28cd631e567b902ed39aee90c34753940d",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/security.md",
+      "sha256": "eb48df1300b48bf155cc09b35294aefd383bd5c5cb2910ec94678634672be0e8",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/spec.md",
+      "sha256": "a9bc23ab2a85938f5b4ee2887fb7e4483c93164c83f2f8b4ec3f37821d043e7b",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "workbench/profiles/technical-writer.md",
+      "sha256": "2df4753a59674a01a6276783cafa08f79cd9bf38583fb6bb5e062fcb7890ad47",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "app/src/App.tsx",
+      "sha256": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "app/src/SettingsView.tsx",
+      "sha256": "22df05f952769ff01f0e020924703d7fa500f71528613527b9e2cb9921a07c66",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "app/src/styles.css",
+      "sha256": "83d00d8fdb1cb4c9044547efcf52e7d049e462b81d3e0a590ad3fb4efda84605",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "app/electron/service.ts",
+      "sha256": "571e6e6cb85c03d1cee80b73d6d2377c60a6e6d3cc2cbd47fabf693f81efcc70",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "app/electron/main.ts",
+      "sha256": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "app/electron/mcp.ts",
+      "sha256": "7e1235fa6a3764e4616694c0d123bb6ff62cde01556536674e3c926b8491b5c0",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "app/electron/prompt-binding.ts",
+      "sha256": "adb633393b38ca2bf82f8e36d24dea8089f878d129feaa36b3f846dc631a2dfc",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "app/electron/role-router.ts",
+      "sha256": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "app/electron/preload.ts",
+      "sha256": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "app/electron/acp.ts",
+      "sha256": "01e8454f5fc63c15331b8e0f6f35570cd43c46532f251f618bce6f2afcc30156",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "app/shared/types.ts",
+      "sha256": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "app/tools/test-role-transitions-ui.mjs",
+      "sha256": "ac0425a46c3c4c4137bf7edfc5dc6aa8fd795b7d1eb62892941e707dd67c8ac7",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/CORE.md",
+      "sha256": "1cea28b6fcf01f409ca2af06c92fdbc929fdc4e489c65d6e2de836e0a1beda27",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/analyst.md",
+      "sha256": "81437e3f1258b7fe5de3ff37d531a5b8b8c3d27c95f741b0c6d30d6cccbf11c2",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/architect.md",
+      "sha256": "e1c687701e8f3705888f45b05e7352fdf28a11e8a647b29e62ebefea22eb33ad",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/backend.md",
+      "sha256": "ed4cac535bb002fbaa5d82b7953e25a22ef35dc96ec629dd1edc1607a0c7d264",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/database.md",
+      "sha256": "619f87a555a9d3a6f834ad1dd92c24a5ec4a893c6fdd3a12cbec4f5da4391e5b",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/designer.md",
+      "sha256": "e9eb486894fd63e94297a8dac9584164da5d706074483a4e6732d34b98b25a79",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/devops.md",
+      "sha256": "05ca52297f9a191b9fe7b9de6affe0af8ab1d53e2c1841dfcbe197abc27fe74a",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/diagnostics.md",
+      "sha256": "ac294df40837a0dd8b226e213f7a7ddd9e0993252138d3a273872e0d71d8e2eb",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/frontend.md",
+      "sha256": "c2c147ec4391206a09da02cb6e4dd289d6dbe0cb09212892667610d94305d7aa",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/gigacode-ui.md",
+      "sha256": "f95c095102ef74fd64a107cca768e77b00d735effc4b562d32621bb0bdd11e06",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/qa.md",
+      "sha256": "5f8bf61325c4840908707cee85d5c0d19df03ab46dd4cadec5f25895f42bbf03",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/reviewer.md",
+      "sha256": "59d2adc726726bb7461b9ba6e3c40f28cd631e567b902ed39aee90c34753940d",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/security.md",
+      "sha256": "eb48df1300b48bf155cc09b35294aefd383bd5c5cb2910ec94678634672be0e8",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/spec.md",
+      "sha256": "a9bc23ab2a85938f5b4ee2887fb7e4483c93164c83f2f8b4ec3f37821d043e7b",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "workbench/profiles/technical-writer.md",
+      "sha256": "2df4753a59674a01a6276783cafa08f79cd9bf38583fb6bb5e062fcb7890ad47",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/src/App.tsx",
+      "sha256": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/src/api.ts",
+      "sha256": "685ec5467aa5f97a6c4057cdb74174301138e8cab090c507f7de596a14e83433",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/src/snapshot-feed.ts",
+      "sha256": "a68c59d601beb5a75a705a34e82b2fca11c0448aeec5f10b412a884a78c825bd",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/src/local-state.ts",
+      "sha256": "964f4d86855f7694b3c8e7436040b8b1ccdcea58ed1ef3b15412bf7ed9b1292f",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/src/Workspace.tsx",
+      "sha256": "d11e4f10208998c6afe9bb51b7612e0db6d5d6977b515f17fa373418a3271762",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/src/ErrorBoundary.tsx",
+      "sha256": "e13f0a5d0b329145a8e38d82a22cdb7022e6ad95eb103049d15c33338fb70043",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/src/ToolBoundary.tsx",
+      "sha256": "c5201b14523d6d8fb08ba944c49402a8bf766d87193ac3ccf7ae137b97f2b5c8",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/src/QueueMessages.tsx",
+      "sha256": "def41a2ba59947f6c325721902f7eaaeb9034d886ddceed7e75a69a6d7282c79",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/src/queue-edit-journal.ts",
+      "sha256": "c556ca15922ef7cf8bf62bc957c280582f607da9d25bc90a29b979c66ac8e561",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/src/styles.css",
+      "sha256": "83d00d8fdb1cb4c9044547efcf52e7d049e462b81d3e0a590ad3fb4efda84605",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/electron/preload.ts",
+      "sha256": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/electron/main.ts",
+      "sha256": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/electron/service.ts",
+      "sha256": "571e6e6cb85c03d1cee80b73d6d2377c60a6e6d3cc2cbd47fabf693f81efcc70",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/electron/acp.ts",
+      "sha256": "01e8454f5fc63c15331b8e0f6f35570cd43c46532f251f618bce6f2afcc30156",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/electron/store.ts",
+      "sha256": "40382045034687e8a5af380cf6ed3a7c54a53a859f0c3a69d4e0f7d6e0ba04a5",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/electron/renderer-recovery.ts",
+      "sha256": "7be680151cc5bf3ab140d722bc9888f4113b51995a7a27e2a56ca8b547e640f3",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/shared/types.ts",
+      "sha256": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/tests/fixtures/acp-fixture.mjs",
+      "sha256": "c6e8b243ac46a69329fddb33265c0eb86dc8052f7e801e4f78bc86dfb4b5e5d7",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "app/tools/test-renderer-resilience-ui.mjs",
+      "sha256": "31b22994f9d8e7548e215cb2213edb011f658645110cf9ec8d5e43a129e70c21",
+      "commitMatches": true,
+      "currentMatches": true
+    },
+    {
+      "report": "agent-runtime-qwen/offline-router.json",
+      "path": "app/electron/role-router.ts",
+      "sha256": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
+      "commitMatches": true,
+      "currentMatches": true
+    }
+  ],
+  "sourceHashAllMatch": true,
+  "sourceHashComparisonCount": 71,
+  "generatedBuildHashExclusions": [
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "dist-electron/main.cjs",
+      "sha256": "485f988a1a0d2d1bade5ec8fc7ddd8eebe870bb539394e2ad432c91db4b50de5",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "dist-electron/preload.cjs",
+      "sha256": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "dist/assets/ClusterPanel-CbEPgavK.js",
+      "sha256": "1ac4e4825cc05a13fb579e4feef218ac7131b8d7343c3351fdeb08772bf13f90",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "dist/assets/DatabasePanel-DKx5hzdU.css",
+      "sha256": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "dist/assets/DatabasePanel-GkJq4AhZ.js",
+      "sha256": "c5a9c92119450189ee30abb37871bcf88e8ef497ad0cbbfcfc2a7f54ae902dfd",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "dist/assets/JenkinsPanel-CaodMrQB.js",
+      "sha256": "04130077e31d5938de7958a1ef1fc545491134fc9a2b156b488bd50d3f0d06b6",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "dist/assets/OperationsSettings-BK0bYkTt.js",
+      "sha256": "0645df338f60893550acc67ca332d04226124d187542796f04164106cf422307",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "dist/assets/dist-NCTH-79-.js",
+      "sha256": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "dist/assets/index-BXB_vQjQ.css",
+      "sha256": "eb17e2528789cd5acc914e8fa08fa9728f98434340de7573a972d68f2d222353",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "dist/assets/index-htE_Fe71.js",
+      "sha256": "8069314856da216f5fc3f4e83c962c409cf48c6a4dda7c64206702f52374e496",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "dist/assets/ops-ui-8eM9bX_B.css",
+      "sha256": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "agent-runtime-ui/report.json",
+      "path": "dist/assets/ops-ui-DcfkRURX.js",
+      "sha256": "421e6a01385e26a12aaedd3f91ecd9462832403f1b5d264a0a1c764a07e10e40",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "dist-electron/main.cjs",
+      "sha256": "485f988a1a0d2d1bade5ec8fc7ddd8eebe870bb539394e2ad432c91db4b50de5",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "dist-electron/preload.cjs",
+      "sha256": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "dist/assets/ClusterPanel-CbEPgavK.js",
+      "sha256": "1ac4e4825cc05a13fb579e4feef218ac7131b8d7343c3351fdeb08772bf13f90",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "dist/assets/DatabasePanel-DKx5hzdU.css",
+      "sha256": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "dist/assets/DatabasePanel-GkJq4AhZ.js",
+      "sha256": "c5a9c92119450189ee30abb37871bcf88e8ef497ad0cbbfcfc2a7f54ae902dfd",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "dist/assets/JenkinsPanel-CaodMrQB.js",
+      "sha256": "04130077e31d5938de7958a1ef1fc545491134fc9a2b156b488bd50d3f0d06b6",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "dist/assets/OperationsSettings-BK0bYkTt.js",
+      "sha256": "0645df338f60893550acc67ca332d04226124d187542796f04164106cf422307",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "dist/assets/dist-NCTH-79-.js",
+      "sha256": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "dist/assets/index-BXB_vQjQ.css",
+      "sha256": "eb17e2528789cd5acc914e8fa08fa9728f98434340de7573a972d68f2d222353",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "dist/assets/index-htE_Fe71.js",
+      "sha256": "8069314856da216f5fc3f4e83c962c409cf48c6a4dda7c64206702f52374e496",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "dist/assets/ops-ui-8eM9bX_B.css",
+      "sha256": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "role-transitions-ui/report.json",
+      "path": "dist/assets/ops-ui-DcfkRURX.js",
+      "sha256": "421e6a01385e26a12aaedd3f91ecd9462832403f1b5d264a0a1c764a07e10e40",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "dist-electron/main.cjs",
+      "sha256": "485f988a1a0d2d1bade5ec8fc7ddd8eebe870bb539394e2ad432c91db4b50de5",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "dist-electron/preload.cjs",
+      "sha256": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "dist/assets/ClusterPanel-CbEPgavK.js",
+      "sha256": "1ac4e4825cc05a13fb579e4feef218ac7131b8d7343c3351fdeb08772bf13f90",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "dist/assets/DatabasePanel-DKx5hzdU.css",
+      "sha256": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "dist/assets/DatabasePanel-GkJq4AhZ.js",
+      "sha256": "c5a9c92119450189ee30abb37871bcf88e8ef497ad0cbbfcfc2a7f54ae902dfd",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "dist/assets/JenkinsPanel-CaodMrQB.js",
+      "sha256": "04130077e31d5938de7958a1ef1fc545491134fc9a2b156b488bd50d3f0d06b6",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "dist/assets/OperationsSettings-BK0bYkTt.js",
+      "sha256": "0645df338f60893550acc67ca332d04226124d187542796f04164106cf422307",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "dist/assets/dist-NCTH-79-.js",
+      "sha256": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "dist/assets/index-BXB_vQjQ.css",
+      "sha256": "eb17e2528789cd5acc914e8fa08fa9728f98434340de7573a972d68f2d222353",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "dist/assets/index-htE_Fe71.js",
+      "sha256": "8069314856da216f5fc3f4e83c962c409cf48c6a4dda7c64206702f52374e496",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "dist/assets/ops-ui-8eM9bX_B.css",
+      "sha256": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    },
+    {
+      "report": "renderer-resilience-ui/report.json",
+      "path": "dist/assets/ops-ui-DcfkRURX.js",
+      "sha256": "421e6a01385e26a12aaedd3f91ecd9462832403f1b5d264a0a1c764a07e10e40",
+      "reason": "OS-specific/generated build output; excluded from tracked-source comparisons."
+    }
+  ],
+  "captureManifest": [
+    {
+      "path": "agent-runtime-ui/report.json",
+      "bytes": 15835,
+      "sha256": "0121e515797d4e09d1a70f28b50828a58fbe72b89a1670a2ae837557147c8b02",
+      "zipEntryModifiedUtc": "2026-10-14T16:24:48+00:00",
+      "selection": "Current run report; original bytes preserved"
+    },
+    {
+      "path": "agent-runtime-ui/roles-composer-dark-1440.png",
+      "bytes": 51019,
+      "sha256": "89ffd59db5510fd7c2db5ea9f71c4b385e584c6efb987db3293071d1ecbe77f3",
+      "zipEntryModifiedUtc": "2026-10-14T16:24:46+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "agent-runtime-ui/roles-settings-light-1000.png",
+      "bytes": 120568,
+      "sha256": "52254535e3c8f9d67994d2cefa9b0f8ec42171009f40c07472bf712f723503e5",
+      "zipEntryModifiedUtc": "2026-10-14T16:24:46+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "role-transitions-ui/report.json",
+      "bytes": 18113,
+      "sha256": "e42dd99951b2ba8a4ca52aef73cc617f35c9b80610f15f6da71929da5e58ee9a",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:18+00:00",
+      "selection": "Current run report; original bytes preserved"
+    },
+    {
+      "path": "role-transitions-ui/backend-pending-dark-1440.png",
+      "bytes": 56903,
+      "sha256": "3a0fcc7f47a6a53884e3718619bdbd62ba008b90bee4d9993133ca529df8c7e1",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:06+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "role-transitions-ui/held-resumable-dark-1000.png",
+      "bytes": 54606,
+      "sha256": "65f1669bcb336020982edcabe3c925b5dad2a8280c5742644fb35da7ec4a9d74",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:08+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "role-transitions-ui/diagnostics-pending-dark-1440.png",
+      "bytes": 61821,
+      "sha256": "707f6491ce00fe26beaf9c4e36cb16371506c45508f4b8f1fe2344815fab36e2",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:12+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "role-transitions-ui/frontend-running-dark-1440.png",
+      "bytes": 63198,
+      "sha256": "504d3450bd3bb3a2e4329f96a2958c9adeda8e1e74af596531f4e98ee83ab341",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:16+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "role-transitions-ui/composer-dark-1440.png",
+      "bytes": 64765,
+      "sha256": "44d1430e0d8682b52610680f8c38f659b321563a1e12105252e64f55405af84c",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:16+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "role-transitions-ui/composer-dark-1000.png",
+      "bytes": 58907,
+      "sha256": "3414c4550bba136c8b5d1e536da5da4f90c0c811fb6500cd51f7a7a8ab9236bc",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:16+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "role-transitions-ui/history-dark-1000.png",
+      "bytes": 123007,
+      "sha256": "b19d4c7c98e394ce064b80b9771c76078d92ce4f4d8937ddfcbde2f5c19209cc",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:16+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "role-transitions-ui/composer-light-1440.png",
+      "bytes": 64312,
+      "sha256": "6261b0443dac82b5dbf3bfda9b84610e869fd5337f8ef7c263fab3431f301536",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:16+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "role-transitions-ui/composer-light-1000.png",
+      "bytes": 58642,
+      "sha256": "4d2363443bd7cba6e551833d6d29b4201e282c534b8420492f82500411bbb674",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:16+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "role-transitions-ui/history-light-1000.png",
+      "bytes": 118889,
+      "sha256": "5b5fe9e6015ef39ad27fdffa9722e828256721a53afa13f3d4250b5bc65d2d1e",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:16+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "renderer-resilience-ui/report.json",
+      "bytes": 8281,
+      "sha256": "e27f4d40705d41a1c880596672a5eb81c15514f38cc8fb83d156f284df10ecc6",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:34+00:00",
+      "selection": "Current run report; original bytes preserved"
+    },
+    {
+      "path": "renderer-resilience-ui/recovered-dark-desktop.png",
+      "bytes": 59984,
+      "sha256": "cba23cf462856ce71a5b2134cd76f47fcb6c92e425a8534414a6a5c5cc6ccde6",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:32+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "renderer-resilience-ui/recovered-light-desktop.png",
+      "bytes": 57957,
+      "sha256": "06c052939577e85514d3713383912df8bae0934090948ab838b28355e17c9476",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:32+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "renderer-resilience-ui/runtime-stopped-dark-desktop.png",
+      "bytes": 62490,
+      "sha256": "10df505440d063dae8b6234de28a5c214cdecd7061a47bc97ab2b2821ed8d824",
+      "zipEntryModifiedUtc": "2026-10-14T16:25:34+00:00",
+      "selection": "Capture named in current win32 report"
+    },
+    {
+      "path": "agent-runtime-qwen/unit-final-win32.json",
+      "bytes": 304183,
+      "sha256": "c4c7591e62940d263ee9ba98110b5bc67768b03ff6116746798576091bf450bd",
+      "zipEntryModifiedUtc": "2026-10-14T16:24:00+00:00",
+      "selection": "Current run report; original bytes preserved"
+    },
+    {
+      "path": "agent-runtime-qwen/system-placement.json",
+      "bytes": 3135,
+      "sha256": "3ff02780d4675ec236fc528992f4660a3f95516babaf6c9ede53b3a80732f2ba",
+      "zipEntryModifiedUtc": "2026-10-14T16:24:12+00:00",
+      "selection": "Current run report; original bytes preserved"
+    },
+    {
+      "path": "agent-runtime-qwen/offline-router.json",
+      "bytes": 16239,
+      "sha256": "8645a9e657d35c4b5d4f905f0fc8b9066bccb511d3ca3f3bce16579f347f8802",
+      "zipEntryModifiedUtc": "2026-10-14T16:24:42+00:00",
+      "selection": "Current run report; original bytes preserved"
+    }
+  ],
+  "selectionPolicy": "Only current win32 reports and captures named by those reports, with ZIP times inside exact run. No attempt JSONs, Darwin reports, or unnamed old captures copied. Original report bytes preserved.",
+  "cleanup": "All three actual desktop reports confirm application closed and owned data removed; offline/placement reports retain exact cleanup claims.",
+  "limitations": [
+    "No installed workplace GigaCode 26.10.6 runtime tested.",
+    "Controlled provider tests verify integration mechanisms, not LLM reasoning quality.",
+    "Generated OS/build hashes excluded from tracked-source equality; ephemeral placement hostBundleSha256 has no retained corresponding build file."
+  ]
+}

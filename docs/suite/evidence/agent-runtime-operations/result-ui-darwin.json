@@ -49,7 +49,7 @@
     "dist/assets/ops-ui-DcfkRURX.js": "421e6a01385e26a12aaedd3f91ecd9462832403f1b5d264a0a1c764a07e10e40",
     "dist/index.html": "a7cd0ec261e4c0fd56bff3165feb43d3eeb7fb5e9cc5695a794962335ea87009",
     "dist-electron/database-provider.cjs": "0be6d6f778fa715e6a37aa90c22a25b4c46c911a20e855b0ae24959ce306ef20",
-    "dist-electron/main.cjs": "f392cc5274dffa875df9d98a420b940613ca0f8bb8d19513c66270d5301f411c",
+    "dist-electron/main.cjs": "485f988a1a0d2d1bade5ec8fc7ddd8eebe870bb539394e2ad432c91db4b50de5",
     "dist-electron/operations-provider.cjs": "1ff87c73fb0acc0f6893f039bea02718a91913a37ddd5ea64c0e2482d1ecbc20",
     "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61"
   },

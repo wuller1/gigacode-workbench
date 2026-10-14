@@ -1,8 +1,8 @@
 {
   "suite": "operations-upstream-live",
   "status": "passed",
-  "started": "2026-10-14T15:48:02.938Z",
-  "ended": "2026-10-14T15:48:51.859Z",
+  "started": "2026-10-14T16:23:05.524Z",
+  "ended": "2026-10-14T16:23:53.922Z",
   "environment": {
     "platform": "darwin",
     "arch": "arm64",
@@ -15,7 +15,7 @@
   "cases": [
     {
       "name": "Actual stdio MCP discovers the pinned secured Jenkins server",
-      "elapsedMs": 275
+      "elapsedMs": 281
     },
     {
       "name": "Real root pagination and nested folder identity",
@@ -23,15 +23,15 @@
     },
     {
       "name": "Real Jenkins parameter discovery validates booleans and choices",
-      "elapsedMs": 102
+      "elapsedMs": 98
     },
     {
       "name": "Prepared trigger has no side effect and duplicate execute creates one actual build",
-      "elapsedMs": 8513
+      "elapsedMs": 8910
     },
     {
       "name": "Actual progressive log preserves Unicode and its upstream byte cursor",
-      "elapsedMs": 31
+      "elapsedMs": 32
     },
     {
       "name": "Absent Pipeline and JUnit plugins remain explicitly unsupported",
@@ -39,23 +39,23 @@
     },
     {
       "name": "Actual running freestyle build is stopped and reconciles to ABORTED",
-      "elapsedMs": 9351
+      "elapsedMs": 9181
     },
     {
       "name": "Actual non-runnable-node queue entry can be cancelled without creating a build",
-      "elapsedMs": 290
+      "elapsedMs": 300
     },
     {
       "name": "Shared connection favorites and project fences are enforced by actual service",
-      "elapsedMs": 23
+      "elapsedMs": 21
     },
     {
       "name": "A second real Jenkins instance has isolated jobs and routing",
-      "elapsedMs": 12246
+      "elapsedMs": 12173
     },
     {
       "name": "Real TLS Kubernetes discovery identifies supported resources and absent OpenShift groups",
-      "elapsedMs": 577
+      "elapsedMs": 523
     },
     {
       "name": "Unsafe Kubernetes path components cannot retarget a ConfigMap read or delete preflight to its namespace",
@@ -63,47 +63,47 @@
     },
     {
       "name": "Actual Kubernetes list pagination preserves complete stable identities",
-      "elapsedMs": 19
+      "elapsedMs": 17
     },
     {
       "name": "Prepared Kubernetes dry run is read-only and exact apply is visible at the real API",
-      "elapsedMs": 116
+      "elapsedMs": 110
     },
     {
       "name": "Real stale resourceVersion is rejected without overwriting a concurrent change",
-      "elapsedMs": 97
+      "elapsedMs": 85
     },
     {
       "name": "Actual RBAC permits reader lists and denies reader mutation preflight",
-      "elapsedMs": 297
+      "elapsedMs": 240
     },
     {
       "name": "Real Secret responses expose metadata without secret payloads",
-      "elapsedMs": 19
+      "elapsedMs": 12
     },
     {
       "name": "Real Kubernetes watch observes a versioned external change without repeated mutation",
-      "elapsedMs": 1079
+      "elapsedMs": 1089
     },
     {
       "name": "Real Deployment scale and restart modify desired state without claiming a rollout",
-      "elapsedMs": 248
+      "elapsedMs": 294
     },
     {
       "name": "Test-registered mesh CRDs are discovered by the native API and their persisted resources can be read",
-      "elapsedMs": 4292
+      "elapsedMs": 4311
     },
     {
       "name": "Recreated Kubernetes name does not inherit an old UID action",
-      "elapsedMs": 211
+      "elapsedMs": 214
     },
     {
       "name": "Environment labels can be renamed without changing the actual target",
-      "elapsedMs": 23
+      "elapsedMs": 24
     },
     {
       "name": "Durable Operations restart preserves receipts, bindings and encrypted credentials",
-      "elapsedMs": 244
+      "elapsedMs": 253
     }
   ],
   "failedCases": [],
@@ -170,22 +170,22 @@
       }
     ],
     "jenkinsBuild": {
-      "receiptId": "7d77e22c-3495-4fcb-bc7b-2968acf8b85b",
+      "receiptId": "79805d27-3efd-4026-a8ec-5c1191946140",
       "queueId": "1",
       "number": 1,
       "result": "SUCCESS"
     },
     "jenkinsProgressiveOffsets": {
-      "opaqueUpstreamCursor": "808",
-      "plainUtf8BodyBytes": 821,
+      "opaqueUpstreamCursor": "807",
+      "plainUtf8BodyBytes": 820,
       "explanation": "Raw offsets include ConsoleNotes; plain UTF-8 body length is not a Jenkins byte cursor",
-      "actualLogFileBytes": 808,
+      "actualLogFileBytes": 807,
       "consoleNoteObserved": true
     },
     "jenkinsLog": {
       "pages": 1,
       "unicodeObserved": true,
-      "characters": 805
+      "characters": 804
     },
     "secondJenkins": {
       "version": "2.580.1",
@@ -201,7 +201,7 @@
       "boundary": "Actual API state verified; zero-outbound assertion is covered separately by the provider unit fixture"
     },
     "meshBoundary": "Minimal test-registered EnvoyFilter/DestinationRule schemas and native Kubernetes persistence; no official Istio CRD bundle, istiod, OpenShift controllers or Envoy data plane",
-    "changeEvents": 174
+    "changeEvents": 171
   },
   "sourceHashes": {
     "electron/operations/catalog.ts": "f508f4c44be21716a224189365ad9f8448453f130c6054e7378dd50baa632cb8",
@@ -227,7 +227,7 @@
     {
       "status": "fulfilled",
       "value": {
-        "pid": 2772,
+        "pid": 21531,
         "exited": true,
         "exitCode": 143,
         "signal": null
@@ -237,20 +237,20 @@
       "status": "fulfilled",
       "value": [
         {
-          "pid": 2585,
+          "pid": 21334,
           "exited": true,
           "exitCode": 143,
           "signal": null
         },
         [
           {
-            "pid": 2597,
+            "pid": 21341,
             "exited": true,
             "exitCode": null,
             "signal": "SIGKILL"
           },
           {
-            "pid": 2589,
+            "pid": 21338,
             "exited": true,
             "exitCode": null,
             "signal": "SIGKILL"
