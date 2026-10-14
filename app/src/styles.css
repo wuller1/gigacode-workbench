@@ -2986,3 +2986,34 @@ kbd {
 .message:focus-within header {
   background: var(--surface);
 }
+
+/* Queue steering is a visible desktop action, never hidden behind hover. */
+.queue-send-now { min-height: 28px; padding: 3px 7px; gap: 5px; border: 0; background: var(--selected); color: var(--text); font-size: 11px; flex: none; }
+.queue-send-now:hover:not(:disabled) { background: var(--hover); }
+.queue-send-now:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.settings-desktop-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.vision-settings details { margin-block: 12px; }
+.vision-settings pre { max-height: 280px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.managed-agents-panel .panel-toolbar select { max-width: 180px; }
+.managed-agent-form { padding: 10px; margin-block: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--subtle); }
+.worker-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+.worker-actions button { font-size: 11px; min-height: 28px; }
+.worker-meta { color: var(--muted); font-size: 11px; }
+.managed-project-links { margin-top: 12px; }
+.managed-project-links > div { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+.managed-project-links > div > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+
+.context-control-details { border-top: 1px solid var(--line); padding-top: 10px; }
+.context-control-details h4 { margin: 0 0 10px; font-size: 13px; }
+.context-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 10px 0; }
+.context-stats > div { min-width: 0; }
+.context-stats dt { font-size: 11px; color: var(--muted); }
+.context-stats dd { margin: 4px 0 0; font-variant-numeric: tabular-nums; }
+
+.context-policy-editor { margin: 10px 0; border-top: 1px solid var(--line); padding-top: 10px; }
+.context-policy-editor summary { cursor: pointer; font-size: 12px; margin-bottom: 8px; }
+.context-policy-editor form { display: grid; gap: 8px; }
+.context-policy-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.context-policy-actions { display: flex; gap: 6px; flex-wrap: wrap; }

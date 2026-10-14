@@ -1,0 +1,134 @@
+[
+  {
+    "schemaVersion": 1,
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "dpr": 2
+    },
+    "theme": "dark",
+    "measuredAt": "2026-10-14T17:28:20.200Z",
+    "scanned": {
+      "controls": 33,
+      "contrast": 55
+    },
+    "issues": [],
+    "truncated": false,
+    "limitations": [
+      "Only current visible DOM; no screen-reader or native-window audit",
+      "Complex/gradient backgrounds excluded from contrast; alpha/opacity approximation requires pixel review",
+      "Small-target and covered-action results require spacing/scroll/overlay review",
+      "A pass does not establish visual quality or visual bridge correctness"
+    ]
+  },
+  {
+    "schemaVersion": 1,
+    "viewport": {
+      "width": 1024,
+      "height": 900,
+      "dpr": 2
+    },
+    "theme": "dark",
+    "measuredAt": "2026-10-14T17:28:20.327Z",
+    "scanned": {
+      "controls": 33,
+      "contrast": 55
+    },
+    "issues": [],
+    "truncated": false,
+    "limitations": [
+      "Only current visible DOM; no screen-reader or native-window audit",
+      "Complex/gradient backgrounds excluded from contrast; alpha/opacity approximation requires pixel review",
+      "Small-target and covered-action results require spacing/scroll/overlay review",
+      "A pass does not establish visual quality or visual bridge correctness"
+    ]
+  },
+  {
+    "schemaVersion": 1,
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "dpr": 2
+    },
+    "theme": "light",
+    "measuredAt": "2026-10-14T17:28:20.504Z",
+    "scanned": {
+      "controls": 33,
+      "contrast": 55
+    },
+    "issues": [],
+    "truncated": false,
+    "limitations": [
+      "Only current visible DOM; no screen-reader or native-window audit",
+      "Complex/gradient backgrounds excluded from contrast; alpha/opacity approximation requires pixel review",
+      "Small-target and covered-action results require spacing/scroll/overlay review",
+      "A pass does not establish visual quality or visual bridge correctness"
+    ]
+  },
+  {
+    "schemaVersion": 1,
+    "viewport": {
+      "width": 1024,
+      "height": 900,
+      "dpr": 2
+    },
+    "theme": "light",
+    "measuredAt": "2026-10-14T17:28:20.640Z",
+    "scanned": {
+      "controls": 33,
+      "contrast": 55
+    },
+    "issues": [],
+    "truncated": false,
+    "limitations": [
+      "Only current visible DOM; no screen-reader or native-window audit",
+      "Complex/gradient backgrounds excluded from contrast; alpha/opacity approximation requires pixel review",
+      "Small-target and covered-action results require spacing/scroll/overlay review",
+      "A pass does not establish visual quality or visual bridge correctness"
+    ]
+  },
+  {
+    "schemaVersion": 1,
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "dpr": 2
+    },
+    "theme": "high-contrast",
+    "measuredAt": "2026-10-14T17:28:20.797Z",
+    "scanned": {
+      "controls": 33,
+      "contrast": 55
+    },
+    "issues": [],
+    "truncated": false,
+    "limitations": [
+      "Only current visible DOM; no screen-reader or native-window audit",
+      "Complex/gradient backgrounds excluded from contrast; alpha/opacity approximation requires pixel review",
+      "Small-target and covered-action results require spacing/scroll/overlay review",
+      "A pass does not establish visual quality or visual bridge correctness"
+    ]
+  },
+  {
+    "schemaVersion": 1,
+    "viewport": {
+      "width": 1024,
+      "height": 900,
+      "dpr": 2
+    },
+    "theme": "high-contrast",
+    "measuredAt": "2026-10-14T17:28:20.922Z",
+    "scanned": {
+      "controls": 33,
+      "contrast": 55
+    },
+    "issues": [],
+    "truncated": false,
+    "limitations": [
+      "Only current visible DOM; no screen-reader or native-window audit",
+      "Complex/gradient backgrounds excluded from contrast; alpha/opacity approximation requires pixel review",
+      "Small-target and covered-action results require spacing/scroll/overlay review",
+      "A pass does not establish visual quality or visual bridge correctness"
+    ]
+  }
+]

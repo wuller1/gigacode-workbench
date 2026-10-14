@@ -1,6 +1,6 @@
 {
   "name": "gigacode-workbench-ui",
-  "version": "0.6.0-preview.1",
+  "version": "0.7.0-preview.1",
   "private": true,
   "description": "A local desktop workspace for ACP coding agents",
   "license": "Apache-2.0",
@@ -79,7 +79,7 @@
   },
   "build": {
     "appId": "io.github.wuller1.gigacode-workbench",
-    "productName": "GigaCode Workbench",
+    "productName": "GigaCode",
     "directories": {
       "output": "release"
     },
@@ -165,17 +165,22 @@
         "portable"
       ],
       "signAndEditExecutable": false,
-      "icon": "build/icon.ico"
+      "icon": "build/icon.ico",
+      "executableName": "GigaCode"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "perMachine": false
+      "perMachine": false,
+      "artifactName": "GigaCode-Setup-${version}-${arch}.${ext}"
     },
     "mac": {
       "category": "public.app-category.developer-tools",
       "identity": null,
       "icon": "build/icon.png"
+    },
+    "portable": {
+      "artifactName": "GigaCode-${version}-${arch}-portable.${ext}"
     }
   },
   "overrides": {

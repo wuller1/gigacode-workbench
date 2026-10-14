@@ -1,3 +1,8 @@
+import type {
+  ManagedAgentRecord,
+  ProjectCoordinationLink,
+} from "./managed-coordination.js";
+
 export type Status =
   | "idle"
   | "starting"
@@ -115,6 +120,22 @@ export interface Session {
   error?: string;
   context: { usedTokens?: number; limitTokens?: number; estimated?: boolean };
   configOptions?: ConfigOption[];
+  /** Host-managed admission/recovery metadata; status above remains process truth. */
+  managed?: Pick<
+    ManagedAgentRecord,
+    | "phase"
+    | "dependencies"
+    | "writeScopes"
+    | "contextBudget"
+    | "attempts"
+    | "effectFence"
+    | "retryAt"
+    | "failure"
+    | "checkpoint"
+    | "desired"
+    | "reconciliations"
+    | "retryMode"
+  > & { canRetry?: boolean };
 }
 export interface Profile {
   id: string;
@@ -154,6 +175,10 @@ export interface Settings {
   reducedMotion: boolean;
   startupRetries: number;
   permissionMode: "auto_allow_bound" | "ask_each";
+  managedMaxPerParent?: number;
+  managedContextBudgetTokens?: number;
+  managedAttempts?: number;
+  allowCrossProjectCoordination?: boolean;
 }
 export interface AppState {
   schemaVersion: 1;
@@ -165,6 +190,7 @@ export interface AppState {
   artifacts: Artifact[];
   questions: Question[];
   settings: Settings;
+  coordinationLinks?: ProjectCoordinationLink[];
 }
 export interface HostEvent {
   type: string;

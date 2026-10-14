@@ -1185,8 +1185,9 @@ describe("durable backend", () => {
       (await logs(x.project)).filter((l) => l.type === "prompt"),
     ).toHaveLength(1);
   });
-  it("rejects cross-project peers and self-trigger loops", async () => {
+  it("rejects cross-project peers when the human disables coordination and rejects self-trigger loops", async () => {
     const x = await setup();
+    await x.service.invoke("settings.update", { patch: { allowCrossProjectCoordination: false } });
     const otherPath = await temporary();
     const p = await x.service.invoke("project.create", {
       name: "Other",

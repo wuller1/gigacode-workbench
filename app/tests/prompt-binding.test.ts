@@ -322,70 +322,81 @@ describe("runtime capability evidence", () => {
     expect(b.support).toBe("unknown");
     expect(execFile).not.toHaveBeenCalled();
   });
-  it("revokes reviewed Qwen evidence after an anchor rewrite despite identical metadata, caching help only for unchanged content", async () => {
-    const directory = await temp();
-    const installed = fileURLToPath(
-      new URL("../node_modules/@qwen-code/qwen-code/", import.meta.url),
-    );
-    const names = [
-      "package.json",
-      "cli-entry.js",
-      "cli.js",
-      "chunks/chunk-A5MAHML6.js",
-      "chunks/chunk-HO724RA7.js",
-      "chunks/acpAgent-FSCEU2SB.js",
-      "chunks/chunk-KGXOCC6J.js",
-      "chunks/chunk-WCM7H5HK.js",
-      "chunks/chunk-DMQ2VTH6.js",
-      "chunks/chunk-BFTRLQJP.js",
-      "chunks/chunk-GT4TCQ3R.js",
-      "chunks/chunk-ZZZAYAJW.js",
-    ];
-    await fs.mkdir(path.join(directory, "chunks"));
-    await Promise.all(
-      names.map((name) =>
-        fs.copyFile(path.join(installed, name), path.join(directory, name)),
-      ),
-    );
-    const executable = path.join(directory, "cli.js"),
-      anchor = path.join(directory, "chunks/chunk-A5MAHML6.js");
-    const metadata = await freezeStatMetadata(
-      names.map((name) => path.join(directory, name)),
-    );
-    vi.mocked(execFile).mockImplementationOnce(((...args: unknown[]) => {
-      const callback = args.at(-1) as (
-        error: null,
-        stdout: string,
-        stderr: string,
-      ) => void;
-      queueMicrotask(() =>
-        callback(
-          null,
-          "--append-system-prompt --safe-mode --max-tool-calls --max-session-turns --max-wall-time --output-format",
-          "",
+  it.each([
+    "chunks/chunk-A5MAHML6.js",
+    "chunks/chunk-HBLEH4WH.js",
+    "chunks/chunk-2UNFJQ2D.js",
+    "chunks/chunk-XXAGVL2C.js",
+  ])(
+    "revokes reviewed Qwen evidence after %s is rewritten despite identical metadata, caching help only for unchanged content",
+    async (anchorName) => {
+      const directory = await temp();
+      const installed = fileURLToPath(
+        new URL("../node_modules/@qwen-code/qwen-code/", import.meta.url),
+      );
+      const names = [
+        "package.json",
+        "cli-entry.js",
+        "cli.js",
+        "chunks/chunk-A5MAHML6.js",
+        "chunks/chunk-HO724RA7.js",
+        "chunks/chunk-2UNFJQ2D.js",
+        "chunks/chunk-XXAGVL2C.js",
+        "chunks/acpAgent-FSCEU2SB.js",
+        "chunks/chunk-KGXOCC6J.js",
+        "chunks/chunk-HBLEH4WH.js",
+        "chunks/chunk-WCM7H5HK.js",
+        "chunks/chunk-DMQ2VTH6.js",
+        "chunks/chunk-BFTRLQJP.js",
+        "chunks/chunk-GT4TCQ3R.js",
+        "chunks/chunk-ZZZAYAJW.js",
+      ];
+      await fs.mkdir(path.join(directory, "chunks"));
+      await Promise.all(
+        names.map((name) =>
+          fs.copyFile(path.join(installed, name), path.join(directory, name)),
         ),
       );
-      return {};
-    }) as typeof execFile);
-    const a = await discoverPromptCapability({ executable });
-    expect(a.support).toBe("source_verified");
-    expect(a.helpVerified).toBe(true);
-    expect(await discoverPromptCapability({ executable })).toBe(a);
-    expect(execFile).toHaveBeenCalledTimes(1);
-    const changed = await fs.readFile(anchor);
-    changed[0] ^= 1;
-    await fs.writeFile(anchor, changed);
-    expect(await fs.stat(anchor)).toBe(metadata.get(anchor));
-    const b = await discoverPromptCapability({ executable });
-    expect(b.runtimeFingerprint).not.toBe(a.runtimeFingerprint);
-    expect(b).toMatchObject({
-      family: "qwen",
-      support: "unknown",
-      supportsToollessRouter: false,
-      helpVerified: false,
-    });
-    expect(execFile).toHaveBeenCalledTimes(1);
-  });
+      const executable = path.join(directory, "cli.js"),
+        anchor = path.join(directory, anchorName);
+      const metadata = await freezeStatMetadata(
+        names.map((name) => path.join(directory, name)),
+      );
+      vi.mocked(execFile).mockImplementationOnce(((...args: unknown[]) => {
+        const callback = args.at(-1) as (
+          error: null,
+          stdout: string,
+          stderr: string,
+        ) => void;
+        queueMicrotask(() =>
+          callback(
+            null,
+            "--append-system-prompt --exclude-tools --safe-mode --max-tool-calls --max-session-turns --max-wall-time --output-format",
+            "",
+          ),
+        );
+        return {};
+      }) as typeof execFile);
+      const a = await discoverPromptCapability({ executable });
+      expect(a.support).toBe("source_verified");
+      expect(a.helpVerified).toBe(true);
+      expect(await discoverPromptCapability({ executable })).toBe(a);
+      expect(execFile).toHaveBeenCalledTimes(1);
+      const changed = await fs.readFile(anchor);
+      changed[0] ^= 1;
+      await fs.writeFile(anchor, changed);
+      expect(await fs.stat(anchor)).toBe(metadata.get(anchor));
+      const b = await discoverPromptCapability({ executable });
+      expect(b.runtimeFingerprint).not.toBe(a.runtimeFingerprint);
+      expect(b).toMatchObject({
+        family: "qwen",
+        support: "unknown",
+        supportsToollessRouter: false,
+        helpVerified: false,
+      });
+      expect(execFile).toHaveBeenCalledTimes(1);
+    },
+  );
   it("does not trust a fork name, a package claim or --append text in a fake executable", async () => {
     const directory = await temp();
     const executable = path.join(directory, "cli.js");

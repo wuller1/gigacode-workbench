@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "platform": "darwin",
+  "time": "2026-10-14T18:07:14.653Z",
+  "scope": "Actual built Electron App with owned deterministic ACP/MCP fixture processes; no paid/real vision model/corporate service",
+  "baseline": false,
+  "checks": [
+    {
+      "name": "Actual queue: editing then visible Send now cancels once and dispatches edited message once",
+      "elapsedMs": 2710,
+      "passed": true
+    },
+    {
+      "name": "Managed delegate created through the actual UI remains visible in current-task scope",
+      "elapsedMs": 1141,
+      "passed": true
+    },
+    {
+      "name": "Host write conflicts and DAG dependencies hold children, queued pause/resume is controlled through UI",
+      "elapsedMs": 2348,
+      "passed": true
+    },
+    {
+      "name": "Managed followup uses actual card UI and prior attempt is not replayed",
+      "elapsedMs": 911,
+      "passed": true
+    },
+    {
+      "name": "Directed cross-project delegation, durable note dedup and revocation use the same host queue",
+      "elapsedMs": 1968,
+      "passed": true
+    }
+  ],
+  "failure": {
+    "test": "Managed dispatched process failure is fenced; retry and followup do not replay UNKNOWN",
+    "message": "locator.selectOption: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.worker-card').filter({ has: locator('.worker-heading').filter({ hasText: 'Unknown worker' }) }).getByLabel('Наблюдаемый результат', { exact: true })\u001b[22m\n"
+  },
+  "proofs": [
+    {
+      "stage": "queue",
+      "queueLength": 0,
+      "editedDispatches": 1,
+      "originalDispatches": 0,
+      "cancellations": 1
+    },
+    {
+      "stage": "managed-dag",
+      "first": "3b2a7f56-3908-41fe-be66-c13d3b333a2d",
+      "second": "9a722853-b82e-4961-976e-af0d3be17d8d",
+      "dependent": "74b7b530-c70d-4034-a3bc-2c1839fd362f",
+      "dependentAndConflictingBeforeRelease": 0
+    },
+    {
+      "stage": "cross-project",
+      "linkId": "a04168fa-4018-422a-b8ce-72a8a379a2e7",
+      "distinctProject": true,
+      "noteDispatches": 1,
+      "revokedAdmission": "held"
+    }
+  ],
+  "captures": [
+    {
+      "name": "queue-send-now-dark.png",
+      "sha256": "1a8f495a2dcffc98c696913dffc02ee4145da5032c55fa124306c69fa7a25018",
+      "viewport": {
+        "width": 1440,
+        "height": 920,
+        "dpr": 2,
+        "theme": "dark"
+      }
+    },
+    {
+      "name": "managed-worker-dark.png",
+      "sha256": "11a5531d70249e36df8ca1c711c9decd31a53ac4c377f1ee16e5fc7affab0153",
+      "viewport": {
+        "width": 1440,
+        "height": 920,
+        "dpr": 2,
+        "theme": "dark"
+      }
+    },
+    {
+      "name": "failure.png",
+      "sha256": "fec449da72cd15fb22bd0016ed1e6742698d5f390d562686d968b1e25bf39321",
+      "viewport": {
+        "width": 1440,
+        "height": 920,
+        "dpr": 2,
+        "theme": "dark"
+      }
+    }
+  ],
+  "rendererErrors": [],
+  "sourceHashes": {
+    "src/App.tsx": "6a9d3f9732601318063d6d940d92fb0e94d19c5103851c3df1ef2d0175119260",
+    "src/ManagedAgentsPanel.tsx": "11ba3ffcc19fb75d8d1683224d5644531a65c5b7a2be17ae65d9fc6f7d3a9e95",
+    "src/ContextControls.tsx": "b53ee8040fb8d42c0cf1517ba3fcd2328f7cfed062c2472d55eecd9b07653ef4",
+    "src/VisionSettings.tsx": "2f5ed5a5696c5130bd2d7ef21bdba837f5eac0fdb96b564e19c00d9eba1f6010",
+    "src/QueueMessages.tsx": "01a93bc8a5077777fb67e47b805e33e5be52c37c5f46969b259f28d91f5ccbb2",
+    "src/SettingsView.tsx": "762d5cd1666d3c735b8b2a064e2da212c3b0649be06d2f90da15dcc7e633217e",
+    "src/styles.css": "7508672f7f11f1aa3e1ee352527aa7a4a6ec96aba2a12321d184f0fdedea2d38",
+    "electron/main.ts": "3b23243c96ae42ccad3b1a2169fcac4d4136db75c87b2af0b0e60e62a5e90c28",
+    "electron/service.ts": "47025621afcf8f109feaf2f5ba495982831fac5ab87ea1041d44360e92f346f9",
+    "electron/acp.ts": "cc1f1accce1ecc2908b35b97bb99da751d62f79f4458e697b05665fcce57bfca",
+    "electron/store.ts": "40382045034687e8a5af380cf6ed3a7c54a53a859f0c3a69d4e0f7d6e0ba04a5",
+    "electron/context-supervisor.ts": "cc945c24c3750ec0f4091586db3bd44c6a9ebe63ca885b63f5057311ffa41d65",
+    "electron/managed-coordination.ts": "7b2ad27b870a7b262ffe264117e52fd3aab8eabb7ef65899ca7392fc4b52a518",
+    "electron/vision-bridge.ts": "be37f367ab12da65aa7e2067f5964a9871c84e8b9c40d42cb20d94d3cbaac781",
+    "shared/context.ts": "b83f3bede7c4115ea534205f32ab5b5fb21b30853eef6662aacc4bc46a553095",
+    "shared/managed-coordination.ts": "e62829ac9f6f28b84ec94a44ce8e11550e3ec476005395bf441d6b0cb3e0f1fa",
+    "shared/vision.ts": "43e7f68854d9fc0d38b5b5652fa336f7e75916be2f0202d5d1490413aa251aa6",
+    "shared/types.ts": "7b3ee71b2a0685c70b1c9052b06c2765c513671bc2f946ceb7fa8d79c73e02a6",
+    "tools/test-flash-runtime-ui.mjs": "4ccadcdca662afe7042f68b7e8f9643c6ff91cc3df9a6a2a8d17cd3188f47fac",
+    "dist-electron/main.cjs": "439439a9de6bf553a266deafdd095f8e5de93c85e09604f03e09c061f2da3b50",
+    "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
+    "dist/assets/ClusterPanel-MauDoX7s.js": "793b5476a84e43a2485c364cfe2c7432fcd8cfbdd84e8b1b57ea2f0fe31f2e11",
+    "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+    "dist/assets/DatabasePanel-x58m1FVQ.js": "c3b62c01607b2768b65fd911c27cb47c624ebdd89af411a605e5b3cdb174d0b3",
+    "dist/assets/JenkinsPanel-DBckhJCi.js": "c6e4544ae6aa5300417593b3dcf4172bc01686c3a21bb49a83c3960c4b20d2f9",
+    "dist/assets/OperationsSettings-N_I7WFZ5.js": "3bd6972191a074ecbd368b85dd1704793bdf8a9727bf1db7048c99c39803607d",
+    "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+    "dist/assets/index-CLQM5sJO.js": "fed9eab6858dc2a835234e2193ec39fd9f547bd88548d57a99745d571f33e2d8",
+    "dist/assets/index-tGRkdgCC.css": "93062faa3f619aa58de031ed09864759bc8d5274bcaa051253c24f3eb1e01ee3",
+    "dist/assets/ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+    "dist/assets/ops-ui-lr_dY7vY.js": "df07cda9aa5f256a91429ffb179c392cd2793b7e408d22d35c03754222e1953b"
+  },
+  "paidRequests": 0,
+  "cleanup": "closed",
+  "fixtureEvents": [
+    {
+      "project": "frontend",
+      "events": [
+        {
+          "type": "new",
+          "pid": 83562,
+          "at": 1792001214203
+        },
+        {
+          "type": "prompt",
+          "command": "hold queue-original",
+          "contentHash": "144be580a75810d8ab87592f971192150cac5087bac54117c87f6eb21fb8363d",
+          "contentBytes": 31400,
+          "hasManagedContract": false,
+          "hasReferenceFence": true,
+          "pid": 83562,
+          "at": 1792001214434
+        },
+        {
+          "type": "cancel",
+          "command": "hold queue-original",
+          "pid": 83562,
+          "at": 1792001214986
+        },
+        {
+          "type": "terminal",
+          "command": "hold queue-original",
+          "reason": "cancelled",
+          "pid": 83562,
+          "at": 1792001215071
+        },
+        {
+          "type": "new",
+          "pid": 83571,
+          "at": 1792001215784
+        },
+        {
+          "type": "prompt",
+          "command": "queued-edited-send-now",
+          "contentHash": "47924c5315267ff7a94c03eef012c21f677c2301b30e4a95c6c57bd31b7bf633",
+          "contentBytes": 32361,
+          "hasManagedContract": false,
+          "hasReferenceFence": true,
+          "pid": 83571,
+          "at": 1792001216021
+        },
+        {
+          "type": "terminal",
+          "command": "queued-edited-send-now",
+          "reason": "end_turn",
+          "pid": 83571,
+          "at": 1792001216086
+        },
+        {
+          "type": "new",
+          "pid": 83594,
+          "at": 1792001217079
+        },
+        {
+          "type": "prompt",
+          "command": "hold worker-primary",
+          "contentHash": "5b05f4515f3eccaeedc1b1a3e92846625f0e4bad5df9a5d4fb0b94c8d217e6d6",
+          "contentBytes": 33193,
+          "hasManagedContract": true,
+          "hasReferenceFence": true,
+          "pid": 83594,
+          "at": 1792001217373
+        },
+        {
+          "type": "terminal",
+          "command": "hold worker-primary",
+          "reason": "end_turn",
+          "pid": 83594,
+          "at": 1792001218209
+        },
+        {
+          "type": "new",
+          "pid": 83627,
+          "at": 1792001218883
+        },
+        {
+          "type": "new",
+          "pid": 83628,
+          "at": 1792001218943
+        },
+        {
+          "type": "prompt",
+          "command": "worker-second",
+          "contentHash": "351555c273aefa69d51cd4167855ce3914a0515241d2d65d909e53b87e7f6e38",
+          "contentBytes": 33187,
+          "hasManagedContract": true,
+          "hasReferenceFence": true,
+          "pid": 83627,
+          "at": 1792001219340
+        },
+        {
+          "type": "terminal",
+          "command": "worker-second",
+          "reason": "end_turn",
+          "pid": 83627,
+          "at": 1792001219403
+        },
+        {
+          "type": "prompt",
+          "command": "worker-dependent",
+          "contentHash": "f1fa1944689e2652de30f55d4569b804dd0edf95fcb429b8c66193bcedb5c235",
+          "contentBytes": 33122,
+          "hasManagedContract": true,
+          "hasReferenceFence": true,
+          "pid": 83628,
+          "at": 1792001219432
+        },
+        {
+          "type": "terminal",
+          "command": "worker-dependent",
+          "reason": "end_turn",
+          "pid": 83628,
+          "at": 1792001219498
+        },
+        {
+          "type": "prompt",
+          "command": "worker-followup",
+          "contentHash": "92243ecf2d4d01ef707a22ac730ff7a8f34aebe7ceb95e7aa3e583f7f98430ec",
+          "contentBytes": 322,
+          "hasManagedContract": false,
+          "hasReferenceFence": true,
+          "pid": 83594,
+          "at": 1792001220444
+        },
+        {
+          "type": "terminal",
+          "command": "worker-followup",
+          "reason": "end_turn",
+          "pid": 83594,
+          "at": 1792001220512
+        },
+        {
+          "type": "new",
+          "pid": 83804,
+          "at": 1792001223314
+        },
+        {
+          "type": "prompt",
+          "command": "unknown-after-dispatch",
+          "contentHash": "0670db507a075ed18580d9bed10509740ee390c734bdd841245cc9470d690e1f",
+          "contentBytes": 33090,
+          "hasManagedContract": true,
+          "hasReferenceFence": true,
+          "pid": 83804,
+          "at": 1792001223596
+        }
+      ]
+    },
+    {
+      "project": "backend",
+      "events": [
+        {
+          "type": "new",
+          "pid": 83718,
+          "at": 1792001221223
+        },
+        {
+          "type": "prompt",
+          "command": "backend-contract-fix",
+          "contentHash": "283a6d48b55f7cfc5ca78988eec4b8586f6b4b61266162674cb6343dabacb16f",
+          "contentBytes": 33034,
+          "hasManagedContract": true,
+          "hasReferenceFence": true,
+          "pid": 83718,
+          "at": 1792001221470
+        },
+        {
+          "type": "terminal",
+          "command": "backend-contract-fix",
+          "reason": "end_turn",
+          "pid": 83718,
+          "at": 1792001221542
+        },
+        {
+          "type": "prompt",
+          "command": "contract-note-reference-only",
+          "contentHash": "a7a75645f95d790eee9a117777099c142b2c7face473feb0591141beb67db95c",
+          "contentBytes": 583,
+          "hasManagedContract": false,
+          "hasReferenceFence": true,
+          "pid": 83718,
+          "at": 1792001222377
+        },
+        {
+          "type": "terminal",
+          "command": "contract-note-reference-only",
+          "reason": "end_turn",
+          "pid": 83718,
+          "at": 1792001222449
+        }
+      ]
+    }
+  ]
+}

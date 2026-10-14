@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "time": "2026-10-14T17:29:02.395872+00:00",
+  "platform": "darwin",
+  "scope": "Isolated real Electron UI kit and typed/source package checks; no application runtime integration, real vision bridge, corporate service or Windows acceptance claimed",
+  "unitContracts": 4,
+  "desktopAssertions": 20,
+  "measuredThemeViewports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "dpr": 2,
+      "theme": "dark",
+      "issues": 0
+    },
+    {
+      "width": 1024,
+      "height": 900,
+      "dpr": 2,
+      "theme": "dark",
+      "issues": 0
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "dpr": 2,
+      "theme": "light",
+      "issues": 0
+    },
+    {
+      "width": 1024,
+      "height": 900,
+      "dpr": 2,
+      "theme": "light",
+      "issues": 0
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "dpr": 2,
+      "theme": "high-contrast",
+      "issues": 0
+    },
+    {
+      "width": 1024,
+      "height": 900,
+      "dpr": 2,
+      "theme": "high-contrast",
+      "issues": 0
+    }
+  ],
+  "checks": [
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "output": "> @organization/gigacode-ui-kit@0.0.0-reference typecheck\n> tsc --noEmit"
+    },
+    {
+      "command": "npm run typecheck:examples",
+      "exitCode": 0,
+      "output": "> @organization/gigacode-ui-kit@0.0.0-reference typecheck:examples\n> tsc -p tsconfig.examples.json"
+    },
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "output": "> @organization/gigacode-ui-kit@0.0.0-reference test\n> npm run build && node --test tests/*.test.mjs\n\n\n> @organization/gigacode-ui-kit@0.0.0-reference build\n> tsc -p tsconfig.json\n\n\u2714 Text bridge rejects stale, unbounded, malformed and extraneous payloads (0.580834ms)\n\u2714 Contrast math returns WCAG black/white extrema and equal-color ratio (0.104209ms)\n\u2714 Large supplied data renders only bounded page and discloses the omission (7.888042ms)\n\u2714 NULL, empty string, zero, false and unavailable retain distinct user meanings (0.452791ms)\n\u2139 tests 4\n\u2139 suites 0\n\u2139 pass 4\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 81.982208"
+    },
+    {
+      "command": "npm run check:catalog",
+      "exitCode": 0,
+      "output": "> @organization/gigacode-ui-kit@0.0.0-reference check:catalog\n> node ./tools/check-catalog.mjs\n\n{\n  \"ok\": true,\n  \"coreTokens\": 57,\n  \"semanticTokensPerTheme\": 22,\n  \"themes\": 3,\n  \"icons\": 37,\n  \"brandAssets\": 5,\n  \"components\": 56,\n  \"recipes\": 14\n}"
+    }
+  ],
+  "packageDryRun": {
+    "entryCount": 143,
+    "unpackedSize": 393684,
+    "noFixturesOrNodeModules": true,
+    "sourceAndRecipesIncluded": true
+  },
+  "typecheckedOrCatalogSources": [
+    {
+      "path": "src/components/AgentActionLifecycle.tsx",
+      "sha256": "2cc1ca85fe54323f5c875d92c2e2664486af26b8df9c5a57165bd1a978d2c814"
+    },
+    {
+      "path": "src/components/AgentWorkspace.tsx",
+      "sha256": "fc1304b20d1bbc8b0b10c4b9552a00512fb7f406007965d80ee38ef47a1b2c7f"
+    },
+    {
+      "path": "src/components/Button.tsx",
+      "sha256": "a03c6aaf4416809267e7ef33d67adaff7fc7cda511c19331e64884deb94abee6"
+    },
+    {
+      "path": "src/components/CodeBlock.tsx",
+      "sha256": "fd2e0936be15baaaa49497e5dd01a8ccafdde46b4678f885c89b9da0d609c3fb"
+    },
+    {
+      "path": "src/components/DataTable.tsx",
+      "sha256": "aafd8c6ec0be91585eae03c5395575625f2496dbca923088f9142820ce7af047"
+    },
+    {
+      "path": "src/components/Enterprise.tsx",
+      "sha256": "67e253b724ed8c6e8fe0737a5f1fbd18a1dbe21458a364d912d1dce73ead7689"
+    },
+    {
+      "path": "src/components/Feedback.tsx",
+      "sha256": "59da83262461abd56f8d8c5b2a33dfba29c803cd8af92204852f2546caf5825a"
+    },
+    {
+      "path": "src/components/Fields.tsx",
+      "sha256": "4fc4f181787977a125a1510c55688f964b10ca042cb5a4be5ed3abbf7c45decf"
+    },
+    {
+      "path": "src/components/Icon.tsx",
+      "sha256": "49c73ad8f35c3079f2ecceab0c6f6d1a40d6c77c29effd0a7635a867d40eeb19"
+    },
+    {
+      "path": "src/components/Layout.tsx",
+      "sha256": "7dac0da43922fc617369de8fbd4b90e1f9fde35b11fd6e8ee9a1197f68c87a36"
+    },
+    {
+      "path": "src/components/Navigation.tsx",
+      "sha256": "7b4e79c60ba16e396dc47bd3904fc3fc50e47f6a9b6918e4026d69184fdc3ee9"
+    },
+    {
+      "path": "src/components/Overlays.tsx",
+      "sha256": "880f11c09931170d9ff292d72d2e28ed3201fa1431e61ae0ffc75840de68e96a"
+    },
+    {
+      "path": "src/components/RepositoryPublicationCard.tsx",
+      "sha256": "904dd6fadfe1e7620f3e0f9a0e888f5163a5cb8365100b5654aaf97382ada864"
+    },
+    {
+      "path": "src/components/StatusBadge.tsx",
+      "sha256": "5d37e7085400262b9c61175b68d3f5dd0d7b30eb523daebb38ec0ed60f84ea1e"
+    },
+    {
+      "path": "src/components/TaskBoard.tsx",
+      "sha256": "8d3195cc659bbb66e8c394ac781b219687bd32f27c9bece094b4092a043bdf84"
+    },
+    {
+      "path": "src/index.ts",
+      "sha256": "f0317b42fe7315979a2ac649bca0cba6ec354f08193f4417d18379322bfbdb15"
+    },
+    {
+      "path": "src/quality/designMetrics.ts",
+      "sha256": "be6cb6ca0ffe66f584da58d5d76a33ac8892b59b6743a98c8dfce70dbd0171b0"
+    },
+    {
+      "path": "src/quality/visionBridge.ts",
+      "sha256": "0f615f7462585689654fdc37e053201093aea685b488b75f10e8ff9f44c5cf35"
+    },
+    {
+      "path": "src/recipes/ConnectorSettings.tsx",
+      "sha256": "0a0de0ca4b6a8f6b98ab93bdab824afb900c0bce0a93f34d868f729d43a8cd47"
+    },
+    {
+      "path": "src/recipes/DesktopDataWorkspace.tsx",
+      "sha256": "3a0997359d7e4be5ceb66523aab3052699fbb9d4191a13a68fcd04b6ec1f4af7"
+    },
+    {
+      "path": "src/recipes/DeveloperTaskWorkspace.tsx",
+      "sha256": "85f664945c26361b07b92d948a555eba3e74cb8d225db6050f124952c590abb8"
+    },
+    {
+      "path": "src/styles/components.css",
+      "sha256": "a096bfb66e1fd3cfe0c0c96d0c31558d1932ea4248356927b960203d58aa47b8"
+    },
+    {
+      "path": "src/styles/semantic.css",
+      "sha256": "885ccb517c2a612ab2960e338c70c08bb135cac3876446e13b9a6bec94078c89"
+    },
+    {
+      "path": "registry/assets.json",
+      "sha256": "1f1a542b9af328fc2a4f687f63fb3c53cfe6aeb57e5eb5fe7cf555d2a72f87dd"
+    },
+    {
+      "path": "registry/components.json",
+      "sha256": "4af9426e61a47163d3d235174b69e3ea64e88409ab72456d75a70ec6b24328f4"
+    },
+    {
+      "path": "registry/design-guardrails.json",
+      "sha256": "0e4042281d8499e95a11e767437bc22e41990d0d335a5d365e108029a03b5a81"
+    },
+    {
+      "path": "registry/icons.json",
+      "sha256": "b6ea01270de6552e2c2bb14772b79af2372de4e220e23e6e47e4dea0b9aeefb2"
+    },
+    {
+      "path": "registry/templates.json",
+      "sha256": "393be45a588720ffca5309ac79db957c4b679c9e3ea3b03d7f07ed73cab11e29"
+    },
+    {
+      "path": "recipes/desktop-recipes.json",
+      "sha256": "26cd16730ffb3a039c9e82db39bf5a24d74c64e587f07ac067c5823a6aa68e3e"
+    },
+    {
+      "path": "examples/DesktopGallery.tsx",
+      "sha256": "e209b6942b818ed0be6bbdd71084d1539c793843103c8c2ca38245dc8c0b0ee5"
+    },
+    {
+      "path": "examples/assets.d.ts",
+      "sha256": "35d26ea66c86da9701e4f4b467913481ffeae910761cea34c775c5dacb7f8eaa"
+    },
+    {
+      "path": "examples/gallery.css",
+      "sha256": "eb43b22817bb898f9e4ee18c9a280ff3135c22b051ab835ed46b8b241f49d233"
+    },
+    {
+      "path": "tests/contracts.test.mjs",
+      "sha256": "47021418bbfbb1cd2d4a33accb0d0d05ed234e069be854d5e96d70e0c0371499"
+    },
+    {
+      "path": "tools/check-catalog.mjs",
+      "sha256": "e7bf9475159022c8cddfeac1a8510172f8acf239091dca88ab4370250800365c"
+    },
+    {
+      "path": "tools/read-recipe.mjs",
+      "sha256": "5ab572d90a11cd62b7bc3f2f876a06427bc879f589b5533d89f1157630aec51e"
+    },
+    {
+      "path": "tools/test-desktop.mjs",
+      "sha256": "31f60af4d89c87845f77b1cb121e9fa24d1655e1fad57cbc59b51a2450a2608c"
+    }
+  ],
+  "desktopReport": "report.json",
+  "metrics": "metrics.json",
+  "paidRequests": 0,
+  "cleanup": "closed",
+  "limitations": [
+    "56 catalog entries include shared export/prop variants",
+    "DOM metrics are bounded, visible-state evidence only; no aesthetic guarantee or full accessibility certification",
+    "Source compositions typechecked; not every component/state exercised by desktop gallery",
+    "Consumer app wiring and true Qwen bridge require separate tests"
+  ]
+}

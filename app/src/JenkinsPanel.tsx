@@ -837,12 +837,12 @@ export function JenkinsPanel({
               {tab === "history" && (
                 <>
                   <div className="ops-notice">
-                    Запуски из Workbench. Полная история Jenkins доступна в
+                    Запуски из GigaCode. Полная история Jenkins доступна в
                     карточке каждой джобы. Избранное не ограничивает этот
                     список.
                   </div>
                   {!receipts.length ? (
-                    <OpsEmpty title="Пока нет запусков из Workbench" />
+                    <OpsEmpty title="Пока нет запусков из GigaCode" />
                   ) : (
                     <div className="ops-table-wrap">
                       <table className="ops-table">

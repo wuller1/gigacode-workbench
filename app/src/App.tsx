@@ -1,3 +1,4 @@
+import { ContextControls } from "./ContextControls";
 import { prepareWindowClose } from "./window-close";
 import { QueueMessages } from "./QueueMessages";
 import { ModelPicker, ContextSend } from "./ModelPicker";
@@ -12,6 +13,7 @@ import type {
 import {
   busy,
   call,
+  callHandled,
   errorText,
   statusLabel,
   useSnapshot,
@@ -415,7 +417,7 @@ function Application() {
     return (
       <div className="startup">
         <span className="brand-mark brand-mark-large" aria-hidden="true" />
-        <h1>GigaCode Workbench</h1>
+        <h1>GigaCode</h1>
         {error ? (
           <>
             <p role="alert">{error}</p>
@@ -436,9 +438,7 @@ function Application() {
             onClick={() => setSidebar(!sidebar)}
           />
           <span className="brand-mark" aria-hidden="true" />
-          <span className="wordmark">
-            GigaCode <span>Workbench</span>
-          </span>
+          <span className="wordmark">GigaCode</span>
         </div>
         <div className="chrome-context">
           {project?.name || "Локальное рабочее пространство"}
@@ -1603,7 +1603,11 @@ function Chat({
               </div>
               <div>
                 <dt>Настроенный ориентир</dt>
-                <dd>{state.settings.contextLimit.toLocaleString()}</dd>
+                <dd>
+                  {state.settings.contextLimit > 0
+                    ? state.settings.contextLimit.toLocaleString()
+                    : "Не задан"}
+                </dd>
               </div>
             </dl>
             <p className="muted">
@@ -1611,21 +1615,20 @@ function Chat({
               Исходный разговор сохраняется. Это не редактирование скрытого
               контекста CLI.
             </p>
+            <ContextControls
+              key={session.id}
+              sessionId={session.id}
+              run={callHandled}
+            />
             <footer>
               <button onClick={() => setContextOpen(false)}>Закрыть</button>
               <button
-                disabled={busy(session.status)}
+                disabled={busy(session.status) || session.status === "unknown"}
                 onClick={async () => {
-                  if (
-                    await ask("Передать краткий контекст в новую сессию?", {
-                      confirm: true,
-                      message:
-                        "Сохранённая история останется доступна. Следующий запрос продолжится через новое подключение.",
-                    })
-                  ) {
-                    await run("session.compact", { id: session.id });
-                    setContextOpen(false);
-                  }
+                  const result = await run("session.compact", {
+                    id: session.id,
+                  });
+                  if (result) setContextOpen(false);
                 }}
               >
                 Передать краткий контекст

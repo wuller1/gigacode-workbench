@@ -12,3 +12,9 @@ For every future breaking release, add a section containing:
 6. consumer projects tested before promotion to `stable`.
 
 Deprecations remain discoverable in the registry for at least one minor release unless a documented security incident requires faster removal.
+
+## Additive desktop source update
+
+Existing exports remain. Button now defaults to `type="button"`; form submit actions explicitly pass `type="submit"`. All formerly specified component entries reference real source. IDs remain stable; use `exportName`, not display-name guesses. Theme belongs on `html` for native-dialog portals.
+
+Do not mass-replace workplace components. Compare actual appearance, keyboard, errors and draft retention first. Preserve host store/session/layout owners and better existing implementations. Wire durable/CAS callbacks for cell edits, queue edits and task moves; UI is not persistence or permission authority. Text vision bridge observations are advisory and bound to exact screenshot metadata. No corporate endpoint is invented and the CLI is not modified.

@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "scope": "Isolated UI kit in actual Electron; no live provider or corporate service",
+  "platform": "darwin",
+  "time": "2026-10-14T17:28:22.200Z",
+  "checks": [
+    {
+      "name": "dark 1440: measured contrast, targets, names and overflow",
+      "passed": true
+    },
+    {
+      "name": "dark 1024: measured contrast, targets, names and overflow",
+      "passed": true
+    },
+    {
+      "name": "light 1440: measured contrast, targets, names and overflow",
+      "passed": true
+    },
+    {
+      "name": "light 1024: measured contrast, targets, names and overflow",
+      "passed": true
+    },
+    {
+      "name": "high-contrast 1440: measured contrast, targets, names and overflow",
+      "passed": true
+    },
+    {
+      "name": "high-contrast 1024: measured contrast, targets, names and overflow",
+      "passed": true
+    },
+    {
+      "name": "Inline data edit: Enter commits without an extra dialog",
+      "passed": true
+    },
+    {
+      "name": "Inline failed save retains draft and exposes error",
+      "passed": true
+    },
+    {
+      "name": "Native dialog Escape closes and restores trigger focus",
+      "passed": true
+    },
+    {
+      "name": "Tabs navigate with arrows, close cross removes actual tab",
+      "passed": true
+    },
+    {
+      "name": "Menu arrows skip disabled items and Escape restores focus",
+      "passed": true
+    },
+    {
+      "name": "Message queue edit persists then Send now is visible and sends immediately",
+      "passed": true
+    },
+    {
+      "name": "Model and reasoning share one selector and update together",
+      "passed": true
+    },
+    {
+      "name": "Sequential questions support free answer, no scroll through all questions",
+      "passed": true
+    },
+    {
+      "name": "Split separator has uniform keyboard resize semantics",
+      "passed": true
+    },
+    {
+      "name": "Text vision reports are bound to exact screenshot and bounded",
+      "passed": true
+    },
+    {
+      "name": "Settings fields, connections and validation render in light and dark shell",
+      "passed": true
+    },
+    {
+      "name": "Task board keyboard move is host-confirmed; rejected move retains original card",
+      "passed": true
+    },
+    {
+      "name": "Design metrics negative control detects bad contrast, small target and unnamed control",
+      "passed": true
+    },
+    {
+      "name": "No renderer exceptions",
+      "passed": true
+    }
+  ],
+  "captures": [
+    {
+      "filename": "dark-1440.png",
+      "sha256": "0c320fc3b774c5cb4e7983b55229188e336c9da7cba59fafc63c62a2d374b527",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 2
+      }
+    },
+    {
+      "filename": "dark-1024.png",
+      "sha256": "fe7e294512096ba1e6e7ec5f389fcebd4b1f792216db3420becb168e7113ee7d",
+      "viewport": {
+        "width": 1024,
+        "height": 900,
+        "dpr": 2
+      }
+    },
+    {
+      "filename": "light-1440.png",
+      "sha256": "f06d6bb8e00fc2d640fe2761a34fabf9a1df6adf02c99825e5da25e3be51ff93",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 2
+      }
+    },
+    {
+      "filename": "light-1024.png",
+      "sha256": "0c3e4f2e5aeaae916fbc84c4ae1b2fcc8987003555e797e402cf3af8bfcb49ff",
+      "viewport": {
+        "width": 1024,
+        "height": 900,
+        "dpr": 2
+      }
+    },
+    {
+      "filename": "high-contrast-1440.png",
+      "sha256": "067c83ec02e8402f7e4a048c0d9910c14f724ae4d3f742b8dbd5ca9387154207",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 2
+      }
+    },
+    {
+      "filename": "high-contrast-1024.png",
+      "sha256": "130afe3e8f362828b3c2e8deccc720ec51e3ff7ac70dc4f6f68ca6bbc10dfdcc",
+      "viewport": {
+        "width": 1024,
+        "height": 900,
+        "dpr": 2
+      }
+    }
+  ],
+  "sources": [
+    {
+      "path": "src/index.ts",
+      "sha256": "f0317b42fe7315979a2ac649bca0cba6ec354f08193f4417d18379322bfbdb15"
+    },
+    {
+      "path": "src/components/Fields.tsx",
+      "sha256": "4fc4f181787977a125a1510c55688f964b10ca042cb5a4be5ed3abbf7c45decf"
+    },
+    {
+      "path": "src/components/Feedback.tsx",
+      "sha256": "59da83262461abd56f8d8c5b2a33dfba29c803cd8af92204852f2546caf5825a"
+    },
+    {
+      "path": "src/components/Overlays.tsx",
+      "sha256": "880f11c09931170d9ff292d72d2e28ed3201fa1431e61ae0ffc75840de68e96a"
+    },
+    {
+      "path": "src/components/Navigation.tsx",
+      "sha256": "7b4e79c60ba16e396dc47bd3904fc3fc50e47f6a9b6918e4026d69184fdc3ee9"
+    },
+    {
+      "path": "src/components/Layout.tsx",
+      "sha256": "7dac0da43922fc617369de8fbd4b90e1f9fde35b11fd6e8ee9a1197f68c87a36"
+    },
+    {
+      "path": "src/components/DataTable.tsx",
+      "sha256": "aafd8c6ec0be91585eae03c5395575625f2496dbca923088f9142820ce7af047"
+    },
+    {
+      "path": "src/components/AgentWorkspace.tsx",
+      "sha256": "fc1304b20d1bbc8b0b10c4b9552a00512fb7f406007965d80ee38ef47a1b2c7f"
+    },
+    {
+      "path": "src/components/Enterprise.tsx",
+      "sha256": "67e253b724ed8c6e8fe0737a5f1fbd18a1dbe21458a364d912d1dce73ead7689"
+    },
+    {
+      "path": "src/components/CodeBlock.tsx",
+      "sha256": "fd2e0936be15baaaa49497e5dd01a8ccafdde46b4678f885c89b9da0d609c3fb"
+    },
+    {
+      "path": "src/components/TaskBoard.tsx",
+      "sha256": "8d3195cc659bbb66e8c394ac781b219687bd32f27c9bece094b4092a043bdf84"
+    },
+    {
+      "path": "src/components/Button.tsx",
+      "sha256": "a03c6aaf4416809267e7ef33d67adaff7fc7cda511c19331e64884deb94abee6"
+    },
+    {
+      "path": "src/components/Icon.tsx",
+      "sha256": "49c73ad8f35c3079f2ecceab0c6f6d1a40d6c77c29effd0a7635a867d40eeb19"
+    },
+    {
+      "path": "src/quality/designMetrics.ts",
+      "sha256": "be6cb6ca0ffe66f584da58d5d76a33ac8892b59b6743a98c8dfce70dbd0171b0"
+    },
+    {
+      "path": "src/quality/visionBridge.ts",
+      "sha256": "0f615f7462585689654fdc37e053201093aea685b488b75f10e8ff9f44c5cf35"
+    },
+    {
+      "path": "src/styles/components.css",
+      "sha256": "a096bfb66e1fd3cfe0c0c96d0c31558d1932ea4248356927b960203d58aa47b8"
+    },
+    {
+      "path": "src/styles/semantic.css",
+      "sha256": "885ccb517c2a612ab2960e338c70c08bb135cac3876446e13b9a6bec94078c89"
+    },
+    {
+      "path": "examples/DesktopGallery.tsx",
+      "sha256": "e209b6942b818ed0be6bbdd71084d1539c793843103c8c2ca38245dc8c0b0ee5"
+    },
+    {
+      "path": "examples/gallery.css",
+      "sha256": "eb43b22817bb898f9e4ee18c9a280ff3135c22b051ab835ed46b8b241f49d233"
+    },
+    {
+      "path": "tools/test-desktop.mjs",
+      "sha256": "31f60af4d89c87845f77b1cb121e9fa24d1655e1fad57cbc59b51a2450a2608c"
+    }
+  ],
+  "cleanup": "closed",
+  "paidRequests": 0
+}

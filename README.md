@@ -1,6 +1,12 @@
-# GigaCode Workbench
+# GigaCode
 
-Новый срез **0.6.0-preview.1**: смена ролей внутри одной задачи через LLM-router, отдельные процессы и системные инструкции этапов, безопасное продолжение без нового сообщения человека. Усилены отмена при зависшем диске, остановка после ошибок хранения, ACP/MCP, восстановление окон и сохранение черновиков. [Итеративный аудит и инструкции переноса](docs/suite/RUNTIME-TRANSITIONS-RESILIENCE.md) отделяют реализованные механизмы от оставшихся ограничений. Текущая рабочая версия пользователя — **GigaCode CLI 26.10.6**, совместимость форка подтверждается на месте.
+Текущий срез исходников **0.7.0-preview.1**: короткий цикл для flash-моделей, host context supervisor, управляемые исполнители и межпроектная координация, текстовый vision-мост и расширенный desktop UI kit. Приложение называется **GigaCode**, Windows executable — **GigaCode.exe**; прежние каталоги данных распознаются отдельно, история не переименовывается механически. Историческое имя репозитория GigaCode Workbench сохраняется в путях и ссылках.
+
+Для обновления существующего приложения на рабочем компьютере начните с **[MIGRATE-GIGACODE.md](MIGRATE-GIGACODE.md)**. Агент сравнивает desktop-исходники с вашей оболочкой, сохраняет лучшие локальные реализации, выполняет incremental merge и проверки, затем сохраняет private QUICK-UPGRADE/receipt для следующей сборки. Это перенос приложения в приложение, **не установка в GigaCode CLI**. Установленный CLI **26.10.6**, его credentials, MCP bindings и память сохраняются; совместимость корпоративного форка проверяется на месте.
+
+Локальная приёмка 0.7: **526 passed / 46 skipped**, полный живой Electron **15/15**, миграция **26/26**, UI kit **20/20 desktop + 4/4 contracts**. Новый Windows-прогон ещё фиксируется отдельно. Ниже сохранён успешный baseline 0.6, который не заменяет проверку изменённого 0.7. [Текущий статус](docs/IMPLEMENTATION_STATUS.md) отделяет эти результаты.
+
+Предыдущий срез **0.6.0-preview.1**: смена ролей внутри одной задачи через LLM-router, отдельные процессы и системные инструкции этапов, безопасное продолжение без нового сообщения человека. Усилены отмена при зависшем диске, остановка после ошибок хранения, ACP/MCP, восстановление окон и сохранение черновиков. [Итеративный аудит и инструкции переноса](docs/suite/RUNTIME-TRANSITIONS-RESILIENCE.md) отделяют реализованные механизмы от оставшихся ограничений.
 
 Приёмка 0.6: macOS **390 passed / 46 skipped**, Windows **385 passed / 51 skipped**; переходы ролей **6/6**, восстановление **8/8**, Roles **8/8**, Chat **3/3**, native Qwen guards **13/13** и system placement **2/2**. [Windows agent harness](https://github.com/wuller1/gigacode-workbench/actions/runs/38597526003) и [свежие отчёты с хешами](docs/suite/evidence/windows-e9b047d/harness/harness-provenance.json) относятся к candidate `e9b047d`. Loopback provider проверяет механизмы, а не интеллект модели; старый платный benchmark ниже остаётся историческим.
 
@@ -28,7 +34,7 @@
 
 ## Один файл для рабочего компьютера
 
-Откройте этот репозиторий в GigaCode и попросите агента прочитать [WORK-COMPUTER-BOOTSTRAP.md](WORK-COMPUTER-BOOTSTRAP.md). Файл содержит автономный процесс: перенос обвязки и памяти, проверяемую установку, адаптацию MCP, активацию системного промпта, проверку GigaCode 26.10.6, локальное встраивание CLI без секретов и продолжение существующего GigaCode UI. Повторять требования в чате не нужно.
+Откройте эту сборку в GigaCode и попросите агента прочитать [MIGRATE-GIGACODE.md](MIGRATE-GIGACODE.md). Он сам найдёт существующий desktop-проект и локальные инструкции прошлого переноса, составит файловый план, сохранит адаптации и проверит результат. План по умолчанию ничего не изменяет; apply требует точного hash, делает backups и сохраняет partial journal при сбое. [Контракт инструмента](docs/suite/QUICK-UPGRADE-CONTRACT.md). [WORK-COMPUTER-BOOTSTRAP.md](WORK-COMPUTER-BOOTSTRAP.md) оставлен как совместимый указатель и справочник; прежняя установка CLI-обвязки — только отдельно выбранный legacy маршрут.
 
 Для большого обновления с Browser Lab, IDE, Design & Artifacts, Task tracker, OpenShift/Kubernetes/Jenkins/knowledge, Sprut, Data workbench и Git/forge агент затем читает [SUITE-UPGRADE-AGENT.md](SUITE-UPGRADE-AGENT.md). [Карта документов](docs/suite/README.md), [матрица функций](docs/suite/COMPETITOR-CAPABILITY-MATRIX.md), [gap-аудит решений](docs/suite/COMPETITOR-GAP-AUDIT.md) и [машиночитаемый план](suite/implementation-plan.json) позволяют продолжать по одной проверяемой карточке в пределах 256k контекста.
 
@@ -45,12 +51,17 @@
 - Регистрация материалов, просмотр текста/Markdown/изображений/HTML, экспорт; базовая память и локальная диагностика.
 - IDE на Theia с Java/Python/frontend расширениями, общими buffers, build/test/debug и восстановлением; PostgreSQL workspace с inline grid, routines, EXPLAIN и потоковыми CSV/SQL/XLSX.
 - Jenkins: каталог/папки/избранное, параметры, queue/builds/logs, trigger/cancel/stop и readback. Кластеры: discovery, namespaces/resources/CRD, YAML/drafts, events и backend watch (UI использует snapshots), dry-run/apply/create/scale/restart/delete. UI и агент используют один Operations service; чужие corporate MCP требуют проверки настоящих schemas/DTO.
+- Flash-процесс: CORE + одна автоматически выбранная роль, короткий рабочий пакет, адресное чтение истории/материалов и небольшие проверяемые срезы. [Правила](workbench/docs/FLASH_MODEL_WORKFLOW.md) не назначают дополнительные LLM-вызовы или ретроспективу каждой маленькой задаче.
+- Контекст: configurable high/low water, route-bound usage и bounded checkpoint перед новым процессом на безопасной границе. Слабое native сжатие не повторяется бесконечно; слишком большой отдельный запрос удерживается для разбиения. История сохраняется. Opt-in calibration имеет adapter hook и bounded budget; реальный предел модели здесь не измерен, успешный HTTP не доказывает recall.
+- Управляемые дочерние и отдельные задачи: idempotent spawn/delegate, generation/lease, dependencies, packet/write reservations, pause/cancel/resume/retry/followup и checkpoints. Направленные project links разрешают скрытые notes и поручения между существующими проектами. После dispatch неизвестный эффект удерживает replay. [Контракт и границы](docs/suite/MANAGED-COORDINATION.md).
+- Визуальные проверки: executor получает текст, настоящий screenshot сохраняется как artifact; настроенный MCP-мост описывает изображение, DOM collector измеряет layout/contrast. Native vision в рабочей среде отключена. [Desktop UI kit и процесс проверки](docs/suite/FLASH-DESIGN-GUIDE.md) дают готовые компоненты/рецепты, но не обещают автоматическую красоту или полную доступность.
+- Очередь показывает inline **«Отправить сейчас»**, редактирование и удаление. Host прерывает текущий ход поддержанным механизмом и ждёт terminal границу; второй одновременный prompt и повтор UNKNOWN запрещены.
 
 Реализованная команда и документированный продуктовый контракт — разные уровни готовности. Полный suite описан как план автономной миграции, а не выдан за готовый runtime. Окончание ответа модели, макет или наличие кнопки сами по себе не доказывают работу backend.
 
 ## Получить код для рабочего компьютера
 
-Клонируйте текущий `main` либо скачайте исходники соответствующего [релиза](https://github.com/wuller1/gigacode-workbench/releases). Откройте код в GigaCode и направьте агента на [WORK-COMPUTER-BOOTSTRAP.md](WORK-COMPUTER-BOOTSTRAP.md). Агент сначала сравнит существующую оболочку с этим кодом и сохранит лучшее; инструкции по переносу IDE находятся в [IDE-RUNTIME-HANDOFF](docs/suite/IDE-RUNTIME-HANDOFF.md). Авторизация, MCP credentials и пользовательская история в исходники не включены. Совместимость рабочего GigaCode 26.10.6 проверяется на месте.
+Клонируйте текущий `main` либо скачайте исходники соответствующего [релиза](https://github.com/wuller1/gigacode-workbench/releases). Откройте новую сборку в GigaCode и направьте агента на [MIGRATE-GIGACODE.md](MIGRATE-GIGACODE.md). Агент сначала сравнит существующую оболочку с этим кодом и сохранит лучшее; инструкции по переносу IDE находятся в [IDE-RUNTIME-HANDOFF](docs/suite/IDE-RUNTIME-HANDOFF.md). Авторизация, MCP credentials и пользовательская история в исходники не включены. Совместимость рабочего GigaCode 26.10.6 проверяется на месте.
 
 [Снимок настоящего приложения с работающим исполнителем](docs/images/live-workers.jpg) · [Отчёт проверок и оставшиеся ограничения](docs/LIVE_TEST_REPORT.md).
 
@@ -133,6 +144,9 @@ npm.cmd run dist:win -- --publish never
 
 | Задача | Документ |
 | --- | --- |
+| Перенести новую desktop-сборку в существующее приложение и сохранить быстрый процесс следующих обновлений | [MIGRATE-GIGACODE.md](MIGRATE-GIGACODE.md), [compare/CAS/backup contract](docs/suite/QUICK-UPGRADE-CONTRACT.md) |
+| Работать flash-моделью с коротким контекстом и текстовым vision-мостом | [Flash workflow](workbench/docs/FLASH_MODEL_WORKFLOW.md), [desktop design guide](docs/suite/FLASH-DESIGN-GUIDE.md) |
+| Управлять исполнителями и межпроектной координацией | [Managed coordination](docs/suite/MANAGED-COORDINATION.md) |
 | Узнать точный срез реализации, проверки и первый шаг следующего агента | [Implementation status](docs/IMPLEMENTATION_STATUS.md) |
 | Проверить live/fixture/Windows результаты и точный commit | [Отчёт проверок](docs/LIVE_TEST_REPORT.md) |
 | Понять интерфейс приложения и backend-контракт | [app/CONTRACT.md](app/CONTRACT.md) |

@@ -3,7 +3,7 @@ name: Agent harness on Windows
 on:
   push:
     branches: [main]
-    paths: ['app/**', 'workbench/**', '.github/workflows/agent-harness.yml']
+    paths: ['app/**', 'workbench/**', 'ui-kit/**', 'tools/**', '.github/workflows/agent-harness.yml']
   workflow_dispatch:
 
 permissions:
@@ -12,7 +12,7 @@ permissions:
 jobs:
   harness-windows:
     runs-on: windows-2022
-    timeout-minutes: 25
+    timeout-minutes: 35
     defaults:
       run:
         shell: pwsh
@@ -31,6 +31,8 @@ jobs:
           cache-dependency-path: app/package-lock.json
       - run: npm ci --include=optional
       - run: node ../tools/check-bundle.mjs
+      - name: Desktop migration and PowerShell UTF-8 compatibility
+        run: node --test ../tools/test-upgrade-workbench.mjs
       - name: Clear committed reports before recording this Windows run
         run: |
           $evidenceRoot = Join-Path (Split-Path $PWD.Path -Parent) 'docs/suite/evidence'
@@ -59,6 +61,12 @@ jobs:
       - name: Actual renderer crash, draft and runtime failure recovery
         timeout-minutes: 4
         run: node tools/test-renderer-resilience-ui.mjs
+      - name: Host-managed Qwen native worker suppression without model requests
+        timeout-minutes: 3
+        run: node tools/test-managed-qwen-policy.mjs
+      - name: Flash context, managed workers, vision bridge and queue desktop acceptance
+        timeout-minutes: 5
+        run: node tools/test-flash-runtime-ui.mjs
       - name: Retain exact Windows evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -74,4 +82,5 @@ jobs:
             docs/suite/evidence/agent-runtime-ui/roles-failure-win32.png
             docs/suite/evidence/role-transitions-ui/**
             docs/suite/evidence/renderer-resilience-ui/**
+            docs/suite/evidence/flash-runtime-ui/**
           retention-days: 14

@@ -259,7 +259,13 @@ export function ContextSend({
     ? `Контекст: ${estimated ? "примерно " : ""}${used!.toLocaleString()} из ${limit!.toLocaleString()} токенов`
     : "CLI не сообщил заполнение контекста";
   return (
-    <div className="context-send">
+    <div
+      className="context-send"
+      onContextMenu={(e) => {
+        e.preventDefault();
+        onContext();
+      }}
+    >
       <button
         className="context-send-ring"
         aria-label={label}
@@ -284,7 +290,11 @@ export function ContextSend({
       <button
         className="send-button"
         aria-label={busy ? "Добавить в очередь" : "Отправить"}
-        title={busy ? "В очередь · Ctrl+Enter" : "Отправить · Ctrl+Enter"}
+        title={
+          busy
+            ? "В очередь · Ctrl+Enter · ПКМ — контекст"
+            : "Отправить · Ctrl+Enter · ПКМ — контекст"
+        }
         disabled={sending || disabled}
         onClick={onSend}
       >

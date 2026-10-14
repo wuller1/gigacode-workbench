@@ -18,7 +18,8 @@ import { WorkbenchService } from "./service";
 import { Workspace, isWithin, scopedPath } from "./workspace";
 import { TerminalService } from "./terminal";
 import { BrowserService, safeWebUrl } from "./browser";
-import { UiMcpServer } from "./mcp";
+import { UiMcpServer, uiMcpToolNames } from "./mcp";
+import { roleDiscoversTool } from "./tools-policy";
 import { redact } from "./acp";
 import { readReference } from "./reference";
 import { bundledCli } from "./bundled-cli";
@@ -26,15 +27,36 @@ import { IdeService } from "./ide";
 import { DatabaseService } from "./database/service";
 import { OpsService } from "./operations/service";
 import { RendererRecoveryBudget } from "./renderer-recovery";
-import { startShutdown, waitForShutdown, shutdownUnconfirmed } from "./shutdown";
+import {
+  startShutdown,
+  waitForShutdown,
+  shutdownUnconfirmed,
+} from "./shutdown";
 import {
   normalizeError as normalizeOpsError,
   failure as opsFailure,
 } from "./operations/errors";
 import type { HostEvent } from "../shared/types";
+import {
+  APPLICATION_NAME,
+  applicationDataDirectory,
+} from "./application-identity";
+import { VisionBridgeService } from "./vision-bridge";
+import { readVisualArtifact } from "./visual-artifact";
 
-if (process.env.WORKBENCH_DATA_DIR)
-  app.setPath("userData", path.resolve(process.env.WORKBENCH_DATA_DIR));
+const previousDataDirectory = app.getPath("userData");
+app.setName(APPLICATION_NAME);
+app.setPath(
+  "userData",
+  applicationDataDirectory({
+    appData: app.getPath("appData"),
+    previousDefault: previousDataDirectory,
+    override: process.env.WORKBENCH_DATA_DIR,
+    hasState: (directory) =>
+      existsSync(path.join(directory, "state.json")) ||
+      existsSync(path.join(directory, "state.json.bak")),
+  }),
+);
 // Keep IDE preview origins isolated while resolving their reserved local subdomains.
 app.commandLine.appendSwitch(
   "host-resolver-rules",
@@ -50,6 +72,7 @@ let service: WorkbenchService,
 let ide: IdeService;
 let database: DatabaseService;
 let operations: OpsService;
+let vision: VisionBridgeService;
 let quitting = false,
   shutdownPreparing = false,
   previewServer: Server | undefined,
@@ -293,7 +316,7 @@ function createWindow() {
     frame: false,
     show: false,
     backgroundColor: "#f8f9f6",
-    title: "GigaCode Workbench",
+    title: "GigaCode",
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
@@ -454,6 +477,8 @@ async function invoke(
     ![
       "state.get",
       "diagnostics.export",
+      "context.inspect",
+      "vision.snapshot",
       "app.info",
       "app.restart",
       "workbench.reference",
@@ -613,6 +638,46 @@ async function invoke(
     sessionProject(p.id);
     sessionOwners.set(p.id, window.id);
   }
+  if (method.startsWith("vision.")) {
+    if (method === "vision.snapshot") return vision.snapshot();
+    if (method === "vision.configure") {
+      if (agentSession)
+        throw new Error(
+          "Vision credentials/configuration are controlled by application settings.",
+        );
+      return vision.configure(
+        p.config,
+        p.secret,
+        p.clearSecret === true,
+        p.expectedRevision,
+      );
+    }
+    if (method === "vision.probe") {
+      if (agentSession)
+        throw new Error("Bridge discovery is a settings action.");
+      return vision.probe();
+    }
+    if (method === "vision.review") {
+      const { artifact, file } = await artifactFile(p.artifactId);
+      if (agentSession) {
+        const owner = service
+          .snapshot()
+          .sessions.find((s) => s.id === agentSession);
+        sessionProject(agentSession);
+        if (!owner || artifact.taskId !== owner.taskId)
+          throw new Error("Visual artifact belongs to another task.");
+      }
+      return vision.review({
+        image: await readVisualArtifact(file),
+        imagePath: file,
+        prompt: String(
+          p.prompt ||
+            "Проверь desktop UI/UX: иерархию, выравнивание, читаемость, состояния и конкретные дефекты.",
+        ),
+      });
+    }
+    throw new Error("Unknown vision operation.");
+  }
   if (method.startsWith("browser.")) {
     if (p.projectId) project(p.projectId);
     if (agentSession) {
@@ -626,13 +691,18 @@ async function invoke(
       p = { ...p, sessionId: agentSession, projectId: owner.id };
     }
     const result: any = await browser.invoke(method, p, window);
-    if (method === "browser.capture" && p.taskId)
-      await service.invoke("artifact.register", {
+    if (
+      ["browser.capture", "browser.designAudit"].includes(method) &&
+      p.taskId
+    ) {
+      const artifact = await service.invoke("artifact.register", {
         taskId: p.taskId,
         path: result.path,
         kind: "image",
         name: "Снимок браузера",
       });
+      result.artifactId = artifact.id;
+    }
     return result;
   }
   if (method.startsWith("ide.")) {
@@ -662,13 +732,15 @@ async function invoke(
       return { requested: true };
     }
     const result = await ide.invoke(method, p, window);
-    if (method === "ide.capture" && p.taskId)
-      await service.invoke("artifact.register", {
+    if (method === "ide.capture" && p.taskId) {
+      const artifact = await service.invoke("artifact.register", {
         taskId: p.taskId,
         path: result.path,
         kind: "image",
         name: "Снимок IDE",
       });
+      result.artifactId = artifact.id;
+    }
     return result;
   }
   if (agentSession) {
@@ -677,6 +749,10 @@ async function invoke(
       "artifact.register",
       "session.create",
       "agent.spawn",
+      "agent.delegate",
+      "agent.control",
+      "agent.followup",
+      "agent.checkpoint",
       "role.transition.request",
       "session.send",
       "session.peerMessage",
@@ -687,15 +763,22 @@ async function invoke(
       "diagnostics.export",
     ]);
     if (!allowed.has(method)) throw new Error("Инструмент недоступен агенту");
-    if (method === "agent.spawn" && p.parentId !== agentSession)
+    if (
+      ["agent.spawn", "agent.delegate"].includes(method) &&
+      p.parentId !== agentSession
+    )
       throw new Error("Agent parent belongs to another session.");
+    if (["agent.control", "agent.followup"].includes(method))
+      p = { ...p, actorSessionId: agentSession };
+    if (method === "agent.checkpoint" && p.sessionId !== agentSession)
+      throw new Error("Checkpoint belongs to another executor.");
     if (method === "instruction.read" && p.sessionId !== agentSession)
       throw new Error("Instruction history belongs to another session.");
     if (method === "role.transition.request" && p.sessionId !== agentSession)
       throw new Error("Role transition belongs to another session.");
     const result = await service.invoke(method, p);
     if (method === "session.create") sessionOwners.set(result.id, window.id);
-    if (method === "agent.spawn")
+    if (["agent.spawn", "agent.delegate"].includes(method))
       sessionOwners.set(result.session.id, window.id);
     return result;
   }
@@ -844,6 +927,11 @@ async function invoke(
     default: {
       const result = await service.invoke(method, p);
       if (method === "session.create") sessionOwners.set(result.id, window.id);
+      if (
+        ["agent.spawn", "agent.delegate"].includes(method) &&
+        result?.session?.id
+      )
+        sessionOwners.set(result.session.id, window.id);
       return result;
     }
   }
@@ -891,6 +979,18 @@ async function start() {
     revokeSessionTools: (id) => mcp?.revokeBinding(id),
   });
   await service.init();
+  vision = new VisionBridgeService({
+    dataDir,
+    vault: {
+      available: () =>
+        safeStorage.isEncryptionAvailable() &&
+        (process.platform !== "linux" ||
+          safeStorage.getSelectedStorageBackend() !== "basic_text"),
+      encrypt: (value) => safeStorage.encryptString(value),
+      decrypt: (value) => safeStorage.decryptString(value),
+    },
+  });
+  await vision.init();
   database = new DatabaseService({
     dataDir,
     node: process.execPath,
@@ -968,6 +1068,12 @@ async function start() {
     {
       onFault: (error) => {
         void failRuntime("mcp-listener-failed", error);
+      },
+      allowInlineImages: () => false,
+      toolsForSession: (id) => {
+        const role =
+          service.snapshot().sessions.find((s) => s.id === id)?.profileId || "";
+        return uiMcpToolNames.filter((name) => roleDiscoversTool(role, name));
       },
     },
   );
@@ -1163,6 +1269,7 @@ app.on("before-quit", (e) => {
           throw new Error("Закрытие отменено: задачи продолжают выполняться.");
       }
       const cleanup = startShutdown([
+        () => vision?.dispose(),
         () => service?.dispose(),
         () => mcp?.dispose(),
         () => terminal?.dispose(),
@@ -1233,7 +1340,9 @@ app.on("before-quit", (e) => {
           type: "warning" as const,
           title: "Сохранение или закрытие не подтверждено",
           message: "Некоторые части приложения завершились с ошибкой.",
-          detail: unconfirmed.join("\n") + "\nМожно оставить окно с историей и диагностикой или завершить без подтверждения. Работа остановлена; автоматического перезапуска не будет.",
+          detail:
+            unconfirmed.join("\n") +
+            "\nМожно оставить окно с историей и диагностикой или завершить без подтверждения. Работа остановлена; автоматического перезапуска не будет.",
           buttons: ["Оставить окно диагностики", "Завершить без подтверждения"],
           defaultId: 0,
           cancelId: 0,
@@ -1242,7 +1351,9 @@ app.on("before-quit", (e) => {
           ? await dialog.showMessageBox(owner, message)
           : await dialog.showMessageBox(message);
         if (choice.response === 0)
-          throw new Error("Завершение отменено: сохранение или закрытие соединений не подтверждено. Работа остановлена, история доступна.");
+          throw new Error(
+            "Завершение отменено: сохранение или закрытие соединений не подтверждено. Работа остановлена, история доступна.",
+          );
         quitting = true;
         void log("shutdown-unconfirmed-exit", unconfirmed);
         app.exit(1);
@@ -1294,6 +1405,6 @@ process.on(
 if (single)
   start().catch(async (error) => {
     void log("startup-failed", error);
-    dialog.showErrorBox("Не удалось запустить Workbench", redact(error));
+    dialog.showErrorBox("Не удалось запустить GigaCode", redact(error));
     app.exit(1);
   });

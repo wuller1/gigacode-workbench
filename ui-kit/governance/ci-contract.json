@@ -2,18 +2,127 @@
   "schemaVersion": 1,
   "status": "required-before-publication",
   "checks": [
-    { "id": "catalog", "required": true, "evidence": ["registry shape", "source refs", "asset hashes"] },
-    { "id": "typecheck", "required": true, "evidence": ["TypeScript diagnostics"] },
-    { "id": "unit", "required": true, "evidence": ["component behavior", "token resolver", "serialization"] },
-    { "id": "interaction", "required": true, "evidence": ["keyboard paths", "focus return", "async cancellation"] },
-    { "id": "accessibility", "required": true, "evidence": ["automated audit", "manual keyboard path", "screen reader smoke matrix"] },
-    { "id": "visual", "required": true, "evidence": ["light", "dark", "high-contrast", "320", "768", "1024", "1440", "1920", "reduced motion"] },
-    { "id": "metrics", "required": true, "evidence": ["contrast", "target size", "overflow", "layout shift", "render budget"] },
-    { "id": "consumer-fixtures", "requiredFor": ["next", "stable"], "evidence": ["build", "typecheck", "critical paths"] },
-    { "id": "security", "required": true, "evidence": ["dependency scan", "Sprut when configured", "secret scan", "license/provenance scan"] },
-    { "id": "package-contents", "required": true, "evidence": ["allowlisted files", "no credentials", "no unregistered assets"] },
-    { "id": "sbom", "requiredFor": ["next", "stable"], "evidence": ["SPDX or CycloneDX reference"] },
-    { "id": "signature-provenance", "requiredFor": ["next", "stable"], "evidence": ["package signature", "source/build attestation"] }
+    {
+      "id": "catalog",
+      "required": true,
+      "evidence": [
+        "registry shape",
+        "source refs",
+        "asset hashes"
+      ]
+    },
+    {
+      "id": "typecheck",
+      "required": true,
+      "evidence": [
+        "TypeScript diagnostics"
+      ]
+    },
+    {
+      "id": "unit",
+      "required": true,
+      "evidence": [
+        "component behavior",
+        "token resolver",
+        "serialization"
+      ]
+    },
+    {
+      "id": "interaction",
+      "required": true,
+      "evidence": [
+        "keyboard paths",
+        "focus return",
+        "async cancellation"
+      ]
+    },
+    {
+      "id": "accessibility",
+      "required": true,
+      "evidence": [
+        "automated audit",
+        "manual keyboard path",
+        "screen reader smoke matrix"
+      ]
+    },
+    {
+      "id": "visual",
+      "required": true,
+      "evidence": [
+        "light",
+        "dark",
+        "high-contrast",
+        "1024x768",
+        "1440x900",
+        "1920x1080",
+        "360/420/560px tool panels",
+        "reduced motion",
+        "remote animation preference"
+      ]
+    },
+    {
+      "id": "metrics",
+      "required": true,
+      "evidence": [
+        "contrast",
+        "target size",
+        "overflow",
+        "layout shift",
+        "render budget"
+      ]
+    },
+    {
+      "id": "consumer-fixtures",
+      "requiredFor": [
+        "next",
+        "stable"
+      ],
+      "evidence": [
+        "build",
+        "typecheck",
+        "critical paths"
+      ]
+    },
+    {
+      "id": "security",
+      "required": true,
+      "evidence": [
+        "dependency scan",
+        "Sprut when configured",
+        "secret scan",
+        "license/provenance scan"
+      ]
+    },
+    {
+      "id": "package-contents",
+      "required": true,
+      "evidence": [
+        "allowlisted files",
+        "no credentials",
+        "no unregistered assets"
+      ]
+    },
+    {
+      "id": "sbom",
+      "requiredFor": [
+        "next",
+        "stable"
+      ],
+      "evidence": [
+        "SPDX or CycloneDX reference"
+      ]
+    },
+    {
+      "id": "signature-provenance",
+      "requiredFor": [
+        "next",
+        "stable"
+      ],
+      "evidence": [
+        "package signature",
+        "source/build attestation"
+      ]
+    }
   ],
   "baselinePolicy": "Visual baselines can change only in the reviewed source pull request; a failing comparison is not fixed by an unreviewed baseline update.",
   "publicationPolicy": "Publish one immutable digest, then promote that digest across channels after their gates pass."

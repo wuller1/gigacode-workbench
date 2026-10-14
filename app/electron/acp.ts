@@ -5,6 +5,8 @@ import {
 } from "node:child_process";
 import path from "node:path";
 import { TextDecoder } from "node:util";
+import { parseReviewedQwenContextUsage } from "./context-supervisor.js";
+import type { ReviewedContextUsage } from "../shared/context.js";
 
 export class AcpError extends Error {
   constructor(
@@ -544,6 +546,22 @@ export class AcpConnection {
       throw new AcpError("CLI did not return a session identity.");
     this.ownedSession = result.sessionId;
     return result;
+  }
+  /** Read-only extension. Owner MUST gate on the exact reviewed Qwen bytes; forks need their own adapter. */
+  async getContextUsage(
+    sessionId: string,
+    signal?: AbortSignal,
+  ): Promise<ReviewedContextUsage> {
+    if (!this.ownedSession || sessionId !== this.ownedSession)
+      throw new AcpError("Wrong ACP session for context usage.");
+    // detail=false avoids loading full file/tool bodies and cannot trigger a model request.
+    const result = await this.request(
+      "qwen/status/session/context_usage",
+      { sessionId, detail: false },
+      5000,
+      signal,
+    );
+    return parseReviewedQwenContextUsage(result, sessionId);
   }
   /** Exact reviewed Qwen extension only; the host decides whether it may be used. */
   async waitForMcpReady(

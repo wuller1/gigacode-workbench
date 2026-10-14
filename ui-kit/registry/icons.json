@@ -215,6 +215,159 @@
         "attention",
         "risk"
       ]
+    },
+    {
+      "id": "more",
+      "source": "icons/more.svg",
+      "sha256": "816579484dabe5de8c2f01bf2c631496e72a57f3f42928a025afd6fc8883c5b8",
+      "origin": "original",
+      "tags": [
+        "more"
+      ]
+    },
+    {
+      "id": "edit",
+      "source": "icons/edit.svg",
+      "sha256": "33523a2cb68d9938cc89966f459b24d3ff46e489543137c966db59f4d537c086",
+      "origin": "original",
+      "tags": [
+        "edit"
+      ]
+    },
+    {
+      "id": "send-now",
+      "source": "icons/send-now.svg",
+      "sha256": "63fb1b4949f407a97f89984d53d53c007e3a95d1b46b08a9dc35ea8182756804",
+      "origin": "original",
+      "tags": [
+        "send-now"
+      ]
+    },
+    {
+      "id": "send",
+      "source": "icons/send.svg",
+      "sha256": "363d711923790293d8ba743c764005e605314f7f664073fa33bf031a3102f306",
+      "origin": "original",
+      "tags": [
+        "send"
+      ]
+    },
+    {
+      "id": "attach",
+      "source": "icons/attach.svg",
+      "sha256": "9368712a9ee4d57fa2805c9fbdf92edb576304240d1c36eff61996edcc6d9061",
+      "origin": "original",
+      "tags": [
+        "attach"
+      ]
+    },
+    {
+      "id": "stop",
+      "source": "icons/stop.svg",
+      "sha256": "a5717447285b7c33574e0637097a7991e185c8d2c68c0b7fe15a599d0a26ac73",
+      "origin": "original",
+      "tags": [
+        "stop"
+      ]
+    },
+    {
+      "id": "chevron-left",
+      "source": "icons/chevron-left.svg",
+      "sha256": "39207cb4e2fa0e89888c0e1bb11b940731598ffba17d80ecbacf8262b07d4c36",
+      "origin": "original",
+      "tags": [
+        "chevron-left"
+      ]
+    },
+    {
+      "id": "chevron-right",
+      "source": "icons/chevron-right.svg",
+      "sha256": "220dc3412f9f49f4f72e969f19f7a19acf410c7dfb9079d3ea5be4b5215685ce",
+      "origin": "original",
+      "tags": [
+        "chevron-right"
+      ]
+    },
+    {
+      "id": "folder",
+      "source": "icons/folder.svg",
+      "sha256": "2596dd7c5a425a982974d3bc748661c427a5ef47122ed79184b2f8bec0c39f72",
+      "origin": "original",
+      "tags": [
+        "folder"
+      ]
+    },
+    {
+      "id": "file",
+      "source": "icons/file.svg",
+      "sha256": "be395e4d8e93618090e8470dd8a60ad763b91c3e89d4ffd4eece1f43bb686b4a",
+      "origin": "original",
+      "tags": [
+        "file"
+      ]
+    },
+    {
+      "id": "terminal",
+      "source": "icons/terminal.svg",
+      "sha256": "507c7c20d7c337fe5b6b59396d4c34e67a5f460b677cac927b96dd30261b4be1",
+      "origin": "original",
+      "tags": [
+        "terminal"
+      ]
+    },
+    {
+      "id": "filter",
+      "source": "icons/filter.svg",
+      "sha256": "2b0bd7c3f19a7a73d51a7d71375db8985ca01123fb109a06d6b149dc0eea00d1",
+      "origin": "original",
+      "tags": [
+        "filter"
+      ]
+    },
+    {
+      "id": "download",
+      "source": "icons/download.svg",
+      "sha256": "6b110ff79c2f24b3ff055fbdbd41a76a10a0d49df2c1d78b7f92e6e43a32b2dc",
+      "origin": "original",
+      "tags": [
+        "download"
+      ]
+    },
+    {
+      "id": "refresh",
+      "source": "icons/refresh.svg",
+      "sha256": "fcdfcd1b6b606c63873d6e7d00dc2d898e65753d21afc2b0cab020f6d3fbdfe0",
+      "origin": "original",
+      "tags": [
+        "refresh"
+      ]
+    },
+    {
+      "id": "split",
+      "source": "icons/split.svg",
+      "sha256": "8796c63b1e1954e21ba5d009f2a9c2bd9b7d7a8cb643b735bb41cf1ae15a1523",
+      "origin": "original",
+      "tags": [
+        "split"
+      ]
+    },
+    {
+      "id": "copy",
+      "source": "icons/copy.svg",
+      "sha256": "621930655c13d1ac6ce96ff4dcb42834f0eb23fd848f6d10c35a6dd0909a9313",
+      "origin": "original",
+      "tags": [
+        "copy"
+      ]
+    },
+    {
+      "id": "format",
+      "source": "icons/format.svg",
+      "sha256": "9b1a8a88ef94cdd2775b6bf8c2b5d55124009cc95e657b4d2664b744bc49ce9a",
+      "origin": "original",
+      "tags": [
+        "format"
+      ]
     }
   ]
 }

@@ -24,6 +24,15 @@ async function until(
     await new Promise((resolve) => setTimeout(resolve, 10));
   }
 }
+async function drainOwnedStorage(service: WorkbenchService) {
+  // A bounded shutdown receipt can report failure before its owned writes settle.
+  // Fixture removal must wait for those real operations, including a restarted
+  // service that intentionally inherits the test's 50 ms acknowledgement limit.
+  await service.dispose();
+  await until(() => (service as any).launches.size === 0);
+  await (service as any).flushPromise;
+  await (service as any).store.close().catch(() => undefined);
+}
 async function setup(extra: Partial<WorkbenchOptions> = {}) {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "resilience-service-"),
@@ -67,8 +76,7 @@ async function setup(extra: Partial<WorkbenchOptions> = {}) {
   );
   await server.start();
   cleanups.push(async () => {
-    await service.dispose();
-    await (service as any).store.close().catch(() => undefined);
+    await drainOwnedStorage(service);
     await server.dispose();
     await fs.rm(directory, { recursive: true, force: true });
   });
@@ -138,7 +146,7 @@ async function setup(extra: Partial<WorkbenchOptions> = {}) {
       mcpServersForSession: undefined,
     });
     await resumed.init();
-    cleanups.push(() => resumed.dispose());
+    cleanups.push(() => drainOwnedStorage(resumed));
     return resumed;
   };
   return {
@@ -351,30 +359,37 @@ describe("service fault containment and recovery", () => {
       id: x.task.id,
       description: "Already admitted host write",
     });
-    await gate.entered;
-    expect(await x.service.quiesce("Storage is stalled")).toEqual({
-      persistence: "failed",
-    });
-    expect(owned.client.alive).toBe(false);
-    expect(await x.checkBinding()).toBe(401);
-    expect(
-      await fs.readFile(path.join(x.dataDir, "owner.lock"), "utf8"),
-    ).toContain(String(process.pid));
-    const second = new WorkbenchService({
-      ...x.options,
-      mcpServersForSession: undefined,
-    });
-    await expect(second.init()).rejects.toThrow(/already owned/i);
-    gate.release();
-    await pending;
-    await until(async () => {
-      try {
-        await fs.stat(path.join(x.dataDir, "owner.lock"));
-        return false;
-      } catch {
-        return true;
-      }
-    });
+    // Observe the admitted write even if an earlier assertion fails.
+    const settled = pending.then(
+      () => ({ resolved: true as const }),
+      (error) => ({ resolved: false as const, error }),
+    );
+    try {
+      await gate.entered;
+      expect(await x.service.quiesce("Storage is stalled")).toEqual({
+        persistence: "failed",
+      });
+      expect(owned.client.alive).toBe(false);
+      expect(await x.checkBinding()).toBe(401);
+      expect(
+        await fs.readFile(path.join(x.dataDir, "owner.lock"), "utf8"),
+      ).toContain(String(process.pid));
+      const second = new WorkbenchService({
+        ...x.options,
+        mcpServersForSession: undefined,
+      });
+      await expect(second.init()).rejects.toThrow(/already owned/i);
+    } finally {
+      gate.release();
+      await settled;
+      await drainOwnedStorage(x.service);
+    }
+    const outcome = await settled;
+    expect(outcome.resolved).toBe(true);
+    if (!outcome.resolved) throw outcome.error;
+    await expect(
+      fs.stat(path.join(x.dataDir, "owner.lock")),
+    ).rejects.toMatchObject({ code: "ENOENT" });
     const resumed = await x.restart();
     expect(resumed.snapshot().sessions[0].status).toBe("unknown");
   });

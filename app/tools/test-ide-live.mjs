@@ -96,7 +96,7 @@ async function forceOwnedCleanup() {
   return cleanupAttempt;
 }
 try {
-  const executablePath = packaged ? path.join(root, 'release/win-unpacked/GigaCode Workbench.exe') : require('electron');
+  const executablePath = packaged ? path.join(root, 'release/win-unpacked/GigaCode.exe') : require('electron');
   if (packaged && process.platform !== 'win32') throw new Error('Packaged acceptance requires the Windows x64 build');
   application = await _electron.launch({ executablePath, args: packaged ? [] : [root], env, timeout: 60_000 });
   process.once('SIGTERM', () => { void forceOwnedCleanup().finally(() => process.exit(0)); });

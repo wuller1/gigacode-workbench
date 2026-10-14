@@ -13,7 +13,61 @@ import type {
   RoleTransition,
 } from "../shared/types.js";
 import { AtomicStore } from "./store.js";
+import {
+  defaultContextPolicy,
+  validateContextPolicy,
+  validateRuntimeContextRecord,
+  recordRuntimeUsage,
+  recordRuntimeDispatch,
+  runtimeContext,
+  runtimeContextDecision,
+  runtimeRecoveryPacket,
+  type RuntimeContextPolicy,
+  type RuntimeContextRecord,
+} from "./context-runtime.js";
+import {
+  observeContext,
+  parseReviewedQwenCompaction,
+} from "./context-supervisor.js";
+import {
+  runContextCalibration,
+  type ContextCalibrationProbe,
+} from "./context-calibration.js";
+import { managedExecutorArgs } from "./managed-runtime-policy.js";
+import type { ContextModelIdentity } from "../shared/context.js";
 import { AcpConnection, AcpError, redact } from "./acp.js";
+import type {
+  ManagedCoordinationState,
+  ManagedFence,
+  ManagedSchedulerPolicy,
+} from "../shared/managed-coordination.js";
+import {
+  createManagedState,
+  registerManagedAgent,
+  managedReadiness,
+  claimManagedAgent,
+  managedDispatched,
+  managedSettled,
+  controlManagedAgent,
+  recoverManagedState,
+  classifyManagedFailure,
+  saveManagedCheckpoint,
+  setManagedDependencies,
+  grantProjectCoordination,
+  revokeProjectCoordination,
+  retainCoordination,
+  claimCoordination,
+  coordinationDispatched,
+  coordinationSettled,
+  validateManagedState,
+  continueManagedAgent,
+  MANAGED_WORKER_SYSTEM,
+  managedHeartbeat,
+  reconcileManagedAgent,
+  ManagedAdmissionDeferred,
+  coordinationReadiness,
+  coordinationHeartbeat,
+} from "./managed-coordination.js";
 import {
   compileInstructions,
   discoverPromptCapability,
@@ -35,6 +89,7 @@ type PeerItem = {
   sourceId: string;
   text: string;
   createdAt: string;
+  managedDeliveryId?: string;
 };
 type PeerReceipt = {
   id: string;
@@ -44,9 +99,10 @@ type PeerReceipt = {
   projectId: string;
   text: string;
   textHash: string;
-  status: "retained" | "dispatched" | "observed" | "unknown";
+  status: "retained" | "dispatched" | "observed" | "unknown" | "cancelled";
   createdAt: string;
   generation?: number;
+  parentDeliveryId?: string;
 };
 type Control = {
   paused: boolean;
@@ -58,6 +114,7 @@ type Control = {
   pendingReasoning?: string;
   configValues?: Record<string, string>;
   peers?: PeerItem[];
+  revokedPeer?: string;
   pendingRoleTransition?: string;
   continuation?: {
     id: string;
@@ -98,6 +155,10 @@ class RoleTransitionBlocked extends Error {
   }
 }
 type Persisted = AppState & {
+  _contextPolicy?: RuntimeContextPolicy;
+  _contextRuntimes?: Record<string, RuntimeContextRecord>;
+  _contextCalibrationReceipts?: unknown[];
+  _managed?: ManagedCoordinationState;
   _controls: Record<string, Control>;
   _memory: string;
   _diagnostics: { at: string; message: string }[];
@@ -133,6 +194,38 @@ export interface WorkbenchOptions {
   bundledCliPath?: string;
   /** Existing workplace LLM router can bind here without replacing its implementation. */
   routeProfile?: RoleRouter;
+  /** Workplace transport must be isolated/no-tools and supply a real route-bound price ceiling. */
+  contextCalibration?: {
+    quoteCeilingUsd(
+      probe: ContextCalibrationProbe,
+      identity: ContextModelIdentity,
+    ): number;
+    execute(
+      probe: ContextCalibrationProbe,
+      identity: ContextModelIdentity,
+      signal: AbortSignal,
+    ): Promise<{
+      output: string;
+      promptTokens?: number;
+      requestReference?: string;
+    }>;
+  };
+  /** Free, read-only workplace adapter; never infer a fork's extension from Qwen. */
+  contextUsage?: (request: {
+    sessionId: string;
+    remoteSessionId: string;
+    generation: number;
+    identity: ContextModelIdentity;
+    client: AcpConnection;
+    signal: AbortSignal;
+  }) => Promise<{
+    remoteSessionId: string;
+    generation: number;
+    usedTokens?: number;
+    limitTokens: number;
+    estimated: boolean;
+    sourceRef: string;
+  }>;
   revokeSessionTools?: (sessionId: string) => void;
   /** Cancellation acknowledgement deadline; small overrides are for local fixtures. */
   cancelTimeoutMs?: number;
@@ -161,6 +254,10 @@ const defaults: Settings = {
   reducedMotion: false,
   startupRetries: 1,
   permissionMode: "auto_allow_bound",
+  managedMaxPerParent: 2,
+  managedContextBudgetTokens: 32000,
+  managedAttempts: 3,
+  allowCrossProjectCoordination: true,
 };
 function text(
   value: unknown,
@@ -209,6 +306,30 @@ function validateState(value: unknown): value is Persisted {
     !v.settings ||
     typeof v._memory !== "string" ||
     !v._controls
+  )
+    return false;
+  if (v._managed !== undefined && !validateManagedState(v._managed))
+    return false;
+  try {
+    if (v._contextPolicy !== undefined) validateContextPolicy(v._contextPolicy);
+  } catch {
+    return false;
+  }
+  if (
+    v._contextRuntimes !== undefined &&
+    (!v._contextRuntimes ||
+      typeof v._contextRuntimes !== "object" ||
+      Array.isArray(v._contextRuntimes) ||
+      Object.keys(v._contextRuntimes).length > 10000 ||
+      Object.values(v._contextRuntimes).some(
+        (record) => !validateRuntimeContextRecord(record),
+      ))
+  )
+    return false;
+  if (
+    v._contextCalibrationReceipts !== undefined &&
+    (!Array.isArray(v._contextCalibrationReceipts) ||
+      v._contextCalibrationReceipts.length > 1000)
   )
     return false;
   for (const name of [
@@ -279,6 +400,11 @@ function configOptions(raw: unknown): ConfigOption[] {
 }
 
 export class WorkbenchService {
+  private calibrationAbort?: AbortController;
+  private calibrationSessionId?: string;
+  private contextReads = new Map<string, AbortController>();
+  private contextLoopStops = new Set<string>();
+  private contextIntentVersions = new Map<string, number>();
   private store: AtomicStore<Persisted>;
   private live = new Map<string, Live>();
   private retiring = new Set<Promise<void>>();
@@ -302,6 +428,8 @@ export class WorkbenchService {
   private stopPromise?: Promise<{ persistence: "saved" | "failed" }>;
   private persistenceFailed = false;
   private pumpScheduled = false;
+  private readonly managedOwnerId = id();
+  private managedRetryTimer?: ReturnType<typeof setTimeout>;
   private core = "";
   private streamUpdates = new Map<string, any[]>();
   private streamTimer?: ReturnType<typeof setTimeout>;
@@ -377,6 +505,36 @@ export class WorkbenchService {
       // the available MCP surface; the permission mode only controls whether an
       // already offered action needs another per-call prompt.
       state.settings = { ...defaults, ...state.settings };
+      state._managed ||= createManagedState();
+      // Only prior host-created children are migrated; native CLI hidden workers
+      // and arbitrary parentId-shaped sessions are not claimed as host-owned.
+      for (const receipt of state._agentReceipts || []) {
+        const child = state.sessions.find(
+          (session) => session.id === receipt.sessionId,
+        );
+        if (!child || Object.hasOwn(state._managed.agents, child.id)) continue;
+        const task = present(state.tasks, child.taskId, "Managed task");
+        const record = registerManagedAgent(
+          state._managed,
+          {
+            sessionId: child.id,
+            parentId: receipt.parentId,
+            taskId: task.id,
+            projectId: task.projectId,
+            operationId: receipt.operationId,
+            inputHash: receipt.inputHash,
+          },
+          Date.now(),
+        ).record;
+        record.phase =
+          active(child) || state._controls[child.id]?.inflight
+            ? "unknown"
+            : child.status === "completed"
+              ? "completed"
+              : "paused";
+        record.effectFence = record.phase === "unknown";
+      }
+      recoverManagedState(state._managed, Date.now());
       state.profiles = [
         ...profiles,
         ...state.profiles.filter(
@@ -453,6 +611,10 @@ export class WorkbenchService {
       _artifactReceipts,
       _agentReceipts,
       _roleTransitions,
+      _managed,
+      _contextPolicy,
+      _contextRuntimes,
+      _contextCalibrationReceipts,
       ...state
     } = persisted;
     const transitions = new Map(
@@ -472,11 +634,54 @@ export class WorkbenchService {
       };
     };
     for (const session of state.sessions) {
+      const worker = _managed?.agents[session.id];
+      if (worker) {
+        const {
+          phase,
+          dependencies,
+          writeScopes,
+          contextBudget,
+          attempts,
+          effectFence,
+          retryAt,
+          failure,
+          checkpoint,
+          desired,
+          reconciliations,
+          retryMode,
+        } = worker;
+        session.managed = {
+          phase,
+          dependencies,
+          writeScopes,
+          contextBudget,
+          attempts,
+          effectFence,
+          retryAt,
+          failure,
+          checkpoint,
+          desired,
+          reconciliations,
+          retryMode,
+          canRetry:
+            ["failed", "cancelled", "retry_wait"].includes(phase) &&
+            !effectFence &&
+            attempts < (persisted.settings.managedAttempts ?? 3) &&
+            retryMode !== "fresh_followup_only" &&
+            (!retryAt || retryAt <= Date.now()) &&
+            !active(session) &&
+            !this.live.has(session.id) &&
+            !this.launches.has(session.id) &&
+            !this.configuring.has(session.id) &&
+            (session.queue.length > 0 || !!worker.retryInputMessageId),
+        };
+      }
       if (session.roleTransition)
         session.roleTransition = view(session.roleTransition);
       if (session.roleTransitionHistory)
         session.roleTransitionHistory = session.roleTransitionHistory.map(view);
     }
+    state.coordinationLinks = _managed?.links || [];
     return state;
   }
   private async change<T>(fn: (state: Persisted) => T): Promise<T> {
@@ -540,6 +745,14 @@ export class WorkbenchService {
     if (session.queue.length >= 100)
       throw new Error("The queue is full. Your input has not been sent.");
     session.queue.push({ id: id(), text: content, createdAt: now() });
+    const worker = state._managed?.agents[session.id];
+    if (
+      worker &&
+      (worker.phase === "completed" ||
+        (worker.phase === "paused" && !worker.desired)) &&
+      !worker.effectFence
+    )
+      continueManagedAgent(state._managed!, session.id, Date.now());
     session.updatedAt = now();
   }
   private transitionScope(state: Persisted, session: Session): string {
@@ -746,6 +959,14 @@ export class WorkbenchService {
       originId: record.originId,
       text: record.continuation,
     };
+    const worker = state._managed?.agents[session.id];
+    if (
+      worker &&
+      !worker.effectFence &&
+      (worker.phase === "completed" ||
+        (worker.phase === "paused" && !worker.desired))
+    )
+      continueManagedAgent(state._managed!, session.id, Date.now());
     this.publishTransition(state, record, "ready");
   }
   private terminalTransition(
@@ -937,6 +1158,357 @@ export class WorkbenchService {
       };
     });
   }
+  private managedPolicy(state: Persisted): ManagedSchedulerPolicy {
+    return {
+      maxConcurrent: state.settings.maxConcurrent,
+      maxPerParent: state.settings.managedMaxPerParent ?? 2,
+      maxContextTokens: state.settings.managedContextBudgetTokens ?? 32000,
+      maxAttempts: state.settings.managedAttempts ?? 3,
+      baseRetryMs: 1000,
+      maxRetryMs: 60000,
+    };
+  }
+  private async canonicalManagedScopes(
+    root: string,
+    scopes: unknown,
+  ): Promise<string[]> {
+    if (
+      !Array.isArray(scopes) ||
+      scopes.length > 32 ||
+      scopes.some(
+        (entry: unknown) =>
+          typeof entry !== "string" ||
+          !entry ||
+          entry.length > 2000 ||
+          entry.includes("\0") ||
+          path.isAbsolute(entry) ||
+          /^[a-z]:/i.test(entry as string) ||
+          (entry as string).split(/[\\/]/).some((part) => part === ".."),
+      )
+    )
+      throw new Error(
+        "Worker write scopes must be project-relative paths without traversal.",
+      );
+    const canonicalRoot = await fs.realpath(root);
+    const comparable = (value: string) =>
+      process.platform === "win32" ? value.toLowerCase() : value;
+    const within = (value: string) => {
+      const relative = path.relative(
+        comparable(canonicalRoot),
+        comparable(value),
+      );
+      return (
+        relative === "" ||
+        (!relative.startsWith(`..${path.sep}`) &&
+          relative !== ".." &&
+          !path.isAbsolute(relative))
+      );
+    };
+    const resolved: string[] = [];
+    for (const scope of scopes as string[]) {
+      let candidate = path.resolve(canonicalRoot, scope),
+        suffix: string[] = [];
+      while (true) {
+        try {
+          const canonical = await fs.realpath(candidate);
+          const full = path.resolve(canonical, ...suffix);
+          if (!within(full))
+            throw new Error(
+              "Worker write scope escapes the real project root through a symlink/alias.",
+            );
+          resolved.push(full);
+          break;
+        } catch (error) {
+          if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+          const parent = path.dirname(candidate);
+          if (parent === candidate)
+            throw new Error(
+              "Cannot resolve the worker's nearest existing write scope parent.",
+            );
+          suffix.unshift(path.basename(candidate));
+          candidate = parent;
+        }
+      }
+    }
+    return [...new Set(resolved)];
+  }
+  private ensureManagedCaller(
+    state: Persisted,
+    sessionId: string,
+    generation?: unknown,
+  ): void {
+    if (generation === undefined) return; // Host UI and older unbound test channels.
+    const live = this.live.get(sessionId);
+    if (
+      !Number.isSafeInteger(generation) ||
+      state._controls[sessionId]?.generation !== generation ||
+      live?.generation !== generation ||
+      live.toolsRevoked ||
+      live.intentionalClose
+    )
+      throw new Error("The authenticated coordinator generation is stale.");
+  }
+  private ensureManagedAuthority(
+    state: Persisted,
+    child: Session,
+    actorId?: unknown,
+    generation?: unknown,
+  ): void {
+    if (actorId === undefined) return; // Direct IPC is the human's host UI.
+    const actor = present(state.sessions, actorId, "Coordinator session");
+    this.ensureManagedCaller(state, actor.id, generation);
+    let ancestor: Session | undefined = child;
+    for (let depth = 0; ancestor && depth < 5; depth++) {
+      if (ancestor.parentId === actor.id) return;
+      ancestor = state.sessions.find(
+        (entry) => entry.id === ancestor?.parentId,
+      );
+    }
+    throw new Error("Only the owning coordinator can control this worker.");
+  }
+  private coordinationLink(
+    state: Persisted,
+    sourceProjectId: string,
+    targetProjectId: string,
+    action: "note" | "delegate",
+  ): string | undefined {
+    if (sourceProjectId === targetProjectId) return undefined;
+    if (!state.settings.allowCrossProjectCoordination)
+      throw new Error("Cross-project coordination is disabled in Settings.");
+    const managed = (state._managed ||= createManagedState());
+    const matches = managed.links.filter(
+      (link) =>
+        link.sourceProjectId === sourceProjectId &&
+        link.targetProjectId === targetProjectId,
+    );
+    const existing = matches.find(
+      (link) => link.enabled && link.actions.includes(action),
+    );
+    if (existing) return existing.id;
+    if (matches.length)
+      throw new Error(
+        "This directed project link was revoked or does not allow the requested action. Change its host settings explicitly.",
+      );
+    return grantProjectCoordination(
+      managed,
+      {
+        id: id(),
+        sourceProjectId,
+        targetProjectId,
+        actions: ["note", "delegate"],
+        authorizationRef: "host-setting:allowCrossProjectCoordination",
+      },
+      Date.now(),
+    ).id;
+  }
+  private managedList(params: Record<string, any>) {
+    const state = this.store.read();
+    const offset = params.offset ?? 0,
+      limit = params.limit ?? 20;
+    if (
+      !Number.isSafeInteger(offset) ||
+      offset < 0 ||
+      !Number.isSafeInteger(limit) ||
+      limit < 1 ||
+      limit > 20
+    )
+      throw new Error("Invalid managed worker page.");
+    const entries = Object.values(state._managed?.agents || {}).filter(
+      (record) =>
+        (!params.parentId || record.parentId === params.parentId) &&
+        (!params.projectId || record.projectId === params.projectId),
+    );
+    const visible = entries.slice(offset, offset + limit).map((record) => ({
+      ...record,
+      attempt: record.attempt
+        ? {
+            epoch: record.attempt.epoch,
+            expiresAt: record.attempt.expiresAt,
+            sessionGeneration: record.attempt.sessionGeneration,
+            phase: record.attempt.phase,
+          }
+        : undefined,
+      sessionStatus:
+        state.sessions.find((session) => session.id === record.sessionId)
+          ?.status || "removed",
+    }));
+    return {
+      agents: visible,
+      total: entries.length,
+      nextOffset:
+        offset + visible.length < entries.length
+          ? offset + visible.length
+          : null,
+      policy: this.managedPolicy(state),
+    };
+  }
+  private async managedControl(params: Record<string, any>) {
+    if (!["pause", "cancel", "resume", "retry"].includes(params.action))
+      throw new Error("Invalid managed control action.");
+    // Cancel native execution before awaiting a possibly stalled storage write.
+    const before = this.store.read(),
+      child = present(before.sessions, params.id, "Managed worker");
+    this.ensureManagedAuthority(
+      before,
+      child,
+      params.actorSessionId,
+      params.generation,
+    );
+    if (!before._managed?.agents[child.id])
+      throw new Error("This session is not a host-managed worker.");
+    const stop =
+      ["pause", "cancel"].includes(params.action) &&
+      (active(child) || this.launches.has(child.id));
+    const cancellation = stop ? this.cancel(child.id) : undefined;
+    // Observe cancellation immediately even if the durable reducer later rejects.
+    if (cancellation) void cancellation.catch(() => undefined);
+    const result = await this.change((state) => {
+      const current = present(state.sessions, params.id, "Managed worker");
+      this.ensureManagedAuthority(
+        state,
+        current,
+        params.actorSessionId,
+        params.generation,
+      );
+      const record = state._managed!.agents[current.id];
+      if (params.action === "retry") {
+        if (record.effectFence || record.phase === "unknown")
+          throw new Error(
+            "Reconcile unknown worker effects before resuming or retrying.",
+          );
+        if (record.retryMode === "fresh_followup_only")
+          throw new Error(
+            "This verified outcome requires a fresh bounded followup; the previous peer/continuation or applied input will not be replayed.",
+          );
+        if (!current.queue.length && record.retryInputMessageId) {
+          const original = current.messages.find(
+            (message) =>
+              message.id === record.retryInputMessageId &&
+              message.role === "user",
+          );
+          if (
+            !original ||
+            createHash("sha256").update(original.content).digest("hex") !==
+              record.retryInputHash
+          )
+            throw new Error(
+              "The captured retry input is unavailable or changed; use a fresh followup.",
+            );
+          this.enqueue(state, current, original.content);
+        }
+        if (!current.queue.length && !state._controls[current.id].continuation)
+          throw new Error(
+            "No undispatched input remains; provide a fresh bounded followup.",
+          );
+      }
+      const controlled = controlManagedAgent(
+        state._managed!,
+        current.id,
+        params.action,
+        Date.now(),
+        this.managedPolicy(state),
+      );
+      const c = state._controls[current.id];
+      c.paused = params.action !== "resume" && params.action !== "retry";
+      if (["resume", "retry"].includes(params.action)) {
+        if (active(current) || this.launches.has(current.id))
+          throw new Error("The previous worker executor has not stopped.");
+        current.status = "idle";
+        current.error = undefined;
+        delete c.inflight;
+      }
+      return {
+        id: current.id,
+        phase: controlled.record.phase,
+        effectFence: controlled.record.effectFence,
+        stopRequested: stop,
+      };
+    });
+    await cancellation;
+    this.schedulePump();
+    this.armManagedRetry();
+    return result;
+  }
+  private armManagedRetry(): void {
+    if (this.managedRetryTimer) clearTimeout(this.managedRetryTimer);
+    this.managedRetryTimer = undefined;
+    if (this.disposed) return;
+    const managed = this.store.read()._managed;
+    const deadlines = [
+      ...Object.values(managed?.agents || {}).flatMap((record) =>
+        record.phase === "retry_wait" &&
+        record.retryAt &&
+        record.retryAt > Date.now()
+          ? [record.retryAt]
+          : ["leased", "dispatched"].includes(record.phase) && record.attempt
+            ? [record.attempt.expiresAt]
+            : [],
+      ),
+      ...(managed?.deliveries || []).flatMap((delivery) =>
+        ["claimed", "dispatched"].includes(delivery.phase) && delivery.attempt
+          ? [delivery.attempt.expiresAt]
+          : [],
+      ),
+    ];
+    if (!deadlines.length) return;
+    this.managedRetryTimer = setTimeout(
+      () => {
+        this.managedRetryTimer = undefined;
+        const snapshot = this.store.read()._managed;
+        const at = Date.now();
+        const expired = new Set([
+          ...Object.values(snapshot?.agents || {})
+            .filter(
+              (record) =>
+                ["leased", "dispatched"].includes(record.phase) &&
+                record.attempt &&
+                record.attempt.expiresAt <= at,
+            )
+            .map((record) => record.sessionId),
+          ...(snapshot?.deliveries || [])
+            .filter(
+              (delivery) =>
+                ["claimed", "dispatched"].includes(delivery.phase) &&
+                delivery.attempt &&
+                delivery.attempt.expiresAt <= at,
+            )
+            .map((delivery) => delivery.target.sessionId),
+        ]);
+        // cancel revokes/aborts and arms owned process termination synchronously
+        // before its first storage await. An unresponsive disk cannot extend a
+        // native executor's authority beyond its host lease deadline.
+        const stopped = Promise.allSettled(
+          [...expired].map((sessionId) => this.cancel(sessionId)),
+        );
+        void this.change((state) => {
+          const recovery = recoverManagedState(
+            state._managed!,
+            Date.now(),
+            false,
+          );
+          for (const sessionId of recovery.stopSessionIds) {
+            const session = state.sessions.find(
+              (entry) => entry.id === sessionId,
+            );
+            if (session) {
+              state._controls[sessionId].paused = true;
+              session.error =
+                "Host-managed lease expired; reconcile dispatched effects before continuation.";
+            }
+          }
+          return recovery.stopSessionIds;
+        })
+          .then(async (ids) => {
+            await stopped;
+            this.schedulePump();
+            this.armManagedRetry();
+          })
+          .catch(() => undefined);
+      },
+      Math.max(10, Math.min(2147483647, Math.min(...deadlines) - Date.now())),
+    );
+    this.managedRetryTimer.unref?.();
+  }
   async invoke(method: string, params: Record<string, any> = {}): Promise<any> {
     if (this.disposed && !["state.get", "diagnostics.export"].includes(method))
       throw new Error(
@@ -947,6 +1519,54 @@ export class WorkbenchService {
     switch (method) {
       case "state.get":
         return this.snapshot();
+      case "context.inspect":
+        return this.inspectContext(params);
+      case "context.policy":
+        return this.change((state) => {
+          const patch = params.patch;
+          if (
+            !patch ||
+            typeof patch !== "object" ||
+            Array.isArray(patch) ||
+            Object.keys(patch).some(
+              (k) =>
+                ![
+                  "enabled",
+                  "highWaterTokens",
+                  "lowWaterTokens",
+                  "routeKey",
+                ].includes(k),
+            )
+          )
+            throw new Error("Invalid context policy patch.");
+          const currentPolicy = {
+            ...defaultContextPolicy,
+            ...state._contextPolicy,
+          };
+          if (
+            params.expectedPolicy !== undefined &&
+            JSON.stringify(params.expectedPolicy) !==
+              JSON.stringify(currentPolicy)
+          )
+            throw new Error(
+              "Context policy changed in another window; refresh before applying. Your draft is retained.",
+            );
+          state._contextPolicy = validateContextPolicy({
+            ...defaultContextPolicy,
+            ...state._contextPolicy,
+            ...patch,
+          });
+          return state._contextPolicy;
+        });
+      case "context.calibrate":
+        return this.calibrateContext(params);
+      case "context.calibration.cancel":
+        if (this.calibrationSessionId !== params.id)
+          throw new Error("No calibration is running for this session.");
+        this.calibrationAbort?.abort(
+          new Error("Context calibration cancelled by the user."),
+        );
+        return { cancelled: true, outcomeMayBeUnknown: true };
       case "role.transition.request":
         return this.requestRoleTransition(params);
       case "project.create": {
@@ -1071,6 +1691,7 @@ export class WorkbenchService {
           await Promise.all([...this.retiring]);
           return result;
         });
+      case "agent.delegate":
       case "agent.spawn": {
         const operationId = text(params.operationId, "agent operation ID", 160);
         const title = text(params.title, "agent title", 300);
@@ -1079,6 +1700,28 @@ export class WorkbenchService {
           params.roleHint === undefined
             ? undefined
             : text(params.roleHint, "role hint", 80);
+        const scopeSnapshot = this.store.read();
+        const scopeParent = present(
+          scopeSnapshot.sessions,
+          params.parentId,
+          "Parent session",
+        );
+        const scopeTask = present(
+          scopeSnapshot.tasks,
+          params.targetTaskId || scopeParent.taskId,
+          "Worker task",
+        );
+        const scopeProject = present(
+          scopeSnapshot.projects,
+          params.targetTaskId
+            ? scopeTask.projectId
+            : params.targetProjectId || scopeTask.projectId,
+          "Worker project",
+        );
+        const resolvedWriteScopes = await this.canonicalManagedScopes(
+          scopeProject.path,
+          params.writeScopes ?? [],
+        );
         const summary = (s: Session) => ({
           id: s.id,
           taskId: s.taskId,
@@ -1096,9 +1739,74 @@ export class WorkbenchService {
             "Parent session",
           );
           this.ensureWritable(parent, state);
+          this.ensureManagedCaller(state, parent.id, params.generation);
+          const sourceTask = present(state.tasks, parent.taskId, "Source task");
+          const targetTask = params.targetTaskId
+            ? present(state.tasks, params.targetTaskId, "Delegated task")
+            : undefined;
+          const targetProjectId =
+            targetTask?.projectId ||
+            params.targetProjectId ||
+            sourceTask.projectId;
+          if (
+            targetTask &&
+            params.targetProjectId &&
+            targetTask.projectId !== params.targetProjectId
+          )
+            throw new Error(
+              "Delegated task does not belong to the selected project.",
+            );
+          const project = present(
+            state.projects,
+            targetProjectId,
+            "Delegated project",
+          );
+          if (
+            parent.taskId !== scopeParent.taskId ||
+            project.id !== scopeProject.id ||
+            project.path !== scopeProject.path ||
+            (targetTask && targetTask.projectId !== scopeTask.projectId)
+          )
+            throw new Error(
+              "Worker project/task scope changed while resolving canonical write leases; request preserved for retry.",
+            );
+          if (project.archived || targetTask?.archived)
+            throw new Error("Restore the delegated target first.");
+          if (targetProjectId !== sourceTask.projectId)
+            this.coordinationLink(
+              state,
+              sourceTask.projectId,
+              targetProjectId,
+              "delegate",
+            );
           if (roleHint) present(state.profiles, roleHint, "Suggested profile");
+          const dependencies = params.dependencies ?? [];
+          if (
+            !Array.isArray(dependencies) ||
+            dependencies.length > 32 ||
+            dependencies.some((entry: unknown) => typeof entry !== "string")
+          )
+            throw new Error("Invalid worker dependencies.");
+          const contextBudget = params.contextBudget ?? 16000;
+          if (
+            !Number.isInteger(contextBudget) ||
+            contextBudget < 2048 ||
+            contextBudget > 256000
+          )
+            throw new Error("Invalid worker context budget.");
           const inputHash = createHash("sha256")
-            .update(JSON.stringify([title, prompt, roleHint ?? null]))
+            .update(
+              JSON.stringify([
+                title,
+                prompt,
+                roleHint ?? null,
+                params.targetTaskId ?? null,
+                params.targetProjectId ?? null,
+                dependencies,
+                resolvedWriteScopes,
+                contextBudget,
+              ]),
+            )
             .digest("hex");
           const receipt = state._agentReceipts?.find(
             (r) => r.parentId === parent.id && r.operationId === operationId,
@@ -1145,9 +1853,23 @@ export class WorkbenchService {
             throw new Error(
               "Agent receipt capacity reached; preserve/export history before creating more workers.",
             );
+          const destinationTask =
+            targetTask ||
+            (method === "agent.delegate"
+              ? {
+                  id: id(),
+                  projectId: project.id,
+                  title,
+                  description: prompt,
+                  createdAt: now(),
+                  updatedAt: now(),
+                }
+              : sourceTask);
+          if (destinationTask !== sourceTask && !targetTask)
+            state.tasks.push(destinationTask);
           const child: Session = {
             id: id(),
-            taskId: parent.taskId,
+            taskId: destinationTask.id,
             title,
             profileId: parent.profileId,
             profileReason:
@@ -1179,10 +1901,309 @@ export class WorkbenchService {
             inputHash,
             sessionId: child.id,
           });
+          registerManagedAgent(
+            (state._managed ||= createManagedState()),
+            {
+              sessionId: child.id,
+              parentId: parent.id,
+              projectId: destinationTask.projectId,
+              taskId: destinationTask.id,
+              operationId,
+              inputHash,
+              dependencies,
+              writeScopes: resolvedWriteScopes,
+              contextBudget,
+            },
+            Date.now(),
+          );
           return { session: summary(child), operationId, replayed: false };
         });
         this.schedulePump();
         return result;
+      }
+      case "agent.list":
+        return this.managedList(params);
+      case "agent.control":
+        return this.managedControl(params);
+      case "agent.followup": {
+        const result = await this.change((state) => {
+          const child = present(state.sessions, params.id, "Managed worker");
+          this.ensureManagedAuthority(
+            state,
+            child,
+            params.actorSessionId,
+            params.generation,
+          );
+          this.ensureWritable(child, state);
+          const record = state._managed?.agents[child.id];
+          if (!record)
+            throw new Error("This session is not a host-managed worker.");
+          if (record.effectFence || active(child))
+            throw new Error(
+              "Reconcile and stop the previous attempt before a fresh followup; unknown work is never replayed.",
+            );
+          if (
+            child.queue.length ||
+            state._controls[child.id].continuation ||
+            state._controls[child.id].peers?.length
+          )
+            throw new Error(
+              "Unsent work is still retained. Edit or remove it before a fresh followup; earlier input will not be replayed implicitly.",
+            );
+          continueManagedAgent(state._managed!, child.id, Date.now());
+          this.enqueue(
+            state,
+            child,
+            text(params.text, "worker followup", 20000),
+          );
+          state._controls[child.id].paused = false;
+          return {
+            id: child.id,
+            status: "queued",
+            previousEffectsReplayed: false,
+          };
+        });
+        this.schedulePump();
+        return result;
+      }
+      case "agent.dependencies":
+        return this.change((state) => {
+          const child = present(state.sessions, params.id, "Managed worker");
+          this.ensureManagedAuthority(
+            state,
+            child,
+            params.actorSessionId,
+            params.generation,
+          );
+          setManagedDependencies(
+            state._managed!,
+            child.id,
+            params.dependencies,
+            Date.now(),
+          );
+          return {
+            id: child.id,
+            dependencies: state._managed!.agents[child.id].dependencies,
+          };
+        }).then((result) => {
+          this.schedulePump();
+          return result;
+        });
+      case "agent.checkpoint":
+        return this.change((state) => {
+          const child = present(
+            state.sessions,
+            params.sessionId,
+            "Managed worker",
+          );
+          this.ensureManagedCaller(state, child.id, params.generation);
+          const record = state._managed?.agents[child.id];
+          if (!record?.attempt)
+            throw new Error("No current host-managed attempt.");
+          saveManagedCheckpoint(
+            state._managed!,
+            child.id,
+            record.attempt,
+            params.checkpoint,
+            Date.now(),
+          );
+          return { saved: true, id: child.id };
+        });
+      case "agent.reconcile": {
+        // This method is deliberately absent from MCP. A real human/host verifier
+        // must supply actual readback evidence; peer text cannot release a fence.
+        const sessionId = text(params.id, "managed worker", 100);
+        if (
+          this.live.has(sessionId) ||
+          this.launches.has(sessionId) ||
+          this.configuring.has(sessionId)
+        )
+          throw new Error(
+            "Wait for the actual owned worker executor to stop before recording verification.",
+          );
+        this.options.revokeSessionTools?.(sessionId);
+        return this.change((state) => {
+          const child = present(state.sessions, sessionId, "Managed worker");
+          if (
+            params.actorSessionId !== undefined ||
+            params.generation !== undefined
+          )
+            throw new Error(
+              "Worker reconciliation requires the human host UI, not an agent assertion.",
+            );
+          if (!["applied", "not_applied"].includes(params.outcome))
+            throw new Error("Invalid reconciliation outcome.");
+          if (
+            this.live.has(sessionId) ||
+            this.launches.has(sessionId) ||
+            this.configuring.has(sessionId)
+          )
+            throw new Error(
+              "A worker executor was started before verification could be saved; no fence was released.",
+            );
+          const c = state._controls[child.id];
+          const existing = state._managed?.agents[child.id];
+          if (!existing)
+            throw new Error("This session is not a host-managed worker.");
+          const humanRequestId =
+            params.operationId === undefined
+              ? id()
+              : text(params.operationId, "human verification request", 200);
+          const replayed =
+            existing.reconciliations?.some(
+              (item) => item.humanRequestId === humanRequestId,
+            ) || false;
+          let assistantIndex = child.messages.length - 1;
+          while (
+            assistantIndex >= 0 &&
+            child.messages[assistantIndex].role !== "assistant"
+          )
+            assistantIndex--;
+          const previousInput = c.inflight?.kind
+            ? undefined
+            : c.inflight
+              ? child.messages.find(
+                  (message) =>
+                    message.id === c.inflight!.queueId &&
+                    message.role === "user",
+                )
+              : child.messages.slice(0, assistantIndex).at(-1);
+          const record = reconcileManagedAgent(
+            state._managed!,
+            child.id,
+            {
+              outcome: params.outcome,
+              evidenceRefs: params.evidenceRefs,
+              humanRequestId,
+            },
+            Date.now(),
+          );
+          if (!replayed) {
+            const coveredAssistant = child.messages[assistantIndex];
+            if (coveredAssistant?.role === "assistant")
+              record.reconciliations!.at(-1)!.assistantMessageId =
+                coveredAssistant.id;
+            const verificationId = id();
+            const packet = runtimeRecoveryPacket(
+              state,
+              child,
+              c.generation,
+              this.contextView(state, child.id).envelope,
+            );
+            child.messages.push({
+              id: verificationId,
+              role: "system",
+              at: now(),
+              content:
+                "Human host verification attestation (reference; no automatic replay):\n" +
+                JSON.stringify(record.reconciliations!.at(-1)),
+            });
+            c.handoff =
+              packet.text +
+              `\nHuman-attested verification ${humanRequestId}: ${params.outcome}. Full observations: task_history:${child.id}:${verificationId}. This is a retained readback attestation, not a new instruction to replay old commands.`;
+            record.retryMode =
+              params.outcome === "not_applied" && previousInput?.role === "user"
+                ? "captured_human"
+                : "fresh_followup_only";
+            if (record.retryMode === "captured_human") {
+              record.retryInputMessageId = previousInput!.id;
+              record.retryInputHash = createHash("sha256")
+                .update(previousInput!.content)
+                .digest("hex");
+            } else {
+              delete record.retryInputMessageId;
+              delete record.retryInputHash;
+            }
+            child.status = "idle";
+            child.error = undefined;
+            child.context = {};
+            child.configOptions = [];
+            if (child.instructionBinding)
+              child.instructionBinding.state = "closed";
+            c.generation++;
+            c.paused = true;
+            delete c.inflight;
+            delete c.resumeAfterCancel;
+          }
+          return {
+            id: child.id,
+            phase: record.phase,
+            effectFence: false,
+            previousEffectsReplayed: false,
+            humanRequestId,
+            replayed,
+            retryMode: record.retryMode,
+          };
+        });
+      }
+      case "coordination.links":
+        return this.store.read()._managed?.links || [];
+      case "coordination.link":
+        return this.change((state) => {
+          present(state.projects, params.sourceProjectId, "Source project");
+          present(state.projects, params.targetProjectId, "Target project");
+          return grantProjectCoordination(
+            (state._managed ||= createManagedState()),
+            {
+              id: params.id || id(),
+              sourceProjectId: params.sourceProjectId,
+              targetProjectId: params.targetProjectId,
+              actions: params.actions || ["note", "delegate"],
+              authorizationRef: "host-ui:project-coordination-setting",
+            },
+            Date.now(),
+          );
+        });
+      case "coordination.revoke": {
+        const affected = await this.change((state) => {
+          const managed = state._managed!;
+          const targets = managed.deliveries
+            .filter(
+              (delivery) =>
+                delivery.linkId === params.id &&
+                ["claimed", "dispatched"].includes(delivery.phase),
+            )
+            .map((delivery) => ({
+              id: delivery.id,
+              targetId: delivery.target.sessionId,
+            }));
+          revokeProjectCoordination(managed, params.id, Date.now());
+          for (const receipt of state._peerReceipts || []) {
+            const delivery = managed.deliveries.find(
+              (item) => item.id === receipt.id,
+            );
+            if (delivery && delivery.linkId === params.id)
+              receipt.status =
+                delivery.phase === "cancelled"
+                  ? "cancelled"
+                  : delivery.phase === "unknown"
+                    ? "unknown"
+                    : receipt.status;
+          }
+          for (const [sessionId, c] of Object.entries(state._controls)) {
+            c.peers = c.peers?.filter(
+              (item) =>
+                !managed.deliveries.some(
+                  (delivery) =>
+                    delivery.id === item.managedDeliveryId &&
+                    delivery.phase === "cancelled",
+                ),
+            );
+            const current = targets.find(
+              (target) =>
+                target.targetId === sessionId &&
+                target.id === c.inflight?.queueId,
+            );
+            if (current) c.revokedPeer = current.id;
+          }
+          return [...new Set(targets.map((target) => target.targetId))];
+        });
+        await Promise.allSettled(
+          affected.map((sessionId) => this.cancel(sessionId)),
+        );
+        this.schedulePump();
+        this.armManagedRetry();
+        return { revoked: true };
       }
       case "session.create":
         return this.change((state) => {
@@ -1279,6 +2300,13 @@ export class WorkbenchService {
         });
       }
       case "session.send": {
+        const worker = this.store.read()._managed?.agents[params.id];
+        if (
+          worker &&
+          ["failed", "cancelled"].includes(worker.phase) &&
+          !worker.effectFence
+        )
+          return this.invoke("agent.followup", params);
         const result = await this.change((state) => {
           const session = present(state.sessions, params.id, "Session");
           this.enqueue(state, session, text(params.text, "message"));
@@ -1375,7 +2403,14 @@ export class WorkbenchService {
           this.updateSettings(state, params.patch);
           return state.settings;
         }).then((result) => {
-          if (params.patch?.maxConcurrent !== undefined) {
+          if (
+            [
+              "maxConcurrent",
+              "managedMaxPerParent",
+              "managedContextBudgetTokens",
+              "managedAttempts",
+            ].some((key) => params.patch?.[key] !== undefined)
+          ) {
             this.schedulePump();
             this.scheduleIdleTrim();
           }
@@ -1583,6 +2618,8 @@ export class WorkbenchService {
     state.sessions = state.sessions.filter((s) => s.id !== sessionId);
     state.questions = state.questions.filter((q) => q.sessionId !== sessionId);
     delete state._controls[sessionId];
+    if (state._contextRuntimes) delete state._contextRuntimes[sessionId];
+    this.contextIntentVersions.delete(sessionId);
     for (const s of state.sessions)
       if (s.parentId === sessionId) s.parentId = undefined;
     const live = this.live.get(sessionId);
@@ -1632,6 +2669,10 @@ export class WorkbenchService {
         if (!["light", "dark", "system"].includes(String(value)))
           throw new Error("Invalid theme.");
         state.settings.theme = value as Settings["theme"];
+      } else if (key === "allowCrossProjectCoordination") {
+        if (typeof value !== "boolean")
+          throw new Error("Invalid coordination preference.");
+        state.settings.allowCrossProjectCoordination = value;
       } else if (key === "reducedMotion") {
         if (typeof value !== "boolean")
           throw new Error("Invalid reduced motion.");
@@ -1641,13 +2682,27 @@ export class WorkbenchService {
           throw new Error("Invalid permission mode.");
         state.settings.permissionMode = value as Settings["permissionMode"];
       } else {
-        const min = key === "maxConcurrent" ? 1 : 0,
+        const min = [
+            "maxConcurrent",
+            "managedMaxPerParent",
+            "managedAttempts",
+          ].includes(key)
+            ? 1
+            : key === "managedContextBudgetTokens"
+              ? 2048
+              : 0,
           max =
             key === "maxConcurrent"
               ? 8
-              : key === "startupRetries"
-                ? 3
-                : 2000000;
+              : key === "managedMaxPerParent"
+                ? 16
+                : key === "managedAttempts"
+                  ? 10
+                  : key === "managedContextBudgetTokens"
+                    ? 16000000
+                    : key === "startupRetries"
+                      ? 3
+                      : 2000000;
         if (
           !Number.isInteger(value) ||
           Number(value) < min ||
@@ -1683,8 +2738,25 @@ export class WorkbenchService {
         control.paused ||
         active(session) ||
         this.launches.has(session.id) ||
-        this.configuring.has(session.id)
+        this.configuring.has(session.id) ||
+        this.calibrationSessionId === session.id
       )
+        continue;
+      if (
+        state._managed?.agents[session.id] &&
+        !managedReadiness(
+          state._managed,
+          session.id,
+          this.managedPolicy(state),
+          Date.now(),
+        ).ready
+      )
+        continue;
+      const peerId =
+        !session.queue.length && !control.continuation
+          ? control.peers?.[0]?.managedDeliveryId
+          : undefined;
+      if (peerId && !coordinationReadiness(state._managed!, peerId).ready)
         continue;
       try {
         this.ensureWritable(session, state);
@@ -1779,6 +2851,11 @@ export class WorkbenchService {
       .catch(() => undefined);
     return trimming;
   }
+  private instructionCore(state: Persisted, session: Session): string {
+    return state._managed?.agents[session.id]
+      ? `${this.core}\n\n${MANAGED_WORKER_SYSTEM}`
+      : this.core;
+  }
   private fingerprint(
     state: Persisted,
     session: Session,
@@ -1795,7 +2872,11 @@ export class WorkbenchService {
           state.settings.cliArgs,
           session.model,
           ...(includeProfile
-            ? [this.core, session.profileId, profile?.prompt]
+            ? [
+                this.instructionCore(state, session),
+                session.profileId,
+                profile?.prompt,
+              ]
             : []),
         ]),
       )
@@ -1812,7 +2893,7 @@ export class WorkbenchService {
       "Selected profile",
     );
     const compiled = compileInstructions({
-      core: this.core,
+      core: this.instructionCore(state, session),
       role: profile.prompt,
       profileId: profile.id,
     });
@@ -1834,7 +2915,7 @@ export class WorkbenchService {
     );
     return planPromptBinding({
       executable,
-      args: state.settings.cliArgs,
+      args: managedExecutorArgs(state.settings.cliArgs, capability),
       compiled,
       capability,
     });
@@ -1998,6 +3079,11 @@ export class WorkbenchService {
         source = "llm";
       }
     } catch (error) {
+      // A managed child with a failed classifier must not silently execute under
+      // the parent's retained role. Keep its input undispatched for capped host
+      // retry or an explicit repair. Unknown-fork/no-router fallback remains
+      // visibly retained because that path did not pretend classification ran.
+      if (state._managed?.agents[sessionId]) throw error;
       decision.reason =
         "Текущая роль сохранена: LLM-маршрутизация временно недоступна. " +
         redact(error instanceof Error ? error.message : error).slice(0, 350);
@@ -2116,11 +3202,360 @@ export class WorkbenchService {
       );
     });
   }
+  private contextView(state: Persisted, sessionId: string) {
+    const raw = present(state.sessions, sessionId, "Session");
+    const session: Session = {
+      ...raw,
+      ...(state._managed?.agents[sessionId]
+        ? { managed: state._managed.agents[sessionId] }
+        : {}),
+    };
+    const control = state._controls[sessionId];
+    const policy = { ...defaultContextPolicy, ...state._contextPolicy };
+    const value = runtimeContext(
+      state,
+      session,
+      control.generation,
+      policy,
+      state._contextRuntimes?.[sessionId],
+    );
+    const clean =
+      !active(session) &&
+      (!session.messages.length || control.lastStopReason === "end_turn");
+    const next =
+      session.queue[0]?.text ||
+      control.continuation?.text ||
+      control.peers?.[0]?.text;
+    return {
+      ...value,
+      session,
+      policy,
+      decision: runtimeContextDecision(
+        state,
+        session,
+        value.record,
+        value.envelope,
+        clean,
+        next,
+      ),
+    };
+  }
+  private async inspectContext(params: Record<string, any>) {
+    const sessionId = text(params.id, "session id", 100);
+    let measurementNote =
+      "Observed ACP usage and configured working-set policy. The provider maximum and recall are not independently verified.";
+    if (params.refresh === true) {
+      const live = this.live.get(sessionId);
+      if (
+        live?.remoteId &&
+        (this.options.contextUsage ||
+          live.instructionPlan.receipt.evidenceScope ===
+            "reviewed_qwen_0.25.1_source")
+      ) {
+        const observedModelKey = this.contextView(this.store.read(), sessionId)
+          .envelope.modelKey;
+        const controller = new AbortController();
+        if (this.contextReads.has(sessionId))
+          throw new Error("Context measurement is already running.");
+        this.contextReads.set(sessionId, controller);
+        const timer = setTimeout(
+          () =>
+            controller.abort(new Error("Context adapter deadline exceeded.")),
+          10000,
+        );
+        let removeAbort = () => {};
+        try {
+          const deadline = new Promise<never>((_, reject) => {
+            const aborted = () => reject(controller.signal.reason);
+            controller.signal.addEventListener("abort", aborted, {
+              once: true,
+            });
+            removeAbort = () =>
+              controller.signal.removeEventListener("abort", aborted);
+          });
+          const usage = await Promise.race([
+            this.options.contextUsage
+              ? this.options
+                  .contextUsage({
+                    sessionId,
+                    remoteSessionId: live.remoteId,
+                    generation: live.generation,
+                    identity: this.contextView(this.store.read(), sessionId)
+                      .identity,
+                    client: live.client,
+                    signal: controller.signal,
+                  })
+                  .then((value) => {
+                    if (
+                      !value ||
+                      value.remoteSessionId !== live.remoteId ||
+                      value.generation !== live.generation ||
+                      typeof value.estimated !== "boolean" ||
+                      !Number.isSafeInteger(value.limitTokens) ||
+                      value.limitTokens < 4096 ||
+                      value.limitTokens > 8 * 1024 * 1024 ||
+                      (value.usedTokens !== undefined &&
+                        (!Number.isSafeInteger(value.usedTokens) ||
+                          value.usedTokens < 0 ||
+                          value.usedTokens > 8 * 1024 * 1024)) ||
+                      typeof value.sourceRef !== "string" ||
+                      !/^[A-Za-z0-9._:-]{1,200}$/.test(value.sourceRef)
+                    )
+                      throw new Error(
+                        "Invalid or stale session-bound context adapter receipt.",
+                      );
+                    return {
+                      ...value,
+                      usedTokens:
+                        value.usedTokens === 0 && value.estimated
+                          ? undefined
+                          : value.usedTokens,
+                    };
+                  })
+              : live.client.getContextUsage(live.remoteId, controller.signal),
+            deadline,
+          ]);
+          controller.signal.throwIfAborted();
+          await this.change((state) => {
+            const s = present(state.sessions, sessionId, "Session");
+            if (
+              this.live.get(sessionId) !== live ||
+              state._controls[sessionId].generation !== live.generation ||
+              this.contextView(state, sessionId).envelope.modelKey !==
+                observedModelKey
+            )
+              throw new Error(
+                "Context measurement belongs to a retired executor or route.",
+              );
+            s.context = {
+              ...(usage.usedTokens === undefined
+                ? {}
+                : { usedTokens: usage.usedTokens }),
+              limitTokens: usage.limitTokens,
+              estimated: usage.estimated,
+            };
+            if (usage.usedTokens !== undefined) {
+              const view = this.contextView(state, sessionId);
+              recordRuntimeUsage(view.record, {
+                kind: "usage",
+                id: id(),
+                at: Date.now(),
+                usedTokens: usage.usedTokens,
+                estimated: usage.estimated,
+                basis: "cli_context",
+              });
+              (state._contextRuntimes ||= {})[sessionId] = view.record;
+            }
+          });
+          measurementNote = this.options.contextUsage
+            ? "Session-bound workplace context adapter receipt; actual adapter source and read-only behavior must be verified during migration."
+            : "Read-only session-bound Qwen context usage; pre-request zero estimates remain unknown. No model prompt was sent.";
+        } catch (error) {
+          measurementNote =
+            "Context read unavailable; prior telemetry retained: " +
+            redact(error).slice(0, 300);
+        } finally {
+          clearTimeout(timer);
+          removeAbort();
+          if (this.contextReads.get(sessionId) === controller)
+            this.contextReads.delete(sessionId);
+        }
+      } else
+        measurementNote =
+          "This CLI has no verified read-only context adapter. Standard ACP usage, when available, is retained; no Qwen-specific method was guessed.";
+    }
+    const state = this.store.read(),
+      view = this.contextView(state, sessionId);
+    return {
+      policy: view.policy,
+      envelope: view.envelope,
+      decision: view.decision,
+      rotations: view.record.rotations,
+      lastRotation: view.record.lastRotation,
+      observedUsage: view.record.supervisor.latestUsage,
+      hostEstimate: view.record.hostEstimate,
+      calibrationAvailable: !!this.options.contextCalibration,
+      measurementNote,
+    };
+  }
+  private async calibrateContext(params: Record<string, any>) {
+    const transport = this.options.contextCalibration;
+    if (!transport)
+      throw new Error(
+        "No verified isolated calibration transport/price adapter is configured for this route.",
+      );
+    if (this.calibrationAbort)
+      throw new Error("A context calibration is already running.");
+    if (params.explicitlyEnabled !== true)
+      throw new Error(
+        "Context calibration is disabled; explicit bounded paid-probe authorization is required.",
+      );
+    const sessionId = text(params.id, "session id", 100);
+    const session = present(this.store.read().sessions, sessionId, "Session");
+    if (
+      active(session) ||
+      this.launches.has(sessionId) ||
+      this.configuring.has(sessionId)
+    )
+      throw new Error(
+        "Wait for the current session operation before calibration.",
+      );
+    const controller = new AbortController();
+    this.calibrationAbort = controller;
+    this.calibrationSessionId = sessionId;
+    const quotes = new Map<string, number>();
+    try {
+      // Free ACP preparation pins the actual runtime fingerprint before paid evidence.
+      // The pump keeps this session queued until calibration releases its reservation.
+      await this.prepare(sessionId);
+      controller.signal.throwIfAborted();
+      const before = this.contextView(this.store.read(), sessionId);
+      const result = await runContextCalibration({
+        identity: before.identity,
+        explicitlyEnabled: params.explicitlyEnabled === true,
+        maxBudgetUsd: params.maxBudgetUsd,
+        inputBytes: params.inputBytes || [16384, 65536, 262144],
+        signal: controller.signal,
+        quoteCeilingUsd: (probe) => {
+          const price = transport.quoteCeilingUsd(probe, before.identity);
+          quotes.set(probe.id, price);
+          return price;
+        },
+        execute: async (probe, signal) => {
+          // Durable intent precedes the external request; an app crash cannot erase dispatch uncertainty.
+          await this.change((state) => {
+            const receipts = (state._contextCalibrationReceipts ||= []);
+            if (receipts.length >= 1000)
+              throw new Error("Calibration receipt capacity reached.");
+            receipts.push({
+              id: probe.id,
+              modelKey: before.envelope.modelKey,
+              status: "unknown",
+              phase: "dispatch_intent",
+              inputBytes: probe.inputBytes,
+              chargedBudgetUsd: quotes.get(probe.id),
+              at: now(),
+            });
+          });
+          signal.throwIfAborted();
+          if (
+            this.contextView(this.store.read(), sessionId).envelope.modelKey !==
+            before.envelope.modelKey
+          )
+            throw new Error("Calibration route changed before dispatch.");
+          return transport.execute(probe, before.identity, signal);
+        },
+        persistReceipt: async (receipt) => {
+          await this.change((state) => {
+            const entries = (state._contextCalibrationReceipts ||= []);
+            const index = entries.findIndex((v: any) => v?.id === receipt.id);
+            const saved = { ...receipt, phase: "settled", at: now() };
+            if (index >= 0) entries[index] = saved;
+            else entries.push(saved);
+          });
+        },
+      });
+      await this.change((state) => {
+        const view = this.contextView(state, sessionId);
+        if (view.envelope.modelKey !== result.modelKey)
+          throw new Error(
+            "Calibration completed for another route; receipts remain retained.",
+          );
+        view.record.evidence = [
+          ...view.record.evidence,
+          ...result.evidence,
+        ].slice(-128);
+        (state._contextRuntimes ||= {})[sessionId] = view.record;
+      });
+      return result;
+    } finally {
+      if (this.calibrationAbort === controller) {
+        this.calibrationAbort = undefined;
+        this.calibrationSessionId = undefined;
+      }
+      this.schedulePump();
+    }
+  }
+  private async contextBeforeDispatch(sessionId: string): Promise<boolean> {
+    const ready = this.store.read();
+    const session = present(ready.sessions, sessionId, "Session");
+    if (
+      this.options.contextUsage &&
+      this.live.get(sessionId)?.hasContext &&
+      !active(session)
+    )
+      await this.inspectContext({ id: sessionId, refresh: true });
+    const current = this.store.read();
+    const intentVersion = this.contextIntentVersions.get(sessionId) || 0;
+    const view = this.contextView(current, sessionId);
+    const mustHold =
+      view.decision.action === "hold_unknown" ||
+      (view.policy.enabled &&
+        ["hold_input", "hold_configuration", "defer_until_boundary"].includes(
+          view.decision.action,
+        ));
+    if (mustHold) {
+      await this.change((state) => {
+        const s = present(state.sessions, sessionId, "Session");
+        state._controls[sessionId].paused = true;
+        s.error =
+          view.decision.action === "hold_input"
+            ? "The single input exceeds the estimated flash working-set budget. Split it or attach a document for bounded reading; the queued message is retained."
+            : view.decision.action === "hold_configuration"
+              ? "Fresh sessions did not sufficiently reduce context twice. Reduce native instructions/MCP/tool overhead or verify the route limit; automatic rotation is held. The queue is retained."
+              : "Context update is held by pending questions or unknown tool outcomes. Reconcile current effects before continuing; the queue is retained.";
+        if (view.decision.action === "hold_unknown") s.status = "unknown";
+      });
+      return false;
+    }
+    if (!view.policy.enabled) return true;
+    const live = this.live.get(sessionId);
+    if (
+      view.decision.action !== "rotate_at_boundary" ||
+      !live?.hasContext ||
+      live.generation !== current._controls[sessionId].generation
+    )
+      return true;
+    const packet = runtimeRecoveryPacket(
+      current,
+      view.session,
+      live.generation,
+      view.envelope,
+    );
+    // Historical unknown receipts remain in this packet and in their authoritative services.
+    // A clean context rotation itself never clears them or replays a past request.
+    await this.recover(sessionId, undefined, true, packet.text);
+    const resumed = await this.change((state) => {
+      const value = this.contextView(state, sessionId);
+      value.record.rotations = view.record.rotations + 1;
+      value.record.lastRotation = {
+        at: now(),
+        beforeTokens: view.decision.usedTokens,
+        checkpointSha256: packet.sha256,
+        checkpointBytes: packet.bytes,
+      };
+      (state._contextRuntimes ||= {})[sessionId] = value.record;
+      const cancelled =
+        (this.contextIntentVersions.get(sessionId) || 0) !== intentVersion;
+      state._controls[sessionId].paused = cancelled;
+      this.addDiagnostic(
+        state,
+        `Context rotated at clean boundary for ${sessionId}; bounded checkpoint ${packet.sha256}, full history retained.`,
+      );
+      return !cancelled;
+    });
+    return resumed;
+  }
   private async runNext(sessionId: string): Promise<void> {
     let dispatched = false;
+    let admitted = false;
+    let workerFence: ManagedFence | undefined;
+    let peerFence: ManagedFence | undefined;
+    let peerDeliveryId: string | undefined;
     let live: Live | undefined;
     let captured: Persisted;
     try {
+      if (!(await this.contextBeforeDispatch(sessionId))) return;
       await this.change((state) => {
         const s = present(state.sessions, sessionId, "Session");
         const c = state._controls[sessionId];
@@ -2128,6 +3563,22 @@ export class WorkbenchService {
         if (c.paused || active(s) || !entry)
           throw new Error("Queue admission changed.");
         this.ensureWritable(s, state);
+        if (state._managed?.agents[sessionId])
+          workerFence = claimManagedAgent(
+            state._managed,
+            sessionId,
+            { leaseId: id(), ownerId: this.managedOwnerId, now: Date.now() },
+            this.managedPolicy(state),
+          );
+        if (!s.queue[0] && !c.continuation && c.peers?.[0]?.managedDeliveryId) {
+          peerDeliveryId = c.peers[0].managedDeliveryId;
+          peerFence = claimCoordination(state._managed!, peerDeliveryId!, {
+            targetSessionId: sessionId,
+            ownerId: this.managedOwnerId,
+            leaseId: id(),
+            now: Date.now(),
+          });
+        }
         if (s.queue[0] && c.pendingRoleTransition)
           this.holdTransition(
             state,
@@ -2148,6 +3599,8 @@ export class WorkbenchService {
           at: now(),
         };
       });
+      admitted = true;
+      this.armManagedRetry();
       await this.routeSession(sessionId);
       captured = this.store.read();
       const session = present(captured.sessions, sessionId, "Session");
@@ -2197,7 +3650,9 @@ export class WorkbenchService {
         );
       }
       if (!live) {
-        const attempts = captured.settings.startupRetries + 1;
+        // One startup attempt per durable managed lease; outer host retries have
+        // their own cap/backoff, so provider/native startup loops do not multiply.
+        const attempts = workerFence ? 1 : captured.settings.startupRetries + 1;
         let lastError: unknown;
         for (let attempt = 0; attempt < attempts; attempt++) {
           if (this.disposed || this.store.read()._controls[sessionId]?.paused)
@@ -2387,6 +3842,13 @@ export class WorkbenchService {
         const control = state._controls[sessionId];
         if (control.paused || control.inflight?.queueId !== entry.id)
           throw new Error("Dispatch was withdrawn.");
+        const context = this.contextView(state, sessionId);
+        recordRuntimeDispatch(context.record, {
+          historyLength: s.messages.length,
+          promptBytes: Buffer.byteLength(prompt),
+          visibleInputBytes: isPeer ? 0 : Buffer.byteLength(entry.text),
+        });
+        (state._contextRuntimes ||= {})[sessionId] = context.record;
         if (isContinuation) {
           if (s.queue.length)
             throw new RoleTransitionBlocked(
@@ -2478,6 +3940,22 @@ export class WorkbenchService {
         s.status = "running";
         s.updatedAt = now();
         control.inflight.phase = "dispatched";
+        if (workerFence)
+          managedDispatched(
+            state._managed!,
+            sessionId,
+            workerFence,
+            live!.generation,
+            Date.now(),
+          );
+        if (peerFence && peerDeliveryId)
+          coordinationDispatched(
+            state._managed!,
+            peerDeliveryId,
+            peerFence,
+            live!.generation,
+            Date.now(),
+          );
         delete control.handoff;
       });
       dispatched = true;
@@ -2511,23 +3989,128 @@ export class WorkbenchService {
         const receipt = state._peerReceipts?.find(
           (r) => r.id === c.inflight?.queueId,
         );
-        if (receipt) receipt.status = live!.cancelled ? "unknown" : "observed";
+        const cleanPeerTerminal =
+          !live!.cancelled &&
+          result?.stopReason === "end_turn" &&
+          !message?.tools?.some(
+            (tool) =>
+              !["completed", "failed", "cancelled"].includes(tool.status),
+          );
+        if (receipt)
+          receipt.status = cleanPeerTerminal ? "observed" : "unknown";
         this.terminalTransition(state, s, live!, result?.stopReason);
+        if (
+          workerFence &&
+          state._managed?.agents[sessionId]?.attempt?.phase !== "revoked"
+        ) {
+          const unresolved = message?.tools?.some(
+            (tool) =>
+              !["completed", "failed", "cancelled"].includes(tool.status),
+          );
+          managedSettled(
+            state._managed!,
+            sessionId,
+            workerFence,
+            {
+              generation: live!.generation,
+              outcome: live!.cancelled
+                ? "cancelled"
+                : result?.stopReason === "end_turn" && !unresolved
+                  ? "completed"
+                  : "unknown",
+            },
+            Date.now(),
+            this.managedPolicy(state),
+          );
+          if (
+            state._managed!.agents[sessionId].phase === "completed" &&
+            state.questions.some(
+              (question) =>
+                question.sessionId === sessionId &&
+                question.status === "pending",
+            )
+          )
+            state._managed!.agents[sessionId].phase = "paused";
+          else if (
+            state._managed!.agents[sessionId].phase === "completed" &&
+            (s.queue.length || c.continuation || c.peers?.length)
+          )
+            continueManagedAgent(state._managed!, sessionId, Date.now());
+          if (state._managed!.agents[sessionId].phase === "unknown") {
+            s.status = "unknown";
+            c.paused = true;
+            s.error =
+              "Worker terminal result contains unresolved tools or unknown effects; reconciliation is required.";
+            if (message) message.outcome = "unknown";
+          }
+        }
+        const revokedPeer =
+          peerDeliveryId &&
+          state._managed?.deliveries.find((item) => item.id === peerDeliveryId)
+            ?.attempt?.phase === "revoked";
+        if (peerFence && peerDeliveryId && !revokedPeer)
+          coordinationSettled(
+            state._managed!,
+            peerDeliveryId,
+            peerFence,
+            live!.generation,
+            cleanPeerTerminal ? "observed" : "unknown",
+            Date.now(),
+          );
+        if (revokedPeer) {
+          s.status = "unknown";
+          c.paused = true;
+          s.error =
+            "Coordination link was revoked during dispatch; reconcile effects before continuation.";
+          if (message) message.outcome = "unknown";
+        }
+        if (peerDeliveryId && !cleanPeerTerminal) {
+          s.status = "unknown";
+          c.paused = true;
+          s.error =
+            "Peer execution has an unknown terminal result or unresolved tool effects; reconcile before continuing.";
+          if (message) message.outcome = "unknown";
+        }
+        delete c.revokedPeer;
         delete c.inflight;
-        s.error = undefined;
+        if (
+          !revokedPeer &&
+          (!peerDeliveryId || cleanPeerTerminal) &&
+          state._managed?.agents[sessionId]?.phase !== "unknown"
+        )
+          s.error = undefined;
       });
-      if (live.cancelled) {
+      const heldUnknown =
+        this.store.read().sessions.find((item) => item.id === sessionId)
+          ?.status === "unknown";
+      if (live.cancelled || heldUnknown) {
+        this.options.revokeSessionTools?.(sessionId);
+        live.toolsRevoked = true;
+        live.intentionalClose = true;
+        this.live.delete(sessionId);
+        const retirement = live.client.dispose();
+        this.retiring.add(retirement);
+        void retirement
+          .finally(() => this.retiring.delete(retirement))
+          .catch(() => undefined);
         await this.change((state) => {
           const s = present(state.sessions, sessionId, "Session");
           state._controls[sessionId].handoff ||= this.handoff(state, s);
           if (s.instructionBinding) s.instructionBinding.state = "closed";
         });
-        live.intentionalClose = true;
-        this.live.delete(sessionId);
-        await live.client.dispose();
+        await retirement;
       }
       live.cancelled = false;
     } catch (error) {
+      if (
+        error instanceof ManagedAdmissionDeferred &&
+        !admitted &&
+        !dispatched
+      ) {
+        // pump snapshots can race another worker's durable lease. This is normal
+        // scheduler deferral, never a failed/paused session or lost input.
+        return;
+      }
       await this.flushUpdates().catch(() => undefined);
       // Routing can be cancelled before this turn assigns its local client.
       // Retire the revoked warm binding as well, preserving its prior context.
@@ -2538,6 +4121,33 @@ export class WorkbenchService {
           const s = state.sessions.find((x) => x.id === sessionId);
           if (!s) return;
           const c = state._controls[sessionId];
+          if (
+            !dispatched &&
+            c.revokedPeer &&
+            c.revokedPeer === c.inflight?.queueId
+          ) {
+            delete c.inflight;
+            delete c.revokedPeer;
+            delete c.resumeAfterCancel;
+            s.status = "idle";
+            s.error = undefined;
+            c.paused = false;
+            if (
+              workerFence &&
+              state._managed?.agents[sessionId]?.attempt?.phase !== "revoked"
+            ) {
+              managedSettled(
+                state._managed!,
+                sessionId,
+                workerFence,
+                { outcome: "cancelled" },
+                Date.now(),
+                this.managedPolicy(state),
+              );
+              continueManagedAgent(state._managed!, sessionId, Date.now());
+            }
+            return;
+          }
           const phase =
             c.inflight?.kind === "continuation"
               ? state._roleTransitions?.find(
@@ -2597,6 +4207,64 @@ export class WorkbenchService {
             (r) => r.id === c.inflight?.queueId,
           );
           if (receipt && dispatched) receipt.status = "unknown";
+          if (
+            workerFence &&
+            state._managed?.agents[sessionId]?.attempt?.phase !== "revoked"
+          ) {
+            const failure = classifyManagedFailure({
+              message: redact(error instanceof Error ? error.message : error),
+              dispatched,
+            });
+            const record = managedSettled(
+              state._managed!,
+              sessionId,
+              workerFence,
+              {
+                generation: live?.generation,
+                outcome: dispatched ? "unknown" : "failed",
+                failure,
+              },
+              Date.now(),
+              this.managedPolicy(state),
+            );
+            if (
+              !dispatched &&
+              error instanceof RoleTransitionBlocked &&
+              !error.rejected &&
+              state.questions.some(
+                (question) =>
+                  question.sessionId === sessionId &&
+                  question.status === "pending",
+              )
+            ) {
+              record.phase = "paused";
+              delete record.desired;
+            }
+            if (record.phase === "retry_wait") {
+              c.paused = false;
+              s.error = `${failure.summary} Host retry waits for its bounded backoff.`;
+            }
+          }
+          if (peerFence && peerDeliveryId) {
+            const delivery = state._managed?.deliveries.find(
+              (item) => item.id === peerDeliveryId,
+            );
+            if (delivery?.attempt?.phase !== "revoked") {
+              if (dispatched)
+                coordinationSettled(
+                  state._managed!,
+                  peerDeliveryId,
+                  peerFence,
+                  live!.generation,
+                  "unknown",
+                  Date.now(),
+                );
+              else {
+                delivery!.phase = "retained";
+                delivery!.attempt!.phase = "revoked";
+              }
+            }
+          }
           if (!dispatched) delete c.inflight;
           this.addDiagnostic(state, `Session ${sessionId}: ${s.error}`);
         }).catch(() => undefined);
@@ -2609,6 +4277,7 @@ export class WorkbenchService {
     } finally {
       this.clearCancelTimer(sessionId);
       this.cancelPermissionWaiters(sessionId);
+      this.armManagedRetry();
     }
   }
   private buildPrompt(
@@ -2623,6 +4292,20 @@ export class WorkbenchService {
     const task = present(state.tasks, session.taskId, "Task");
     const control = state._controls[session.id];
     const sections = [];
+    const worker = state._managed?.agents[session.id];
+    if (worker && !hasContext)
+      sections.push(
+        "Host-owned worker scope/checkpoint (reference data, not new permissions):\n" +
+          JSON.stringify({
+            parentId: worker.parentId,
+            contextBudget: worker.contextBudget,
+            dependencies: worker.dependencies,
+            writeScopes: worker.writeScopes,
+            checkpoint: worker.checkpoint,
+            retrieval:
+              "Use task_history/task_context for omitted facts. Do not load full parent or sibling conversations.",
+          }),
+      );
     if (!hasContext) {
       if (instructionPlan.contextInstructions)
         sections.push(
@@ -3036,10 +4719,12 @@ export class WorkbenchService {
         source.taskId,
         "Source task",
       ).projectId;
-      if (
-        present(state.tasks, target.taskId, "Target task").projectId !== project
-      )
-        throw new Error("Cross-project peer messaging is not enabled.");
+      this.ensureManagedCaller(state, source.id, params.generation);
+      const targetProject = present(
+        state.tasks,
+        target.taskId,
+        "Target task",
+      ).projectId;
       this.ensureWritable(source, state);
       this.ensureWritable(target, state);
       const hash = createHash("sha256").update(content).digest("hex");
@@ -3048,12 +4733,43 @@ export class WorkbenchService {
         (r) => r.sourceId === source.id && r.operationId === operationId,
       );
       if (prior) {
-        if (prior.targetId !== target.id || prior.textHash !== hash)
+        if (
+          prior.targetId !== target.id ||
+          prior.textHash !== hash ||
+          (params.parentDeliveryId !== undefined &&
+            prior.parentDeliveryId !== params.parentDeliveryId)
+        )
           throw new Error(
             "Peer operation ID was reused with a different target or payload.",
           );
         return prior;
       }
+      const linkId = this.coordinationLink(
+        state,
+        project,
+        targetProject,
+        "note",
+      );
+      const sourceControl = state._controls[source.id];
+      const causalParent =
+        sourceControl.inflight?.kind === "peer"
+          ? state._managed?.deliveries.find(
+              (delivery) =>
+                delivery.id === sourceControl.inflight?.queueId &&
+                delivery.phase === "dispatched" &&
+                delivery.attempt?.sessionGeneration ===
+                  sourceControl.generation,
+            )
+          : undefined;
+      if (
+        causalParent &&
+        params.parentDeliveryId !== undefined &&
+        params.parentDeliveryId !== causalParent.id
+      )
+        throw new Error(
+          "A peer reply cannot reset its host-derived causal chain.",
+        );
+      const parentDeliveryId = causalParent?.id || params.parentDeliveryId;
       const recent = state._peerReceipts.filter(
         (r) =>
           r.projectId === project &&
@@ -3073,8 +4789,34 @@ export class WorkbenchService {
         sourceId: source.id,
         text: content,
         createdAt: now(),
+        managedDeliveryId: "",
       };
+      peer.managedDeliveryId = peer.id;
+      retainCoordination(
+        (state._managed ||= createManagedState()),
+        {
+          id: peer.id,
+          operationId,
+          source: {
+            sessionId: source.id,
+            taskId: source.taskId,
+            projectId: project,
+            generation: state._controls[source.id].generation,
+          },
+          target: {
+            sessionId: target.id,
+            taskId: target.taskId,
+            projectId: targetProject,
+          },
+          text: content,
+          linkId,
+          ...(parentDeliveryId ? { parentDeliveryId } : {}),
+        },
+        Date.now(),
+      );
       control.peers.push(peer);
+      if (state._managed.agents[target.id]?.phase === "completed")
+        continueManagedAgent(state._managed, target.id, Date.now());
       const receipt: PeerReceipt = {
         id: peer.id,
         operationId,
@@ -3085,6 +4827,7 @@ export class WorkbenchService {
         textHash: hash,
         status: "retained",
         createdAt: peer.createdAt,
+        ...(parentDeliveryId ? { parentDeliveryId } : {}),
       };
       state._peerReceipts.push(receipt);
       this.addDiagnostic(
@@ -3146,6 +4889,40 @@ export class WorkbenchService {
             if (!session || !live) continue;
             for (const { generation, params } of entries) {
               if (live.generation !== generation) continue;
+              const owner = state._managed?.agents[sessionId];
+              if (
+                owner?.attempt?.phase === "dispatched" &&
+                owner.attempt.sessionGeneration === generation &&
+                owner.phase === "dispatched" &&
+                Date.now() < owner.attempt.expiresAt
+              )
+                managedHeartbeat(
+                  state._managed!,
+                  sessionId,
+                  owner.attempt,
+                  Date.now(),
+                );
+              const peerOwner =
+                state._controls[sessionId]?.inflight?.kind === "peer"
+                  ? state._managed?.deliveries.find(
+                      (delivery) =>
+                        delivery.id ===
+                        state._controls[sessionId].inflight?.queueId,
+                    )
+                  : undefined;
+              if (
+                peerOwner?.phase === "dispatched" &&
+                peerOwner.attempt?.phase === "dispatched" &&
+                peerOwner.attempt.sessionGeneration === generation &&
+                Date.now() < peerOwner.attempt.expiresAt
+              )
+                coordinationHeartbeat(
+                  state._managed!,
+                  peerOwner.id,
+                  peerOwner.attempt,
+                  generation,
+                  Date.now(),
+                );
               const update = params?.update || params;
               const kind = update?.sessionUpdate;
               let message = session.messages.find(
@@ -3158,6 +4935,64 @@ export class WorkbenchService {
                 message
               ) {
                 message.content += update.content.text;
+                const notice =
+                  live.instructionPlan.receipt.evidenceScope ===
+                  "reviewed_qwen_0.25.1_source"
+                    ? parseReviewedQwenCompaction(update.content.text)
+                    : undefined;
+                if (notice) {
+                  const view = this.contextView(state, sessionId),
+                    actualUsage = view.record.supervisor.latestUsage;
+                  view.record.supervisor = observeContext(
+                    view.record.supervisor,
+                    {
+                      kind: "compaction",
+                      id: id(),
+                      at: Date.now(),
+                      ...notice,
+                      estimated: true,
+                      basis: "reviewed_qwen_diagnostic",
+                    },
+                  );
+                  // Native notice is prose with no authenticated origin tag. It is only a loop hint.
+                  view.record.supervisor.latestUsage = actualUsage;
+                  (state._contextRuntimes ||= {})[sessionId] = view.record;
+                  const decision = runtimeContextDecision(
+                    state,
+                    session,
+                    view.record,
+                    view.envelope,
+                    false,
+                  );
+                  const key = sessionId + ":" + generation;
+                  if (
+                    view.policy.enabled &&
+                    decision.poorCompactions >= 2 &&
+                    actualUsage &&
+                    !actualUsage.estimated &&
+                    actualUsage.usedTokens >= view.envelope.highWaterTokens &&
+                    !this.contextLoopStops.has(key)
+                  ) {
+                    this.contextLoopStops.add(key);
+                    if (this.contextLoopStops.size > 1000)
+                      this.contextLoopStops.delete(
+                        this.contextLoopStops.values().next().value!,
+                      );
+                    this.addDiagnostic(
+                      state,
+                      `Compaction loop hint plus measured context pressure for ${sessionId}; cancel and hold, never replay unconfirmed effects.`,
+                    );
+                    queueMicrotask(() => {
+                      if (
+                        this.live.get(sessionId)?.generation === generation &&
+                        !this.disposed
+                      )
+                        void this.cancel(sessionId, false).catch(
+                          () => undefined,
+                        );
+                    });
+                  }
+                }
               } else if (
                 (kind === "tool_call" || kind === "tool_call_update") &&
                 message &&
@@ -3269,12 +5104,31 @@ export class WorkbenchService {
                   used >= 0 &&
                   Number.isFinite(total) &&
                   total > 0
-                )
+                ) {
                   session.context = {
                     usedTokens: used,
                     limitTokens: total,
                     estimated: false,
                   };
+                  if (
+                    Number.isSafeInteger(used) &&
+                    Number.isSafeInteger(total) &&
+                    used <= 8 * 1024 * 1024 &&
+                    total >= 4096 &&
+                    total <= 8 * 1024 * 1024
+                  ) {
+                    const view = this.contextView(state, sessionId);
+                    recordRuntimeUsage(view.record, {
+                      kind: "usage",
+                      id: id(),
+                      at: Date.now(),
+                      usedTokens: used,
+                      estimated: false,
+                      basis: "cli_usage",
+                    });
+                    (state._contextRuntimes ||= {})[sessionId] = view.record;
+                  }
+                }
               }
               session.updatedAt = now();
             }
@@ -3624,6 +5478,10 @@ export class WorkbenchService {
       if (beforeControl.inflight?.queueId === entry.id)
         throw new Error("This message is already captured for dispatch.");
     }
+    this.contextIntentVersions.set(
+      sessionId,
+      (this.contextIntentVersions.get(sessionId) || 0) + 1,
+    );
     this.options.revokeSessionTools?.(sessionId);
     this.routing.get(sessionId)?.abort();
     const beforeLive = this.live.get(sessionId);
@@ -3813,6 +5671,7 @@ export class WorkbenchService {
     sessionId: string,
     summary: unknown,
     compact: boolean,
+    hostContextPacket?: string,
   ): Promise<any> {
     const current = this.store.read();
     const session = present(current.sessions, sessionId, "Session");
@@ -3820,7 +5679,7 @@ export class WorkbenchService {
       ["starting", "running", "waiting", "cancelling"].includes(
         session.status,
       ) ||
-      this.launches.has(sessionId) ||
+      (!hostContextPacket && this.launches.has(sessionId)) ||
       this.configuring.has(sessionId)
     )
       throw new Error(
@@ -3831,6 +5690,16 @@ export class WorkbenchService {
         "Reconcile the unknown result and recover explicitly before compacting.",
       );
     if (this.disposed) throw new Error("Application is closing.");
+    const manualPacket =
+      compact && !hostContextPacket
+        ? runtimeRecoveryPacket(
+            current,
+            session,
+            current._controls[sessionId].generation,
+            this.contextView(current, sessionId).envelope,
+          )
+        : undefined;
+    const checkpointText = hostContextPacket || manualPacket?.text;
     // Reserve admission before the first await. Otherwise a send/resume during
     // process disposal could dispatch a new turn whose generation we then reset.
     this.configuring.add(sessionId);
@@ -3852,8 +5721,9 @@ export class WorkbenchService {
         const c = state._controls[sessionId];
         const previous = s.status;
         c.handoff =
+          checkpointText ||
           this.handoff(state, s) +
-          (note ? "\nUser recovery note: " + note : "");
+            (note ? "\nUser recovery note: " + note : "");
         s.messages.push({
           id: id(),
           role: "system",
@@ -3870,6 +5740,25 @@ export class WorkbenchService {
         delete c.inflight;
         c.paused = true;
         c.generation++;
+        const freshContext = this.contextView(state, sessionId);
+        freshContext.record.historyFromIndex = s.messages.length;
+        freshContext.record.historyBoundaryKnown = true;
+        freshContext.record.historyBaselineBytes = Math.min(
+          16 * 1024 * 1024,
+          Buffer.byteLength(c.handoff),
+        );
+        (state._contextRuntimes ||= {})[sessionId] = freshContext.record;
+        if (manualPacket) {
+          const view = this.contextView(state, sessionId);
+          view.record.rotations++;
+          view.record.lastRotation = {
+            at: now(),
+            beforeTokens: session.context.usedTokens,
+            checkpointSha256: manualPacket.sha256,
+            checkpointBytes: manualPacket.bytes,
+          };
+          (state._contextRuntimes ||= {})[sessionId] = view.record;
+        }
       });
       return {
         status: "ready",
@@ -4026,6 +5915,13 @@ export class WorkbenchService {
   ): Promise<{ persistence: "saved" | "failed" }> {
     if (this.stopPromise) return this.stopPromise;
     this.disposed = true; // Synchronous, before revoke hooks or any storage await.
+    for (const controller of this.contextReads.values())
+      controller.abort(
+        new Error("Runtime stopped during context measurement."),
+      );
+    this.calibrationAbort?.abort(
+      new Error("Runtime stopped during context calibration."),
+    );
     let resolve!: (result: { persistence: "saved" | "failed" }) => void;
     this.stopPromise = new Promise((done) => {
       resolve = done;
@@ -4065,6 +5961,8 @@ export class WorkbenchService {
     };
     for (const timer of this.cancelTimers.values()) clearTimeout(timer);
     this.cancelTimers.clear();
+    if (this.managedRetryTimer) clearTimeout(this.managedRetryTimer);
+    this.managedRetryTimer = undefined;
     for (const controller of this.routing.values()) controller.abort();
     if (this.streamTimer) {
       clearTimeout(this.streamTimer);
@@ -4174,6 +6072,7 @@ export class WorkbenchService {
                 if (!uncertain) delete control.inflight;
               }
             }
+            if (state._managed) recoverManagedState(state._managed, Date.now());
             this.addDiagnostic(state, `Runtime stopped: ${reason}`);
             state.revision++;
           }),

@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "platform": "darwin",
+  "time": "2026-10-14T17:43:06.368Z",
+  "scope": "Read-only unmodified Qwen 0.25.1 ACP initialize/session-new/native registry; no provider prompts or paid requests",
+  "cases": [
+    {
+      "managed": false,
+      "args": [
+        "--acp",
+        "--auth-type=openai",
+        "--no-chat-recording"
+      ],
+      "initialized": true,
+      "sessionCreated": true,
+      "nativeTools": [
+        {
+          "name": "agent",
+          "enabled": true
+        },
+        {
+          "name": "ask_user_question",
+          "enabled": true
+        },
+        {
+          "name": "edit",
+          "enabled": true
+        },
+        {
+          "name": "enter_plan_mode",
+          "enabled": true
+        },
+        {
+          "name": "enter_worktree",
+          "enabled": true
+        },
+        {
+          "name": "exit_plan_mode",
+          "enabled": true
+        },
+        {
+          "name": "exit_worktree",
+          "enabled": true
+        },
+        {
+          "name": "get_goal",
+          "enabled": true
+        },
+        {
+          "name": "glob",
+          "enabled": true
+        },
+        {
+          "name": "grep_search",
+          "enabled": true
+        },
+        {
+          "name": "list_agents",
+          "enabled": true
+        },
+        {
+          "name": "manage_memory",
+          "enabled": true
+        },
+        {
+          "name": "monitor",
+          "enabled": true
+        },
+        {
+          "name": "notebook_edit",
+          "enabled": true
+        },
+        {
+          "name": "read_file",
+          "enabled": true
+        },
+        {
+          "name": "read_mcp_resource",
+          "enabled": true
+        },
+        {
+          "name": "record_artifact",
+          "enabled": true
+        },
+        {
+          "name": "report_findings",
+          "enabled": true
+        },
+        {
+          "name": "run_shell_command",
+          "enabled": true
+        },
+        {
+          "name": "search_memory",
+          "enabled": true
+        },
+        {
+          "name": "send_message",
+          "enabled": true
+        },
+        {
+          "name": "skill",
+          "enabled": true
+        },
+        {
+          "name": "task_stop",
+          "enabled": true
+        },
+        {
+          "name": "tool_call",
+          "enabled": true
+        },
+        {
+          "name": "tool_search",
+          "enabled": true
+        },
+        {
+          "name": "update_goal",
+          "enabled": true
+        },
+        {
+          "name": "web_fetch",
+          "enabled": true
+        },
+        {
+          "name": "write_file",
+          "enabled": true
+        },
+        {
+          "name": "zoom_image",
+          "enabled": true
+        }
+      ],
+      "sessionToolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "manage_memory",
+        "notebook_edit",
+        "read_file",
+        "search_memory",
+        "run_shell_command",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "note": "A baseline-absent CreateSubSession is not counted as an observed transition; its exclusion is additionally source-verified.",
+      "suppressed": [],
+      "providerRequests": 0
+    }
+  ],
+  "failures": [
+    "name is not defined"
+  ],
+  "cleanup": [
+    "fulfilled",
+    "fulfilled"
+  ],
+  "providerRequests": 0,
+  "paidRequests": 0,
+  "status": "failed",
+  "sourceHashes": {
+    "electron/managed-runtime-policy.ts": "807a7c45f37dfac8a2d445f917f7335229beb26fd68d5a09a4b0854687ab3e95",
+    "electron/prompt-binding.ts": "7d9c7f046470c31c7a03b8dc196bec5a412525d84be9e8bc81efbda32ea88a11",
+    "electron/acp.ts": "cc1f1accce1ecc2908b35b97bb99da751d62f79f4458e697b05665fcce57bfca",
+    "tools/test-managed-qwen-policy.mjs": "47a31330261a810f2ea30c48817e954e6719c1d7e51a77e96f2741d91f995ceb"
+  }
+}

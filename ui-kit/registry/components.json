@@ -1,9 +1,17 @@
 {
   "schemaVersion": 1,
-  "catalogStatus": "reference-starter",
-  "requiredThemes": ["light", "dark", "high-contrast"],
-  "requiredViewports": [320, 768, 1024, 1440, 1920],
-  "requiredStatePolicy": "Every interactive component covers default, hover, focus-visible, disabled, loading when asynchronous, error when fallible, keyboard path, high contrast and reduced motion.",
+  "catalogStatus": "implemented-source-with-desktop-evidence",
+  "requiredThemes": [
+    "light",
+    "dark",
+    "high-contrast"
+  ],
+  "requiredViewports": [
+    1024,
+    1440,
+    1920
+  ],
+  "requiredStatePolicy": "Desktop-first. Native semantics, keyboard path, retained input on failure, light/dark/high-contrast. Browser evidence is scoped to exercised paths; missing paths remain unverified.",
   "components": [
     {
       "id": "action.button",
@@ -11,11 +19,34 @@
       "category": "actions",
       "kind": "interactive",
       "implementationStatus": "reference-source",
-      "sourceRefs": ["src/components/Button.tsx", "src/styles/components.css"],
-      "variants": ["primary", "secondary", "quiet", "danger"],
-      "states": ["default", "hover", "active", "focus-visible", "disabled", "loading"],
-      "keyboard": ["Tab focuses", "Space or Enter activates"],
-      "accessibility": ["native button semantics", "aria-busy while loading", "visible focus"]
+      "sourceRefs": [
+        "src/components/Button.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "primary",
+        "secondary",
+        "quiet",
+        "danger"
+      ],
+      "states": [
+        "default",
+        "hover",
+        "active",
+        "focus-visible",
+        "disabled",
+        "loading"
+      ],
+      "keyboard": [
+        "Tab focuses",
+        "Space or Enter activates"
+      ],
+      "accessibility": [
+        "native button semantics",
+        "aria-busy while loading",
+        "visible focus"
+      ],
+      "exportName": "Button"
     },
     {
       "id": "action.icon-button",
@@ -23,11 +54,33 @@
       "category": "actions",
       "kind": "interactive",
       "implementationStatus": "reference-source",
-      "sourceRefs": ["src/components/Button.tsx", "src/components/Icon.tsx", "src/styles/components.css"],
-      "variants": ["secondary", "quiet", "danger"],
-      "states": ["default", "hover", "active", "focus-visible", "disabled", "loading"],
-      "keyboard": ["Tab focuses", "Space or Enter activates"],
-      "accessibility": ["required accessible label", "minimum 32 px control and 44 px touch target where touch is primary"]
+      "sourceRefs": [
+        "src/components/Button.tsx",
+        "src/components/Icon.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "secondary",
+        "quiet",
+        "danger"
+      ],
+      "states": [
+        "default",
+        "hover",
+        "active",
+        "focus-visible",
+        "disabled",
+        "loading"
+      ],
+      "keyboard": [
+        "Tab focuses",
+        "Space or Enter activates"
+      ],
+      "accessibility": [
+        "required accessible label",
+        "minimum 32 px control and 44 px touch target where touch is primary"
+      ],
+      "exportName": "IconButton"
     },
     {
       "id": "status.badge",
@@ -35,11 +88,27 @@
       "category": "feedback",
       "kind": "display",
       "implementationStatus": "reference-source",
-      "sourceRefs": ["src/components/StatusBadge.tsx", "src/styles/components.css"],
-      "variants": ["neutral", "success", "info", "warning", "danger"],
-      "states": ["default", "high-contrast"],
+      "sourceRefs": [
+        "src/components/StatusBadge.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "neutral",
+        "success",
+        "info",
+        "warning",
+        "danger"
+      ],
+      "states": [
+        "default",
+        "high-contrast"
+      ],
       "keyboard": [],
-      "accessibility": ["text accompanies color", "status announcements are opt-in at call site"]
+      "accessibility": [
+        "text accompanies color",
+        "status announcements are opt-in at call site"
+      ],
+      "exportName": "StatusBadge"
     },
     {
       "id": "agent.action-lifecycle",
@@ -47,11 +116,32 @@
       "category": "agent",
       "kind": "display",
       "implementationStatus": "reference-source",
-      "sourceRefs": ["src/components/AgentActionLifecycle.tsx", "src/styles/components.css"],
-      "variants": ["compact", "detailed"],
-      "states": ["proposal", "preview", "execute", "result", "verify", "evidence", "failed"],
-      "keyboard": ["Details receive focus only when actionable"],
-      "accessibility": ["ordered list semantics", "aria-current identifies active stage", "state text does not rely on motion"]
+      "sourceRefs": [
+        "src/components/AgentActionLifecycle.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "compact",
+        "detailed"
+      ],
+      "states": [
+        "proposal",
+        "preview",
+        "execute",
+        "result",
+        "verify",
+        "evidence",
+        "failed"
+      ],
+      "keyboard": [
+        "Details receive focus only when actionable"
+      ],
+      "accessibility": [
+        "ordered list semantics",
+        "aria-current identifies active stage",
+        "state text does not rely on motion"
+      ],
+      "exportName": "AgentActionLifecycle"
     },
     {
       "id": "enterprise.repository-publication",
@@ -59,263 +149,1748 @@
       "category": "enterprise",
       "kind": "interactive",
       "implementationStatus": "reference-source",
-      "sourceRefs": ["src/components/RepositoryPublicationCard.tsx", "src/styles/components.css"],
-      "variants": ["canary", "next", "stable"],
-      "states": ["default", "hover", "focus-visible", "disabled", "loading", "draft", "review", "approved", "blocked"],
-      "keyboard": ["Tab reaches review action", "Enter opens review"],
-      "accessibility": ["repository, version, channel and checks have text labels"]
+      "sourceRefs": [
+        "src/components/RepositoryPublicationCard.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "canary",
+        "next",
+        "stable"
+      ],
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "loading",
+        "draft",
+        "review",
+        "approved",
+        "blocked"
+      ],
+      "keyboard": [
+        "Tab reaches review action",
+        "Enter opens review"
+      ],
+      "accessibility": [
+        "repository, version, channel and checks have text labels"
+      ],
+      "exportName": "RepositoryPublicationCard"
     },
     {
       "id": "input.text-field",
-      "name": "Text field",
+      "name": "TextField",
       "category": "inputs",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["single-line", "multiline", "search"],
-      "states": ["default", "hover", "focus-visible", "disabled", "read-only", "loading", "error", "success"],
-      "keyboard": ["native text editing", "Escape clears search only when documented"],
-      "accessibility": ["persistent label", "described error", "autocomplete purpose where known"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Fields.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Native Tab/Shift+Tab; native input/select editing; Space toggles checkbox/switch"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "TextField"
     },
     {
       "id": "input.select",
-      "name": "Select / combobox",
+      "name": "SelectField",
       "category": "inputs",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["single", "multiple", "async"],
-      "states": ["default", "hover", "focus-visible", "disabled", "read-only", "loading", "empty", "error"],
-      "keyboard": ["Arrow keys navigate", "Enter selects", "Escape closes", "typeahead searches"],
-      "accessibility": ["combobox/listbox relationship", "active option announced"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Fields.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Native Tab/Shift+Tab; native input/select editing; Space toggles checkbox/switch"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "SelectField"
     },
     {
       "id": "input.checkbox",
-      "name": "Checkbox",
+      "name": "CheckField",
       "category": "inputs",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["binary", "indeterminate"],
-      "states": ["default", "hover", "focus-visible", "checked", "indeterminate", "disabled", "error"],
-      "keyboard": ["Space toggles"],
-      "accessibility": ["native checkbox preferred", "label click toggles"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Fields.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Native Tab/Shift+Tab; native input/select editing; Space toggles checkbox/switch"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "CheckField"
     },
     {
       "id": "input.switch",
-      "name": "Switch",
+      "name": "CheckField",
       "category": "inputs",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["immediate-setting"],
-      "states": ["default", "hover", "focus-visible", "checked", "disabled", "loading", "error"],
-      "keyboard": ["Space toggles"],
-      "accessibility": ["role switch", "state change is immediate and reversible"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Fields.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Native Tab/Shift+Tab; native input/select editing; Space toggles checkbox/switch"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "CheckField",
+      "notes": "CheckField switchControl=true; native checkbox with role=switch."
     },
     {
       "id": "navigation.tabs",
       "name": "Tabs",
       "category": "navigation",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["document", "section", "pills"],
-      "states": ["default", "hover", "focus-visible", "selected", "disabled", "overflow", "dirty", "running"],
-      "keyboard": ["Arrow keys move", "Home/End jump", "Delete closes when allowed"],
-      "accessibility": ["tablist/tab/tabpanel semantics", "selected panel relationship"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Navigation.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Tabs: Left/Right/Home/End; Delete closes when enabled",
+        "Tree: Up/Down/Home/End; Left/Right expands/collapses; Enter opens",
+        "Close buttons remain normal reachable buttons"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "Tabs"
     },
     {
       "id": "navigation.activity-rail",
-      "name": "Activity rail",
+      "name": "ActivityRail",
       "category": "navigation",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["desktop", "compact"],
-      "states": ["default", "hover", "focus-visible", "selected", "attention", "disabled"],
-      "keyboard": ["Tab or roving focus", "shortcut metadata available"],
-      "accessibility": ["aria-current", "tooltip and label for every icon"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Navigation.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Tabs: Left/Right/Home/End; Delete closes when enabled",
+        "Tree: Up/Down/Home/End; Left/Right expands/collapses; Enter opens",
+        "Close buttons remain normal reachable buttons"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "ActivityRail"
     },
     {
       "id": "navigation.command-palette",
-      "name": "Command palette",
+      "name": "CommandPalette",
       "category": "navigation",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["global", "scoped"],
-      "states": ["default", "focus-visible", "loading", "empty", "partial", "error", "permission-disabled"],
-      "keyboard": ["Arrow keys navigate", "Enter runs or previews", "Escape closes and returns focus"],
-      "accessibility": ["combobox/listbox semantics", "target and risk are announced"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Enterprise.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Native controls and list buttons; command palette arrows/Enter/Escape"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "CommandPalette"
     },
     {
       "id": "navigation.tree",
-      "name": "Resource tree",
+      "name": "ResourceTree",
       "category": "navigation",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["files", "resources", "schemas"],
-      "states": ["default", "hover", "focus-visible", "selected", "expanded", "loading", "partial", "error"],
-      "keyboard": ["Arrow keys traverse and expand", "Home/End jump", "typeahead finds"],
-      "accessibility": ["tree/treeitem semantics", "level and expansion announced"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Navigation.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Tabs: Left/Right/Home/End; Delete closes when enabled",
+        "Tree: Up/Down/Home/End; Left/Right expands/collapses; Enter opens",
+        "Close buttons remain normal reachable buttons"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "ResourceTree"
     },
     {
       "id": "data.table",
-      "name": "Data table",
-      "category": "data-display",
+      "name": "DataTable",
+      "category": "data",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["dense", "comfortable", "virtualized"],
-      "states": ["default", "hover", "focus-visible", "selected", "loading", "empty", "partial", "stale", "error"],
-      "keyboard": ["cell navigation", "range selection", "copy with optional headers"],
-      "accessibility": ["table or grid semantics selected by interaction model", "visible-range fallback"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/DataTable.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Enter opens cell editor; Enter commits; Escape cancels",
+        "Tab reaches sort, paging and inline controls",
+        "Host rejects stale edits; failed commit preserves draft"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "DataTable",
+      "notes": "Bounded native table, default 200/max 1000 supplied rows; parent owns server paging/sort. Not a virtualized million-row grid."
     },
     {
       "id": "data.empty-state",
-      "name": "Empty state",
-      "category": "feedback",
+      "name": "EmptyState",
+      "category": "data",
       "kind": "display",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["first-use", "no-results", "no-permission", "offline"],
-      "states": ["default", "compact"],
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Feedback.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion"
+      ],
       "keyboard": [],
-      "accessibility": ["reason is explicit", "at most one primary action"]
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "EmptyState"
     },
     {
       "id": "feedback.progress",
       "name": "Progress",
       "category": "feedback",
-      "kind": "display",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["determinate", "indeterminate", "steps"],
-      "states": ["default", "paused", "complete", "failed", "reduced-motion"],
-      "keyboard": [],
-      "accessibility": ["label and value", "indeterminate motion is not the only status"]
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Feedback.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Actions are native buttons; details summary toggles with Enter/Space"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "Progress"
     },
     {
       "id": "feedback.toast",
-      "name": "Toast",
+      "name": "Notice",
       "category": "feedback",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["success", "information", "warning", "error"],
-      "states": ["default", "hover", "focus-visible", "queued", "paused"],
-      "keyboard": ["action and dismiss can receive focus without stealing current focus"],
-      "accessibility": ["polite by default", "errors persist in an evidence/log surface"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Feedback.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Actions are native buttons; details summary toggles with Enter/Space"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "Notice",
+      "notes": "Notice surface only. Host owns lifetime, stacking and durable error state. No auto-dismiss of errors."
     },
     {
       "id": "overlay.dialog",
-      "name": "Dialog / question overlay",
+      "name": "Dialog",
       "category": "overlays",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["modal", "non-modal-question", "sheet"],
-      "states": ["default", "focus-visible", "loading", "error", "minimized"],
-      "keyboard": ["Escape closes when safe", "focus returns to launcher"],
-      "accessibility": ["modal focus trap only for modal variant", "name and description relationship"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Overlays.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Dialog: native modal focus containment; Escape invokes controlled close; focus returns to opener",
+        "Menu: arrows/Home/End; disabled skipped; Escape returns to trigger",
+        "Questions: one item per view; back/next; free answer is a native textarea"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "Dialog"
     },
     {
       "id": "enterprise.target-picker",
-      "name": "Bound target picker",
+      "name": "TargetPicker",
       "category": "enterprise",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["project", "environment", "namespace", "database"],
-      "states": ["default", "hover", "focus-visible", "loading", "stale", "partial", "offline", "production", "read-only"],
-      "keyboard": ["typeahead", "arrow navigation", "Enter binds"],
-      "accessibility": ["effective target is visible", "risk status is textual"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Enterprise.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Native controls and list buttons; command palette arrows/Enter/Escape"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "TargetPicker"
     },
     {
       "id": "enterprise.connection-card",
-      "name": "Connection card",
+      "name": "ConnectorCard",
       "category": "enterprise",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["MCP", "API", "CLI", "database", "browser"],
-      "states": ["default", "hover", "focus-visible", "healthy", "degraded", "offline", "disabled", "credentials-expired"],
-      "keyboard": ["Open details", "disable capability from policy view"],
-      "accessibility": ["latency and status are textual", "secrets are never rendered"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Enterprise.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Native controls and list buttons; command palette arrows/Enter/Escape"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "ConnectorCard"
     },
     {
       "id": "enterprise.review-sheet",
-      "name": "Change review sheet",
+      "name": "ChangeReview",
       "category": "enterprise",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["code", "configuration", "SQL", "publication"],
-      "states": ["default", "focus-visible", "validating", "ready", "conflict", "blocked", "executing", "verified", "failed"],
-      "keyboard": ["structured navigation", "explicit action button", "Escape closes before execution"],
-      "accessibility": ["target, impact, diff, validation and rollback are labeled"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Enterprise.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Native controls and list buttons; command palette arrows/Enter/Escape"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "ChangeReview"
     },
     {
       "id": "enterprise.audit-trail",
-      "name": "Audit trail",
+      "name": "AuditTrail",
       "category": "enterprise",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["compact", "timeline", "export"],
-      "states": ["default", "focus-visible", "loading", "partial", "stale", "empty", "error"],
-      "keyboard": ["timeline items are navigable", "details expand without focus loss"],
-      "accessibility": ["actor, time, operation, target and result are text"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Enterprise.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Native controls and list buttons; command palette arrows/Enter/Escape"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "AuditTrail"
     },
     {
       "id": "agent.session-picker",
-      "name": "Agent session picker",
+      "name": "SessionList",
       "category": "agent",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["task-local", "project"],
-      "states": ["default", "hover", "focus-visible", "loading", "empty", "running", "needs-attention", "completed", "failed"],
-      "keyboard": ["typeahead", "arrow navigation", "Enter selects"],
-      "accessibility": ["role, task and runtime status are announced"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/AgentWorkspace.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Composer Ctrl/Cmd+Enter sends; Enter remains newline; IME composition is not submitted",
+        "Queue: visible Send now, Edit, Remove; failed action retains content",
+        "Model/reasoning configured together; role is a read-only indication"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "SessionList"
     },
     {
       "id": "agent.context-meter",
-      "name": "Context meter",
+      "name": "ContextRing",
       "category": "agent",
-      "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["compact", "detailed"],
-      "states": ["default", "warning", "critical", "compacting", "checkpointed", "error", "focus-visible"],
-      "keyboard": ["Open details", "create checkpoint"],
-      "accessibility": ["used and limit values are text", "color is secondary"]
+      "kind": "display",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/AgentWorkspace.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion"
+      ],
+      "keyboard": [],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "ContextRing",
+      "notes": "Ring around Send; no inline percentages; unknown remains unknown; actual context accounting is host-owned."
     },
     {
       "id": "agent.todo-plan",
-      "name": "Adaptive task plan",
+      "name": "TaskPlan",
       "category": "agent",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["compact", "inspector"],
-      "states": ["default", "hover", "focus-visible", "pending", "current", "completed", "blocked", "removed"],
-      "keyboard": ["navigate steps", "open evidence", "approve proposed restructure"],
-      "accessibility": ["ordered list", "current step textual", "completed styling is not color-only"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/AgentWorkspace.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Composer Ctrl/Cmd+Enter sends; Enter remains newline; IME composition is not submitted",
+        "Queue: visible Send now, Edit, Remove; failed action retains content",
+        "Model/reasoning configured together; role is a read-only indication"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "TaskPlan"
     },
     {
       "id": "agent.evidence-list",
-      "name": "Evidence list",
+      "name": "EvidenceList",
       "category": "agent",
       "kind": "interactive",
-      "implementationStatus": "specified",
-      "sourceRefs": [],
-      "variants": ["compact", "grouped", "export"],
-      "states": ["default", "hover", "focus-visible", "loading", "empty", "stale", "unavailable", "verified"],
-      "keyboard": ["open stable reference", "copy reference"],
-      "accessibility": ["source, revision, observation time and verification state are text"]
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Feedback.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Actions are native buttons; details summary toggles with Enter/Space"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "exportName": "EvidenceList"
+    },
+    {
+      "id": "input.textarea",
+      "name": "TextArea",
+      "exportName": "TextArea",
+      "category": "inputs",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Fields.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Native Tab/Shift+Tab; native input/select editing; Space toggles checkbox/switch"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "input.form-section",
+      "name": "FormSection",
+      "exportName": "FormSection",
+      "category": "inputs",
+      "kind": "display",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Fields.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion"
+      ],
+      "keyboard": [],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "navigation.breadcrumbs",
+      "name": "Breadcrumbs",
+      "exportName": "Breadcrumbs",
+      "category": "navigation",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Navigation.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Tabs: Left/Right/Home/End; Delete closes when enabled",
+        "Tree: Up/Down/Home/End; Left/Right expands/collapses; Enter opens",
+        "Close buttons remain normal reachable buttons"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "data.editable-cell",
+      "name": "EditableCell",
+      "exportName": "EditableCell",
+      "category": "data",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/DataTable.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Enter opens cell editor; Enter commits; Escape cancels",
+        "Tab reaches sort, paging and inline controls",
+        "Host rejects stale edits; failed commit preserves draft"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "data.value",
+      "name": "DataValue",
+      "exportName": "DataValue",
+      "category": "data",
+      "kind": "display",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/DataTable.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion"
+      ],
+      "keyboard": [],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "data.pagination",
+      "name": "Pagination",
+      "exportName": "Pagination",
+      "category": "data",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/DataTable.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Enter opens cell editor; Enter commits; Escape cancels",
+        "Tab reaches sort, paging and inline controls",
+        "Host rejects stale edits; failed commit preserves draft"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "data.results-frame",
+      "name": "ResultsFrame",
+      "exportName": "ResultsFrame",
+      "category": "data",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/DataTable.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Enter opens cell editor; Enter commits; Escape cancels",
+        "Tab reaches sort, paging and inline controls",
+        "Host rejects stale edits; failed commit preserves draft"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "feedback.error",
+      "name": "ErrorState",
+      "exportName": "ErrorState",
+      "category": "feedback",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Feedback.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Actions are native buttons; details summary toggles with Enter/Space"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "feedback.skeleton",
+      "name": "Skeleton",
+      "exportName": "Skeleton",
+      "category": "feedback",
+      "kind": "display",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Feedback.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion"
+      ],
+      "keyboard": [],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "feedback.key-values",
+      "name": "KeyValueList",
+      "exportName": "KeyValueList",
+      "category": "feedback",
+      "kind": "display",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Feedback.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion"
+      ],
+      "keyboard": [],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "overlay.menu",
+      "name": "Menu",
+      "exportName": "Menu",
+      "category": "overlays",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Overlays.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Dialog: native modal focus containment; Escape invokes controlled close; focus returns to opener",
+        "Menu: arrows/Home/End; disabled skipped; Escape returns to trigger",
+        "Questions: one item per view; back/next; free answer is a native textarea"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "overlay.tooltip",
+      "name": "Tooltip",
+      "exportName": "Tooltip",
+      "category": "overlays",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Overlays.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Dialog: native modal focus containment; Escape invokes controlled close; focus returns to opener",
+        "Menu: arrows/Home/End; disabled skipped; Escape returns to trigger",
+        "Questions: one item per view; back/next; free answer is a native textarea"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "overlay.question-flow",
+      "name": "QuestionFlow",
+      "exportName": "QuestionFlow",
+      "category": "overlays",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Overlays.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Dialog: native modal focus containment; Escape invokes controlled close; focus returns to opener",
+        "Menu: arrows/Home/End; disabled skipped; Escape returns to trigger",
+        "Questions: one item per view; back/next; free answer is a native textarea"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "layout.toolbar",
+      "name": "Toolbar",
+      "exportName": "Toolbar",
+      "category": "layout",
+      "kind": "display",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Layout.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion"
+      ],
+      "keyboard": [],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "layout.search",
+      "name": "SearchField",
+      "exportName": "SearchField",
+      "category": "layout",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Layout.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Split: mouse pointer capture; arrows resize by 2 points, Shift by 10; Home/End boundaries",
+        "Toolbar uses normal Tab order rather than falsely claiming arrow-key toolbar pattern"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "layout.filter-bar",
+      "name": "FilterBar",
+      "exportName": "FilterBar",
+      "category": "layout",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Layout.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Split: mouse pointer capture; arrows resize by 2 points, Shift by 10; Home/End boundaries",
+        "Toolbar uses normal Tab order rather than falsely claiming arrow-key toolbar pattern"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "layout.tool-panel",
+      "name": "ToolPanel",
+      "exportName": "ToolPanel",
+      "category": "layout",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Layout.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Split: mouse pointer capture; arrows resize by 2 points, Shift by 10; Home/End boundaries",
+        "Toolbar uses normal Tab order rather than falsely claiming arrow-key toolbar pattern"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "layout.split-pane",
+      "name": "SplitPane",
+      "exportName": "SplitPane",
+      "category": "layout",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Layout.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Split: mouse pointer capture; arrows resize by 2 points, Shift by 10; Home/End boundaries",
+        "Toolbar uses normal Tab order rather than falsely claiming arrow-key toolbar pattern"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "notes": "Two-pane mouse/keyboard splitter primitive; does not claim an entire docking-layout engine."
+    },
+    {
+      "id": "layout.workspace-shell",
+      "name": "WorkspaceShell",
+      "exportName": "WorkspaceShell",
+      "category": "layout",
+      "kind": "display",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Layout.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion"
+      ],
+      "keyboard": [],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "enterprise.settings-layout",
+      "name": "SettingsLayout",
+      "exportName": "SettingsLayout",
+      "category": "enterprise",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/Enterprise.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Native controls and list buttons; command palette arrows/Enter/Escape"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "agent.status",
+      "name": "AgentStatus",
+      "exportName": "AgentStatus",
+      "category": "agent",
+      "kind": "display",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/AgentWorkspace.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion"
+      ],
+      "keyboard": [],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "agent.message-queue",
+      "name": "MessageQueue",
+      "exportName": "MessageQueue",
+      "category": "agent",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/AgentWorkspace.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Composer Ctrl/Cmd+Enter sends; Enter remains newline; IME composition is not submitted",
+        "Queue: visible Send now, Edit, Remove; failed action retains content",
+        "Model/reasoning configured together; role is a read-only indication"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "agent.model-picker",
+      "name": "ModelPicker",
+      "exportName": "ModelPicker",
+      "category": "agent",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/AgentWorkspace.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Composer Ctrl/Cmd+Enter sends; Enter remains newline; IME composition is not submitted",
+        "Queue: visible Send now, Edit, Remove; failed action retains content",
+        "Model/reasoning configured together; role is a read-only indication"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "agent.composer",
+      "name": "AgentComposer",
+      "exportName": "AgentComposer",
+      "category": "agent",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/AgentWorkspace.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Composer Ctrl/Cmd+Enter sends; Enter remains newline; IME composition is not submitted",
+        "Queue: visible Send now, Edit, Remove; failed action retains content",
+        "Model/reasoning configured together; role is a read-only indication"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "agent.tool-activity",
+      "name": "ToolActivity",
+      "exportName": "ToolActivity",
+      "category": "agent",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/AgentWorkspace.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Composer Ctrl/Cmd+Enter sends; Enter remains newline; IME composition is not submitted",
+        "Queue: visible Send now, Edit, Remove; failed action retains content",
+        "Model/reasoning configured together; role is a read-only indication"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ]
+    },
+    {
+      "id": "code.block",
+      "name": "CodeBlock",
+      "exportName": "CodeBlock",
+      "category": "data",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/CodeBlock.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "semantic-theme",
+        "desktop-compact"
+      ],
+      "states": [
+        "default",
+        "high-contrast",
+        "reduced-motion",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "error",
+        "loading"
+      ],
+      "keyboard": [
+        "Scrollable code is keyboard focusable; copy is a native labeled button"
+      ],
+      "accessibility": [
+        "Native semantics or documented keyboard pattern",
+        "Accessible names required; color/motion never sole state evidence",
+        "Controlled host data; no demo results inserted into consumer runtime"
+      ],
+      "notes": "Render tokens produced by a real parser. No pretend parser or executable raw HTML."
+    },
+    {
+      "id": "tasks.board",
+      "name": "TaskBoard",
+      "exportName": "TaskBoard",
+      "category": "tasks",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/components/TaskBoard.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "controlled-host-state",
+        "desktop"
+      ],
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "loading",
+        "error"
+      ],
+      "keyboard": [
+        "Native Tab and buttons; task board has keyboard move menu equivalent to drag"
+      ],
+      "accessibility": [
+        "No optimistic success or demo data injected",
+        "Stable IDs and host-confirmed state",
+        "Names and visible error retention"
+      ]
+    },
+    {
+      "id": "recipe.data-workspace",
+      "name": "DesktopDataWorkspace",
+      "exportName": "DesktopDataWorkspace",
+      "category": "recipes",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/recipes/DesktopDataWorkspace.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "controlled-host-state",
+        "desktop"
+      ],
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "loading",
+        "error"
+      ],
+      "keyboard": [
+        "Native Tab and buttons; task board has keyboard move menu equivalent to drag"
+      ],
+      "accessibility": [
+        "No optimistic success or demo data injected",
+        "Stable IDs and host-confirmed state",
+        "Names and visible error retention"
+      ]
+    },
+    {
+      "id": "recipe.task-workspace",
+      "name": "DeveloperTaskWorkspace",
+      "exportName": "DeveloperTaskWorkspace",
+      "category": "recipes",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/recipes/DeveloperTaskWorkspace.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "controlled-host-state",
+        "desktop"
+      ],
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "loading",
+        "error"
+      ],
+      "keyboard": [
+        "Native Tab and buttons; task board has keyboard move menu equivalent to drag"
+      ],
+      "accessibility": [
+        "No optimistic success or demo data injected",
+        "Stable IDs and host-confirmed state",
+        "Names and visible error retention"
+      ]
+    },
+    {
+      "id": "recipe.connector-settings",
+      "name": "ConnectorSettings",
+      "exportName": "ConnectorSettings",
+      "category": "recipes",
+      "kind": "interactive",
+      "implementationStatus": "reference-source",
+      "sourceRefs": [
+        "src/recipes/ConnectorSettings.tsx",
+        "src/styles/components.css"
+      ],
+      "variants": [
+        "controlled-host-state",
+        "desktop"
+      ],
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "loading",
+        "error"
+      ],
+      "keyboard": [
+        "Native Tab and buttons; task board has keyboard move menu equivalent to drag"
+      ],
+      "accessibility": [
+        "No optimistic success or demo data injected",
+        "Stable IDs and host-confirmed state",
+        "Names and visible error retention"
+      ]
     }
+  ],
+  "requiredPanelWidths": [
+    360,
+    420,
+    560
   ]
 }

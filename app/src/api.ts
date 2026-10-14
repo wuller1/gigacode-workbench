@@ -14,13 +14,21 @@ export type Invoke = (
   method: string,
   params?: Record<string, unknown>,
 ) => Promise<any>;
+/** Errors are handled by the calling form; no duplicate global error toast. */
+export const callHandled: Invoke = async (method, params = {}) => {
+  if (!window.workbench)
+    throw new Error(
+      "Откройте приложение Electron: связь с локальным backend недоступна.",
+    );
+  return window.workbench.invoke(method, params);
+};
 export const call: Invoke = async (method, params = {}) => {
   if (!window.workbench)
     throw new Error(
       "Откройте приложение Electron: связь с локальным backend недоступна.",
     );
   try {
-    return await window.workbench.invoke(method, params);
+    return await callHandled(method, params);
   } catch (e) {
     window.dispatchEvent(
       new CustomEvent("workbench-error", { detail: errorText(e) }),

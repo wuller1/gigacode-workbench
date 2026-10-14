@@ -263,9 +263,17 @@ const QWEN_SOURCE_ANCHORS: Readonly<Record<string, string>> = Object.freeze({
     "c52a691e794f5908891f4c732d7dd739a3bbb17cca524cc23af8f1dcc677e77c",
   "chunks/acpAgent-FSCEU2SB.js":
     "9509f54054b2c5d65f72200407597afe4c4418e6fb8711519994f7a92eb4bbb1",
+  // Canonical native worker names and CreateSubSession registration; whole-tool excludes use reviewed CLI/config/permission anchors above.
+  "chunks/chunk-2UNFJQ2D.js":
+    "a6d15d5a9d3369d4452d3483057197e31b2a0ce85c5e76071f563655cf474ff5",
+  "chunks/chunk-XXAGVL2C.js":
+    "766ed9606e09f8de011ec736437c82e255171512d5fa758c3a76e609f6334c54",
   // Session-bound read-only MCP readiness status extension names.
   "chunks/chunk-KGXOCC6J.js":
     "f73458237b48f05fe8f1ce628bb3c7ecec5f464116e4d626a56949eab7c7531c",
+  // Read-only context usage collector: prompt count vs estimate and overhead breakdown.
+  "chunks/chunk-HBLEH4WH.js":
+    "70557b8b6df34398396f03cd77f649502c262bfcef27b711d0d13db15c9b9342",
   "chunks/chunk-WCM7H5HK.js":
     "19734fcf4de3a4a9177da1a56b1b5925576147fb0c5c44e56af63e7da3763343",
   "chunks/chunk-DMQ2VTH6.js":
@@ -281,7 +289,7 @@ const QWEN_SOURCE_ANCHORS: Readonly<Record<string, string>> = Object.freeze({
 });
 const capabilityCache = new Map<string, Promise<PromptCapabilityEvidence>>();
 const MAX_EVIDENCE_FILE_BYTES = 256 * 1024 * 1024;
-// The 12 reviewed anchors total 5,823,538 bytes. Leave room for inspection while
+// The 15 reviewed anchors total 5,860,787 bytes. Leave room for inspection while
 // bounding aggregate reads of a modified package; unknown native CLIs retain 256 MiB.
 const MAX_REVIEWED_EVIDENCE_BYTES = 32 * 1024 * 1024;
 
@@ -333,6 +341,7 @@ async function verifiedHelp(executable: string): Promise<boolean> {
           !error &&
             [
               "--append-system-prompt",
+              "--exclude-tools",
               "--safe-mode",
               "--max-tool-calls",
               "--max-session-turns",

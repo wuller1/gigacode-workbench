@@ -120,7 +120,7 @@ export async function runOperationsUi({
     );
   const suffix = process.platform + (packaged ? "-packaged" : "");
   const executable = packaged
-    ? path.join(root, "release/win-unpacked/GigaCode Workbench.exe")
+    ? path.join(root, "release/win-unpacked/GigaCode.exe")
     : require("electron");
   const cases = [],
     errors = [],

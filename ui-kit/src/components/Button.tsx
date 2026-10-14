@@ -13,13 +13,14 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant = "secondary", icon, loading = false, disabled, className = "", children, ...props },
+  { variant = "secondary", icon, loading = false, disabled, type = "button", className = "", children, ...props },
   ref,
 ) {
   return (
     <button
       {...props}
       ref={ref}
+      type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={`gc-button gc-button--${variant} ${className}`.trim()}

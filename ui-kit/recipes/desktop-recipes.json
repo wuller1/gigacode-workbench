@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 1,
+  "status": "implemented-source-recipes",
+  "rulesRef": "registry/design-guardrails.json",
+  "exampleRef": "examples/DesktopGallery.tsx",
+  "recipes": [
+    {
+      "id": "desktop.agent-workspace",
+      "componentIds": [
+        "layout.workspace-shell",
+        "navigation.activity-rail",
+        "layout.split-pane",
+        "navigation.tabs",
+        "agent.composer",
+        "agent.message-queue"
+      ],
+      "rules": [
+        "Primary desktop surface is chat plus tools, not a dashboard of cards.",
+        "No redundant panel-name bar when a tab already identifies the tool.",
+        "Rail 44px; controls 32px; split handles have pointer capture and keyboard semantics.",
+        "Switching visible panels never cancels background execution."
+      ],
+      "requiredEvidence": [
+        "current source hashes",
+        "DOM metrics for visible state",
+        "current screenshot ID/hash/viewport",
+        "interaction test results",
+        "bridge uncertainty when used"
+      ]
+    },
+    {
+      "id": "desktop.database",
+      "componentIds": [
+        "layout.toolbar",
+        "code.block",
+        "data.results-frame",
+        "data.table",
+        "data.editable-cell",
+        "data.pagination"
+      ],
+      "rules": [
+        "Use inline cell editing, preserve NULL versus empty string and zero.",
+        "Commit/CAS and actual execution belong to host; keep failed edit and previous result.",
+        "Page/stream at source; never read an entire import or result into model context.",
+        "Only one meaningful query toolbar; connection/schema next to Execute."
+      ],
+      "requiredEvidence": [
+        "current source hashes",
+        "DOM metrics for visible state",
+        "current screenshot ID/hash/viewport",
+        "interaction test results",
+        "bridge uncertainty when used"
+      ]
+    },
+    {
+      "id": "desktop.editor",
+      "componentIds": [
+        "layout.split-pane",
+        "layout.tool-panel",
+        "navigation.tree",
+        "navigation.tabs",
+        "code.block"
+      ],
+      "rules": [
+        "File explorer exists inside IDE only, starts left and can be hidden.",
+        "Git state is text plus semantic color, no vendor icons copied.",
+        "CodeBlock is a preview/token renderer; full editor comes from IDE engine.",
+        "Project tree defaults compact 27px rows with 14px indent."
+      ],
+      "requiredEvidence": [
+        "current source hashes",
+        "DOM metrics for visible state",
+        "current screenshot ID/hash/viewport",
+        "interaction test results",
+        "bridge uncertainty when used"
+      ]
+    },
+    {
+      "id": "desktop.settings",
+      "componentIds": [
+        "enterprise.settings-layout",
+        "input.form-section",
+        "input.text-field",
+        "input.select",
+        "input.checkbox",
+        "input.switch"
+      ],
+      "rules": [
+        "Stable settings categories and persistent footer actions.",
+        "Validation remains beside its control; never clears user input after failure.",
+        "Credentials are vault references, not copied into labels, examples or prompts."
+      ],
+      "requiredEvidence": [
+        "current source hashes",
+        "DOM metrics for visible state",
+        "current screenshot ID/hash/viewport",
+        "interaction test results",
+        "bridge uncertainty when used"
+      ]
+    },
+    {
+      "id": "desktop.connectors",
+      "componentIds": [
+        "enterprise.connection-card",
+        "enterprise.target-picker",
+        "enterprise.settings-layout"
+      ],
+      "rules": [
+        "Connection IDs global, project bindings reference them; display names/environments editable.",
+        "Never hard-code DEV/IFT as the only environments.",
+        "Addresses/credentials/tests configured explicitly; share connection references, not secret copies."
+      ],
+      "requiredEvidence": [
+        "current source hashes",
+        "DOM metrics for visible state",
+        "current screenshot ID/hash/viewport",
+        "interaction test results",
+        "bridge uncertainty when used"
+      ]
+    },
+    {
+      "id": "desktop.agent-composer",
+      "componentIds": [
+        "agent.composer",
+        "agent.model-picker",
+        "agent.context-meter"
+      ],
+      "rules": [
+        "Branch left; automatic role before model on right; model and reasoning share one selector.",
+        "Context ring wraps Send, changes semantic level, no inline percentage; hover gives exact known values.",
+        "At narrow tool-panel widths hide optional branch before squeezing model/reasoning.",
+        "Host capabilities determine real reasoning options; vision bridge does not advertise direct vision."
+      ],
+      "requiredEvidence": [
+        "current source hashes",
+        "DOM metrics for visible state",
+        "current screenshot ID/hash/viewport",
+        "interaction test results",
+        "bridge uncertainty when used"
+      ]
+    },
+    {
+      "id": "desktop.message-queue",
+      "componentIds": [
+        "agent.message-queue",
+        "overlay.dialog"
+      ],
+      "rules": [
+        "Send now is always visible per queued row, not hidden behind a menu.",
+        "Edit uses expectedText CAS; failure retains local draft and host winner.",
+        "Send now calls host once; never silently duplicates/replays unknown turn outcome.",
+        "Busy queue actions are held; draft edit dialog never implies successful durable save."
+      ],
+      "requiredEvidence": [
+        "current source hashes",
+        "DOM metrics for visible state",
+        "current screenshot ID/hash/viewport",
+        "interaction test results",
+        "bridge uncertainty when used"
+      ]
+    },
+    {
+      "id": "desktop.questions",
+      "componentIds": [
+        "overlay.question-flow",
+        "overlay.dialog"
+      ],
+      "rules": [
+        "One question at a time; choices and custom answer; answers retained by host.",
+        "Native modal containment; close and Escape follow controlled caller policy.",
+        "Submission error keeps answers; no auto-advance based on guessed intent."
+      ],
+      "requiredEvidence": [
+        "current source hashes",
+        "DOM metrics for visible state",
+        "current screenshot ID/hash/viewport",
+        "interaction test results",
+        "bridge uncertainty when used"
+      ]
+    },
+    {
+      "id": "desktop.agent-plan",
+      "componentIds": [
+        "agent.todo-plan",
+        "agent.status",
+        "agent.tool-activity",
+        "agent.evidence-list"
+      ],
+      "rules": [
+        "Completed step struck through and less prominent; current step highlighted with optional spinner.",
+        "Text status remains meaningful when remote desktop suppresses animation.",
+        "Tool calls collapsed into compact activity; errors and unknown results remain discoverable.",
+        "Plan is host state with stable IDs and revision, never fabricated progress."
+      ],
+      "requiredEvidence": [
+        "current source hashes",
+        "DOM metrics for visible state",
+        "current screenshot ID/hash/viewport",
+        "interaction test results",
+        "bridge uncertainty when used"
+      ]
+    },
+    {
+      "id": "desktop.navigation",
+      "componentIds": [
+        "navigation.tabs",
+        "navigation.activity-rail",
+        "overlay.menu",
+        "overlay.tooltip",
+        "navigation.command-palette"
+      ],
+      "rules": [
+        "Close crosses actually close their owning tab; dirty close policy belongs to host.",
+        "Frequent actions remain visible; secondary actions go in labeled keyboard menu.",
+        "Tooltips explain icon-only controls; icon geometry is distinct for meaning."
+      ],
+      "requiredEvidence": [
+        "current source hashes",
+        "DOM metrics for visible state",
+        "current screenshot ID/hash/viewport",
+        "interaction test results",
+        "bridge uncertainty when used"
+      ]
+    },
+    {
+      "id": "desktop.failure",
+      "componentIds": [
+        "feedback.error",
+        "feedback.toast",
+        "feedback.progress",
+        "feedback.skeleton",
+        "data.empty-state"
+      ],
+      "rules": [
+        "Never show loading forever without elapsed/time/error/retry context supplied by host.",
+        "No automatic success toast without observed result.",
+        "Retain previous data with stale indication; show retry only when host says safe."
+      ],
+      "requiredEvidence": [
+        "current source hashes",
+        "DOM metrics for visible state",
+        "current screenshot ID/hash/viewport",
+        "interaction test results",
+        "bridge uncertainty when used"
+      ]
+    },
+    {
+      "id": "desktop.review",
+      "componentIds": [
+        "enterprise.review-sheet",
+        "enterprise.audit-trail",
+        "agent.evidence-list",
+        "code.block"
+      ],
+      "rules": [
+        "Actual target, source diff and verification facts precede apply.",
+        "Do not confuse visual sign-off with permission to mutate production.",
+        "Use specific failure/unknown receipts and evidence rather than decorative pass marks."
+      ],
+      "requiredEvidence": [
+        "current source hashes",
+        "DOM metrics for visible state",
+        "current screenshot ID/hash/viewport",
+        "interaction test results",
+        "bridge uncertainty when used"
+      ]
+    },
+    {
+      "id": "desktop.task-board",
+      "componentIds": [
+        "tasks.board",
+        "layout.search",
+        "layout.filter-bar",
+        "overlay.menu"
+      ],
+      "rules": [
+        "Columns have stable IDs; labels and workflow come from host.",
+        "Mouse drag and keyboard Move menu invoke the same host command.",
+        "Failed or stale move retains original task; no optimistic success.",
+        "Bound cards/column and use server filters/paging for large backlogs."
+      ],
+      "requiredEvidence": [
+        "move API receipt",
+        "keyboard move and rejection tests",
+        "board screenshot/DOM at desktop viewport"
+      ]
+    },
+    {
+      "id": "desktop.composed-workspaces",
+      "componentIds": [
+        "recipe.data-workspace",
+        "recipe.task-workspace",
+        "recipe.connector-settings"
+      ],
+      "rules": [
+        "Prefer ready compositions over reconstructing free-form page layout.",
+        "Supply actual host state and callbacks; examples are not backend capabilities."
+      ],
+      "requiredEvidence": [
+        "consumer build/typecheck",
+        "actual host integration tests"
+      ]
+    }
+  ]
+}

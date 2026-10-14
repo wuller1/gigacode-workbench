@@ -1,0 +1,1159 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "platform": "darwin",
+  "time": "2026-10-14T18:37:03.114Z",
+  "scope": "Actual built Electron App with owned deterministic ACP/MCP fixture processes; no paid/real vision model/corporate service",
+  "baseline": false,
+  "diagnosticContinue": true,
+  "checks": [
+    {
+      "name": "Actual queue: editing then visible Send now cancels once and dispatches edited message once",
+      "elapsedMs": 1153,
+      "passed": true
+    },
+    {
+      "name": "Managed delegate created through the actual UI remains visible in current-task scope",
+      "elapsedMs": 581,
+      "passed": true
+    },
+    {
+      "name": "Host write conflicts and DAG dependencies hold children, queued pause/resume is controlled through UI",
+      "elapsedMs": 1029,
+      "passed": true
+    },
+    {
+      "name": "Managed followup uses actual card UI and prior attempt is not replayed",
+      "elapsedMs": 323,
+      "passed": true
+    },
+    {
+      "name": "Directed cross-project delegation, durable note dedup and revocation use the same host queue",
+      "elapsedMs": 689,
+      "passed": true
+    },
+    {
+      "name": "Managed dispatched process failure is fenced; retry and followup do not replay UNKNOWN",
+      "elapsedMs": 1054,
+      "passed": true
+    },
+    {
+      "name": "Predispatch HTML 429 startup failure retries with a bounded new attempt and exactly one prompt",
+      "elapsedMs": 25024,
+      "passed": false,
+      "error": "Timed out: managed startup retry terminal"
+    },
+    {
+      "name": "Actual settings edit stdio args JSON and mapping; secret vault never returns plaintext",
+      "elapsedMs": 560,
+      "passed": true
+    },
+    {
+      "name": "Actual vision MCP schema/mapping delivers real PNG bytes, scrubs secret and caches exact image/query",
+      "elapsedMs": 113,
+      "passed": true
+    },
+    {
+      "name": "Vision discovered schema rejects wrong mapping before tool/model dispatch",
+      "elapsedMs": 136,
+      "passed": true
+    },
+    {
+      "name": "Vision settings CAS rejects stale draft without replacing the accepted route",
+      "elapsedMs": 23,
+      "passed": true
+    },
+    {
+      "name": "High-water context supervision rotates only at clean boundary, preserving full host history and queued request",
+      "elapsedMs": 1338,
+      "passed": true
+    },
+    {
+      "name": "Advanced context policy validates inline, retains invalid/stale drafts and applies explicit thresholds with CAS",
+      "elapsedMs": 785,
+      "passed": true
+    },
+    {
+      "name": "Actual desktop light/dark 1024/1440 settings and worker controls fit; Escape dismisses settings",
+      "elapsedMs": 10537,
+      "passed": false,
+      "error": "locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Настройки', exact: true }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button>…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div role=\"alert\" class=\"error-toast\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div role=\"alert\" class=\"error-toast\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    19 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div role=\"alert\" class=\"error-toast\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+    },
+    {
+      "name": "Fake bridge secret absent from plaintext logs/state/rendered UI and no renderer exceptions",
+      "elapsedMs": 9,
+      "passed": true
+    }
+  ],
+  "failure": {
+    "test": "Predispatch HTML 429 startup failure retries with a bounded new attempt and exactly one prompt",
+    "message": "Timed out: managed startup retry terminal"
+  },
+  "proofs": [
+    {
+      "stage": "queue",
+      "queueLength": 0,
+      "editedDispatches": 1,
+      "originalDispatches": 0,
+      "cancellations": 1
+    },
+    {
+      "stage": "managed-dag",
+      "first": "dde6bd4f-3dbf-45e6-a370-6ae755f79016",
+      "second": "f45c2031-f989-428f-aaa0-5f01a3da8cbb",
+      "dependent": "a0828f3c-9d86-4179-a2e3-6a413a753276",
+      "dependentAndConflictingBeforeRelease": 0,
+      "queuedCancellationDispatched": 0,
+      "queuedCancellationInputRetained": true
+    },
+    {
+      "stage": "cross-project",
+      "linkId": "eaf3a324-0fa9-4a17-ba8b-c8ad1b760331",
+      "distinctProject": true,
+      "noteDispatches": 1,
+      "revokedAdmission": "held"
+    },
+    {
+      "stage": "human-reconcile-form",
+      "forms": 1,
+      "labels": [
+        "Наблюдаемый результатВыберите после реальной проверкиПредыдущие действия применены — не повторятьПодтверждено, что действия не применены",
+        "Ссылки на проверку"
+      ]
+    },
+    {
+      "stage": "unknown-worker",
+      "replayed": false,
+      "unresolvedHistoricalEvidenceRetained": true,
+      "externalReadback": "Owned fixture has no external effect implementation; corporate write reconciliation not tested"
+    },
+    {
+      "stage": "vision-config",
+      "vaultAvailable": true,
+      "plaintextReturned": false,
+      "revision": 1
+    },
+    {
+      "stage": "vision-review",
+      "imageSha256": "7e8a86157d328b13622253cb6a0063b0cc90366f668a6e4080b39d65a9dad8f0",
+      "realBytes": 68,
+      "calls": 1,
+      "exactCache": true,
+      "description": "Redacted and held as untrusted; no real vision model invoked"
+    },
+    {
+      "stage": "vision-negative-mapping",
+      "objectKeyOnlyRejectedAtReview": true,
+      "beforeMCPConnection": true,
+      "discoveredSchemaRejected": true,
+      "additionalToolCalls": 0,
+      "failedReviewChangedRevision": false
+    },
+    {
+      "stage": "context-boundary",
+      "initialUsed": 227414,
+      "highWater": 96000,
+      "lowWater": 64000,
+      "rotations": 1,
+      "originalPromptCount": 1,
+      "queuedDispatches": 1,
+      "hostHistoryPreserved": true,
+      "opaqueCliHistoryEdited": false
+    },
+    {
+      "stage": "context-policy",
+      "invalidRetained": true,
+      "staleCASRejected": true,
+      "refreshedDraftApplied": true,
+      "highWater": 63000,
+      "lowWater": 39000,
+      "calibrationAvailable": false,
+      "paidRequests": 0
+    },
+    {
+      "stage": "desktop-fit",
+      "theme": "dark",
+      "width": 1440,
+      "modal": {
+        "x": 295,
+        "y": 96.5,
+        "width": 850,
+        "height": 707
+      },
+      "fieldCount": 11,
+      "controls": [
+        {
+          "name": "Закрыть",
+          "tag": "button",
+          "width": 32,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Внешний вид",
+          "tag": "button",
+          "width": 149,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "CLI и модели",
+          "tag": "button",
+          "width": 149,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "IDE",
+          "tag": "button",
+          "width": 149,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Подключения БД",
+          "tag": "button",
+          "width": 149,
+          "height": 38,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Jenkins и кластеры",
+          "tag": "button",
+          "width": 149,
+          "height": 38,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Выполнение",
+          "tag": "button",
+          "width": 149,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Визуальные проверки",
+          "tag": "button",
+          "width": 149,
+          "height": 38,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Роли",
+          "tag": "button",
+          "width": 149,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Память",
+          "tag": "button",
+          "width": 149,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Диагностика",
+          "tag": "button",
+          "width": 149,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Визуальные проверкиТекстовый мостОтключены",
+          "tag": "select",
+          "width": 630,
+          "height": 34,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "ПодключениеHTTP MCPЛокальный MCP (stdio)",
+          "tag": "select",
+          "width": 309,
+          "height": 34,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Название моста",
+          "tag": "input",
+          "width": 309,
+          "height": 34,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Команда MCP",
+          "tag": "input",
+          "width": 630,
+          "height": 34,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Аргументы · JSON",
+          "tag": "input",
+          "width": 630,
+          "height": 34,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Сохранить мост",
+          "tag": "button",
+          "width": 130.8984375,
+          "height": 32,
+          "centreHit": true,
+          "disabled": true
+        },
+        {
+          "name": "Обнаружить инструменты",
+          "tag": "button",
+          "width": 200,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Инструмент описания изображения",
+          "tag": "input",
+          "width": 630,
+          "height": 34,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Закрыть",
+          "tag": "button",
+          "width": 78.1875,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Сохранить",
+          "tag": "button",
+          "width": 94.0859375,
+          "height": 32,
+          "centreHit": true,
+          "disabled": true
+        }
+      ]
+    },
+    {
+      "stage": "managed-desktop-fit",
+      "theme": "dark",
+      "width": 1440,
+      "controls": [
+        {
+          "name": "Область исполнителей",
+          "tag": "select",
+          "width": 115,
+          "height": 34,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Поручение",
+          "tag": "button",
+          "width": 103.1953125,
+          "height": 27,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "hold worker-primary",
+          "tag": "button",
+          "width": 551.5,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Открыть",
+          "tag": "button",
+          "width": 58.8125,
+          "height": 26,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Пауза",
+          "tag": "button",
+          "width": 45.796875,
+          "height": 26,
+          "centreHit": true,
+          "disabled": true
+        },
+        {
+          "name": "Остановить",
+          "tag": "button",
+          "width": 74.734375,
+          "height": 26,
+          "centreHit": true,
+          "disabled": true
+        },
+        {
+          "name": "Новое поручение",
+          "tag": "button",
+          "width": 104.046875,
+          "height": 26,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Worker conflict",
+          "tag": "button",
+          "width": 551.5,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Открыть",
+          "tag": "button",
+          "width": 58.8125,
+          "height": 26,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Пауза",
+          "tag": "button",
+          "width": 45.796875,
+          "height": 26,
+          "centreHit": true,
+          "disabled": true
+        },
+        {
+          "name": "Остановить",
+          "tag": "button",
+          "width": 74.734375,
+          "height": 26,
+          "centreHit": true,
+          "disabled": true
+        },
+        {
+          "name": "Новое поручение",
+          "tag": "button",
+          "width": 104.046875,
+          "height": 26,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Worker dependent",
+          "tag": "button",
+          "width": 551.5,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Открыть",
+          "tag": "button",
+          "width": 58.8125,
+          "height": 26,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Пауза",
+          "tag": "button",
+          "width": 45.796875,
+          "height": 26,
+          "centreHit": true,
+          "disabled": true
+        },
+        {
+          "name": "Остановить",
+          "tag": "button",
+          "width": 74.734375,
+          "height": 26,
+          "centreHit": true,
+          "disabled": true
+        },
+        {
+          "name": "Новое поручение",
+          "tag": "button",
+          "width": 104.046875,
+          "height": 26,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Worker cancel queued",
+          "tag": "button",
+          "width": 551.5,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Открыть",
+          "tag": "button",
+          "width": 58.8125,
+          "height": 26,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Пауза",
+          "tag": "button",
+          "width": 45.796875,
+          "height": 26,
+          "centreHit": true,
+          "disabled": true
+        },
+        {
+          "name": "Остановить",
+          "tag": "button",
+          "width": 74.734375,
+          "height": 26,
+          "centreHit": true,
+          "disabled": true
+        },
+        {
+          "name": "Новое поручение",
+          "tag": "button",
+          "width": 104.046875,
+          "height": 26,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Backend contract fix",
+          "tag": "button",
+          "width": 551.5,
+          "height": 32,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Открыть",
+          "tag": "button",
+          "width": 58.8125,
+          "height": 26,
+          "centreHit": true,
+          "disabled": false
+        },
+        {
+          "name": "Пауза",
+          "tag": "button",
+          "width": 45.796875,
+          "height": 26,
+          "centreHit": true,
+          "disabled": true
+        },
+        {
+          "name": "Остановить",
+          "tag": "button",
+          "width": 74.734375,
+          "height": 26,
+          "centreHit": true,
+          "disabled": true
+        },
+        {
+          "name": "Новое поручение",
+          "tag": "button",
+          "width": 104.046875,
+          "height": 26,
+          "centreHit": true,
+          "disabled": false
+        }
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "name": "queue-send-now-dark.png",
+      "sha256": "01f9757b641d3177194fe2d9c0d0b4ecfa7c0fa2f14e26ebc848b5bfed8d5cae",
+      "viewport": {
+        "width": 1440,
+        "height": 920,
+        "dpr": 2,
+        "theme": "dark"
+      }
+    },
+    {
+      "name": "managed-worker-dark.png",
+      "sha256": "50779a327f32efb6e8ace9874a70afb8abb4332ab07915f0afb38c77065d7849",
+      "viewport": {
+        "width": 1440,
+        "height": 920,
+        "dpr": 2,
+        "theme": "dark"
+      }
+    },
+    {
+      "name": "diagnostic-failure-7.png",
+      "sha256": "f61d5887c391f09a9d40b4af56595af188d8b3a8e9d0effa86287db915978b19",
+      "viewport": {
+        "width": 1440,
+        "height": 920,
+        "dpr": 2,
+        "theme": "dark"
+      }
+    },
+    {
+      "name": "vision-settings-dark.png",
+      "sha256": "e222d66f37006ad77fee1478ff428c9da6e41cba7c6088cdbf3ae022785e8bc9",
+      "viewport": {
+        "width": 1440,
+        "height": 920,
+        "dpr": 2,
+        "theme": "dark"
+      }
+    },
+    {
+      "name": "context-controls-dark.png",
+      "sha256": "6237b753ed6c3df28c26b70aa8e0eb3b6c9572e7325527cb27517b821fc4aa74",
+      "viewport": {
+        "width": 1440,
+        "height": 920,
+        "dpr": 2,
+        "theme": "dark"
+      }
+    },
+    {
+      "name": "context-policy-dark.png",
+      "sha256": "00fa0ae83c1773919b541d020ae7a0f3f9f3122d09ded9127fdc9b990a5145f7",
+      "viewport": {
+        "width": 1440,
+        "height": 920,
+        "dpr": 2,
+        "theme": "dark"
+      }
+    },
+    {
+      "name": "vision-settings-dark-1440.png",
+      "sha256": "32a44509b5a2748f85447dbd95c01cce3590d95849d7b7e66eebde6276f2ad45",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 2,
+        "theme": "dark"
+      }
+    },
+    {
+      "name": "managed-workers-dark-1440.png",
+      "sha256": "d47cb20beec696cdae3bead687d3a7062e999bd3398be1d5888c1b68a1e03ebf",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 2,
+        "theme": "dark"
+      }
+    },
+    {
+      "name": "diagnostic-failure-14.png",
+      "sha256": "8b7b3ac0ce0a42583ae0d2646d86b40c56995e7fd0d369190acd6695aa2bd6f8",
+      "viewport": {
+        "width": 1024,
+        "height": 900,
+        "dpr": 2,
+        "theme": "dark"
+      }
+    }
+  ],
+  "rendererErrors": [],
+  "sourceHashes": {
+    "build/icon-dark.png": "b5f839e46c666f6347a1a5d84f60c34a423f22d6ce2266bb2f811ab8d00219e2",
+    "build/icon-dark.svg": "19afb5b86bdc35dc8518ebf095ca46d073f5d42b400db2861305d81381efa9f1",
+    "build/icon-light.png": "ad9a8f3a004c263e4fbe846fdf185c7bda07caa5e1a18ad2500eecee15b65bd6",
+    "build/icon-light.svg": "e8f977a567f0dcdab4c534a3ef1772c16b2d788b5e083d636ef30cfaa576b5c0",
+    "build/icon.ico": "53867cc8be8bd87ee8b2412816a6bb5990af711c4b63ca3c9da6f94bfa591829",
+    "build/icon.png": "b5f839e46c666f6347a1a5d84f60c34a423f22d6ce2266bb2f811ab8d00219e2",
+    "build/icon.svg": "e1e3bc2680cd41c6bf780ea5af8502edd023cb9f62dfe18b99b07fac2adfa95f",
+    "dist-electron/main.cjs": "7000ac8a68aa81c2898f8ba9cc059bb7f63d5fd84ca022f04312f5c9f539705b",
+    "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
+    "electron/acp.ts": "cc1f1accce1ecc2908b35b97bb99da751d62f79f4458e697b05665fcce57bfca",
+    "electron/application-identity.ts": "6ea5a9018715351175b9c20089cf724bc599672ba40ce2475f124623fb1ef086",
+    "electron/browser.ts": "f42b0d6a75a05638562ea679279026ebd649e5bb142bcae54a11d194bb06d86a",
+    "electron/bundled-cli.ts": "db84a765aa451f01190a861c7a34f17bacc7c2bcac342de81e9a910b88404ab4",
+    "electron/context-calibration.ts": "47af3d995f5a26e8fad106e66851ed9f5a28d1a93097b655010cc66082b26f1f",
+    "electron/context-runtime.ts": "40f7fdfde7673f4b5d5c7a57339ee07b2c806378f9af3b33dc6da10161475636",
+    "electron/context-supervisor.ts": "cc945c24c3750ec0f4091586db3bd44c6a9ebe63ca885b63f5057311ffa41d65",
+    "electron/database/client.ts": "93180086cc089ed64b9cc4e15c381aabac0e17a96012500a3e79f7231d372a71",
+    "electron/database/engine.ts": "29f7d3423c992c5bcec899056d182552f50c8d2dbd2d3dcb38229692d683fa87",
+    "electron/database/files.ts": "ff63e8bcc9b895ff51141a171965c4696ef686894f5a9a84c7e3701eede0d81c",
+    "electron/database/http.ts": "c34a214be47546f71a8ea0a7b8c02ac58dbfb6ba5112644d10d6af5f2376e233",
+    "electron/database/protocol.ts": "a7cc9a7400b6b227beeae081da5883d14fbbc409a63b98506d8ed5087a3f71de",
+    "electron/database/provider.ts": "6ca1594902bd53c0b307e349e5594f8281700fb7f73601eab3fcb9933c8ecdb1",
+    "electron/database/query-stream.ts": "339a7a9d10b811bdafd77d511fa1c7b621aac37520e1caad262ed2b5deca0860",
+    "electron/database/relations.ts": "1d2850b936e1d6059dc8eec6061475957074e0e771bf607599bc5e7bfee0c98e",
+    "electron/database/response.ts": "c456e60b1a304dda2c94d9f2307d0dc4268fbf53c3e4c9752aede46b5ed1d46c",
+    "electron/database/service.ts": "2123f69b79383800dcec9f8a2c4ee03523fc4641042995c57497b536791fa775",
+    "electron/database/sql-file.ts": "0a332e2b591b554ef77c74fb443b5ec72a2e904fd1b43a497ce692c57133ef80",
+    "electron/database/tls.ts": "fee9f6726e6a36337fe376d8eb52abead62d1aa7d400f0b1ab5bfca546591e19",
+    "electron/database/wire-limit.ts": "c611c00f4fbb60f1f47bdcea79f66a13ed66b9ea7bed93e1d025746bc7c05904",
+    "electron/design-evidence.ts": "662f7d76e4019af3a22fcfb65558bf51709021fcf2a3e58e98420c814106e074",
+    "electron/ide-process.ts": "5d532c1b5f13c6532eef6477b85f9b2b63a2e08a0faaaff210b0cf4b4d65d13e",
+    "electron/ide-recovery-persist.ts": "5f769c4b8d79cc13e40918b325f8f66afc3a19d6a4daf99cf4366942de881c2a",
+    "electron/ide.ts": "7d967137936e16c06bcb93778e5604b18927139984c6d6112c437687415ff143",
+    "electron/main.ts": "8331093492e00ceef03583885abd6d1240579d8654b62573976254348e30ef34",
+    "electron/managed-coordination.ts": "19ca0c8993b17eb68b2e64890574b0b115cc24e111600d6398dca34778f5112e",
+    "electron/managed-runtime-policy.ts": "807a7c45f37dfac8a2d445f917f7335229beb26fd68d5a09a4b0854687ab3e95",
+    "electron/mcp.ts": "4362c8217ff4a163dd7e48b476602ff3b246925b5f2f42b88f52a789d1e72d85",
+    "electron/operations/catalog.ts": "f508f4c44be21716a224189365ad9f8448453f130c6054e7378dd50baa632cb8",
+    "electron/operations/client.ts": "ed38b98dcacafeff7d74909adb35c9a0e364220673bacce6576df4faea566ac9",
+    "electron/operations/errors.ts": "4a93fa1b2d7e443dfc8283f52501fc30fb5289b0d3dd1a7c3a489eab065b902c",
+    "electron/operations/http.ts": "673045d68800078a76e6bcca909a8c62667b684c740dec3bdec3726bf1e13085",
+    "electron/operations/jenkins-logs.ts": "493e91611655ad59aba6026ecd7fc4b4c1d4dd9c5ed062266923253dea1cde0c",
+    "electron/operations/jenkins.ts": "3a104c3229d9901dfc493e5cd7b765d6a501a2021df04068557415a2ccbbcde0",
+    "electron/operations/kubernetes.ts": "0b370c3059e6167dd006125fe07c6bba3b0f527a03ce2c33f3a54b9cca3dec11",
+    "electron/operations/protocol.ts": "28a35878a8b9583b5256d4d7986f6963fa1115ebdd36a002d1bee264160440f7",
+    "electron/operations/provider.ts": "dda93ba26f10fb3e999d21600dee71a77517fe2c6ce33cbd04a707d10e80a1d1",
+    "electron/operations/service.ts": "9ae07292eb02c019b11c62f417af1c40da3b799d26fff85732d6adabcbe738d4",
+    "electron/preload.ts": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
+    "electron/prompt-binding.ts": "7d9c7f046470c31c7a03b8dc196bec5a412525d84be9e8bc81efbda32ea88a11",
+    "electron/reference.ts": "acb655693830f6188febef155c7275cf632bb3bd09a4ecb98d6d589f3623612b",
+    "electron/renderer-recovery.ts": "7be680151cc5bf3ab140d722bc9888f4113b51995a7a27e2a56ca8b547e640f3",
+    "electron/role-router.ts": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
+    "electron/service.ts": "3316b4b4b074b6be6114d4ab102481e91ec4ab673cfa1c1a454b328bd414ce66",
+    "electron/shutdown.ts": "afb16079d29c07c46b83d0bc9b8beec513a5b9cd2089736387701be1ece024e8",
+    "electron/store.ts": "40382045034687e8a5af380cf6ed3a7c54a53a859f0c3a69d4e0f7d6e0ba04a5",
+    "electron/terminal.ts": "8e14ce700e57e401e97b5d185c16dee059fe74cd8f99cfbf7d12d983435dbec7",
+    "electron/tools-policy.ts": "b42645c4d3425c49f3744f09695d031d45251049878c3a4874c133341860a8bb",
+    "electron/vision-bridge.ts": "66028b2fffb7266bbfe0b5fe621b46e61602de03728c35f5ebc0c75c2e6c523b",
+    "electron/visual-artifact.ts": "340877ab8ba445994afb151c4ab930a37c111f2e9f21dc96cc2de891950912a2",
+    "electron/workspace.ts": "dc83194e912539aafbabb03e9a3aa6f90172ede932e06d1e8b61045aedb5d1c6",
+    "index.html": "3bb2fa190b895b960a30dc86594d7623fc93db096bbf14dfef38cd78cf57cc79",
+    "package-lock.json": "4d48857f2d82a563dfca679c7f1a0d0f975999b678a991ad4474def40f66819e",
+    "package.json": "b014fe95cdf353b87330ef8a087f803a0c45803ca95d1eb752e5fb42d24f4869",
+    "public/icons/agents.svg": "dbb7027fc7f7dd36335fe2c4e1699fa5e57c52a38f4e585cff4e95f4b281c41c",
+    "public/icons/arrow-up.svg": "2e8f864300aeb1f12d742fe567e6e2f570b2ea23b4520cc39ec984ab2f620686",
+    "public/icons/attach.svg": "19b113933fc4c51eb1fae8dde8b94607ef3ae30bd8063b62a771e453449f943e",
+    "public/icons/branch.svg": "3f5faaf2de6d39521fde77224404e220f911db2a7082f6e6d285e085e9ea0865",
+    "public/icons/brand-dark.svg": "b2e947d35d37938f1d04f40cfc29e1379e11ee46196cef9ff700f18e1b329567",
+    "public/icons/brand-light.svg": "d38ed650ac9fcf2cde6a2176f035bfba933929e595379ac954972e9d3c148903",
+    "public/icons/browser.svg": "a457b1068793cad9e1ed3fa7ce7b8db8c7068e4e4174247dd959031b6f113eab",
+    "public/icons/chat.svg": "7da1659a554a18ed84db80471c65e8d6d16f629233dd2d1e8c1f3769c2a1fee4",
+    "public/icons/check.svg": "3adaaf0bbb96ecd702068908bcfa1f0fcfebafb14ebfb4fe51c22076d6c0511e",
+    "public/icons/chevron-down.svg": "55a8acbf97cdaffd683bf7cdacbf435e434ba8f731d0e6b4c97608da977bd9a5",
+    "public/icons/chevron-left.svg": "7eb22ba7edb7a57c72da38b3ecacb190a72995fb11f0ed325d4fdf675ac00fc3",
+    "public/icons/chevron-right.svg": "4505bddd2a36ee8db499037086a484abf75cb5038a637c5dc86b62c383a752fd",
+    "public/icons/chevron-up.svg": "c3eb9a53dfffd21f63077f4e410f6e2e395220a8627a63fa3f1b085ac0870e4a",
+    "public/icons/clock.svg": "872a71d9fd1cc4eada1873a79d4072bf3a2c3cbaa9f84dd8c26ba9ec682eaae3",
+    "public/icons/close.svg": "b111a6fd53548f743efdca3147c8b92c38043f9cda2a8be148dd6387ff83f9a2",
+    "public/icons/cluster.svg": "eb2e8061a8e1115af045f9bdd5c984165f0e69a599543ad7c19c764a98a1b0fa",
+    "public/icons/code.svg": "775fe47f0556b40d7e8f804bb793fe11afabfbee079956478cfb48a1c552595c",
+    "public/icons/command.svg": "7f9153c4b9e51ded9349971f6ea0ff6f7d04f7331b03fe37aac57b0e1298d68a",
+    "public/icons/copy.svg": "e8913d37c1a1bf3c49bc214fe6990d9cecb9225ff925b9d15761e11e313e86fc",
+    "public/icons/database.svg": "744a1e02bd48e9e24b5e68e7910696a514c095fe5df3b82ced49f03fa09d876d",
+    "public/icons/debug.svg": "a75ad0358ec2cc115ffba156b2ed563e1196cf41fb43a1c497d7bb434bc00ab8",
+    "public/icons/diff.svg": "f0b5972a0c6ff7319901beabe9dd45b371eb36e6cc6c46d34cc3a0093da0e1f7",
+    "public/icons/edit.svg": "2887476d01214761468375e8efa7046c83573c706324e4ed5069e6b7e10f7ad9",
+    "public/icons/extensions.svg": "c7ecdbbaacc264e8f36b4eea7b14869f9db0981ed72c79ed1a2c8a239f0a851d",
+    "public/icons/external-browser.svg": "333e07ed41bfce22e99aeb334bc44599d02f01232a09ab3e0fb1af1fa50d3292",
+    "public/icons/file.svg": "5a690165d2eeb1e2b610dae1983186dec6bf901c1e975513bc7b7302636cc164",
+    "public/icons/folder.svg": "57be5307550e01ec51b8444b64518f83f3838621599d9441af30996a069c9284",
+    "public/icons/memory.svg": "a3c5161c798e33ee47b383ef01f21c8c885f6c7cf4b9bb46ad310e016fa81f73",
+    "public/icons/more.svg": "0a2a2ae8f75b1c972edad1ffbb3835df1ed3d20dfc081e45bb7860b302302e14",
+    "public/icons/panel-left.svg": "b84ed621de693a5b53ca8dfe16ff96661136216ebbdfde1ffc78ce43c653bb0c",
+    "public/icons/pipeline.svg": "32ff81d226ab725f62d6802d60fcf8b23ad52994e503a7054380f9fac718b1f7",
+    "public/icons/play.svg": "d9d84ce2d84926fdcb9d7c0bd776e891567e8ec8ea3d4d7c7a5e926754304192",
+    "public/icons/plus.svg": "fa1da41907373871dda8e0afc70fa4fce60a41ba1f80b06fd901a53e5b7152ad",
+    "public/icons/profile.svg": "d4c619b141adb3366e63cc68b11b6bfbcc9ec50400ef04c0061ba3692110156c",
+    "public/icons/question.svg": "c5f726d5f975e6ea9ad98037656834bdf615917feff4b0ba9239529316135b5a",
+    "public/icons/reload.svg": "dd5684e155c180dfc03952e3d4f16d17037236fe83e2691560fcb7a1ca17ccb2",
+    "public/icons/search.svg": "5b51b8b20b526d3daae64018ac320da73d9f8c36f55976bf9aba4d9a7303fd75",
+    "public/icons/session-exchange.svg": "f5537d084613ed826fbafcf5f8c54f484471ef6bf7e39a52f537e7dee891ac74",
+    "public/icons/settings.svg": "e013ce0d2187507a583a69776e865511092e5d58b93812c48937841a64a5ed27",
+    "public/icons/stop.svg": "89550c58323813ab99b8e6fdcbe0f4ed8790f2ea5b160f8973b66e8f35a80eab",
+    "public/icons/terminal.svg": "363bbc4cde9831c7cbc125e2458639047d830b065e7aa0147271c04240c190ae",
+    "public/icons/todo.svg": "ab8ef190f1667342a4da7e8744f7aec761ebbcd84bc7eb018a3fcd030f01fe3e",
+    "public/icons/unknown.svg": "1230399c0ec0719d8d61380baa70be5a22fb63fa5e9f790dff5053d173fb7bb1",
+    "public/icons/warning.svg": "fbb850e59af041b6f944adee1c5798328d3bf360069d92f212e14a65abc5a6e0",
+    "public/icons/window-maximize.svg": "af58cb27f3df1917c89a8573969648ed3a2a4531dcfb52f295ff09ad86cf6b0a",
+    "public/icons/window-minimize.svg": "b13c95d9fdde952edd931931271d43e3f6efa18415c22d9ab5c821474cad3246",
+    "public/icons/window-restore.svg": "016e06197b052afa506aa35d230dcb8718ef37928c69366b9f26c0bc8d35281d",
+    "shared/context.ts": "b83f3bede7c4115ea534205f32ab5b5fb21b30853eef6662aacc4bc46a553095",
+    "shared/database.ts": "003aa11c1851081f0a15cb98ca3fef7fa0ba1399808e03237a40c3395cf74f4e",
+    "shared/managed-coordination.ts": "d26cd77c6bfe64119f4f9aa2f91c8d9a5b2b6292036d02f368c0009524d3f046",
+    "shared/operations.ts": "eff22761fde3e312835f63d8ad6dd907f1f2bf38714e72244f4a1ea1896a3d8f",
+    "shared/sql.ts": "f1bd1d2345f60f6fc0f36159601460066c1360e631374128acf54dd6da1dc1e3",
+    "shared/suite-contracts.ts": "ac3b15643d0c7423f65f08f77edf3e08c1287b5e10cf850482d6e566ee0119a7",
+    "shared/types.ts": "7b3ee71b2a0685c70b1c9052b06c2765c513671bc2f946ceb7fa8d79c73e02a6",
+    "shared/vision.ts": "43e7f68854d9fc0d38b5b5652fa336f7e75916be2f0202d5d1490413aa251aa6",
+    "src/App.tsx": "65f7b71c711a7a2d042712703f3f0e7076427e99deeae701ab36e5f5e49c70dd",
+    "src/ClusterPanel.tsx": "ce2aa4b9cc808c94c86874e92b592640386989b26a80bbbfbb86522cbf60be1b",
+    "src/ContextControls.tsx": "9ff7aa977b40332051f190b032a5243334071599779e5bcb77e06767c7e70214",
+    "src/DatabaseConsoleEditor.tsx": "dbbd06603b03ab53e7416338531d537f02cfa96fc55dadff8a947c80c061df27",
+    "src/DatabaseEffect.tsx": "8dc051c4af1fa77b2a2cde123759e9ac3ebe2d443c641e90f8749a21d8678c8d",
+    "src/DatabaseExplorer.tsx": "a3d3fbf023a8a50235aed95310ee7d466c99796996bb4e1dc144e3d9b633a38d",
+    "src/DatabaseHistory.tsx": "79907e400279578dbf085c784e41e720d665b1efe85e657e1d37b3ae1847f756",
+    "src/DatabasePanel.tsx": "419f2766c22a96e36e7b62144386da1d6d6815606aeb768c53a9c73c75d2eb6b",
+    "src/DatabaseRelations.tsx": "72fc8f941b416e26b8f5b0b5e467cfb145b00fb5b895d6d730de7eb853ab296b",
+    "src/DatabaseSettings.tsx": "34c0292535f7aef3fd1d227dad3bc9c2e4d14b0e1a496ec1d0564d6ac7c5cd0b",
+    "src/DatabaseStructure.tsx": "3fc1a5755c7499e686a066845f3f0e218ac0d596c17e1efdc4028ebe8071c42e",
+    "src/ErrorBoundary.tsx": "e13f0a5d0b329145a8e38d82a22cdb7022e6ad95eb103049d15c33338fb70043",
+    "src/IdePanel.tsx": "6a10f055d4eb6e652e8b7f208c5678839510805af8d7dbfb938bfb9912436987",
+    "src/IdeSettings.tsx": "6be334f9735ea973d7081d380772719804f3cfdc09cba3a2bc5a8e7bc9fad1d3",
+    "src/JenkinsPanel.tsx": "3d92d1d9b6e06a3fc539dce1f5b7cedf5d30f944a3053e88d53b46a6ba7ef60d",
+    "src/ManagedAgentsPanel.tsx": "853c927349c7a92229f6eb7d8efcdceeb7f742e92bc0dd1d92f98fc41d06d1f7",
+    "src/ModelPicker.tsx": "0c39e7c2f0378817655c78ceff91a815ed26843ff5ca5e850f9c4d9d40e73bbc",
+    "src/OperationsSettings.tsx": "d43aa156d1d68f95d4b8d7b797e38d024539eaee8615571625937bd322932566",
+    "src/Panels.tsx": "8f26455c21f2942865c9a9971b6a924a103742eb48af17a87fc781a7f30308c4",
+    "src/QueueMessages.tsx": "01a93bc8a5077777fb67e47b805e33e5be52c37c5f46969b259f28d91f5ccbb2",
+    "src/SettingsView.tsx": "762d5cd1666d3c735b8b2a064e2da212c3b0649be06d2f90da15dcc7e633217e",
+    "src/SqlEditor.tsx": "eebe0424ea213087342f4d529d245555c951e6340b86573c94d4d58d9622a642",
+    "src/SqlPlan.tsx": "c01915b2490fb6b4a06328de153ead7bb56157947516ca6c9d317823c1dbdadf",
+    "src/ToolBoundary.tsx": "c5201b14523d6d8fb08ba944c49402a8bf766d87193ac3ccf7ae137b97f2b5c8",
+    "src/VisionSettings.tsx": "2f5ed5a5696c5130bd2d7ef21bdba837f5eac0fdb96b564e19c00d9eba1f6010",
+    "src/Workspace.tsx": "d11e4f10208998c6afe9bb51b7612e0db6d5d6977b515f17fa373418a3271762",
+    "src/api.ts": "685ec5467aa5f97a6c4057cdb74174301138e8cab090c507f7de596a14e83433",
+    "src/database-relations.css": "2a81b405623604ad682c91c791c0f65e5efdecd508cb9d54088cc8ce923d4029",
+    "src/database-structure.css": "f4e607369ce6fb52f75c6db84c203e05fa1e930dcfabd8cc2aed108c8e76d9c0",
+    "src/database.css": "ced273257f148ad648f5e7c3d024c6e0ec70f9d93fe1ec63130ff3bb27cd85cd",
+    "src/docking.ts": "c49920cebe216b72a578f46ff5b954fb39a68539aa7e5c2e47d5483ea9216e9e",
+    "src/labels.ts": "013f58cbf409d6a6c3063e0596bcf4d02048a3212f13ff0781409e8e88a9e4fc",
+    "src/local-state.ts": "964f4d86855f7694b3c8e7436040b8b1ccdcea58ed1ef3b15412bf7ed9b1292f",
+    "src/main.tsx": "833c06aa8ebc47d17ad3f14a0685aa18ea5e396277340afd046a53b3c11dfa66",
+    "src/motion.ts": "1db3cef535cddd41b3538b667be291a1226e8bcdbb61e250c721b61d2006cb2f",
+    "src/operations.css": "b9038c0975357f06516a9486a00a960e5095beb0ede08ae6e24a40fb9309c03e",
+    "src/ops-ui.tsx": "3dad227d49fa638842878f8c7349121e509c480b8d05ce99a3608f1d13d31131",
+    "src/queue-edit-journal.ts": "c556ca15922ef7cf8bf62bc957c280582f607da9d25bc90a29b979c66ac8e561",
+    "src/snapshot-feed.ts": "a68c59d601beb5a75a705a34e82b2fca11c0448aeec5f10b412a884a78c825bd",
+    "src/styles.css": "7508672f7f11f1aa3e1ee352527aa7a4a6ec96aba2a12321d184f0fdedea2d38",
+    "src/ui.tsx": "c393a5ba5856c58b75b4738ae8d3ccdf47a30b83531e61825f14fdc598692dcd",
+    "src/window-close.ts": "196e50c3362d8c72178da07867131c055101a04af428d707d8339862c82eb5bb",
+    "tools/test-flash-runtime-ui.mjs": "47d45d02750d30ed64709817ce2d91dbab7d687b7b48ec4a1d2211e21a26bdb1",
+    "tsconfig.json": "d3bfdd8024d47eee4cd4ac1e66f7f5efc57f501288cfc8cf4833114b80af26ed",
+    "vite.config.ts": "f7c1a3238afdbc3dc59f969bf33dc384d243c9acc17f7d7d19dfc3bb5b30ff71",
+    "dist/assets/ClusterPanel-BwEROP8N.js": "cddde7fa77da989dc78658d261ee5f94b222e70825609dd4c421107f426f0f80",
+    "dist/assets/DatabasePanel-CGs0oKbH.js": "89f76a6392c315e214f88fb8009e2b74b912f3b584534765f396ca4cc9eaab8a",
+    "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+    "dist/assets/JenkinsPanel-Cv1GnWbz.js": "fcd5ab453f991735e33269dca996d8d81c8aa7f2fbf0b0f28fa84cffb60f91f2",
+    "dist/assets/OperationsSettings-DpRp4pRi.js": "59c2083ea8b26e60fd17a57ff9f7e653346f4cca1c61a172b2b9cc3fae85fdf1",
+    "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+    "dist/assets/index-CxDukIpM.js": "7f5879047590c811623f7db21b1f07e75275ac9e575537d4f0a0fb9959a5fbf1",
+    "dist/assets/index-tGRkdgCC.css": "93062faa3f619aa58de031ed09864759bc8d5274bcaa051253c24f3eb1e01ee3",
+    "dist/assets/ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+    "dist/assets/ops-ui-_yP2FVXD.js": "8e3a537e517781f85de61f8e64ae408c013a8c2a7e83ac62eee9f16e1c8065f7"
+  },
+  "paidRequests": 0,
+  "cleanup": "closed",
+  "electronExit": {
+    "code": 0,
+    "signal": null
+  },
+  "ownedProcesses": {
+    "observed": 15,
+    "remaining": []
+  },
+  "fixtureEvents": [
+    {
+      "project": "frontend",
+      "events": [
+        {
+          "type": "new",
+          "pid": 2744,
+          "at": 1792002979335
+        },
+        {
+          "type": "prompt",
+          "command": "hold queue-original",
+          "contentHash": "e3fc40b93fe2c0a45a830522d67772cb34c438dc761f0e1af24131d0503b6cf3",
+          "contentBytes": 31400,
+          "hasManagedContract": false,
+          "hasReferenceFence": true,
+          "pid": 2744,
+          "at": 1792002979391
+        },
+        {
+          "type": "cancel",
+          "command": "hold queue-original",
+          "pid": 2744,
+          "at": 1792002979818
+        },
+        {
+          "type": "terminal",
+          "command": "hold queue-original",
+          "reason": "cancelled",
+          "pid": 2744,
+          "at": 1792002979900
+        },
+        {
+          "type": "new",
+          "pid": 2757,
+          "at": 1792002980119
+        },
+        {
+          "type": "prompt",
+          "command": "queued-edited-send-now",
+          "contentHash": "ee763c37e508669ad393dcad5830cf4423b4d71f9abc9f64b628d881ed3ee2e9",
+          "contentBytes": 32361,
+          "hasManagedContract": false,
+          "hasReferenceFence": true,
+          "pid": 2757,
+          "at": 1792002980171
+        },
+        {
+          "type": "terminal",
+          "command": "queued-edited-send-now",
+          "reason": "end_turn",
+          "pid": 2757,
+          "at": 1792002980232
+        },
+        {
+          "type": "new",
+          "pid": 2765,
+          "at": 1792002980637
+        },
+        {
+          "type": "prompt",
+          "command": "hold worker-primary",
+          "contentHash": "d115a52f048563fc7dc99f3f51544e1206b11227610db466d87f49fa83e34498",
+          "contentBytes": 33193,
+          "hasManagedContract": true,
+          "hasReferenceFence": true,
+          "pid": 2765,
+          "at": 1792002980695
+        },
+        {
+          "type": "terminal",
+          "command": "hold worker-primary",
+          "reason": "end_turn",
+          "pid": 2765,
+          "at": 1792002981456
+        },
+        {
+          "type": "new",
+          "pid": 2773,
+          "at": 1792002981670
+        },
+        {
+          "type": "new",
+          "pid": 2774,
+          "at": 1792002981687
+        },
+        {
+          "type": "prompt",
+          "command": "worker-second",
+          "contentHash": "86a45cb5393d4b2d9a93b2815def95df2a9849bfbfcb96b3d74c95099a075734",
+          "contentBytes": 33187,
+          "hasManagedContract": true,
+          "hasReferenceFence": true,
+          "pid": 2773,
+          "at": 1792002981745
+        },
+        {
+          "type": "prompt",
+          "command": "worker-dependent",
+          "contentHash": "32bf6b177cc4ff982f21df2c691a97ded0233202ea28dfe8559e068046435bdf",
+          "contentBytes": 33122,
+          "hasManagedContract": true,
+          "hasReferenceFence": true,
+          "pid": 2774,
+          "at": 1792002981783
+        },
+        {
+          "type": "terminal",
+          "command": "worker-second",
+          "reason": "end_turn",
+          "pid": 2773,
+          "at": 1792002981807
+        },
+        {
+          "type": "terminal",
+          "command": "worker-dependent",
+          "reason": "end_turn",
+          "pid": 2774,
+          "at": 1792002981845
+        },
+        {
+          "type": "prompt",
+          "command": "worker-followup",
+          "contentHash": "9e399eaf60735765749e45a1af57e86d066fa8d17c35d3d83e4342c9f30a1af9",
+          "contentBytes": 322,
+          "hasManagedContract": false,
+          "hasReferenceFence": true,
+          "pid": 2765,
+          "at": 1792002982081
+        },
+        {
+          "type": "terminal",
+          "command": "worker-followup",
+          "reason": "end_turn",
+          "pid": 2765,
+          "at": 1792002982141
+        },
+        {
+          "type": "new",
+          "pid": 2792,
+          "at": 1792002983086
+        },
+        {
+          "type": "prompt",
+          "command": "unknown-after-dispatch",
+          "contentHash": "291157c4e4279eeb011562f1140837e60a3cee5118c5c80f14a62a5e9c8d4e95",
+          "contentBytes": 33090,
+          "hasManagedContract": true,
+          "hasReferenceFence": true,
+          "pid": 2792,
+          "at": 1792002983143
+        },
+        {
+          "type": "new",
+          "pid": 2793,
+          "at": 1792002983707
+        },
+        {
+          "type": "prompt",
+          "command": "fresh-after-unknown-readback",
+          "contentHash": "6ff8e106d83b518eaf99f3e8cde3f105dd886d22c60cf8719cc1f391dea91186",
+          "contentBytes": 34477,
+          "hasManagedContract": true,
+          "hasReferenceFence": true,
+          "pid": 2793,
+          "at": 1792002983770
+        },
+        {
+          "type": "terminal",
+          "command": "fresh-after-unknown-readback",
+          "reason": "end_turn",
+          "pid": 2793,
+          "at": 1792002983831
+        },
+        {
+          "type": "startup-failure",
+          "status": 429,
+          "pid": 2805,
+          "at": 1792002984139
+        },
+        {
+          "type": "new",
+          "pid": 3067,
+          "at": 1792003010363
+        },
+        {
+          "type": "prompt",
+          "command": "hold usage-high",
+          "contentHash": "3a0ff86b57147763ef175c7c28abf99268aad3d775ddb35b434d41d1770c3fa6",
+          "contentBytes": 31368,
+          "hasManagedContract": false,
+          "hasReferenceFence": true,
+          "pid": 3067,
+          "at": 1792003010422
+        },
+        {
+          "type": "terminal",
+          "command": "hold usage-high",
+          "reason": "end_turn",
+          "pid": 3067,
+          "at": 1792003010614
+        },
+        {
+          "type": "new",
+          "pid": 3079,
+          "at": 1792003010889
+        },
+        {
+          "type": "prompt",
+          "command": "context-after-checkpoint",
+          "contentHash": "4eaaaf195c8467e8275bac515b015cd81158c2d20801c769e70510df77afad97",
+          "contentBytes": 32326,
+          "hasManagedContract": false,
+          "hasReferenceFence": true,
+          "pid": 3079,
+          "at": 1792003010946
+        },
+        {
+          "type": "terminal",
+          "command": "context-after-checkpoint",
+          "reason": "end_turn",
+          "pid": 3079,
+          "at": 1792003011008
+        }
+      ]
+    },
+    {
+      "project": "backend",
+      "events": [
+        {
+          "type": "new",
+          "pid": 2791,
+          "at": 1792002982395
+        },
+        {
+          "type": "prompt",
+          "command": "backend-contract-fix",
+          "contentHash": "1818f6220d64fb24139aff1bd5a375bb6a33cae9ba15a226e97575e3dbc391b0",
+          "contentBytes": 33034,
+          "hasManagedContract": true,
+          "hasReferenceFence": true,
+          "pid": 2791,
+          "at": 1792002982457
+        },
+        {
+          "type": "terminal",
+          "command": "backend-contract-fix",
+          "reason": "end_turn",
+          "pid": 2791,
+          "at": 1792002982518
+        },
+        {
+          "type": "prompt",
+          "command": "contract-note-reference-only",
+          "contentHash": "bcee0df625b7bb4640bba619000d004accfceeea540f3cece8c825519a7c8b37",
+          "contentBytes": 583,
+          "hasManagedContract": false,
+          "hasReferenceFence": true,
+          "pid": 2791,
+          "at": 1792002982736
+        },
+        {
+          "type": "terminal",
+          "command": "contract-note-reference-only",
+          "reason": "end_turn",
+          "pid": 2791,
+          "at": 1792002982798
+        }
+      ]
+    }
+  ],
+  "visionEvents": [
+    {
+      "type": "list",
+      "hadSecret": true,
+      "pid": 3046
+    },
+    {
+      "type": "list",
+      "hadSecret": true,
+      "pid": 3057
+    },
+    {
+      "type": "list",
+      "hadSecret": true,
+      "pid": 3058
+    },
+    {
+      "type": "call",
+      "imageHash": "7e8a86157d328b13622253cb6a0063b0cc90366f668a6e4080b39d65a9dad8f0",
+      "imageBytes": 68,
+      "questionHadUntrustedFence": true,
+      "model": "Qwen 3.6 Flash",
+      "hadSecret": true,
+      "pid": 3058
+    },
+    {
+      "type": "list",
+      "hadSecret": true,
+      "pid": 3059
+    }
+  ]
+}

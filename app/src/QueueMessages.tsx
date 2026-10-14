@@ -119,12 +119,16 @@ function SessionQueueMessages({
             <div className="queue-row" key={item.id}>
               <span title={item.text}>{item.text}</span>
               <div className="queue-actions">
-                <IconButton
-                  icon="send"
-                  label="Отправить сейчас"
+                <button
+                  className="queue-send-now"
+                  aria-label="Отправить сейчас"
+                  title="Остановить текущий запрос и отправить это сообщение после подтверждения остановки"
                   disabled={pending || unknown || stopped}
                   onClick={() => void act("queue.sendNow", { id: item.id })}
-                />
+                >
+                  <Icon name="send" size={13} />
+                  <span>Отправить сейчас</span>
+                </button>
                 <IconButton
                   icon="edit"
                   label="Редактировать сообщение"

@@ -52,7 +52,7 @@ try {
   const packaged = process.argv.includes("--packaged");
   app = await _electron.launch({
     executablePath: packaged
-      ? path.join(root, "release/win-unpacked/GigaCode Workbench.exe")
+      ? path.join(root, "release/win-unpacked/GigaCode.exe")
       : require("electron"),
     args: packaged ? [] : [root],
     env,

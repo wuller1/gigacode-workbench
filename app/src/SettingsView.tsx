@@ -1,3 +1,4 @@
+import { VisionSettings } from "./VisionSettings";
 import { DatabaseSettings } from "./DatabaseSettings";
 const OperationsSettings = lazy(() =>
   import("./OperationsSettings").then((module) => ({
@@ -8,7 +9,7 @@ import { IdeSettings } from "./IdeSettings";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import type { AppState, Profile, Settings } from "../shared/types";
 import { profileName } from "./labels";
-import type { Invoke } from "./api";
+import { callHandled, type Invoke } from "./api";
 import { Empty, Icon, IconButton, Modal, useAsk } from "./ui";
 const same = (a: unknown, b: unknown) =>
   JSON.stringify(a) === JSON.stringify(b);
@@ -195,6 +196,7 @@ export function SettingsView({
     ["database", "Подключения БД", "database"],
     ["operations", "Jenkins и кластеры", "cluster"],
     ["execution", "Выполнение", "agents"],
+    ["vision", "Визуальные проверки", "browser"],
     ["profiles", "Роли", "branch"],
     ["memory", "Память", "memory"],
     ["about", "Диагностика", "unknown"],
@@ -227,6 +229,9 @@ export function SettingsView({
           ))}
         </nav>
         <div className="settings-body">
+          {section === "vision" && (
+            <VisionSettings run={callHandled} onDirty={setOpsDirty} />
+          )}
           {section === "general" && (
             <>
               <h3>Внешний вид</h3>

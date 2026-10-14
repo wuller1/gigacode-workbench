@@ -274,7 +274,7 @@ jobs:
           @'
           const fs = require('node:fs'), path = require('node:path'), assert = require('node:assert/strict');
           const {spawnSync} = require('node:child_process');
-          const application = path.resolve('release/win-unpacked/GigaCode Workbench.exe');
+          const application = path.resolve('release/win-unpacked/GigaCode.exe');
           const cli = path.resolve('release/win-unpacked/resources/app.asar.unpacked/node_modules/@qwen-code/qwen-code/cli.js');
           assert.ok(fs.existsSync(application) && fs.existsSync(cli), 'Packaged app or bundled Qwen entrypoint is missing');
           const resources = path.resolve('release/win-unpacked/resources');

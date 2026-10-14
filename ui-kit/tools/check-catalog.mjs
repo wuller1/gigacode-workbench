@@ -16,6 +16,8 @@ for (const file of [
   "registry/icons.json",
   "registry/assets.json",
   "registry/templates.json",
+  "registry/design-guardrails.json",
+  "recipes/desktop-recipes.json",
   "governance/ci-contract.json",
   "governance/repository-policy.example.json",
 ]) {
@@ -98,7 +100,24 @@ for (const component of components.components) {
   for (const source of component.sourceRefs ?? []) {
     try { await access(path.join(root, source)); } catch { failures.push(`${component.id}: missing ${source}`); }
   }
+  if (component.implementationStatus === "reference-source" && component.exportName) {
+    const source = (await Promise.all(component.sourceRefs.filter(name => name.endsWith(".tsx")).map(name => readFile(path.join(root, name), "utf8")))).join("\n");
+    if (!new RegExp(`export (?:const|function) ${component.exportName}\\b`).test(source)) failures.push(`${component.id}: exported implementation ${component.exportName} not found`);
+  }
   if (!component.states.includes("focus-visible") && component.kind === "interactive") failures.push(`${component.id}: missing focus-visible state`);
+}
+
+const recipes = await readJson("recipes/desktop-recipes.json");
+const recipeIds = new Set();
+for (const recipe of recipes.recipes) {
+  if (recipeIds.has(recipe.id)) failures.push(`${recipe.id}: duplicate recipe`);
+  recipeIds.add(recipe.id);
+  if (!recipe.rules?.length || !recipe.requiredEvidence?.length) failures.push(`${recipe.id}: missing usage/evidence rules`);
+  for (const id of recipe.componentIds) if (!componentIds.has(id)) failures.push(`${recipe.id}: unknown component ${id}`);
+}
+const guardrails = await readJson("registry/design-guardrails.json");
+for (const file of [guardrails.qualityCollector, guardrails.visionContract, recipes.exampleRef, recipes.rulesRef]) {
+  try { await access(path.join(root, file)); } catch { failures.push(`missing design protocol source ${file}`); }
 }
 
 if (failures.length) {
@@ -113,5 +132,6 @@ if (failures.length) {
     icons: icons.icons.length,
     brandAssets: assets.assets.length,
     components: components.components.length,
+    recipes: recipes.recipes.length,
   }, null, 2));
 }

@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "status": "measurable-guardrails-not-aesthetic-guarantee",
+  "desktop": {
+    "primaryViewports": [
+      {
+        "width": 1440,
+        "height": 900
+      },
+      {
+        "width": 1920,
+        "height": 1080
+      }
+    ],
+    "minimumWholeWindow": {
+      "width": 1024,
+      "height": 768
+    },
+    "panelWidths": [
+      360,
+      420,
+      560
+    ],
+    "controlHeight": 32,
+    "treeRowHeight": 27,
+    "tableRowHeight": 30,
+    "railWidth": 44,
+    "spacingScale": [
+      4,
+      8,
+      12,
+      16,
+      24
+    ],
+    "fontSizes": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      18,
+      24
+    ]
+  },
+  "checks": [
+    {
+      "id": "text-contrast",
+      "source": "WCAG22-1.4.3",
+      "minimumNormal": 4.5,
+      "minimumLarge": 3,
+      "method": "computed solid-color plus pixel check for complex backgrounds"
+    },
+    {
+      "id": "target-size",
+      "source": "WCAG22-2.5.8",
+      "minimumCSSPixels": 24,
+      "exceptions": "WCAG spacing/inline/equivalent/essential exceptions need explicit review; desktop kit default is 32px"
+    },
+    {
+      "id": "no-horizontal-window-overflow",
+      "allowedPixels": 1,
+      "exception": "deliberate table/code internal scroll only"
+    },
+    {
+      "id": "keyboard",
+      "required": [
+        "Tab/Shift+Tab",
+        "Enter/Space for buttons",
+        "Escape overlays",
+        "tabs arrows",
+        "tree arrows",
+        "split arrows"
+      ]
+    },
+    {
+      "id": "form-errors",
+      "required": [
+        "label",
+        "aria-invalid",
+        "described error",
+        "retained input"
+      ]
+    },
+    {
+      "id": "theme",
+      "required": [
+        "dark",
+        "light",
+        "high-contrast",
+        "foreground/background switch together",
+        "no forced black composer in light theme"
+      ]
+    },
+    {
+      "id": "queue",
+      "required": [
+        "visible Send now",
+        "edit CAS",
+        "remove",
+        "retained draft on rejection"
+      ]
+    },
+    {
+      "id": "visual-bridge",
+      "required": [
+        "exact screenshot id and SHA-256",
+        "viewport/DPR",
+        "bounded structured observations",
+        "separate measured facts",
+        "uncertainty retained"
+      ]
+    }
+  ],
+  "forbiddenDefaults": [
+    "raw palette or arbitrary spacing in generated screens",
+    "invented data or capability support",
+    "decorative redundant panel-name/status bars",
+    "modal editing for ordinary table cells",
+    "hide frequent action exclusively in overflow menu",
+    "claim pixel-perfect design from text bridge",
+    "claim aesthetic or accessibility certification from automated checks alone"
+  ],
+  "qualityCollector": "src/quality/designMetrics.ts",
+  "visionContract": "src/quality/visionBridge.ts",
+  "primarySources": [
+    {
+      "title": "WCAG 2.2 Recommendation",
+      "url": "https://www.w3.org/TR/WCAG22/"
+    },
+    {
+      "title": "WAI-ARIA Authoring Practices Guide",
+      "url": "https://www.w3.org/WAI/ARIA/apg/"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "name": "@organization/gigacode-ui-kit",
   "version": "0.0.0-reference",
   "private": true,
-  "description": "Reference source starter for a versioned corporate UI kit",
+  "description": "Typed desktop enterprise components and bounded design recipes for GigaCode",
   "type": "module",
   "sideEffects": [
     "./src/styles/*.css"
@@ -16,8 +16,10 @@
     "registry",
     "CHANGELOG.md",
     "MIGRATION.md",
-    "src/styles",
-    "LICENSE"
+    "src",
+    "LICENSE",
+    "recipes",
+    "tools/read-recipe.mjs"
   ],
   "exports": {
     ".": {
@@ -30,13 +32,17 @@
     "./brand/*": "./brand/*",
     "./icons/*": "./icons/*",
     "./templates/*": "./templates/*",
-    "./registry/*": "./registry/*"
+    "./registry/*": "./registry/*",
+    "./recipes/*": "./recipes/*"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "check:catalog": "node ./tools/check-catalog.mjs",
     "build": "tsc -p tsconfig.json",
-    "prepack": "npm run build && npm run check:catalog"
+    "prepack": "npm run build && npm run check:catalog",
+    "typecheck:examples": "tsc -p tsconfig.examples.json",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "test:desktop": "node tools/test-desktop.mjs"
   },
   "peerDependencies": {
     "react": ">=18 <20",
