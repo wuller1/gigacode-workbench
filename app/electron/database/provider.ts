@@ -53,6 +53,12 @@ async function main() {
         case "jobRead":
           value = await engine.jobRead(p);
           break;
+        case "operationList":
+          value = engine.operationList(p);
+          break;
+        case "operationRead":
+          value = engine.operationRead(p);
+          break;
         case "execute":
           value = await engine.execute(p);
           break;
@@ -66,13 +72,20 @@ async function main() {
           value = engine.dropResult(p.resultId);
           break;
         case "catalog":
-          value = await engine.catalog(p.leaseId, p.schema);
+          value = await engine.catalog(p.leaseId, p.schema, p);
           break;
         case "describe":
           value = await engine.describe(p.leaseId, p.oid, p.kind);
           break;
         case "transaction":
-          value = await engine.transaction(p.leaseId, p.action, p.mode, p.name);
+          value = await engine.transaction(
+            p.leaseId,
+            p.action,
+            p.mode,
+            p.name,
+            p.operationId,
+            p.consoleId,
+          );
           break;
         case "table":
           value = await engine.table(p);

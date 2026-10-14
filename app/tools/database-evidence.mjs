@@ -13,6 +13,7 @@ export async function databaseHashes() {
       "src/DatabasePanel.tsx",
       "src/DatabaseEffect.tsx",
       "src/DatabaseHistory.tsx",
+      "src/DatabaseExplorer.tsx",
       "src/DatabaseSettings.tsx",
       "src/SqlEditor.tsx",
       "src/SqlPlan.tsx",

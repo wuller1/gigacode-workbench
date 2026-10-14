@@ -358,6 +358,52 @@ export async function writeRows(
     if (format === "csv") yield fields.map(csvCell).join(",") + "\r\n";
     for await (const row of rows) {
       signal.throwIfAborted();
+      if (
+        format === "csv" &&
+        row.some((v) => typeof v === "string" && v.length > 65536)
+      ) {
+        // Avoid creating several full-row strings for a large CSV value. Keep
+        // surrogate pairs together before the stream encodes each chunk to UTF-8.
+        for (let column = 0; column < row.length; column++) {
+          if (column) {
+            yield ",";
+            bytes++;
+          }
+          const value = row[column];
+          if (value === null || value === undefined) {
+            yield "\\N";
+            bytes += 2;
+            continue;
+          }
+          const cell =
+            typeof value === "string" ? value : JSON.stringify(value);
+          yield '"';
+          bytes++;
+          for (let start = 0; start < cell.length;) {
+            signal.throwIfAborted();
+            let end = Math.min(start + 65536, cell.length);
+            if (
+              end < cell.length &&
+              cell.charCodeAt(end - 1) >= 0xd800 &&
+              cell.charCodeAt(end - 1) <= 0xdbff &&
+              cell.charCodeAt(end) >= 0xdc00 &&
+              cell.charCodeAt(end) <= 0xdfff
+            )
+              end--;
+            const chunk = cell.slice(start, end).replaceAll('"', '""');
+            bytes += Buffer.byteLength(chunk);
+            yield chunk;
+            start = end;
+          }
+          yield '"';
+          bytes++;
+        }
+        yield "\r\n";
+        bytes += 2;
+        count++;
+        if (count % 256 === 0) progress(count, bytes);
+        continue;
+      }
       const text =
         format === "csv"
           ? row.map(csvCell).join(",") + "\r\n"

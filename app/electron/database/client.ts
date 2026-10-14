@@ -22,7 +22,12 @@ export class DatabaseMcpClient {
   tools: { name: string; description?: string; inputSchema: unknown }[] = [];
   constructor(
     private connection: DatabaseConnection,
-    private runtime: { node: string; provider: string; directory: string },
+    private runtime: {
+      node: string;
+      provider: string;
+      directory: string;
+      heapMiB?: number;
+    },
     private secret?: string,
   ) {}
   async connect() {
@@ -61,7 +66,11 @@ export class DatabaseMcpClient {
           c.transport === "postgres-mcp" ? this.runtime.node : c.command!,
         args:
           c.transport === "postgres-mcp"
-            ? ["--max-old-space-size=768", this.runtime.provider]
+            ? [
+                "--max-old-space-size=" + (this.runtime.heapMiB || 768),
+                ...(this.runtime.heapMiB ? ["--max-semi-space-size=4"] : []),
+                this.runtime.provider,
+              ]
             : c.args || [],
         env: {
           ...getDefaultEnvironment(),
@@ -109,15 +118,21 @@ export class DatabaseMcpClient {
       ? "database_operation"
       : this.connection.bindings?.[operation];
     if (!name || !this.validators.has(name))
-      throw new Error(
-        `MCP не предоставляет адаптированную операцию «${operation}». Проверьте inventory и bindings подключения.`,
+      throw Object.assign(
+        new Error(
+          `MCP не предоставляет адаптированную операцию «${operation}». Проверьте inventory и bindings подключения.`,
+        ),
+        { outcome: "notApplied" },
       );
     const input = builtin ? { operation, arguments: args } : args;
     const validate = this.validators.get(name)!;
     if (!validate(input))
-      throw new Error(
-        "Аргументы не соответствуют фактической схеме MCP: " +
-          JSON.stringify(validate.errors),
+      throw Object.assign(
+        new Error(
+          "Аргументы не соответствуют фактической схеме MCP: " +
+            JSON.stringify(validate.errors),
+        ),
+        { outcome: "notApplied" },
       );
     const r = await this.client.callTool(
       { name, arguments: input },

@@ -248,6 +248,7 @@ jobs:
           retention-days: 7
 
       - name: Upload unsigned Windows build artifacts
+        # Only isolated test resources are used in these reports/screenshots.
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: gigacode-workbench-windows-x64-${{ github.sha }}
@@ -256,4 +257,16 @@ jobs:
             app/release/*.exe.blockmap
             app/release/SHA256SUMS.txt
           if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload database acceptance reports and isolated diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: database-evidence-windows-${{ github.sha }}
+          path: |
+            docs/suite/evidence/database-runtime-*win32*.json
+            docs/suite/evidence/database-runtime-*win32*.png
+            app/test-results/database
+          if-no-files-found: warn
           retention-days: 14

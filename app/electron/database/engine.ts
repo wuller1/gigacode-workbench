@@ -54,6 +54,7 @@ export class DatabaseEngine {
   private leases = new Map<string, Lease>();
   private jobs = new Map<string, DatabaseJob>();
   private receipts = new Map<string, Receipt>();
+  private receiptBytes = new Map<string, number>();
   private db!: DatabaseSync;
   private bytes = 0;
   private tasks = new Set<Promise<void>>();
@@ -73,11 +74,14 @@ export class DatabaseEngine {
     this.db.exec(
       "PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; CREATE TABLE IF NOT EXISTS rows(result TEXT, n INTEGER, body TEXT, PRIMARY KEY(result,n)); CREATE TABLE IF NOT EXISTS receipts(id TEXT PRIMARY KEY, body TEXT); CREATE TABLE IF NOT EXISTS jobs(id TEXT PRIMARY KEY, body TEXT); CREATE TABLE IF NOT EXISTS results(id TEXT PRIMARY KEY,job TEXT,body TEXT)",
     );
+    this.db.exec(
+      "CREATE TABLE IF NOT EXISTS intents(id TEXT PRIMARY KEY,console TEXT,at TEXT,kind TEXT,body TEXT);CREATE INDEX IF NOT EXISTS intents_console ON intents(console)",
+    );
     await fs.chmod(path.join(this.directory, "results.sqlite"), 0o600);
     for (const r of this.db
       .prepare("SELECT id, body FROM receipts ORDER BY rowid DESC LIMIT 1000")
-      .all())
-      this.receipts.set(String(r.id), JSON.parse(String(r.body)));
+      .iterate())
+      this.cacheReceipt(String(r.id), String(r.body));
     for (const r of this.db
       .prepare("SELECT id, body FROM jobs ORDER BY rowid DESC LIMIT 200")
       .all()
@@ -123,12 +127,23 @@ export class DatabaseEngine {
     };
   }
   private receipt(id: string, r: Receipt) {
-    this.receipts.set(id, r);
+    const body = JSON.stringify(r);
+    this.cacheReceipt(id, body);
     this.db
       .prepare("INSERT OR REPLACE INTO receipts VALUES(?,?)")
-      .run(id, JSON.stringify(r));
-    if (this.receipts.size > 1000)
-      this.receipts.delete(this.receipts.keys().next().value!);
+      .run(id, body);
+  }
+  private cacheReceipt(id: string, body: string) {
+    // Do not retain a reference to the growing live job's result array.
+    this.receipts.set(id, JSON.parse(body));
+    this.receiptBytes.set(id, Buffer.byteLength(body));
+    let size = [...this.receiptBytes.values()].reduce((a, b) => a + b, 0);
+    while (this.receipts.size > 1000 || size > 8 * 1024 ** 2) {
+      const key = this.receipts.keys().next().value!;
+      size -= this.receiptBytes.get(key) || 0;
+      this.receipts.delete(key);
+      this.receiptBytes.delete(key);
+    }
   }
   private save(job: DatabaseJob) {
     this.db
@@ -292,6 +307,31 @@ export class DatabaseEngine {
     action: string,
     mode?: "auto" | "manual",
     name?: string,
+    operationId?: string,
+    consoleId?: string,
+  ) {
+    if (action === "commit")
+      return this.once(
+        operationId || randomUUID(),
+        { leaseId: id, consoleId, action },
+        () => this.transactionActual(id, action, mode, name),
+      )
+        .then((value) =>
+          this.leases.has(id)
+            ? { ...this.leases.get(id)!.info, busy: false }
+            : value,
+        )
+        .catch((error: any) => {
+          if (!error.outcome) error.outcome = "notApplied";
+          throw error;
+        });
+    return this.transactionActual(id, action, mode, name);
+  }
+  private async transactionActual(
+    id: string,
+    action: string,
+    mode?: "auto" | "manual",
+    name?: string,
   ) {
     const l = this.available(id);
     l.info.busy = true;
@@ -314,6 +354,10 @@ export class DatabaseEngine {
         );
       else throw new Error("Неизвестное действие транзакции");
       return { ...l.info, busy: false };
+    } catch (error: any) {
+      error.outcome =
+        l.info.transaction === "unknown" ? "unknown" : "notApplied";
+      throw error;
     } finally {
       l.info.busy = false;
     }
@@ -326,9 +370,12 @@ export class DatabaseEngine {
   ): Promise<T> {
     if (!operationId || operationId.length > 128)
       throw new Error("Нужен уникальный operationId");
-    const hash = createHash("sha256")
-      .update(JSON.stringify(request))
-      .digest("hex");
+    const captured = JSON.stringify(request);
+    if (Buffer.byteLength(captured) > 8 * 1024 ** 2)
+      throw new Error(
+        "Операция превышает 8 MiB. Разделите её на проверяемые порции.",
+      );
+    const hash = createHash("sha256").update(captured).digest("hex");
     const stored = this.db
       .prepare("SELECT body FROM receipts WHERE id=?")
       .get(operationId);
@@ -368,6 +415,22 @@ export class DatabaseEngine {
       }
       return previous.value as T;
     }
+    const input = request as Record<string, any>;
+    this.db
+      .prepare("INSERT INTO intents VALUES(?,?,?,?,?)")
+      .run(
+        operationId,
+        String(input.consoleId || ""),
+        new Date().toISOString(),
+        input.action
+          ? "transaction"
+          : input.sql
+            ? "query"
+            : input.changes
+              ? "changes"
+              : "file",
+        captured,
+      );
     this.receipt(operationId, { hash, status: "pending" });
     try {
       const value = await execute();
@@ -557,6 +620,9 @@ export class DatabaseEngine {
           try {
             for (const body of batch)
               insert.run(result.id, result.rows++, body);
+            // Rows + progress are one durable SQLite commit. Separate FULL
+            // fsyncs per metadata row make small-row streams very slow on Windows.
+            this.save(job);
             this.db.exec("COMMIT");
           } catch (e) {
             this.db.exec("ROLLBACK");
@@ -564,7 +630,6 @@ export class DatabaseEngine {
           }
           batch = [];
           batchBytes = 0;
-          this.save(job);
         };
         try {
           for await (const row of stream) {
@@ -585,7 +650,7 @@ export class DatabaseEngine {
             this.bytes += size;
             job.rows++;
             job.bytes += size;
-            if (batch.length >= 128 || batchBytes >= 1024 ** 2) {
+            if (batch.length >= 1024 || batchBytes >= 1024 ** 2) {
               flush();
               await new Promise<void>((r) => setImmediate(r));
             }
@@ -744,6 +809,52 @@ export class DatabaseEngine {
       hash,
     };
   }
+  operationList(p: { consoleId: string; offset?: number; limit?: number }) {
+    const offset = Math.max(0, Math.floor(p.offset || 0)),
+      limit = Math.min(50, Math.max(1, Math.floor(p.limit || 20)));
+    const rows = this.db
+      .prepare(
+        "SELECT i.id operationId,i.at,i.kind,json_extract(r.body,'$.status') receiptStatus,json_extract(r.body,'$.hash') hash,json_extract(r.body,'$.value.id') jobId,json_extract(j.body,'$.status') jobStatus FROM intents i LEFT JOIN receipts r ON r.id=i.id LEFT JOIN jobs j ON j.id=json_extract(r.body,'$.value.id') WHERE i.console=? ORDER BY i.rowid DESC LIMIT ? OFFSET ?",
+      )
+      .all(p.consoleId, limit + 1, offset);
+    return {
+      operations: rows.slice(0, limit),
+      offset,
+      hasMore: rows.length > limit,
+    };
+  }
+  operationRead(p: {
+    consoleId: string;
+    operationId: string;
+    offset?: number;
+    limit?: number;
+  }) {
+    const row = this.db
+      .prepare(
+        "SELECT i.body,json_extract(r.body,'$.status') status,json_extract(r.body,'$.hash') hash FROM intents i LEFT JOIN receipts r ON r.id=i.id WHERE i.id=? AND i.console=?",
+      )
+      .get(p.operationId, p.consoleId);
+    if (!row)
+      throw new Error(
+        "Операция другой консоли или исходный payload не сохранён",
+      );
+    const text = String(row.body),
+      hash = createHash("sha256").update(text).digest("hex");
+    if (row.hash && hash !== row.hash)
+      throw new Error("Хеш исходной операции не совпадает");
+    const offset = Math.max(0, Math.floor(p.offset || 0)),
+      limit = Math.min(32768, Math.max(1, Math.floor(p.limit || 8192)));
+    return {
+      consoleId: p.consoleId,
+      operationId: p.operationId,
+      text: text.slice(offset, offset + limit),
+      hash,
+      receiptStatus: row.status,
+      offset,
+      total: text.length,
+      truncated: offset + limit < text.length,
+    };
+  }
   dropResult(id: string) {
     if (this.pinnedResults.get(id)?.size)
       throw new Error(
@@ -780,7 +891,29 @@ export class DatabaseEngine {
     }
     return { deleted: true };
   }
-  async catalog(id: string, schema?: string) {
+  async catalog(
+    id: string,
+    schema?: string,
+    options: {
+      schemas?: string[];
+      search?: string;
+      offset?: number;
+      limit?: number;
+      includeSystem?: boolean;
+    } = {},
+  ) {
+    const selected = options.schemas ?? (schema ? [schema] : []);
+    if (
+      !Array.isArray(selected) ||
+      selected.length > 100 ||
+      selected.some(
+        (s) => typeof s !== "string" || !s || Buffer.byteLength(s) > 63,
+      )
+    )
+      throw new Error("Выберите до 100 схем из каталога");
+    const search = String(options.search || "").slice(0, 256),
+      offset = Math.max(0, Math.floor(options.offset || 0)),
+      limit = Math.min(500, Math.max(1, Math.floor(options.limit || 200)));
     // A fast query may finish between two UI snapshots. Catalog refresh waits;
     // it must not fail or preempt the query merely because the UI missed 'busy'.
     const deadline = Date.now() + 65000;
@@ -793,14 +926,28 @@ export class DatabaseEngine {
     l.info.busy = true;
     try {
       const schemas = await l.client.query(
-        "SELECT nspname name FROM pg_namespace WHERE nspname NOT LIKE 'pg_%' AND nspname <> 'information_schema' ORDER BY nspname",
+        "SELECT nspname name FROM pg_namespace WHERE $1::boolean OR (nspname NOT LIKE 'pg_%' AND nspname <> 'information_schema') ORDER BY nspname LIMIT 10000",
+        [!!options.includeSystem],
       );
-      if (!schema) return { schemas: schemas.rows, objects: [] };
+      if (!selected.length)
+        return {
+          schemas: schemas.rows,
+          objects: [],
+          offset,
+          total: 0,
+          hasMore: false,
+        };
       const r = await l.client.query(
-        `SELECT c.oid::text, n.nspname schema, c.relname name, CASE c.relkind WHEN 'r' THEN 'table' WHEN 'p' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'S' THEN 'sequence' WHEN 'f' THEN 'foreign table' END kind FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname=$1 AND c.relkind IN ('r','p','v','m','S','f') UNION ALL SELECT p.oid::text,n.nspname,p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')', CASE p.prokind WHEN 'p' THEN 'procedure' ELSE 'function' END FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname=$1 ORDER BY kind,name LIMIT 10000`,
-        [schema],
+        `WITH objects AS (SELECT c.oid::text, n.nspname schema, c.relname name, CASE c.relkind WHEN 'r' THEN 'table' WHEN 'p' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'S' THEN 'sequence' WHEN 'f' THEN 'foreign table' END kind FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname=ANY($1::text[]) AND c.relkind IN ('r','p','v','m','S','f') UNION ALL SELECT p.oid::text,n.nspname,p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')', CASE p.prokind WHEN 'p' THEN 'procedure' ELSE 'function' END FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname=ANY($1::text[]) AND p.prokind IN ('p','f','w')) SELECT *,count(*) OVER()::text AS total FROM objects WHERE strpos(lower(name),lower($2))>0 ORDER BY schema,kind,name,oid LIMIT $3 OFFSET $4`,
+        [selected, search, limit + 1, offset],
       );
-      return { schemas: schemas.rows, objects: r.rows };
+      return {
+        schemas: schemas.rows,
+        objects: r.rows.slice(0, limit).map(({ total, ...o }) => o),
+        offset,
+        total: Number(r.rows[0]?.total || 0),
+        hasMore: r.rows.length > limit,
+      };
     } finally {
       l.info.busy = false;
     }
@@ -1432,6 +1579,9 @@ export class DatabaseEngine {
                 : 0;
             async function* rows() {
               let offset = 0;
+              const getRow = db.prepare(
+                "SELECT body FROM rows WHERE result=? AND n=?",
+              );
               while (true) {
                 const batch = db
                   .prepare(
@@ -1442,9 +1592,7 @@ export class DatabaseEngine {
                 for (const r of batch) {
                   if (result!.source && offset++ >= result!.source.pageSize)
                     return;
-                  const captured = db
-                    .prepare("SELECT body FROM rows WHERE result=? AND n=?")
-                    .get(result!.id, r.n)!;
+                  const captured = getRow.get(result!.id, r.n)!;
                   yield JSON.parse(String(captured.body)).slice(keyCount);
                 }
                 if (!result!.source) offset += batch.length;

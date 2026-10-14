@@ -40,7 +40,7 @@ export type DatabaseConsole = {
   object?: { oid: string; kind: string };
   pendingEffect?: {
     operationId: string;
-    kind: "changes";
+    kind: "changes" | "transaction";
     phase: "submitting" | "unknown";
     at: string;
     requestHash: string;

@@ -17,6 +17,8 @@ export const databaseOperations = [
   "export",
   "metrics",
   "jobRead",
+  "operationList",
+  "operationRead",
 ] as const;
 export type DatabaseOperation = (typeof databaseOperations)[number];
 export const databaseToolSchema = {

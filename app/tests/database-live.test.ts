@@ -210,13 +210,92 @@ describe.skipIf(!url)(
           sampledHeapDelta: delta,
           exportBytes: (await fs.stat(file)).size,
         };
-        expect(delta).toBeLessThan(96 * 1024 ** 2);
+        // Informational in the shared Vitest VM: GC scheduling includes the
+        // harness/other cases. A separate real MCP worker below enforces the
+        // hard memory bound for this workload instead of a flaky GC threshold.
         await fs.rm(file);
         engine.dropResult(j.results[0].id);
       } finally {
         clearInterval(timer);
       }
     }, 30000);
+    it("real stdio worker streams 128 MiB wide rows and exports under a 64 MiB old-space cap without materializing an oversized page", async () => {
+      const client = new DatabaseMcpClient(
+        connection,
+        {
+          node: process.execPath,
+          provider: path.resolve("dist-electron/database-provider.cjs"),
+          directory: path.join(temp, "hard-heap-provider"),
+          heapMiB: 64,
+        },
+        new URL(url!).password,
+      );
+      try {
+        await client.connect();
+        const l = await client.call("open", {
+          connection,
+          password: new URL(url!).password,
+        });
+        const started = await client.call("execute", {
+          leaseId: l.id,
+          consoleId: "hard-heap",
+          operationId: op(),
+          sql: "SELECT n,repeat('x',524288) payload FROM generate_series(1,256) n",
+        });
+        async function terminal(id: string) {
+          for (let i = 0; i < 3000; i++) {
+            const j = (await client.call("status", {})).jobs.find(
+              (j: any) => j.id === id,
+            );
+            if (j?.status !== "running") return j;
+            await new Promise((r) => setTimeout(r, 20));
+          }
+          throw new Error("Bounded worker did not terminate");
+        }
+        const completed = await terminal(started.id);
+        expect(completed.status, completed.error?.message).toBe("completed");
+        expect(completed.results[0].rows).toBe(256);
+        await expect(
+          client.call("page", {
+            resultId: completed.results[0].id,
+            offset: 0,
+            limit: 500,
+          }),
+        ).rejects.toThrow(/3 MiB/);
+        expect(
+          (
+            await client.call("page", {
+              resultId: completed.results[0].id,
+              offset: 0,
+              limit: 1,
+            })
+          ).values[0][1],
+        ).toHaveLength(524288);
+        const file = path.join(temp, "hard-heap.csv"),
+          transfer = await client.call("export", {
+            leaseId: l.id,
+            consoleId: "hard-heap",
+            operationId: op(),
+            file,
+            format: "csv",
+            resultId: completed.results[0].id,
+          });
+        expect((await terminal(transfer.id)).status).toBe("completed");
+        expect((await fs.stat(file)).size).toBeGreaterThan(128 * 1024 ** 2);
+        const observed = await client.call("metrics", {});
+        metrics.hardHeapWorker = {
+          oldSpaceMiB: 64,
+          semiSpaceMiB: 4,
+          observed,
+          exportBytes: (await fs.stat(file)).size,
+        };
+        expect(observed.sampledPeak.heapUsed).toBeLessThan(96 * 1024 ** 2);
+        await client.call("close", { leaseId: l.id });
+        await fs.rm(file);
+      } finally {
+        await client.close();
+      }
+    }, 60000);
     it("retains column metadata and captured rows when a later fetched row raises a server error", async () => {
       const j = await query(
         "SELECT n, 1/(200-n) AS calculated FROM generate_series(1,300) n",
@@ -246,6 +325,56 @@ describe.skipIf(!url)(
       const routine = await engine.describe(lease.id, f.oid, "function");
       expect(routine.ddl).toContain("wb_twice");
       expect(routine.hash).toHaveLength(64);
+    });
+    it("selects several schemas, pages/searches objects on the server and exposes system schemas only when requested", async () => {
+      await admin.query(
+        "CREATE SCHEMA wb_alpha;CREATE SCHEMA wb_beta;CREATE TABLE wb_alpha.same_name(id int);CREATE TABLE wb_beta.same_name(id int);CREATE TABLE wb_beta.other_name(id int)",
+      );
+      const both = await engine.catalog(lease.id, undefined, {
+        schemas: ["wb_alpha", "wb_beta"],
+        limit: 2,
+      });
+      expect(both.objects).toHaveLength(2);
+      expect(both.total).toBe(3);
+      expect(both.hasMore).toBe(true);
+      expect(new Set(both.objects.map((o: any) => o.schema))).toEqual(
+        new Set(["wb_alpha", "wb_beta"]),
+      );
+      const next = await engine.catalog(lease.id, undefined, {
+        schemas: ["wb_alpha", "wb_beta"],
+        limit: 2,
+        offset: 2,
+      });
+      expect(next.objects).toHaveLength(1);
+      expect(next.hasMore).toBe(false);
+      expect(
+        new Set([...both.objects, ...next.objects].map((o: any) => o.oid)).size,
+      ).toBe(3);
+      const found = await engine.catalog(lease.id, undefined, {
+        schemas: ["wb_alpha", "wb_beta"],
+        search: "same_name",
+      });
+      expect(found.objects).toHaveLength(2);
+      expect(
+        (await engine.catalog(lease.id, undefined, { schemas: [] })).objects,
+      ).toHaveLength(0);
+      expect(both.schemas.some((s: any) => s.name === "pg_catalog")).toBe(
+        false,
+      );
+      expect(
+        (
+          await engine.catalog(lease.id, undefined, { includeSystem: true })
+        ).schemas.some((s: any) => s.name === "pg_catalog"),
+      ).toBe(true);
+      const injection = await engine.catalog(lease.id, undefined, {
+        schemas: ["public' OR true --"],
+        search: "' OR true --",
+      });
+      expect(injection.objects).toHaveLength(0);
+      expect(
+        (await admin.query("SELECT to_regclass('wb_data') present")).rows[0]
+          .present,
+      ).toBe("wb_data");
     });
     it("optimistic changesets are atomic and reject stale row identities", async () => {
       const t = (await engine.catalog(lease.id, "public")).objects.find(
@@ -385,6 +514,43 @@ describe.skipIf(!url)(
           expect(text).toContain(format === "csv" ? "\\N" : "NULL");
         }
       }
+    });
+    it("large CSV chunks preserve a split surrogate pair, quotes, newline and NULL on COPY round trip", async () => {
+      const value = "x".repeat(65535) + "😀" + '"tail\n' + "y".repeat(1000),
+        file = path.join(temp, "unicode-wide.csv");
+      async function* source() {
+        yield [value];
+        yield [null];
+      }
+      await writeRows(
+        file,
+        "csv",
+        ["value"],
+        source(),
+        new AbortController().signal,
+        () => {},
+      );
+      await admin.query("CREATE TABLE wb_unicode_wide(value text)");
+      const oid = (
+        await admin.query("SELECT 'wb_unicode_wide'::regclass::oid::text oid")
+      ).rows[0].oid;
+      const imported = await engine.importFile({
+        leaseId: lease.id,
+        consoleId: lease.id,
+        oid,
+        file,
+        format: "csv",
+        columns: ["value"],
+        header: true,
+        operationId: op(),
+      });
+      expect((await wait(imported.id)).status).toBe("completed");
+      const observed = (
+        await admin.query(
+          "SELECT value FROM wb_unicode_wide ORDER BY value NULLS LAST",
+        )
+      ).rows;
+      expect(observed.map((r) => r.value)).toEqual([value, null]);
     });
     it("never overwrites an existing export destination", async () => {
       const q = await query("SELECT 1 n"),
@@ -966,202 +1132,268 @@ describe.skipIf(!url)(
         await new Promise<void>((r) => https.close(() => r()));
       }
     }, 30000);
-    it("survives actual COMMIT response loss without repeating INSERT, persists intent and requires observed reconciliation", async () => {
-      await admin.query(
-        "CREATE TABLE wb_lost_commit(id int PRIMARY KEY, value text)",
-      );
-      const oid = (
-        await admin.query("SELECT 'wb_lost_commit'::regclass::oid::text oid")
-      ).rows[0].oid;
-      const sockets = new Set<Socket>();
-      let dropped = false,
-        armed = false,
-        sawCommit = false;
-      const target = new URL(url!);
-      const proxy = createTcpServer((front) => {
-        const back = connectTcp(Number(target.port), target.hostname);
-        sockets.add(front);
-        sockets.add(back);
-        for (const socket of [front, back]) {
-          socket.on("error", () => {});
-          socket.on("close", () => sockets.delete(socket));
-        }
-        let held = Buffer.alloc(0),
-          scan = Buffer.alloc(0);
-        front.on("data", (data) => {
-          // Fixture sends simple-query COMMIT through pg; no production parsing.
-          if (!dropped && data.includes(Buffer.from("COMMIT\0"))) armed = true;
-          back.write(data);
-        });
-        back.on("data", (data) => {
-          if (!armed) {
-            front.write(data);
-            return;
-          }
-          held = Buffer.concat([held, data]);
-          scan = Buffer.concat([scan, data]);
-          while (scan.length >= 5) {
-            const length = scan.readUInt32BE(1) + 1;
-            if (scan.length < length) break;
-            const packet = scan.subarray(0, length);
-            scan = scan.subarray(length);
-            if (
-              packet[0] === 67 &&
-              packet.subarray(5).toString() === "COMMIT\0"
-            ) {
-              sawCommit = true;
-              dropped = true;
-              armed = false;
-              // The server committed; deliberately withhold that acknowledgement.
-              front.destroy();
-              back.destroy();
-              return;
-            }
-            if (packet[0] === 69) {
-              armed = false;
-              front.write(held);
-              held = Buffer.alloc(0);
-              return;
-            }
-          }
-        });
-        front.on("close", () => back.destroy());
-        back.on("close", () => front.destroy());
-      });
-      await new Promise<void>((resolve) =>
-        proxy.listen(0, "127.0.0.1", resolve),
-      );
-      const port = (proxy.address() as any).port;
-      const options = {
-        dataDir: path.join(temp, "lost-commit-host"),
-        node: process.execPath,
-        provider: path.resolve("dist-electron/database-provider.cjs"),
-        project: (_id: string) => {},
-        changed: () => {},
-        vault: {
-          available: () => true,
-          encrypt: (s: string) => Buffer.from(s.split("").reverse().join("")),
-          decrypt: (b: Buffer) => b.toString().split("").reverse().join(""),
-        },
-      };
-      let service = new DatabaseService(options);
-      try {
-        await service.init();
-        const saved = await service.invoke("database.connection.save", {
-          connection: { ...connection, id: undefined, port },
-          secret: target.password,
-        });
-        const doc = await service.invoke("database.console.create", {
-          projectId: "p",
-          connectionId: saved.id,
-        });
-        const params = { projectId: "p", consoleId: doc.id };
-        await service.invoke("database.console.open", params);
-        const operationId = op();
-        const intent = {
-          ...params,
-          oid,
-          operationId,
-          changes: [
-            { kind: "insert", values: { id: "1", value: "committed-once" } },
-          ],
-        };
-        await expect(
-          service.invoke("database.changes", intent),
-        ).rejects.toThrow(/неизвестен/);
-        expect(sawCommit).toBe(true);
-        expect(
-          (await admin.query("SELECT count(*) FROM wb_lost_commit")).rows[0]
-            .count,
-        ).toBe("1");
-        let current = await service.invoke("database.console.read", params);
-        expect(current.pendingEffect.phase).toBe("unknown");
-        expect(current.pendingEffect.operationId).toBe(operationId);
-        await expect(
-          service.invoke("database.changes", { ...intent, operationId: op() }),
-        ).rejects.toThrow(/свер/);
-        await service.invoke("database.console.disconnect", params);
-        await expect(
-          service.invoke("database.connection.save", {
-            connection: { ...saved, port: connection.port },
-          }),
-        ).rejects.toThrow();
-        await service.dispose();
-        service = new DatabaseService(options);
-        await service.init();
-        current = await service.invoke("database.console.read", params);
-        expect(current.pendingEffect.operationId).toBe(operationId);
-        const recorded = await service.invoke(
-          "database.effect.read",
-          params,
-          true,
+    it.each(["changes", "manual-commit"])(
+      "survives actual COMMIT response loss for %s without repeating INSERT, persists intent and requires observed reconciliation",
+      async (mode) => {
+        await admin.query(
+          "DROP TABLE IF EXISTS wb_lost_commit;CREATE TABLE wb_lost_commit(id int PRIMARY KEY, value text)",
         );
-        expect(recorded.intent).toContain("committed-once");
-        await expect(
-          service.invoke(
+        const oid = (
+          await admin.query("SELECT 'wb_lost_commit'::regclass::oid::text oid")
+        ).rows[0].oid;
+        const sockets = new Set<Socket>();
+        let dropped = false,
+          armed = false,
+          sawCommit = false;
+        const target = new URL(url!);
+        const proxy = createTcpServer((front) => {
+          const back = connectTcp(Number(target.port), target.hostname);
+          sockets.add(front);
+          sockets.add(back);
+          for (const socket of [front, back]) {
+            socket.on("error", () => {});
+            socket.on("close", () => sockets.delete(socket));
+          }
+          let held = Buffer.alloc(0),
+            scan = Buffer.alloc(0);
+          front.on("data", (data) => {
+            // Fixture sends simple-query COMMIT through pg; no production parsing.
+            if (!dropped && data.includes(Buffer.from("COMMIT\0")))
+              armed = true;
+            back.write(data);
+          });
+          back.on("data", (data) => {
+            if (!armed) {
+              front.write(data);
+              return;
+            }
+            held = Buffer.concat([held, data]);
+            scan = Buffer.concat([scan, data]);
+            while (scan.length >= 5) {
+              const length = scan.readUInt32BE(1) + 1;
+              if (scan.length < length) break;
+              const packet = scan.subarray(0, length);
+              scan = scan.subarray(length);
+              if (
+                packet[0] === 67 &&
+                packet.subarray(5).toString() === "COMMIT\0"
+              ) {
+                sawCommit = true;
+                dropped = true;
+                armed = false;
+                // The server committed; deliberately withhold that acknowledgement.
+                front.destroy();
+                back.destroy();
+                return;
+              }
+              if (packet[0] === 69) {
+                armed = false;
+                front.write(held);
+                held = Buffer.alloc(0);
+                return;
+              }
+            }
+          });
+          front.on("close", () => back.destroy());
+          back.on("close", () => front.destroy());
+        });
+        await new Promise<void>((resolve) =>
+          proxy.listen(0, "127.0.0.1", resolve),
+        );
+        const port = (proxy.address() as any).port;
+        const options = {
+          dataDir: path.join(temp, "lost-commit-host"),
+          node: process.execPath,
+          provider: path.resolve("dist-electron/database-provider.cjs"),
+          project: (_id: string) => {},
+          changed: () => {},
+          vault: {
+            available: () => true,
+            encrypt: (s: string) => Buffer.from(s.split("").reverse().join("")),
+            decrypt: (b: Buffer) => b.toString().split("").reverse().join(""),
+          },
+        };
+        let service = new DatabaseService(options);
+        try {
+          await service.init();
+          const saved = await service.invoke("database.connection.save", {
+            connection: { ...connection, id: undefined, port },
+            secret: target.password,
+          });
+          const doc = await service.invoke("database.console.create", {
+            projectId: "p",
+            connectionId: saved.id,
+          });
+          const params = { projectId: "p", consoleId: doc.id };
+          await service.invoke("database.console.open", params);
+          const operationId = op();
+          const intent = {
+            ...params,
+            oid,
+            operationId: mode === "changes" ? operationId : op(),
+            changes: [
+              { kind: "insert", values: { id: "1", value: "committed-once" } },
+            ],
+          };
+          if (mode === "changes")
+            await expect(
+              service.invoke("database.changes", intent),
+            ).rejects.toThrow(/неизвестен/);
+          else {
+            await service.invoke("database.transaction", {
+              ...params,
+              action: "mode",
+              mode: "manual",
+            });
+            expect(
+              (await service.invoke("database.changes", intent)).committed,
+            ).toBe(false);
+            expect(
+              (await admin.query("SELECT count(*) FROM wb_lost_commit")).rows[0]
+                .count,
+            ).toBe("0");
+            await expect(
+              service.invoke("database.transaction", {
+                ...params,
+                action: "commit",
+                operationId,
+              }),
+            ).rejects.toThrow(/terminated|неизвест/i);
+          }
+          expect(sawCommit).toBe(true);
+          expect(
+            (await admin.query("SELECT count(*) FROM wb_lost_commit")).rows[0]
+              .count,
+          ).toBe("1");
+          let current = await service.invoke("database.console.read", params);
+          expect(current.pendingEffect.phase).toBe("unknown");
+          expect(current.pendingEffect.operationId).toBe(operationId);
+          await expect(
+            service.invoke("database.changes", {
+              ...intent,
+              operationId: op(),
+            }),
+          ).rejects.toThrow(/свер/);
+          await service.invoke("database.console.disconnect", params);
+          await expect(
+            service.invoke("database.connection.save", {
+              connection: { ...saved, port: connection.port },
+            }),
+          ).rejects.toThrow();
+          await service.dispose();
+          service = new DatabaseService(options);
+          await service.init();
+          current = await service.invoke("database.console.read", params);
+          expect(current.pendingEffect.operationId).toBe(operationId);
+          const recorded = await service.invoke(
+            "database.effect.read",
+            params,
+            true,
+          );
+          expect(recorded.intent).toContain(
+            mode === "changes" ? "committed-once" : "commit",
+          );
+          const ledger = await service.invoke(
+            "database.operation.list",
+            params,
+            true,
+          );
+          const submitted = ledger.operations.find(
+            (o: any) => o.operationId === operationId,
+          );
+          expect(submitted.receiptStatus).toBe("pending");
+          const original = await service.invoke(
+            "database.operation.read",
+            { ...params, operationId: intent.operationId },
+            true,
+          );
+          expect(original.text).toContain("committed-once");
+          await expect(
+            service.invoke(
+              "database.effect.resolve",
+              {
+                ...params,
+                operationId,
+                outcome: "applied",
+                note: "I think it worked",
+              },
+              true,
+            ),
+          ).rejects.toThrow(/проверки/);
+          const readback = await service.invoke("database.console.create", {
+            projectId: "p",
+            connectionId: saved.id,
+          });
+          await service.invoke("database.console.open", {
+            ...params,
+            consoleId: readback.id,
+          });
+          const job = await service.invoke("database.execute", {
+            projectId: "p",
+            consoleId: readback.id,
+            operationId: op(),
+            sql: "SELECT * FROM wb_lost_commit WHERE id=1",
+          });
+          let terminal: any;
+          for (let i = 0; i < 200; i++) {
+            terminal = (await service.snapshot("p")).jobs.find(
+              (j) => j.id === job.id,
+            );
+            if (terminal?.status !== "running") break;
+            await new Promise((r) => setTimeout(r, 20));
+          }
+          expect(terminal.status).toBe("completed");
+          const observed = await service.invoke("database.page", {
+            projectId: "p",
+            consoleId: readback.id,
+            resultId: terminal.results[0].id,
+          });
+          expect(observed.values).toEqual([["1", "committed-once"]]);
+          await service.invoke(
             "database.effect.resolve",
             {
               ...params,
               operationId,
               outcome: "applied",
-              note: "I think it worked",
+              note: "Readback found id=1 and value=committed-once; row count is one.",
+              evidenceJobIds: [job.id],
             },
             true,
-          ),
-        ).rejects.toThrow(/проверки/);
-        const readback = await service.invoke("database.console.create", {
-          projectId: "p",
-          connectionId: saved.id,
-        });
-        await service.invoke("database.console.open", {
-          ...params,
-          consoleId: readback.id,
-        });
-        const job = await service.invoke("database.execute", {
-          projectId: "p",
-          consoleId: readback.id,
-          operationId: op(),
-          sql: "SELECT * FROM wb_lost_commit WHERE id=1",
-        });
-        let terminal: any;
-        for (let i = 0; i < 200; i++) {
-          terminal = (await service.snapshot("p")).jobs.find(
-            (j) => j.id === job.id,
           );
-          if (terminal?.status !== "running") break;
-          await new Promise((r) => setTimeout(r, 20));
+          current = await service.invoke("database.console.read", params);
+          expect(current.pendingEffect).toBeUndefined();
+          expect(current.lastResolution.evidenceJobIds).toEqual([job.id]);
+          expect(
+            (
+              await service.invoke("database.operation.read", {
+                ...params,
+                operationId: intent.operationId,
+              })
+            ).text,
+          ).toContain("committed-once");
+          await expect(
+            service.invoke(
+              "database.operation.read",
+              {
+                projectId: "p",
+                consoleId: readback.id,
+                operationId: intent.operationId,
+              },
+              true,
+            ),
+          ).rejects.toThrow(/другой консоли/);
+          expect(
+            (await admin.query("SELECT count(*) FROM wb_lost_commit")).rows[0]
+              .count,
+          ).toBe("1");
+        } finally {
+          await service.dispose();
+          for (const socket of sockets) socket.destroy();
+          await new Promise<void>((resolve) => proxy.close(() => resolve()));
         }
-        expect(terminal.status).toBe("completed");
-        const observed = await service.invoke("database.page", {
-          projectId: "p",
-          consoleId: readback.id,
-          resultId: terminal.results[0].id,
-        });
-        expect(observed.values).toEqual([["1", "committed-once"]]);
-        await service.invoke(
-          "database.effect.resolve",
-          {
-            ...params,
-            operationId,
-            outcome: "applied",
-            note: "Readback found id=1 and value=committed-once; row count is one.",
-            evidenceJobIds: [job.id],
-          },
-          true,
-        );
-        current = await service.invoke("database.console.read", params);
-        expect(current.pendingEffect).toBeUndefined();
-        expect(current.lastResolution.evidenceJobIds).toEqual([job.id]);
-        expect(
-          (await admin.query("SELECT count(*) FROM wb_lost_commit")).rows[0]
-            .count,
-        ).toBe("1");
-      } finally {
-        await service.dispose();
-        for (const socket of sockets) socket.destroy();
-        await new Promise<void>((resolve) => proxy.close(() => resolve()));
-      }
-    }, 30000);
+      },
+      30000,
+    );
     it("recovers offline results and exact parameters after restart, and prevents silent retargeting of old documents", async () => {
       const options = {
         dataDir: path.join(temp, "offline-host"),

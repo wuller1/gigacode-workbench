@@ -20,7 +20,9 @@ export function DatabaseEffect({
     return (
       <div className="db-effect">
         <span className="working-arc" />
-        Применяю changeset…
+        {effect.kind === "transaction"
+          ? "Подтверждаю транзакцию…"
+          : "Применяю changeset…"}
       </div>
     );
   return (
@@ -51,7 +53,7 @@ export function DatabaseEffect({
                   .catch((e) => setError(e.message))
               }
             >
-              Показать исходный changeset
+              Показать исходную операцию
             </button>
             {intent && (
               <pre className="db-output">

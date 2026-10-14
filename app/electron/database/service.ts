@@ -202,6 +202,48 @@ export class DatabaseService {
       }
     }
   }
+  private async withEffect(
+    c: DatabaseConsole,
+    kind: "changes" | "transaction",
+    operationId: string,
+    intent: Record<string, unknown>,
+    submit: () => Promise<any>,
+  ) {
+    const pending: NonNullable<DatabaseConsole["pendingEffect"]> = {
+      operationId,
+      kind,
+      phase: "submitting",
+      at: new Date().toISOString(),
+      requestHash: createHash("sha256")
+        .update(JSON.stringify(intent))
+        .digest("hex"),
+      intent,
+    };
+    await this.store.update((s) => {
+      s.consoles.find((d) => d.id === c.id)!.pendingEffect = pending;
+    });
+    this.options.changed(c.projectId);
+    try {
+      const result = await submit();
+      await this.store.update((s) => {
+        const d = s.consoles.find((d) => d.id === c.id)!;
+        if (d.pendingEffect?.operationId === operationId)
+          d.pendingEffect = undefined;
+      });
+      return result;
+    } catch (error: any) {
+      await this.store.update((s) => {
+        const d = s.consoles.find((d) => d.id === c.id)!;
+        if (error.outcome === "notApplied") d.pendingEffect = undefined;
+        else if (d.pendingEffect) {
+          d.pendingEffect.phase = "unknown";
+          d.pendingEffect.reason = String(error.message).slice(0, 2000);
+        }
+      });
+      this.options.changed(c.projectId);
+      throw error;
+    }
+  }
   async snapshot(projectId: string): Promise<DatabaseSnapshot> {
     this.options.project(projectId);
     await this.refresh(projectId);
@@ -500,6 +542,16 @@ export class DatabaseService {
       return c;
     }
     const c = this.console(p.consoleId, p.projectId);
+    if (op === "operation.list" || op === "operation.read")
+      return (await this.client(c.connectionId)).call(
+        op === "operation.list" ? "operationList" : "operationRead",
+        {
+          consoleId: c.id,
+          operationId: p.operationId,
+          offset: p.offset,
+          limit: p.limit,
+        },
+      );
     if (op === "history.load") {
       const status = await (
         await this.client(c.connectionId)
@@ -784,7 +836,11 @@ export class DatabaseService {
     )
       throw new Error("Результат принадлежит другой консоли");
     if (agent && op === "page") args.limit = Math.min(50, p.limit || 50);
-    if (c.pendingEffect && ["changes", "routineApply", "import"].includes(op))
+    if (
+      c.pendingEffect &&
+      (["changes", "routineApply", "import"].includes(op) ||
+        (op === "transaction" && p.action === "commit"))
+    )
       throw new Error(
         "Есть несверенная запись. Сначала проверьте данные; повтор заблокирован.",
       );
@@ -806,39 +862,24 @@ export class DatabaseService {
         changes: p.changes,
         operationId: p.operationId,
       };
-      const pending: NonNullable<DatabaseConsole["pendingEffect"]> = {
-        operationId: p.operationId,
-        kind: "changes",
-        phase: "submitting",
-        at: new Date().toISOString(),
-        requestHash: createHash("sha256")
-          .update(JSON.stringify(intent))
-          .digest("hex"),
+      result = await this.withEffect(c, "changes", p.operationId, intent, () =>
+        client.call("changes", intent),
+      );
+    } else if (op === "transaction" && p.action === "commit") {
+      const operationId =
+        typeof p.operationId === "string" && p.operationId
+          ? p.operationId
+          : randomUUID();
+      if (operationId.length > 128)
+        throw new Error("operationId exceeds 128 characters");
+      const intent = { ...args, operationId };
+      result = await this.withEffect(
+        c,
+        "transaction",
+        operationId,
         intent,
-      };
-      await this.store.update((s) => {
-        s.consoles.find((d) => d.id === c.id)!.pendingEffect = pending;
-      });
-      this.options.changed(p.projectId);
-      try {
-        result = await client.call("changes", intent);
-        await this.store.update((s) => {
-          const d = s.consoles.find((d) => d.id === c.id)!;
-          if (d.pendingEffect?.operationId === p.operationId)
-            d.pendingEffect = undefined;
-        });
-      } catch (error: any) {
-        await this.store.update((s) => {
-          const d = s.consoles.find((d) => d.id === c.id)!;
-          if (error.outcome === "notApplied") d.pendingEffect = undefined;
-          else if (d.pendingEffect) {
-            d.pendingEffect.phase = "unknown";
-            d.pendingEffect.reason = String(error.message).slice(0, 2000);
-          }
-        });
-        this.options.changed(p.projectId);
-        throw error;
-      }
+        () => client.call("transaction", intent),
+      );
     } else result = await client.call(op as DatabaseOperation, args);
     if (agent && op === "page") {
       const fields = result.fields.slice(0, 200),

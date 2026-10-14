@@ -14,6 +14,7 @@ import type { PanelProps } from "./Panels";
 import { Empty, Icon, IconButton, Menu, Modal, useAsk } from "./ui";
 import { DatabaseEffect } from "./DatabaseEffect";
 import { DatabaseHistory } from "./DatabaseHistory";
+import { DatabaseExplorer, type DatabaseCatalog } from "./DatabaseExplorer";
 import { SqlPlan } from "./SqlPlan";
 import { SqlEditor } from "./SqlEditor";
 import "./database.css";
@@ -35,11 +36,17 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     ),
     [tree, setTree] = useStored("database.tree", true),
     [search, setSearch] = useState(""),
-    [schema, setSchema] = useState("public"),
-    [catalog, setCatalog] = useState<{
-      schemas: { name: string }[];
-      objects: DatabaseObject[];
-    }>({ schemas: [], objects: [] }),
+    [catalogSearch, setCatalogSearch] = useState(""),
+    [catalogOffset, setCatalogOffset] = useState(0),
+    [systemSchemas, setSystemSchemas] = useState(false),
+    [loadingCatalog, setLoadingCatalog] = useState(false),
+    [schemaSelections, setSchemaSelections] = useStored<
+      Record<string, string[]>
+    >("database.schemas.v1", {}),
+    [catalog, setCatalog] = useState<DatabaseCatalog>({
+      schemas: [],
+      objects: [],
+    }),
     [error, setError] = useState(""),
     [dismissedJob, setDismissedJob] = useState<string>(),
     [table, setTable] = useState<Record<string, any>>({}),
@@ -79,6 +86,8 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     [history, setHistory] = useState(false),
     [metrics, setMetrics] = useState<any>();
   const catalogKey = useRef("");
+  const pendingCatalogKey = useRef("");
+  const wantedCatalogKey = useRef("");
   const lastSelectedQuery = useRef<Record<string, string>>({});
   const awaitingQuery = useRef<Record<string, string>>({});
   const submittedChanges = useRef<
@@ -108,6 +117,28 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     d = active ? detail[active.id] : undefined,
     staged = changes[active?.id || ""] || [],
     ask = useAsk();
+  const schemaScope = project?.id + ":" + connection?.id;
+  const visibleSchemas = schemaSelections[schemaScope] || ["public"];
+  const requestCatalogKey = JSON.stringify([
+    active?.id,
+    visibleSchemas,
+    catalogSearch,
+    catalogOffset,
+    systemSchemas,
+  ]);
+  wantedCatalogKey.current = requestCatalogKey;
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCatalogSearch(search);
+      setCatalogOffset(0);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [search]);
+  useEffect(() => {
+    setCatalogOffset(0);
+    setCatalog({ schemas: [], objects: [] });
+    catalogKey.current = "";
+  }, [schemaScope]);
   const refresh = useCallback(async () => {
     if (!project || refreshing.current) return;
     const pid = project.id;
@@ -229,20 +260,40 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
   const loadCatalog = async () => {
     if (!active?.leaseId) return;
     const id = active.id,
-      r = await invoke("catalog", { schema });
-    if (activeId.current === id) {
-      setCatalog(r);
-      catalogKey.current = id + ":" + schema;
+      key = requestCatalogKey;
+    if (pendingCatalogKey.current === key) return;
+    pendingCatalogKey.current = key;
+    setLoadingCatalog(true);
+    try {
+      const r = await invoke("catalog", {
+        schemas: visibleSchemas,
+        search: catalogSearch,
+        offset: catalogOffset,
+        limit: 200,
+        includeSystem: systemSchemas,
+      });
+      if (activeId.current === id && wantedCatalogKey.current === key) {
+        setCatalog(r);
+        catalogKey.current = key;
+      }
+    } catch (error) {
+      if (wantedCatalogKey.current === key) throw error;
+    } finally {
+      if (pendingCatalogKey.current === key) {
+        pendingCatalogKey.current = "";
+        setLoadingCatalog(false);
+      }
     }
   };
   useEffect(() => {
     if (
       active?.leaseId &&
+      lease?.transaction !== "unknown" &&
       !busy &&
-      catalogKey.current !== active.id + ":" + schema
+      catalogKey.current !== requestCatalogKey
     )
       void attempt(loadCatalog);
-  }, [snapshot, active?.id, active?.leaseId, schema, !!busy]);
+  }, [snapshot, active?.id, active?.leaseId, requestCatalogKey, !!busy]);
   useEffect(() => {
     const id = active?.id;
     if (!id) return;
@@ -488,13 +539,13 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     });
     setEdit(undefined);
   };
-  const canEdit =
-    !active?.pendingEffect &&
+  const tableEditable =
     !!result?.source &&
     !!t &&
     ["r", "p"].includes(t.kind) &&
     !lease?.readOnly &&
     page?.fields?.some((f: any) => f.name === "__wb_xmin");
+  const canEdit = tableEditable && !active?.pendingEffect && !busy;
   const close = async (c: DatabaseConsole) => {
     if (
       (changes[c.id] || []).length &&
@@ -669,64 +720,31 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
           {tree && (
             <>
               <aside className="db-navigator" style={{ width: navWidth }}>
-                <div className="db-tree-tools">
-                  <input
-                    aria-label="Поиск объекта БД"
-                    placeholder="Найти объект…"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                  <IconButton
-                    icon="reload"
-                    label="Обновить схему"
-                    disabled={!lease || !!busy}
-                    onClick={() => void attempt(loadCatalog)}
-                  />
-                </div>
-                <select
-                  aria-label="Видимая схема"
-                  value={schema}
-                  onChange={(e) => setSchema(e.target.value)}
-                >
-                  {[
-                    ...new Set([schema, ...catalog.schemas.map((s) => s.name)]),
-                  ].map((s) => (
-                    <option key={s}>{s}</option>
-                  ))}
-                </select>
-                <div className="db-object-tree">
-                  {catalog.objects
-                    .filter((o) =>
-                      o.name.toLowerCase().includes(search.toLowerCase()),
-                    )
-                    .map((o) => (
-                      <button
-                        key={o.kind + o.oid}
-                        title={o.schema + "." + o.name}
-                        onDoubleClick={() => void attempt(() => openObject(o))}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter")
-                            void attempt(() => openObject(o));
-                        }}
-                      >
-                        <Icon
-                          name={
-                            ["function", "procedure"].includes(o.kind)
-                              ? "code"
-                              : "database"
-                          }
-                          size={15}
-                        />
-                        <span>{o.name}</span>
-                        <small>{o.kind}</small>
-                      </button>
-                    ))}
-                  {!lease && (
-                    <p className="muted">
-                      Подключите консоль, чтобы загрузить объекты.
-                    </p>
-                  )}
-                </div>
+                <DatabaseExplorer
+                  catalog={catalog}
+                  selected={visibleSchemas}
+                  onSelected={(schemas) => {
+                    setSchemaSelections((s) => ({
+                      ...s,
+                      [schemaScope]: schemas,
+                    }));
+                    setCatalogOffset(0);
+                  }}
+                  search={search}
+                  onSearch={setSearch}
+                  system={systemSchemas}
+                  onSystem={(v) => {
+                    setSystemSchemas(v);
+                    setCatalogOffset(0);
+                  }}
+                  connected={!!lease}
+                  busy={!!busy}
+                  loading={loadingCatalog}
+                  refresh={() => void attempt(loadCatalog)}
+                  open={(o) => void attempt(() => openObject(o))}
+                  offset={catalogOffset}
+                  onOffset={setCatalogOffset}
+                />
               </aside>
               <div
                 className="db-resize-x"
@@ -961,11 +979,12 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                           />
                         </>
                       )}
-                      {canEdit && (
+                      {tableEditable && (
                         <>
                           <IconButton
                             icon="plus"
                             label="Добавить строку DEFAULT"
+                            disabled={!canEdit}
                             onClick={() =>
                               setChanges((s) => ({
                                 ...s,
@@ -977,7 +996,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                             }
                           />
                           <button
-                            disabled={!staged.length || !!busy}
+                            disabled={!staged.length || !canEdit || !!edit}
                             onClick={() => void attempt(apply)}
                           >
                             Применить
@@ -986,7 +1005,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                           <IconButton
                             icon="stop"
                             label="Отменить локальные изменения"
-                            disabled={!staged.length}
+                            disabled={!staged.length || !canEdit}
                             onClick={() =>
                               setChanges((s) => ({ ...s, [active.id]: [] }))
                             }
@@ -1116,7 +1135,9 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                                 {f.name}
                               </th>
                             ))}
-                            {canEdit && <th aria-label="Действия строки" />}
+                            {tableEditable && (
+                              <th aria-label="Действия строки" />
+                            )}
                           </tr>
                         </thead>
                         <tbody>
@@ -1142,7 +1163,9 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                                   ]
                                 : undefined;
                             const key =
-                                canEdit && !inserted ? keyFor(row) : undefined,
+                                tableEditable && !inserted
+                                  ? keyFor(row)
+                                  : undefined,
                               change =
                                 inserted ||
                                 (key
@@ -1317,10 +1340,11 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                                     </td>
                                   );
                                 })}
-                                {canEdit && (
+                                {tableEditable && (
                                   <td>
                                     <IconButton
                                       icon="close"
+                                      disabled={!canEdit}
                                       label={
                                         "Удалить строку " + (offset + ri + 1)
                                       }
@@ -1690,6 +1714,8 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
         <DatabaseHistory
           jobs={jobs}
           read={(p) => invoke("job.read", p)}
+          listOperations={(p) => invoke("operation.list", p)}
+          readOperation={(p) => invoke("operation.read", p)}
           onClose={() => setHistory(false)}
         />
       )}

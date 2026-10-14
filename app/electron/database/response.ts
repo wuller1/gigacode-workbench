@@ -109,6 +109,27 @@ export function validateDatabaseResponse(
   else if (op === "dropResult") valid = object(value) && value.deleted === true;
   else if (op === "admin") valid = Array.isArray(value) && value.length <= 1000;
   else if (op === "metrics") valid = object(value);
+  else if (op === "operationList")
+    valid =
+      object(value) &&
+      Array.isArray(value.operations) &&
+      value.operations.length <= 50 &&
+      value.operations.every(
+        (o: any) =>
+          object(o) && text(o.operationId) && text(o.kind) && text(o.at),
+      ) &&
+      integer(value.offset) &&
+      typeof value.hasMore === "boolean";
+  else if (op === "operationRead")
+    valid =
+      object(value) &&
+      value.consoleId === args.consoleId &&
+      value.operationId === args.operationId &&
+      text(value.text) &&
+      value.text.length <= 32768 &&
+      integer(value.offset) &&
+      integer(value.total) &&
+      /^[0-9a-f]{64}$/.test(value.hash);
   else if (op === "jobRead")
     valid =
       object(value) &&

@@ -166,6 +166,20 @@ try {
       },
     );
   }
+} catch (error) {
+  const diagnostics = path.join(root, "test-results/database");
+  await fs.mkdir(diagnostics, { recursive: true });
+  for (const name of ["vitest.json", "metrics.json"]) {
+    const body = await fs
+      .readFile(path.join(temp, name), "utf8")
+      .catch(() => undefined);
+    if (body)
+      await fs.writeFile(
+        path.join(diagnostics, name),
+        body.replaceAll(password, "[isolated-test-secret]"),
+      );
+  }
+  throw error;
 } finally {
   if (started)
     await run(

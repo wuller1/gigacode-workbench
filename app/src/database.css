@@ -113,7 +113,8 @@
   overflow: auto;
   flex: 1;
 }
-.db-object-tree > button {
+.db-object-tree > button,
+.db-schema-group > button {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -125,10 +126,13 @@
   text-align: left;
 }
 .db-object-tree > button:hover,
-.db-object-tree > button:focus-visible {
+.db-object-tree > button:focus-visible,
+.db-schema-group > button:hover,
+.db-schema-group > button:focus-visible {
   background: var(--selected);
 }
-.db-object-tree > button > span:nth-child(2) {
+.db-object-tree > button > span:nth-child(2),
+.db-schema-group > button > span:nth-child(2) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -647,4 +651,94 @@
 }
 .db-history section .db-output {
   min-height: 240px;
+}
+
+.db-schema-picker {
+  position: relative;
+  margin: 4px 0;
+}
+.db-schema-picker > button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  background: transparent;
+  padding: 4px 5px;
+  color: var(--muted);
+}
+.db-schema-popup {
+  position: fixed;
+  z-index: 160;
+  font-size: 12px;
+  width: 270px;
+  max-width: calc(100vw - 100px);
+  padding: 9px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  box-shadow: 0 8px 24px #0004;
+}
+.db-schema-popup > input {
+  width: 100%;
+  font-size: 12px;
+  min-height: 28px;
+}
+.db-schema-options {
+  max-height: 250px;
+  overflow: auto;
+  margin: 8px 0;
+}
+.db-schema-options label,
+.db-system-schemas {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 2px;
+}
+.db-schema-options span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.db-schema-popup input[type="checkbox"] {
+  width: 14px;
+  min-height: 14px;
+  accent-color: var(--focus);
+}
+.db-system-schemas {
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.db-schema-popup small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 5px;
+}
+.db-schema-group > summary {
+  cursor: pointer;
+  padding: 5px 2px;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+}
+.db-schema-group > summary > .icon {
+  margin: 0 6px 0 3px;
+  vertical-align: middle;
+}
+.db-schema-group > button {
+  padding-left: 18px;
+  min-height: 26px;
+}
+.db-catalog-pages {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  padding-top: 4px;
 }

@@ -25,7 +25,7 @@ const assert = (condition, message) => {
 try {
   await admin.connect();
   await admin.query(
-    "CREATE TABLE public.desktop_data(id bigint PRIMARY KEY, note text, amount numeric(40,20)); INSERT INTO desktop_data VALUES(1,'original',12345678901234567890.12345678901234567890),(2,NULL,NULL);",
+    "CREATE TABLE public.desktop_data(id bigint PRIMARY KEY, note text, amount numeric(40,20)); INSERT INTO desktop_data VALUES(1,'original',12345678901234567890.12345678901234567890),(2,NULL,NULL); CREATE SCHEMA additional;CREATE TABLE additional.other_data(id int);",
   );
   const env = {
     ...process.env,
@@ -132,6 +132,74 @@ try {
     },
   );
   await check(
+    "Schema popup selects several schemas, filters at source and preserves the SQL document",
+    async () => {
+      await p
+        .getByRole("button", { name: "Выбрать видимые схемы", exact: true })
+        .click();
+      const popup = p.getByRole("region", {
+        name: "Видимые схемы",
+        exact: true,
+      });
+      await popup
+        .getByRole("checkbox", { name: "additional", exact: true })
+        .check();
+      await p.keyboard.press("Escape");
+      await popup.waitFor({ state: "detached" });
+      await p
+        .locator(".db-object-tree button")
+        .filter({ hasText: "other_data" })
+        .waitFor();
+      await p
+        .getByRole("textbox", { name: "Поиск объекта БД" })
+        .fill("desktop_data");
+      await p.waitForFunction(
+        () => document.querySelectorAll(".db-object-tree button").length === 1,
+      );
+      assert(
+        (await p.locator(".db-object-tree button").innerText()).includes(
+          "desktop_data",
+        ),
+        "Server catalog search kept an unrelated object",
+      );
+      await p.getByRole("textbox", { name: "Поиск объекта БД" }).fill("");
+      await p
+        .locator(".db-object-tree button")
+        .filter({ hasText: "other_data" })
+        .waitFor();
+      await p
+        .getByRole("button", { name: "Выбрать видимые схемы", exact: true })
+        .click();
+      await popup
+        .getByRole("checkbox", { name: "public", exact: true })
+        .uncheck();
+      await p.keyboard.press("Escape");
+      await p.waitForFunction(
+        () =>
+          !document
+            .querySelector(".db-object-tree")
+            ?.textContent?.includes("desktop_data"),
+      );
+      assert(
+        (
+          await p.getByRole("textbox", { name: "SQL редактор" }).innerText()
+        ).includes("keyboard_result"),
+        "Schema filtering replaced the user's SQL",
+      );
+      await p
+        .getByRole("button", { name: "Выбрать видимые схемы", exact: true })
+        .click();
+      await popup
+        .getByRole("checkbox", { name: "public", exact: true })
+        .check();
+      await p.keyboard.press("Escape");
+      await p
+        .locator(".db-object-tree button")
+        .filter({ hasText: "desktop_data" })
+        .waitFor();
+    },
+  );
+  await check(
     "Catalog opens table in its own document and keeps SQL console intact",
     async () => {
       await p
@@ -163,6 +231,7 @@ try {
       await p
         .getByRole("button", { name: "Применить · 1", exact: true })
         .waitFor({ state: "hidden" });
+      await p.locator(".db-effect").waitFor({ state: "hidden" });
       await p
         .locator(".db-grid td")
         .filter({ hasText: "edited from desktop" })
@@ -203,6 +272,7 @@ try {
       await p
         .getByRole("button", { name: "Применить · 1", exact: true })
         .waitFor({ state: "hidden" });
+      await p.locator(".db-effect").waitFor({ state: "hidden" });
       assert(
         (await admin.query("SELECT id,note FROM desktop_data WHERE id=3"))
           .rows[0].note === null,
@@ -458,6 +528,20 @@ try {
         !(await dialog.innerText()).includes(url.password),
         "History leaked the connection password",
       );
+      await dialog
+        .getByRole("tab", { name: "Журнал операций", exact: true })
+        .click();
+      await p.waitForFunction(() =>
+        document
+          .querySelector(".db-history section pre")
+          ?.textContent?.includes("SELECT 81 AS keyboard_result;"),
+      );
+      assert(
+        (await dialog.locator("section pre").innerText()).includes(
+          "SELECT 81 AS keyboard_result;",
+        ),
+        "Durable operation ledger lost the original SQL",
+      );
       await p.keyboard.press("Escape");
       await dialog.waitFor({ state: "detached" });
     },
@@ -561,7 +645,11 @@ try {
       "DB UI DIAGNOSTIC",
       await page.locator(".database-workspace").innerText(),
     );
-    await page.screenshot({ path: "/tmp/gigacode-database-ui-failure.png" });
+    const diagnostic = path.join(root, "test-results/database");
+    await fs.mkdir(diagnostic, { recursive: true });
+    await page.screenshot({
+      path: path.join(diagnostic, "database-ui-failure.png"),
+    });
   }
   throw error;
 } finally {
