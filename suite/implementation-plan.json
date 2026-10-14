@@ -809,12 +809,13 @@
       ],
       "evidence": [
         "docs/suite/evidence/operations-macos/verification.json",
+        "docs/suite/evidence/windows-2eb000e/provenance.json",
         "docs/suite/OPERATIONS-RUNTIME-AUDIT.md"
       ],
       "runtimeSlice": {
         "implementation": "app/electron/operations + JenkinsPanel/ClusterPanel",
-        "status": "macos_verified_windows_pending",
-        "limitations": "See OPERATIONS-RUNTIME-HANDOFF.md; full card acceptance remains open, no full console/Ultimate parity claim."
+        "status": "verified_runtime_subset",
+        "limitations": "Full card acceptance remains open. Windows source/packaged Jenkins verified; native Kubernetes API verified on macOS, not Windows or corporate OpenShift. See OPERATIONS-RUNTIME-HANDOFF.md."
       }
     },
     {
@@ -838,12 +839,13 @@
       ],
       "evidence": [
         "docs/suite/evidence/operations-macos/verification.json",
+        "docs/suite/evidence/windows-2eb000e/provenance.json",
         "docs/suite/OPERATIONS-RUNTIME-AUDIT.md"
       ],
       "runtimeSlice": {
         "implementation": "app/electron/operations + JenkinsPanel/ClusterPanel",
-        "status": "macos_verified_windows_pending",
-        "limitations": "See OPERATIONS-RUNTIME-HANDOFF.md; full card acceptance remains open, no full console/Ultimate parity claim."
+        "status": "verified_runtime_subset",
+        "limitations": "Full card acceptance remains open. Windows source/packaged Jenkins verified; native Kubernetes API verified on macOS, not Windows or corporate OpenShift. See OPERATIONS-RUNTIME-HANDOFF.md."
       }
     },
     {
@@ -867,12 +869,13 @@
       ],
       "evidence": [
         "docs/suite/evidence/operations-macos/verification.json",
+        "docs/suite/evidence/windows-2eb000e/provenance.json",
         "docs/suite/OPERATIONS-RUNTIME-AUDIT.md"
       ],
       "runtimeSlice": {
         "implementation": "app/electron/operations + JenkinsPanel/ClusterPanel",
-        "status": "macos_verified_windows_pending",
-        "limitations": "See OPERATIONS-RUNTIME-HANDOFF.md; full card acceptance remains open, no full console/Ultimate parity claim."
+        "status": "verified_runtime_subset",
+        "limitations": "Full card acceptance remains open. Windows source/packaged Jenkins verified; native Kubernetes API verified on macOS, not Windows or corporate OpenShift. See OPERATIONS-RUNTIME-HANDOFF.md."
       }
     },
     {

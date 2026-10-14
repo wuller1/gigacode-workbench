@@ -1,0 +1,44 @@
+{
+  "suite": "operations-actual-electron",
+  "status": "passed",
+  "platform": "win32",
+  "mode": "Windows unpacked application and its own provider",
+  "cases": [
+    "Actual App opens Jenkins and discovers its real root catalog",
+    "Folder navigation and favorite filtering include nested real jobs",
+    "Real parameter form runs once and screen updates without a refresh click",
+    "Completed Jenkins build refreshes its catalog row and confirms its receipt without clicks",
+    "Jenkins test and stage tabs read the actual APIs and report absent plugins explicitly",
+    "Actual desktop Jenkins dark and light screenshots preserve usable controls",
+    "Switching projects and independent CI does not retain the old job or log",
+    "Discussing an actual job preserves composer draft and selected session",
+    "Host reveal opens an exact real job instead of just the generic panel",
+    "A delayed same-connection reveal cannot override a newer manual selection",
+    "Actual App stops its running Jenkins build and updates to ABORTED without refresh",
+    "Actual Operations settings warns before discarding secret and CA drafts"
+  ],
+  "passed": 12,
+  "screenshots": [
+    "<SOURCE_ROOT>\\app\\test-results\\operations\\operations-jenkins-dark-win32-packaged.png",
+    "<SOURCE_ROOT>\\app\\test-results\\operations\\operations-jenkins-light-win32-packaged.png"
+  ],
+  "artifactHashes": {
+    "release\\win-unpacked\\GigaCode Workbench.exe": "47790dc0dd81d4d4a79426850e3cf59f452a9c99bf92fe87ace2de8cf92aeb2a",
+    "release\\win-unpacked\\resources\\app.asar": "46ac591d07e04676d968be7eb3cce788254ff8b9e598e5cb6b43368f748e5e0f"
+  },
+  "loadedFixtureHash": "4cc3795b8a06671fbb3e89f1d5f8d84b84abd798bd07dcf42aba8c95d6a96dfe",
+  "faultInjection": "One selected real Jenkins response delayed by a private forwarding proxy; response data remains upstream",
+  "optionalApiReads": [
+    {
+      "method": "GET",
+      "path": "/job/Team/job/Build/2/testReport/api/json",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/job/Team/job/Build/2/wfapi/describe",
+      "status": 404
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,105 @@
+{
+  "total_count": 5,
+  "artifacts": [
+    {
+      "id": 11885715276,
+      "node_id": "MDg6QXJ0aWZhY3QxMTg4NTcxNTI3Ng==",
+      "name": "gigacode-workbench-windows-x64-2eb000ed954984d8c02da3f64cd5fd6ce47b9023",
+      "size_in_bytes": 1712055441,
+      "url": "https://api.github.com/repos/wuller1/gigacode-workbench/actions/artifacts/11885715276",
+      "archive_download_url": "https://api.github.com/repos/wuller1/gigacode-workbench/actions/artifacts/11885715276/zip",
+      "expired": false,
+      "digest": "sha256:73613c879ecc5168f6fab65bb14f00d32c9255a59d23a7612924f1ec3df33b7d",
+      "created_at": "2026-10-14T10:09:28Z",
+      "updated_at": "2026-10-14T10:09:28Z",
+      "expires_at": "2026-10-28T10:08:35Z",
+      "workflow_run": {
+        "id": 38544491920,
+        "repository_id": 1412148412,
+        "head_repository_id": 1412148412,
+        "head_branch": "main",
+        "head_sha": "2eb000ed954984d8c02da3f64cd5fd6ce47b9023"
+      }
+    },
+    {
+      "id": 11885700393,
+      "node_id": "MDg6QXJ0aWZhY3QxMTg4NTcwMDM5Mw==",
+      "name": "operations-evidence-windows-2eb000ed954984d8c02da3f64cd5fd6ce47b9023",
+      "size_in_bytes": 283077,
+      "url": "https://api.github.com/repos/wuller1/gigacode-workbench/actions/artifacts/11885700393",
+      "archive_download_url": "https://api.github.com/repos/wuller1/gigacode-workbench/actions/artifacts/11885700393/zip",
+      "expired": false,
+      "digest": "sha256:8eb28b530cc55232ca40ba3bfa23deabd527debcd6d8a47988a1336f17bef33f",
+      "created_at": "2026-10-14T10:09:31Z",
+      "updated_at": "2026-10-14T10:09:31Z",
+      "expires_at": "2026-10-28T10:09:30Z",
+      "workflow_run": {
+        "id": 38544491920,
+        "repository_id": 1412148412,
+        "head_repository_id": 1412148412,
+        "head_branch": "main",
+        "head_sha": "2eb000ed954984d8c02da3f64cd5fd6ce47b9023"
+      }
+    },
+    {
+      "id": 11885520979,
+      "node_id": "MDg6QXJ0aWZhY3QxMTg4NTUyMDk3OQ==",
+      "name": "database-evidence-windows-2eb000ed954984d8c02da3f64cd5fd6ce47b9023",
+      "size_in_bytes": 175641,
+      "url": "https://api.github.com/repos/wuller1/gigacode-workbench/actions/artifacts/11885520979",
+      "archive_download_url": "https://api.github.com/repos/wuller1/gigacode-workbench/actions/artifacts/11885520979/zip",
+      "expired": false,
+      "digest": "sha256:bca6c08be7335e5d2c32c8205a9ab72d1a9c5b4aca23e954f67490ef591f0e5c",
+      "created_at": "2026-10-14T10:09:30Z",
+      "updated_at": "2026-10-14T10:09:30Z",
+      "expires_at": "2026-10-28T10:09:29Z",
+      "workflow_run": {
+        "id": 38544491920,
+        "repository_id": 1412148412,
+        "head_repository_id": 1412148412,
+        "head_branch": "main",
+        "head_sha": "2eb000ed954984d8c02da3f64cd5fd6ce47b9023"
+      }
+    },
+    {
+      "id": 11884479101,
+      "node_id": "MDg6QXJ0aWZhY3QxMTg4NDQ3OTEwMQ==",
+      "name": "ide-diagnostics-windows-2eb000ed954984d8c02da3f64cd5fd6ce47b9023",
+      "size_in_bytes": 55137,
+      "url": "https://api.github.com/repos/wuller1/gigacode-workbench/actions/artifacts/11884479101",
+      "archive_download_url": "https://api.github.com/repos/wuller1/gigacode-workbench/actions/artifacts/11884479101/zip",
+      "expired": false,
+      "digest": "sha256:12a99b6c484e00c61ca857953fe81fc97fe2650b8c1235782979bc6a24f796d0",
+      "created_at": "2026-10-14T10:08:35Z",
+      "updated_at": "2026-10-14T10:08:35Z",
+      "expires_at": "2026-10-21T10:08:34Z",
+      "workflow_run": {
+        "id": 38544491920,
+        "repository_id": 1412148412,
+        "head_repository_id": 1412148412,
+        "head_branch": "main",
+        "head_sha": "2eb000ed954984d8c02da3f64cd5fd6ce47b9023"
+      }
+    },
+    {
+      "id": 11883667824,
+      "node_id": "MDg6QXJ0aWZhY3QxMTg4MzY2NzgyNA==",
+      "name": "database-source-evidence-windows-2eb000ed954984d8c02da3f64cd5fd6ce47b9023",
+      "size_in_bytes": 181146,
+      "url": "https://api.github.com/repos/wuller1/gigacode-workbench/actions/artifacts/11883667824",
+      "archive_download_url": "https://api.github.com/repos/wuller1/gigacode-workbench/actions/artifacts/11883667824/zip",
+      "expired": false,
+      "digest": "sha256:a660e235b211a15307776a5fdc802cf6bc1dc69f7534aae5e6b976e7089f2024",
+      "created_at": "2026-10-14T09:46:24Z",
+      "updated_at": "2026-10-14T09:46:24Z",
+      "expires_at": "2026-10-28T09:46:23Z",
+      "workflow_run": {
+        "id": 38544491920,
+        "repository_id": 1412148412,
+        "head_repository_id": 1412148412,
+        "head_branch": "main",
+        "head_sha": "2eb000ed954984d8c02da3f64cd5fd6ce47b9023"
+      }
+    }
+  ]
+}

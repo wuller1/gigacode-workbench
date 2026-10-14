@@ -1,6 +1,6 @@
 # Operations: итеративный аудит реализации
 
-Срез `app/` 0.4.0-preview.1. **macOS:182 unit/protocol, 43 изолированных Electron UI, 23 настоящих серверных и 23 actual App сценария прошли. Windows нового среза ещё проверяется.** Здесь отделены доказанные дефекты, исправления, тестовые стенды и незавершённый объём. Этот документ не является заявлением полного соответствия OpenShift Console/Jenkins UI.
+Срез `app/` 0.4.0-preview.1. **macOS: 182 unit/protocol, 43 изолированных Electron UI, 23 настоящих серверных и 23 actual App сценария прошли. [Windows 2eb000e](https://github.com/wuller1/gigacode-workbench/actions/runs/38544491920) успешно проверил source/packaged Jenkins и регрессии IDE/Data.** Здесь отделены доказанные дефекты, исправления, тестовые стенды и незавершённый объём. Этот документ не является заявлением полного соответствия OpenShift Console/Jenkins UI.
 
 ## Проверяемые уровни
 
@@ -53,15 +53,25 @@ Test servers не используют существующий JENKINS_HOME, ku
 
 ## Текущие доказательства
 
-Первая Windows-приёмка `6122d84` ([run38542875039](https://github.com/wuller1/gigacode-workbench/actions/runs/38542875039)) прошла Data44/25, PowerShell5.1, unit/build/native checks и37 GUI cases, затем общий трёхминутный UI deadline оборвал запуск последнего набора. Assertion failure не было. Workflow разделён на пять отдельных ограниченных шагов, все43 проверки сохранены; повторная Windows-приёмка обязательна. Этот failed run не выдаётся за pass.
+Первая Windows-приёмка `6122d84` ([run 38542875039](https://github.com/wuller1/gigacode-workbench/actions/runs/38542875039)) прошла Data44/25, PowerShell 5.1, unit/build/native checks и37 GUI cases, затем общий трёхминутный UI deadline оборвал запуск последнего набора. Assertion failure не было. Workflow разделён на пять отдельных ограниченных шагов, все43 проверки сохранены; повторная Windows-приёмка успешно выполнена и приведена ниже. Этот failed run не выдаётся за pass.
 
 После Operations integration на той же сборке повторно прошли [чат 3, PostgreSQL 44 и Data UI 25](evidence/operations-macos/regressions.json). Данные и внешний вид БД проверялись с настоящим изолированным PostgreSQL; это не snapshot-only проверка.
 
-[Сводная проверка](evidence/operations-macos/verification.json), [native API23](evidence/operations-macos/native.json), [actual App23](evidence/operations-macos/desktop.json), [изолированный UI43](evidence/operations-macos/isolated-ui.json), [StrictMode/Web Locks/late-navigation14](evidence/operations-macos/review-ui.json). Финальный прогон 14.10.2026 09:24:09–09:25:38 UTC завершился с нулём renderer errors;26 исходников и 15 compiled artifacts сверены после выполнения, дрейфа нет. Все test-owned процессы закрыты. Платные модели не вызывались.
+[Сводная проверка](evidence/operations-macos/verification.json), [native API 23](evidence/operations-macos/native.json), [actual App 23](evidence/operations-macos/desktop.json), [изолированный UI 43](evidence/operations-macos/isolated-ui.json), [StrictMode/Web Locks/late-navigation14](evidence/operations-macos/review-ui.json). Финальный прогон 14.10.2026 09:24:09–09:25:38 UTC завершился с нулём renderer errors; 26 исходников и 15 compiled artifacts сверены после выполнения, дрейфа нет. Все test-owned процессы закрыты. Платные модели не вызывались.
 
 Настоящие снимки: Jenkins [dark](evidence/operations-macos/operations-jenkins-dark-darwin.png) / [light](evidence/operations-macos/operations-jenkins-light-darwin.png); Kubernetes [dark](evidence/operations-macos/operations-cluster-dark-darwin.png) / [light](evidence/operations-macos/operations-cluster-light-darwin.png); [1024px, две панели](evidence/operations-macos/operations-split-1024-dark-darwin.png). Это собранное приложение с живыми тестовыми API, не HTML-макет.
 
 Первый реальный render crash сохранён отдельно: [failed report](evidence/operations-iterations/first-render/report.json), [снимок](evidence/operations-iterations/first-render/failure.png). Поздние остановки из-за изменившегося layout были ошибками селекторов harness: существующий объект дополнительно проверялся прямым API GET. Проверки уточнялись к видимому detail и конкретной причине unsupported, без ослабления backend/target/receipt assertions. Старые положительные результаты не переносились на изменённый код.
+
+## Windows source и packaged
+
+[Run 38544491920](https://github.com/wuller1/gigacode-workbench/actions/runs/38544491920), commit `2eb000ed954984d8c02da3f64cd5fd6ce47b9023`: [общая provenance](evidence/windows-2eb000e/provenance.json), [artifact metadata](evidence/windows-2eb000e/artifacts.json). Source Jenkins: [11 API](evidence/operations-windows-2eb000e/result-win32.json) +[12 actual UI](evidence/operations-windows-2eb000e/result-ui-win32.json). Packaged Jenkins: [11 API](evidence/operations-windows-2eb000e/result-win32-packaged.json) +[12 actual UI](evidence/operations-windows-2eb000e/result-ui-win32-packaged.json). Renderer errors отсутствуют, cleanup выполнен; 26 исходников совпадают с текущим кодом. Все 15 source compiled artifacts также побайтно совпали с проверенной macOS-сборкой.
+
+Настоящий Windows packaged UI: [dark](evidence/operations-windows-2eb000e/operations-jenkins-dark-win32-packaged.png), [light](evidence/operations-windows-2eb000e/operations-jenkins-light-win32-packaged.png). Просмотрены актуальность master/detail, очищенные логи, светлый editor и видимость команд.
+
+Повторно прошли 182 unit/protocol, 43 UI, 44 PostgreSQL, 25 source + 25 packaged Data UI и44 source + 44 packaged IDE, legacy PowerShell 5.1, Python pipe, PTY/Sharp, NSIS/portable, packaged Qwen 0.25.1 и resource/hash checks. [IDE source](evidence/windows-2eb000e/ide/source.json) / [packaged](evidence/windows-2eb000e/ide/packaged.json). Большой installer ZIP локально не скачивался: artifact digest приведён как GitHub-reported metadata. Проверены запуск unpacked app и создание installers, не интерактивная установка на рабочем компьютере.
+
+Windows run использовал `--jenkins-only`: Kubernetes/Istio/OpenShift controllers на Windows этим не проверены. Общий native Operations прогон на macOS (23 сценария, включая Kubernetes API) сохраняется отдельным доказательством, не переносится на корпоративный cluster.
 
 ## UX критерии
 
@@ -73,4 +83,6 @@ Test servers не используют существующий JENKINS_HOME, ku
 
 ## Ещё не подтверждено
 
-Рабочие Windows/ВАРМ, корпоративные MCP schemas/auth/CA, реальные OpenShift-specific controllers, kubelet/Running pods/log delivery/exec/port-forward и успешные rollouts. Native envtest проверяет API, не весь cluster. Полные Pipeline graph/Jenkinsfile/config/manual gates, history retention/export, kubeconfig exec-auth/OIDC/mTLS и полный OpenShift Console остаются адресными продолжениями. Инструкция переноса: [OPERATIONS-RUNTIME-HANDOFF.md](OPERATIONS-RUNTIME-HANDOFF.md).
+Встроенный HTTP bridge пока возвращает общую причину dry-run422/SSA409 без `KubernetesStatus.details.causes`; это открытое улучшение диагностики. Server status и Retry-After сохраняются. Full error body не собирается. Внешний adapter может передавать очищенный bounded message; не выдавать это за реализованный structured error inspector.
+
+Конкретные рабочие Windows/ВАРМ, корпоративные MCP schemas/auth/CA, реальные OpenShift-specific controllers, kubelet/Running pods/log delivery/exec/port-forward и успешные rollouts. Native envtest проверяет API, не весь cluster. Полные Pipeline graph/Jenkinsfile/config/manual gates, history retention/export, kubeconfig exec-auth/OIDC/mTLS и полный OpenShift Console остаются адресными продолжениями. Инструкция переноса: [OPERATIONS-RUNTIME-HANDOFF.md](OPERATIONS-RUNTIME-HANDOFF.md).

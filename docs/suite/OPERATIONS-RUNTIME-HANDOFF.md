@@ -69,6 +69,8 @@ Renderer использует те же `ops.*` IPC методы и DTO из `ap
 
 `adapterStatus: inventory_only` подтверждает лишь обнаружение точных tools/bindings/schema, а не совместимость DTO или live корпоративного сервера. Отдельно проверьте read/prepare/no-side-effect/execute/readback и ошибочные ответы на тестовой цели.
 
+Встроенный bridge сохраняет HTTP status/kind/Retry-After и определённость исхода, но пока не передаёт `KubernetesStatus.message/details.causes`. Dry-run422 и SSA409 могут потребовать отдельного read-only просмотра очищенной серверной причины. Тела ошибок отменяются и не сохраняются; подробное логирование не включает полный ответ сервера. Рабочий adapter может передать разрешённые field/reason/message в очищенном `OpsError.message` до 2000 символов, сохранив status/kind/retry. Произвольный `details` текущий client не пропускает: структурированные причины требуют отдельного расширения DTO/валидатора/UI. Raw HTML/env/Secret values не логировать.
+
 ## Карта совместного переноса
 
 Переносите вертикальный путь одной цепочкой, сверяя существующих владельцев: `app/shared/operations.ts` → `app/electron/operations/*` → main lifecycle/IPC и host tools в `main.ts`/`mcp.ts` → provider bundle в `build-electron.mjs` → `JenkinsPanel.tsx`, `ClusterPanel.tsx`, `OperationsSettings.tsx`, `ops-ui.tsx`, `operations.css` → lazy panels/Settings/App/Workspace/docking. Локальная ToolBoundary сохраняет соседние инструменты при сбое. Добавьте pinned `yaml` и соответствующий lockfile/license; не копируйте `node_modules`, `runtime`, test homes или private state.

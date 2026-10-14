@@ -1,0 +1,125 @@
+{
+  "runId": 38544491920,
+  "headSha": "2eb000ed954984d8c02da3f64cd5fd6ce47b9023",
+  "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38544491920",
+  "conclusion": "success",
+  "counts": {
+    "opsSourceNative": 11,
+    "opsSourceUi": 12,
+    "opsPackagedNative": 11,
+    "opsPackagedUi": 12,
+    "postgresql": 44,
+    "dataSourceUi": 25,
+    "dataPackagedUi": 25,
+    "ideSource": 44,
+    "idePackaged": 44
+  },
+  "rendererErrors": {
+    "opsSource": [],
+    "opsPackaged": [],
+    "dataSource": [],
+    "dataPackaged": [],
+    "ideSource": [],
+    "idePackaged": []
+  },
+  "cleanup": {
+    "opsSource": [
+      "fulfilled",
+      "fulfilled",
+      "fulfilled"
+    ],
+    "opsPackaged": [
+      "fulfilled",
+      "fulfilled",
+      "fulfilled"
+    ]
+  },
+  "sourceChecks": [
+    {
+      "report": "opsSource",
+      "sourceFiles": 26,
+      "drift": []
+    },
+    {
+      "report": "opsPackaged",
+      "sourceFiles": 26,
+      "drift": []
+    },
+    {
+      "report": "dataLive",
+      "sourceFiles": 41,
+      "drift": []
+    },
+    {
+      "report": "dataUiSource",
+      "sourceFiles": 41,
+      "drift": []
+    },
+    {
+      "report": "dataUiPackaged",
+      "sourceFiles": 41,
+      "drift": []
+    }
+  ],
+  "packagedHashes": {
+    "release\\win-unpacked\\GigaCode Workbench.exe": "47790dc0dd81d4d4a79426850e3cf59f452a9c99bf92fe87ace2de8cf92aeb2a",
+    "release\\win-unpacked\\resources\\app.asar": "46ac591d07e04676d968be7eb3cce788254ff8b9e598e5cb6b43368f748e5e0f"
+  },
+  "metricLines": [
+    "windows-x64\tUnit and protocol fixture tests (no model credentials)\t2026-10-14T09:51:16.1062515Z  Test Files  23 passed | 2 skipped (25)",
+    "windows-x64\tUnit and protocol fixture tests (no model credentials)\t2026-10-14T09:51:16.1063622Z       Tests  182 passed | 46 skipped (228)",
+    "windows-x64\tVerify packaged CLI and self-hosting references, then calculate artifact hashes\t2026-10-14T10:08:31.2919651Z Packaged Qwen: 0.25.1"
+  ],
+  "artifacts": [
+    {
+      "id": 11885715276,
+      "name": "gigacode-workbench-windows-x64-2eb000ed954984d8c02da3f64cd5fd6ce47b9023",
+      "bytes": 1712055441,
+      "digest": "sha256:73613c879ecc5168f6fab65bb14f00d32c9255a59d23a7612924f1ec3df33b7d",
+      "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38544491920/artifacts/11885715276"
+    },
+    {
+      "id": 11885700393,
+      "name": "operations-evidence-windows-2eb000ed954984d8c02da3f64cd5fd6ce47b9023",
+      "bytes": 283077,
+      "digest": "sha256:8eb28b530cc55232ca40ba3bfa23deabd527debcd6d8a47988a1336f17bef33f",
+      "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38544491920/artifacts/11885700393"
+    },
+    {
+      "id": 11885520979,
+      "name": "database-evidence-windows-2eb000ed954984d8c02da3f64cd5fd6ce47b9023",
+      "bytes": 175641,
+      "digest": "sha256:bca6c08be7335e5d2c32c8205a9ab72d1a9c5b4aca23e954f67490ef591f0e5c",
+      "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38544491920/artifacts/11885520979"
+    },
+    {
+      "id": 11884479101,
+      "name": "ide-diagnostics-windows-2eb000ed954984d8c02da3f64cd5fd6ce47b9023",
+      "bytes": 55137,
+      "digest": "sha256:12a99b6c484e00c61ca857953fe81fc97fe2650b8c1235782979bc6a24f796d0",
+      "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38544491920/artifacts/11884479101"
+    },
+    {
+      "id": 11883667824,
+      "name": "database-source-evidence-windows-2eb000ed954984d8c02da3f64cd5fd6ce47b9023",
+      "bytes": 181146,
+      "digest": "sha256:a660e235b211a15307776a5fdc802cf6bc1dc69f7534aae5e6b976e7089f2024",
+      "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38544491920/artifacts/11883667824"
+    }
+  ],
+  "scope": "Windows controlled Jenkins, source and actual unpacked App; no Windows Kubernetes runtime, corporate MCP, GigaCode fork or VARM claim",
+  "unit": {
+    "testsPassed": 182,
+    "testsSkipped": 46,
+    "filesPassed": 23,
+    "filesSkipped": 2
+  },
+  "packagedCliVersion": "0.25.1",
+  "localAdditionalVerification": {
+    "operationsSourceFiles": 26,
+    "operationsCompiledSourceArtifacts": 15,
+    "crossPlatformCompiledArtifactsIdentical": true,
+    "nativeKubernetesOnWindows": false,
+    "runtimeReleaseCommitNote": "Final documentation/evidence commit does not change app/ide/workbench/tools runtime trees."
+  }
+}
