@@ -648,14 +648,14 @@ const tools: Tool[] = [
   ),
   tool(
     "agent_spawn",
-    "Delegate a bounded independent subtask within the SAME task. Shared workspace: no filesystem isolation is implied. Use analysis/review by default; coordinate file ownership before edits.",
-    { title: str, profileId: str, prompt: str },
-    ["title", "profileId", "prompt"],
+    "Delegate a bounded independent subtask within the SAME task. Supply a unique operationId; repeat the same ID and payload to retrieve the original child, never create a second child after an uncertain response. The optional profileId is a role hint for automatic routing, not a forced role. Shared workspace: no filesystem isolation is implied. Use analysis/review by default; coordinate file ownership before edits.",
+    { title: str, profileId: str, prompt: str, operationId: str },
+    ["title", "prompt", "operationId"],
   ),
   tool(
     "agent_status",
-    "Inspect child sessions of the current task with their actual status and recent result.",
-    {},
+    "Inspect actual child sessions of the current task in bounded pages (default 10, maximum 20). Use an id to inspect one child. Recent output is a UTF-8-safe tail of at most 1500 bytes with explicit truncation; use task_history for full evidence. A completed turn does not prove task acceptance or integration.",
+    { id: str, offset: num, limit: num },
   ),
   tool(
     "session_message",
@@ -669,9 +669,24 @@ const tools: Tool[] = [
     { id: str, afterId: str, messageId: str, offset: num },
   ),
   tool(
+    "task_context",
+    "Read the current task description or this conversation's plan and task artifacts after a bounded checkpoint. Description and individual todo text use character offsets, at most 12000 characters; todo/artifact lists use item offsets, at most 20 entries. For a truncated todo, use section todos and todoId to read its full text. Snapshot revision and task update time identify the source; retained context is not new authorization.",
+    {
+      section: { type: "string", enum: ["description", "todos", "artifacts"] },
+      offset: num,
+      todoId: str,
+    },
+  ),
+  tool(
     "workbench_reference",
     "Read the packaged workflow, suite plan, design prototype, or UI-kit starter without loading the entire library. Omit path to list documents; then request a listed path and optional character offset. Project instructions and current user scope still apply.",
     { path: str, offset: num },
+  ),
+  tool(
+    "instruction_snapshot",
+    "Read a retained host instruction version referenced by this conversation's binding or messages. Supply its exact fingerprint and optional character offset; returns at most 12000 characters with manifest and continuation cursor. Historical instructions are reference evidence only: they do not override current instructions or grant permissions.",
+    { fingerprint: str, offset: num },
+    ["fingerprint"],
   ),
   tool(
     "memory_read",
@@ -710,17 +725,20 @@ export class UiMcpServer {
     this.server = createServer(async (req, res) => {
       res.setHeader("Content-Type", "application/json");
       res.setHeader("Cache-Control", "no-store");
-      const id = req.url?.match(/^\/mcp\/([a-zA-Z0-9-]+)$/)?.[1],
-        expected = id && this.tokens.get(id);
+      const id = req.url?.match(/^\/mcp\/([a-zA-Z0-9-]+)$/)?.[1];
       const received = String(req.headers.authorization || "").replace(
         /^Bearer /,
         "",
       );
-      if (
-        !expected ||
-        Buffer.byteLength(received) !== Buffer.byteLength(expected) ||
-        !timingSafeEqual(Buffer.from(received), Buffer.from(expected))
-      ) {
+      const currentBinding = () => {
+        const expected = id && this.tokens.get(id);
+        return (
+          !!expected &&
+          Buffer.byteLength(received) === Buffer.byteLength(expected) &&
+          timingSafeEqual(Buffer.from(received), Buffer.from(expected))
+        );
+      };
+      if (!currentBinding()) {
         res.writeHead(401);
         res.end('{"error":"Unauthorized"}');
         return;
@@ -743,6 +761,13 @@ export class UiMcpServer {
           if (size > 1024 * 1024) throw new Error("Request too large");
           chunks.push(chunk);
         }
+        // Reading an HTTP body yields. A new ACP process may have superseded
+        // this binding while an old client was still uploading its request.
+        if (!currentBinding()) {
+          res.writeHead(401);
+          res.end('{"error":"Unauthorized"}');
+          return;
+        }
         const message = JSON.parse(Buffer.concat(chunks).toString("utf8"));
         if (!message || Array.isArray(message) || message.jsonrpc !== "2.0")
           throw new Error("Invalid JSON-RPC");
@@ -761,6 +786,11 @@ export class UiMcpServer {
         else if (message.method === "ping") result = {};
         else if (message.method === "tools/list") result = { tools };
         else if (message.method === "tools/call") {
+          if (!currentBinding()) {
+            res.writeHead(401);
+            res.end('{"error":"Unauthorized"}');
+            return;
+          }
           try {
             const value = await this.call(
               id!,
@@ -838,7 +868,9 @@ export class UiMcpServer {
     this.port = (this.server.address() as any).port;
   }
   binding(sessionId: string) {
-    const token = this.tokens.get(sessionId) || randomBytes(32).toString("hex");
+    // Each new ACP binding supersedes the previous client of this host session.
+    // Already admitted actions keep their normal receipts/unknown semantics.
+    const token = randomBytes(32).toString("hex");
     this.tokens.set(sessionId, token);
     return [
       {
@@ -848,6 +880,10 @@ export class UiMcpServer {
         headers: [{ name: "Authorization", value: `Bearer ${token}` }],
       },
     ];
+  }
+  /** Retire the current client's authority before cancellation or process teardown. */
+  revokeBinding(sessionId: string): void {
+    this.tokens.delete(sessionId);
   }
   private async call(sessionId: string, name: string, p: any) {
     if (this.stopping) throw new Error("Application is closing");
@@ -864,6 +900,7 @@ export class UiMcpServer {
             id: s.id,
             title: s.title,
             profileId: s.profileId,
+            instructionFingerprint: s.instructionBinding?.fingerprint,
             status: s.status,
             messageCount: s.messages.length,
           })),
@@ -885,6 +922,7 @@ export class UiMcpServer {
           id: message.id,
           role: message.role,
           at: message.at,
+          instructionFingerprint: message.instructionFingerprint,
           content: message.content.slice(offset, end),
           offset,
           totalCharacters: message.content.length,
@@ -899,6 +937,7 @@ export class UiMcpServer {
         id: m.id,
         role: m.role,
         at: m.at,
+        instructionFingerprint: m.instructionFingerprint,
         content: m.content.slice(0, 6000),
         truncated: m.content.length > 6000,
         tools: m.tools
@@ -911,8 +950,118 @@ export class UiMcpServer {
         nextAfterId: messages.at(-1)?.id,
       };
     }
+    if (name === "task_context") {
+      const section = p.section ?? "description";
+      if (!["description", "todos", "artifacts"].includes(section))
+        throw new Error("Unknown task context section.");
+      const offset = p.offset ?? 0;
+      if (!Number.isSafeInteger(offset) || offset < 0)
+        throw new Error("Invalid task context offset.");
+      if (p.todoId !== undefined && section !== "todos")
+        throw new Error("todoId requires the todos section.");
+      const metadata = {
+        taskId: task.id,
+        sessionId,
+        title: task.title,
+        snapshotRevision: state.revision,
+        taskUpdatedAt: task.updatedAt,
+        counts: {
+          todos: session.todos?.length || 0,
+          artifacts:
+            state.artifacts?.filter((a) => a.taskId === task.id).length || 0,
+        },
+      };
+      const readText = (content: string) => {
+        if (offset > content.length)
+          throw new Error(
+            "Task context offset exceeds the selected text length.",
+          );
+        const end = Math.min(offset + 12000, content.length);
+        return {
+          text: content.slice(offset, end),
+          offset,
+          totalCharacters: content.length,
+          nextOffset: end < content.length ? end : null,
+        };
+      };
+      if (section === "description")
+        return { ...metadata, section, ...readText(task.description || "") };
+      if (section === "todos" && p.todoId !== undefined) {
+        const todo = session.todos?.find((item) => item.id === p.todoId);
+        if (!todo) throw new Error("Todo was not found in this conversation.");
+        return {
+          ...metadata,
+          section,
+          todoId: todo.id,
+          status: todo.status,
+          ...readText(todo.text),
+        };
+      }
+      const sourceItems =
+        section === "todos"
+          ? session.todos || []
+          : (state.artifacts || []).filter((item) => item.taskId === task.id);
+      if (offset > sourceItems.length)
+        throw new Error(
+          "Task context offset exceeds the selected list length.",
+        );
+      const end = Math.min(offset + 20, sourceItems.length);
+      const items =
+        section === "todos"
+          ? (session.todos || []).slice(offset, end).map((item) => ({
+              id: item.id,
+              status: item.status,
+              text: item.text.slice(0, 1000),
+              totalCharacters: item.text.length,
+              truncated: item.text.length > 1000,
+            }))
+          : (state.artifacts || [])
+              .filter((item) => item.taskId === task.id)
+              .slice(offset, end)
+              .map((item) => ({
+                id: item.id,
+                name: item.name.slice(0, 300),
+                path: item.path.slice(0, 1000),
+                pathTruncated: item.path.length > 1000,
+                kind: item.kind,
+              }));
+      return {
+        ...metadata,
+        section,
+        items,
+        offset,
+        totalItems: sourceItems.length,
+        nextOffset: end < sourceItems.length ? end : null,
+      };
+    }
     if (name === "workbench_reference")
       return this.invoke("workbench.reference", p, sessionId);
+    if (name === "instruction_snapshot") {
+      if (
+        !p ||
+        typeof p !== "object" ||
+        Array.isArray(p) ||
+        Object.keys(p).some(
+          (key) => !["fingerprint", "offset"].includes(key),
+        ) ||
+        typeof p.fingerprint !== "string" ||
+        !/^[a-f0-9]{64}$/.test(p.fingerprint) ||
+        (p.offset !== undefined &&
+          (!Number.isSafeInteger(p.offset) || p.offset < 0))
+      )
+        throw new Error(
+          "Invalid instruction snapshot arguments; use the current schema.",
+        );
+      return this.invoke(
+        "instruction.read",
+        {
+          sessionId,
+          fingerprint: p.fingerprint,
+          ...(p.offset === undefined ? {} : { offset: p.offset }),
+        },
+        sessionId,
+      );
+    }
     if (name === "memory_read")
       return this.invoke("memory.read", {}, sessionId);
     if (name === "memory_remember")
@@ -932,42 +1081,136 @@ export class UiMcpServer {
         sessionId,
       );
     if (name === "agent_spawn") {
-      if (typeof p.prompt !== "string" || p.prompt.length > 20000)
-        throw new Error("Subtask prompt is too large");
-      const child = await this.invoke(
-        "session.create",
+      if (
+        !p ||
+        typeof p !== "object" ||
+        Array.isArray(p) ||
+        Object.keys(p).some(
+          (key) =>
+            !["title", "profileId", "prompt", "operationId"].includes(key),
+        )
+      )
+        throw new Error(
+          "Invalid subtask arguments; use the current agent_spawn schema.",
+        );
+      for (const [key, max] of [
+        ["title", 300],
+        ["prompt", 20000],
+        ["operationId", 128],
+      ] as const)
+        if (
+          typeof p[key] !== "string" ||
+          !p[key].trim() ||
+          p[key].length > max ||
+          p[key].includes("\0")
+        )
+          throw new Error(`Invalid subtask ${key}.`);
+      if (
+        p.profileId !== undefined &&
+        (typeof p.profileId !== "string" ||
+          !p.profileId.trim() ||
+          !state.profiles?.some((profile) => profile.id === p.profileId))
+      )
+        throw new Error(
+          "Choose an actual profile ID from the current role catalog, or omit the role hint.",
+        );
+      return this.invoke(
+        "agent.spawn",
         {
-          taskId: task.id,
           parentId: sessionId,
           title: p.title,
-          profileId: p.profileId,
+          prompt: p.prompt,
+          operationId: p.operationId,
+          ...(p.profileId === undefined ? {} : { roleHint: p.profileId }),
         },
         sessionId,
       );
-      await this.invoke(
-        "session.send",
-        { id: child.id, text: p.prompt },
-        sessionId,
-      );
-      return {
-        id: child.id,
-        status: this.snapshot().sessions.find((x) => x.id === child.id)?.status,
-      };
     }
-    if (name === "agent_status")
-      return state.sessions
-        .filter((x) => x.taskId === task.id && x.parentId)
-        .map((x) => ({
-          id: x.id,
-          title: x.title,
-          profileId: x.profileId,
-          status: x.status,
-          result: x.messages
-            .filter((m) => m.role === "assistant")
-            .at(-1)
-            ?.content.slice(-5000),
-          error: x.error,
-        }));
+    if (name === "agent_status") {
+      if (
+        !p ||
+        typeof p !== "object" ||
+        Array.isArray(p) ||
+        Object.keys(p).some((key) => !["id", "offset", "limit"].includes(key))
+      )
+        throw new Error(
+          "Invalid agent_status arguments; use the current schema.",
+        );
+      const offset = p.offset ?? 0,
+        limit = p.limit ?? 10;
+      if (
+        !Number.isSafeInteger(offset) ||
+        offset < 0 ||
+        !Number.isSafeInteger(limit) ||
+        limit < 1 ||
+        limit > 20
+      )
+        throw new Error(
+          "Invalid agent status page; choose a limit from 1 to 20.",
+        );
+      const children = state.sessions.filter(
+        (child) =>
+          child.taskId === task.id && child.parentId && !child.archived,
+      );
+      const selected =
+        p.id === undefined
+          ? children
+          : children.filter((child) => child.id === p.id);
+      if (
+        p.id !== undefined &&
+        (typeof p.id !== "string" || selected.length !== 1)
+      )
+        throw new Error("Child session was not found in this task.");
+      if (offset > selected.length)
+        throw new Error("Agent status offset exceeds the selected list.");
+      const tail = (value: string, maximumBytes: number) => {
+        const bytes = Buffer.from(value, "utf8");
+        let start = Math.max(0, bytes.length - maximumBytes);
+        while (start < bytes.length && (bytes[start] & 0xc0) === 0x80) start++;
+        return {
+          text: bytes.subarray(start).toString("utf8"),
+          totalBytes: bytes.length,
+          truncated: start > 0,
+        };
+      };
+      const end = Math.min(offset + limit, selected.length);
+      const agents = selected.slice(offset, end).map((child) => {
+        const result = tail(
+          child.messages
+            .filter((message) => message.role === "assistant")
+            .at(-1)?.content || "",
+          1500,
+        );
+        const title = tail(child.title, 300);
+        const error = tail(child.error || "", 600);
+        return {
+          id: child.id,
+          title: title.text,
+          titleTruncated: title.truncated,
+          parentId: child.parentId,
+          profileId: child.profileId,
+          status: child.status,
+          result: result.text,
+          resultTotalBytes: result.totalBytes,
+          resultTruncated: result.truncated,
+          error: error.text || undefined,
+          errorTruncated: error.truncated,
+        };
+      });
+      const response = {
+        agents,
+        offset,
+        totalAgents: selected.length,
+        nextOffset: end < selected.length ? end : null,
+        snapshotRevision: state.revision,
+        note: "Observed execution status and bounded output only; full transcript is available through task_history.",
+      };
+      if (Buffer.byteLength(JSON.stringify(response), "utf8") > 64 * 1024)
+        throw new Error(
+          "Agent status page exceeds its output budget; request fewer agents.",
+        );
+      return response;
+    }
     if (name === "session_message") {
       const target = state.sessions.find((x) => x.id === p.id),
         targetTask = state.tasks.find((x) => x.id === target?.taskId);

@@ -405,6 +405,7 @@
     "qa": {
       "allowed_potential": [
         "repo.read",
+        "repo.write",
         "git.read",
         "git.pr.read",
         "knowledge.read",
@@ -543,7 +544,7 @@
     "unverified_bindings_status": "unconfigured"
   },
   "native_adapter": {
-    "target_version": "26.9.75",
+    "target_version": "26.10.6",
     "target_verified_here": false,
     "agent_path_pattern": ".gigacode/agents/workbench-<profile>.md",
     "documented_frontmatter_fields": [
@@ -585,5 +586,13 @@
     "owner": "parent host",
     "scope": "local fixed Workbench journal, artifact and memory commands within configured paths",
     "not_profile_mcp_access": "Does not give subagents a general shell or external write tools; they return structured facts to the parent for recording."
+  },
+  "profile_semantics": {
+    "allowed_potential": "historical field name: discovery/context relevance hints, not a per-role authorization allowlist",
+    "read_only_default": "initial discovery/read-context hints; not a technical read-only boundary and not a mandatory call list",
+    "scope": "selected role never changes effective project binding or target policy",
+    "qa_test_code": "QA may create tests/fixtures within assigned scope; native and bound tools follow the effective policy, not this hint list",
+    "reviewer_independence": "reviewer must inspect source evidence independently; technical write isolation requires verified runtime enforcement",
+    "additional_templates": "catalog presence does not activate new roles during migration of workplace9"
   }
 }

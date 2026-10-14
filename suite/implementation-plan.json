@@ -1330,7 +1330,7 @@
     {
       "id": "S8-03",
       "title": "Profiles, AI role router, recipes, memory и self-optimization",
-      "status": "planned",
+      "status": "in_progress",
       "dependsOn": [
         "S8-01",
         "S0-02"
@@ -1351,12 +1351,15 @@
         "ROL-11",
         "ROL-12"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/suite/AGENT-HARNESS-AUDIT.md"
+      ],
+      "implementationBoundary": "0.5 verifies a bounded role/binding/worker/recovery slice. Full recipe/memory/self-optimization or managed DAG/leases/isolation acceptance remains open; see audit."
     },
     {
       "id": "S8-10",
       "title": "Native host-owned управление subagents",
-      "status": "planned",
+      "status": "in_progress",
       "dependsOn": [
         "S8-02",
         "S8-03",
@@ -1377,7 +1380,10 @@
         "AGT-13",
         "AGT-14"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/suite/AGENT-HARNESS-AUDIT.md"
+      ],
+      "implementationBoundary": "0.5 verifies a bounded role/binding/worker/recovery slice. Full recipe/memory/self-optimization or managed DAG/leases/isolation acceptance remains open; see audit."
     },
     {
       "id": "S8-04",
@@ -1905,12 +1911,25 @@
         "Always select through LLM from request, task goal/stage and conversation/project context; no manual role selection.",
         "Compare and retain the better existing workplace router; local keyword fallback is not its implementation.",
         "Improve role boundaries and compactness, add useful specialists without keyword-triggered oscillation."
-      ]
+      ],
+      "progress": "0.5: 14 compact role prompts, actual host binding, workplace router adapter, bounded Qwen classifier, regression audit. Workplace migration and model/project A/B remain open."
     },
     {
       "priority": "after_current_ide_database_work",
       "requestedAt": "2026-10-14",
       "scope": "Maximize Task tracker and Knowledge base usability/functionality; user deferred starting until current work is finished."
+    },
+    {
+      "priority": "after_current_agent_harness",
+      "requestedAt": "2026-10-14",
+      "scope": "Reduce durable history and multi-window hot-path cost without losing recovery or silently deleting transcripts.",
+      "evidence": "docs/suite/evidence/agent-runtime-qwen/performance-audit.json",
+      "constraints": [
+        "Preserve confirmed writes, one writer and unknown-outcome reconciliation.",
+        "Benchmark bounded realistic histories and multiple renderers on Windows; retain measured baseline and final source hashes.",
+        "Implement journal/delta subscriptions, paged virtualized transcripts and versioned context deltas in independently verified slices; bytes/characters are not model tokens."
+      ],
+      "progress": "Redundant revision full-state clone removed in0.5; larger persistence/fanout/context changes deliberately remain open."
     }
   ]
 }

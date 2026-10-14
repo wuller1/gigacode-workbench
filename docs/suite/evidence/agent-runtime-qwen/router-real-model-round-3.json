@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-14T11:05:24.298Z",
+  "cli": "@qwen-code/qwen-code@0.25.1",
+  "model": "qwen/qwen3.7-flash",
+  "evidence": "actual CLI and external real-model routing; synthetic cases, no development-task execution",
+  "hostClassifierDispatches": 12,
+  "passed": 6,
+  "failed": 6,
+  "results": [
+    {
+      "id": "functional-brief",
+      "expected": "analyst",
+      "pass": false,
+      "failure": "Router CLI failed; the task request was not executed.",
+      "elapsedMs": 6772
+    },
+    {
+      "id": "criticism-is-not-formal-sdd",
+      "expected": "analyst",
+      "pass": false,
+      "failure": "Router CLI failed; the task request was not executed.",
+      "elapsedMs": 7267
+    },
+    {
+      "id": "explicit-sdd",
+      "expected": "spec",
+      "actual": "spec",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 7591
+    },
+    {
+      "id": "contextual-implementation",
+      "expected": "backend",
+      "actual": "backend",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 5316
+    },
+    {
+      "id": "small-ui-fix",
+      "expected": "frontend",
+      "actual": "frontend",
+      "confidence": 0.9,
+      "pass": true,
+      "elapsedMs": 7328
+    },
+    {
+      "id": "postgres-performance",
+      "expected": "database",
+      "pass": false,
+      "failure": "Router CLI failed; the task request was not executed.",
+      "elapsedMs": 6503
+    },
+    {
+      "id": "jenkins-operation",
+      "expected": "devops",
+      "actual": "devops",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 8323
+    },
+    {
+      "id": "investigate-failure",
+      "expected": "diagnostics",
+      "pass": false,
+      "failure": "Router CLI failed; the task request was not executed.",
+      "elapsedMs": 6656
+    },
+    {
+      "id": "independent-review",
+      "expected": "reviewer",
+      "pass": false,
+      "failure": "Router CLI failed; the task request was not executed.",
+      "elapsedMs": 7317
+    },
+    {
+      "id": "behavior-acceptance",
+      "expected": "qa",
+      "actual": "qa",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 6126
+    },
+    {
+      "id": "personal-electron-slice",
+      "expected": "gigacode-ui",
+      "pass": false,
+      "failure": "Router CLI failed; the task request was not executed.",
+      "elapsedMs": 6599
+    },
+    {
+      "id": "existing-user-guide",
+      "expected": "technical-writer",
+      "actual": "technical-writer",
+      "confidence": 0.9,
+      "pass": true,
+      "elapsedMs": 8924
+    }
+  ],
+  "limitations": "Small single-model sample; does not establish superiority, workplace-model quality, Giga compatibility or all task outcomes."
+}

@@ -96,9 +96,9 @@ Custom commands текущего Qwen — Markdown с опциональным f
 
 Qwen документирует `-p`, JSON/stream-json output и продолжение через `--continue`/`--resume`. Headless stream-json имеет собственные `type`/`session_id` сообщения; его нельзя разбирать ACP JSON-RPC parser. Документация отдельно оговаривает состояние развития stream-json input. Для UI с permissions и несколькими чатами сначала использовать уже существующую ACP-интеграцию прототипа; headless оставлять отдельным проверенным адаптером. [headless.md:18–57](https://github.com/QwenLM/qwen-code/blob/4360b003a087fe9e57f6ffbe7ba48795980b59c3/docs/users/features/headless.md#L18), [formats:221–253](https://github.com/QwenLM/qwen-code/blob/4360b003a087fe9e57f6ffbe7ba48795980b59c3/docs/users/features/headless.md#L221), [официальная headless документация](https://qwenlm.github.io/qwen-code-docs/en/users/features/headless/).
 
-## Что проверить на компьютере с GigaCode 26.9.75
+## Что проверить на компьютере с целевым GigaCode 26.10.6
 
-Это приёмочная программа, **не список уже проведённых проверок**. Использовать существующий прототип оболочки и установленный GigaCode Desktop как наблюдаемый пример, не извлекать из него секреты и не модифицировать CLI.
+Этот раздел актуализирован под текущую цель 26.10.6; прежняя цель 26.9.75 и датированные факты исследования выше остаются историческими. Сначала прочитай фактическую версию выбранного executable. Это приёмочная программа, **не список уже проведённых проверок**. Использовать существующий прототип оболочки и установленный GigaCode Desktop как наблюдаемый пример, не извлекать из него секреты и не модифицировать CLI.
 
 1. Зафиксировать версию executable, launcher, `--help`, доступную schema, рабочий каталог, sanitized launch args и источник config. Не переносить `.qwen` paths/env в `.gigacode` механической заменой без проверки.
 2. Записать очищенный ACP handshake и реальные capabilities. Проверить создание, prompt, streaming, конечный ответ, load/resume только при заявленной поддержке. Отличать UI chat ID от ACP session ID и connection generation.

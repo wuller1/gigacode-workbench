@@ -1,0 +1,285 @@
+{
+  "suite": "operations-upstream-live",
+  "status": "passed",
+  "started": "2026-10-14T11:53:19.596Z",
+  "ended": "2026-10-14T11:54:48.956Z",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "uiMode": "source App and its actual MCP provider",
+    "scope": "Actual OpsService → stdio MCP → two secured real Jenkins instances / native Kubernetes API; no provider/model/corporate access",
+    "vaultBoundary": "Ephemeral test AES-GCM vault, Electron OS credential encryption verified separately"
+  },
+  "passed": 23,
+  "cases": [
+    {
+      "name": "Actual stdio MCP discovers the pinned secured Jenkins server",
+      "elapsedMs": 307
+    },
+    {
+      "name": "Real root pagination and nested folder identity",
+      "elapsedMs": 48
+    },
+    {
+      "name": "Real Jenkins parameter discovery validates booleans and choices",
+      "elapsedMs": 108
+    },
+    {
+      "name": "Prepared trigger has no side effect and duplicate execute creates one actual build",
+      "elapsedMs": 8126
+    },
+    {
+      "name": "Actual progressive log preserves Unicode and its upstream byte cursor",
+      "elapsedMs": 31
+    },
+    {
+      "name": "Absent Pipeline and JUnit plugins remain explicitly unsupported",
+      "elapsedMs": 30
+    },
+    {
+      "name": "Actual running freestyle build is stopped and reconciles to ABORTED",
+      "elapsedMs": 9856
+    },
+    {
+      "name": "Actual non-runnable-node queue entry can be cancelled without creating a build",
+      "elapsedMs": 271
+    },
+    {
+      "name": "Shared connection favorites and project fences are enforced by actual service",
+      "elapsedMs": 22
+    },
+    {
+      "name": "A second real Jenkins instance has isolated jobs and routing",
+      "elapsedMs": 12204
+    },
+    {
+      "name": "Real TLS Kubernetes discovery identifies supported resources and absent OpenShift groups",
+      "elapsedMs": 533
+    },
+    {
+      "name": "Unsafe Kubernetes path components cannot retarget a ConfigMap read or delete preflight to its namespace",
+      "elapsedMs": 14
+    },
+    {
+      "name": "Actual Kubernetes list pagination preserves complete stable identities",
+      "elapsedMs": 18
+    },
+    {
+      "name": "Prepared Kubernetes dry run is read-only and exact apply is visible at the real API",
+      "elapsedMs": 108
+    },
+    {
+      "name": "Real stale resourceVersion is rejected without overwriting a concurrent change",
+      "elapsedMs": 85
+    },
+    {
+      "name": "Actual RBAC permits reader lists and denies reader mutation preflight",
+      "elapsedMs": 245
+    },
+    {
+      "name": "Real Secret responses expose metadata without secret payloads",
+      "elapsedMs": 14
+    },
+    {
+      "name": "Real Kubernetes watch observes a versioned external change without repeated mutation",
+      "elapsedMs": 1082
+    },
+    {
+      "name": "Real Deployment scale and restart modify desired state without claiming a rollout",
+      "elapsedMs": 220
+    },
+    {
+      "name": "Test-registered mesh CRDs are discovered by the native API and their persisted resources can be read",
+      "elapsedMs": 4283
+    },
+    {
+      "name": "Recreated Kubernetes name does not inherit an old UID action",
+      "elapsedMs": 199
+    },
+    {
+      "name": "Environment labels can be renamed without changing the actual target",
+      "elapsedMs": 32
+    },
+    {
+      "name": "Durable Operations restart preserves receipts, bindings and encrypted credentials",
+      "elapsedMs": 399
+    }
+  ],
+  "failedCases": [],
+  "observations": {
+    "upstream": {
+      "jenkins": {
+        "version": "2.580.1",
+        "warSha256": "393bf2476352dd726519fd1f92ce66eac7d23c0936e6967420b717060c4c40d0",
+        "plugins": [
+          {
+            "name": "commons-lang3-api",
+            "version": "3.21.0-122.v6a_ea_4fd34049",
+            "sha1": "CNyk6YwkL9Se1Fyj39gdTIX20Gk=",
+            "sha256Observed": "4d6194f8d3b3f2b69264f0403fe5a51846236a41f4e363f6aae45f82f7761657",
+            "source": "https://plugins.jenkins.io/api/plugin/commons-lang3-api",
+            "download": "https://updates.jenkins.io/download/plugins/commons-lang3-api/3.21.0-122.v6a_ea_4fd34049/commons-lang3-api.hpi"
+          },
+          {
+            "name": "ionicons-api",
+            "version": "94.vcc3065403257",
+            "sha1": "594kBrMGiuhTjBe53vJ8P9/9AcY=",
+            "sha256Observed": "95f3504375d628d887425ccdf32d5606a230261ee42dc683f13958d8e973ac3f",
+            "source": "https://plugins.jenkins.io/api/plugin/ionicons-api",
+            "download": "https://updates.jenkins.io/download/plugins/ionicons-api/94.vcc3065403257/ionicons-api.hpi"
+          },
+          {
+            "name": "cloudbees-folder",
+            "version": "6.1106.v3a_d9a_6d2465e",
+            "sha1": "Iqnkt/oldPguA9pHzj6t1weOfX4=",
+            "sha256Observed": "4ccfcfe145a1b36aef61f19187e8aa74eb3c90fdb9c9bfce865e09aa13c8a70a",
+            "source": "https://plugins.jenkins.io/api/plugin/cloudbees-folder",
+            "download": "https://updates.jenkins.io/download/plugins/cloudbees-folder/6.1106.v3a_d9a_6d2465e/cloudbees-folder.hpi"
+          }
+        ],
+        "csrf": "DefaultCrumbIssuer enabled; actual user API token"
+      },
+      "kubernetes": {
+        "apiServer": "1.36.2",
+        "envtestArchiveSha256": "f344e7c70961b100471eeea4d2555006f282a6a27bece7f42fbede77b29b886e",
+        "tls": "Generated private CA, trusted leaf certificate; rejectUnauthorized=true",
+        "boundary": "Real etcd and kube-apiserver only; no kubelet, scheduler, controller-manager or OpenShift distribution"
+      }
+    },
+    "jenkinsCatalog": [
+      {
+        "id": "Disabled",
+        "kind": "hudson.model.FreeStyleProject",
+        "runnable": false
+      },
+      {
+        "id": "Hold",
+        "kind": "hudson.model.FreeStyleProject",
+        "runnable": true
+      },
+      {
+        "id": "Queued",
+        "kind": "hudson.model.FreeStyleProject",
+        "runnable": true
+      },
+      {
+        "id": "Team",
+        "kind": "com.cloudbees.hudson.plugins.folder.Folder",
+        "runnable": false
+      }
+    ],
+    "jenkinsBuild": {
+      "receiptId": "97fecf12-0efe-4429-b7b8-d7ef99bd7716",
+      "queueId": "1",
+      "number": 1,
+      "result": "SUCCESS"
+    },
+    "jenkinsProgressiveOffsets": {
+      "opaqueUpstreamCursor": "808",
+      "plainUtf8BodyBytes": 821,
+      "explanation": "Raw offsets include ConsoleNotes; plain UTF-8 body length is not a Jenkins byte cursor",
+      "actualLogFileBytes": 808,
+      "consoleNoteObserved": true
+    },
+    "jenkinsLog": {
+      "pages": 1,
+      "unicodeObserved": true,
+      "characters": 805
+    },
+    "secondJenkins": {
+      "version": "2.580.1",
+      "independentHome": true,
+      "independentQueueAndBuild": true
+    },
+    "kubernetesResources": 67,
+    "kubernetesPathScope": {
+      "unsafeName": "..",
+      "getAndDeletePreflight": "validation rejection",
+      "namespaceUidPreserved": true,
+      "configMapUidAndRevisionPreserved": true,
+      "boundary": "Actual API state verified; zero-outbound assertion is covered separately by the provider unit fixture"
+    },
+    "meshBoundary": "Minimal test-registered EnvoyFilter/DestinationRule schemas and native Kubernetes persistence; no official Istio CRD bundle, istiod, OpenShift controllers or Envoy data plane",
+    "ui": {
+      "status": "passed",
+      "passed": 23,
+      "screenshots": [
+        "operations-jenkins-dark-darwin.png",
+        "operations-jenkins-light-darwin.png",
+        "operations-split-1024-dark-darwin.png",
+        "operations-cluster-dark-darwin.png",
+        "operations-cluster-light-darwin.png"
+      ]
+    },
+    "changeEvents": 172
+  },
+  "sourceHashes": {
+    "electron/operations/catalog.ts": "f508f4c44be21716a224189365ad9f8448453f130c6054e7378dd50baa632cb8",
+    "electron/operations/client.ts": "ed38b98dcacafeff7d74909adb35c9a0e364220673bacce6576df4faea566ac9",
+    "electron/operations/errors.ts": "4a93fa1b2d7e443dfc8283f52501fc30fb5289b0d3dd1a7c3a489eab065b902c",
+    "electron/operations/http.ts": "673045d68800078a76e6bcca909a8c62667b684c740dec3bdec3726bf1e13085",
+    "electron/operations/jenkins-logs.ts": "493e91611655ad59aba6026ecd7fc4b4c1d4dd9c5ed062266923253dea1cde0c",
+    "electron/operations/jenkins.ts": "3a104c3229d9901dfc493e5cd7b765d6a501a2021df04068557415a2ccbbcde0",
+    "electron/operations/kubernetes.ts": "0b370c3059e6167dd006125fe07c6bba3b0f527a03ce2c33f3a54b9cca3dec11",
+    "electron/operations/protocol.ts": "28a35878a8b9583b5256d4d7986f6963fa1115ebdd36a002d1bee264160440f7",
+    "electron/operations/provider.ts": "dda93ba26f10fb3e999d21600dee71a77517fe2c6ce33cbd04a707d10e80a1d1",
+    "electron/operations/service.ts": "b8f839c534384e3cc56f05eb1b2e308d326d62d7eacc79cc96b859382f66fbc0",
+    "shared/operations.ts": "eff22761fde3e312835f63d8ad6dd907f1f2bf38714e72244f4a1ea1896a3d8f",
+    "tools/ops-test-assets.mjs": "dd46a48ee463005aad8a9835a52c246f4882e1a53895ec74796568797925e68f",
+    "tools/ops-test-servers.mjs": "9c73158d557b08f27c24af4c09187e8a96a0b09ebb764d3599dcfbaaa756706d",
+    "tools/test-operations-live.mjs": "fc91ca991985bf082c4c70b1a40c71a52aff4e3daf59690924e810c6de1b0820",
+    "tests/fixtures/ops-ui-checks.mjs": "4cc3795b8a06671fbb3e89f1d5f8d84b84abd798bd07dcf42aba8c95d6a96dfe",
+    "electron/main.ts": "575495a0ab215c302d267b48a6f6745ebf9bbf8b90e55d0eee17da25733a88f1",
+    "electron/mcp.ts": "b1c031551913cc87ddd866331639d7a4b04b3eebdf69404013a7b8bccf7ac1bd",
+    "src/App.tsx": "24a0718367c98b052dcdc368e7f1800f9190bead0f55e92eb7814961a18519ef",
+    "src/Workspace.tsx": "445825b5d0e81fb798c136e068690339a21a1e2370c11abe52ffeb5fb96457e6",
+    "src/SettingsView.tsx": "e274d09530ecc7877db16f89aae2b114f7e43aa8e4763330b9d2c0582156cea2",
+    "src/JenkinsPanel.tsx": "94e0f864053be37ec2a85bb639376b4d2c7ceb03859c6debc152bd5b52874eb0",
+    "src/ClusterPanel.tsx": "ce2aa4b9cc808c94c86874e92b592640386989b26a80bbbfbb86522cbf60be1b",
+    "src/OperationsSettings.tsx": "d43aa156d1d68f95d4b8d7b797e38d024539eaee8615571625937bd322932566",
+    "src/ToolBoundary.tsx": "f17ecccba2101bc1f9d0f22c05ca749e16ad9eaccbdc29f2e554e81e38ed102b",
+    "src/ops-ui.tsx": "3dad227d49fa638842878f8c7349121e509c480b8d05ce99a3608f1d13d31131",
+    "src/operations.css": "b9038c0975357f06516a9486a00a960e5095beb0ede08ae6e24a40fb9309c03e"
+  },
+  "cleanup": [
+    {
+      "status": "fulfilled"
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "pid": 87410,
+        "exited": true,
+        "exitCode": 143,
+        "signal": null
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": [
+        {
+          "pid": 87211,
+          "exited": true,
+          "exitCode": 143,
+          "signal": null
+        },
+        [
+          {
+            "pid": 87216,
+            "exited": true,
+            "exitCode": null,
+            "signal": "SIGKILL"
+          },
+          {
+            "pid": 87215,
+            "exited": true,
+            "exitCode": null,
+            "signal": "SIGKILL"
+          }
+        ]
+      ]
+    }
+  ],
+  "publishedCopyNote": "Copied from final source acceptance; screenshot paths localized to this evidence directory. Original actual-run provenance and source hashes retained."
+}

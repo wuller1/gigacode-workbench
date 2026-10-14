@@ -455,16 +455,24 @@ async function invoke(
       "todo.replace",
       "artifact.register",
       "session.create",
+      "agent.spawn",
       "session.send",
       "session.peerMessage",
       "question.create",
       "memory.read",
+      "instruction.read",
       "memory.remember",
       "diagnostics.export",
     ]);
     if (!allowed.has(method)) throw new Error("Инструмент недоступен агенту");
+    if (method === "agent.spawn" && p.parentId !== agentSession)
+      throw new Error("Agent parent belongs to another session.");
+    if (method === "instruction.read" && p.sessionId !== agentSession)
+      throw new Error("Instruction history belongs to another session.");
     const result = await service.invoke(method, p);
     if (method === "session.create") sessionOwners.set(result.id, window.id);
+    if (method === "agent.spawn")
+      sessionOwners.set(result.session.id, window.id);
     return result;
   }
   if (method.startsWith("fs.") || method.startsWith("git."))
@@ -644,6 +652,7 @@ async function start() {
     emit,
     bundledCliPath: builtinCli?.path,
     mcpServersForSession: (id) => mcp.binding(id),
+    revokeSessionTools: (id) => mcp?.revokeBinding(id),
   });
   await service.init();
   database = new DatabaseService({

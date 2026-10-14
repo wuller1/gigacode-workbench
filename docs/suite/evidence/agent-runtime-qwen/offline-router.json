@@ -1,0 +1,424 @@
+{
+  "createdAt": "2026-10-14T11:51:41.735Z",
+  "runtime": {
+    "node": "v26.8.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "qwen": "0.25.1"
+  },
+  "transport": "Controlled loopback OpenAI SSE fixture; no real LLM or external provider calls",
+  "scope": "Actual headless Qwen safe-mode isolation and ordinary-tool budget; exploratory pure structured_output exception; actual current routeWithQwen with dedicated classifier system, six eager tools denied, host JSON validation and bounded classifier retry. No routing-quality, GigaCode-compatibility, or ACP-executor-binding claim.",
+  "currentRouterSourceSha256": "718f8525b99e3fa77bc2c38f86db12b38f78b22575ce9f0d8798c52e82a70e8a",
+  "excluded22Status": "Exploratory alternative: removes provider tool declarations in this fixture, but not the selected runtime; separate live-model evaluation rejected it for worse routing behavior.",
+  "scenarios": [
+    {
+      "kind": "plain",
+      "requests": 1,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": true,
+      "structuredOutputAdvertised": false,
+      "dedicatedSystemObserved": false,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        [
+          "edit",
+          "glob",
+          "grep_search",
+          "notebook_edit",
+          "read_file",
+          "run_shell_command",
+          "skill",
+          "tool_call",
+          "tool_search",
+          "write_file"
+        ]
+      ],
+      "maxToolCalls": 0,
+      "exitCode": 0,
+      "writeOccurred": false,
+      "mcpStarted": false,
+      "budgetReported": false,
+      "plainResultPresent": true,
+      "plainEnvelopeKeys": [
+        "0",
+        "1",
+        "2"
+      ],
+      "parsedRoleId": "reviewer"
+    },
+    {
+      "kind": "tool",
+      "requests": 1,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": true,
+      "structuredOutputAdvertised": false,
+      "dedicatedSystemObserved": false,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        [
+          "edit",
+          "glob",
+          "grep_search",
+          "notebook_edit",
+          "read_file",
+          "run_shell_command",
+          "skill",
+          "tool_call",
+          "tool_search",
+          "write_file"
+        ]
+      ],
+      "maxToolCalls": 0,
+      "exitCode": 55,
+      "writeOccurred": false,
+      "mcpStarted": false,
+      "budgetReported": true,
+      "plainResultPresent": false
+    },
+    {
+      "kind": "tool",
+      "requests": 1,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": true,
+      "structuredOutputAdvertised": false,
+      "dedicatedSystemObserved": false,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        [
+          "edit",
+          "glob",
+          "grep_search",
+          "notebook_edit",
+          "read_file",
+          "run_shell_command",
+          "skill",
+          "tool_call",
+          "tool_search",
+          "write_file"
+        ]
+      ],
+      "maxToolCalls": 1,
+      "exitCode": 53,
+      "writeOccurred": true,
+      "mcpStarted": false,
+      "budgetReported": false,
+      "plainResultPresent": false
+    },
+    {
+      "kind": "structured",
+      "requests": 1,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": true,
+      "structuredOutputAdvertised": true,
+      "dedicatedSystemObserved": true,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        [
+          "edit",
+          "glob",
+          "grep_search",
+          "notebook_edit",
+          "read_file",
+          "run_shell_command",
+          "skill",
+          "structured_output",
+          "tool_call",
+          "tool_search",
+          "write_file"
+        ]
+      ],
+      "maxToolCalls": 0,
+      "exitCode": 0,
+      "writeOccurred": false,
+      "mcpStarted": false,
+      "budgetReported": false,
+      "plainResultPresent": true,
+      "plainEnvelopeKeys": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "parsedRoleId": "reviewer"
+    },
+    {
+      "kind": "mixed",
+      "requests": 1,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": true,
+      "structuredOutputAdvertised": true,
+      "dedicatedSystemObserved": true,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        [
+          "edit",
+          "glob",
+          "grep_search",
+          "notebook_edit",
+          "read_file",
+          "run_shell_command",
+          "skill",
+          "structured_output",
+          "tool_call",
+          "tool_search",
+          "write_file"
+        ]
+      ],
+      "maxToolCalls": 0,
+      "exitCode": 0,
+      "writeOccurred": false,
+      "mcpStarted": false,
+      "budgetReported": false,
+      "plainResultPresent": true,
+      "plainEnvelopeKeys": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "parsedRoleId": "reviewer"
+    },
+    {
+      "kind": "route_invalid_json",
+      "requests": 2,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": false,
+      "structuredOutputAdvertised": false,
+      "dedicatedSystemObserved": true,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        [
+          "agent",
+          "enter_worktree",
+          "exit_worktree",
+          "get_goal",
+          "list_agents",
+          "read_mcp_resource",
+          "record_artifact",
+          "report_findings",
+          "send_message",
+          "task_stop",
+          "update_goal",
+          "web_fetch"
+        ],
+        [
+          "agent",
+          "enter_worktree",
+          "exit_worktree",
+          "get_goal",
+          "list_agents",
+          "read_mcp_resource",
+          "record_artifact",
+          "report_findings",
+          "send_message",
+          "task_stop",
+          "update_goal",
+          "web_fetch"
+        ]
+      ],
+      "exitCode": 0,
+      "attempts": 2,
+      "parsedRoleId": "reviewer",
+      "writeOccurred": false,
+      "mcpStarted": false,
+      "inheritedSystemDumpCreated": false,
+      "currentRouterSourceSha256": "718f8525b99e3fa77bc2c38f86db12b38f78b22575ce9f0d8798c52e82a70e8a",
+      "toolDeclarationsRemoved": false,
+      "note": "Actual current routeWithQwen in a separately spawned worker with isolated environment; first invalid/tool response repaired by a second classifier-only attempt. No executor task replay."
+    },
+    {
+      "kind": "route_invalid_role",
+      "requests": 2,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": false,
+      "structuredOutputAdvertised": false,
+      "dedicatedSystemObserved": true,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        [
+          "agent",
+          "enter_worktree",
+          "exit_worktree",
+          "get_goal",
+          "list_agents",
+          "read_mcp_resource",
+          "record_artifact",
+          "report_findings",
+          "send_message",
+          "task_stop",
+          "update_goal",
+          "web_fetch"
+        ],
+        [
+          "agent",
+          "enter_worktree",
+          "exit_worktree",
+          "get_goal",
+          "list_agents",
+          "read_mcp_resource",
+          "record_artifact",
+          "report_findings",
+          "send_message",
+          "task_stop",
+          "update_goal",
+          "web_fetch"
+        ]
+      ],
+      "exitCode": 0,
+      "attempts": 2,
+      "parsedRoleId": "reviewer",
+      "writeOccurred": false,
+      "mcpStarted": false,
+      "inheritedSystemDumpCreated": false,
+      "currentRouterSourceSha256": "718f8525b99e3fa77bc2c38f86db12b38f78b22575ce9f0d8798c52e82a70e8a",
+      "toolDeclarationsRemoved": false,
+      "note": "Actual current routeWithQwen in a separately spawned worker with isolated environment; first invalid/tool response repaired by a second classifier-only attempt. No executor task replay."
+    },
+    {
+      "kind": "route_tool",
+      "requests": 2,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": false,
+      "structuredOutputAdvertised": false,
+      "dedicatedSystemObserved": true,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        [
+          "agent",
+          "enter_worktree",
+          "exit_worktree",
+          "get_goal",
+          "list_agents",
+          "read_mcp_resource",
+          "record_artifact",
+          "report_findings",
+          "send_message",
+          "task_stop",
+          "update_goal",
+          "web_fetch"
+        ],
+        [
+          "agent",
+          "enter_worktree",
+          "exit_worktree",
+          "get_goal",
+          "list_agents",
+          "read_mcp_resource",
+          "record_artifact",
+          "report_findings",
+          "send_message",
+          "task_stop",
+          "update_goal",
+          "web_fetch"
+        ]
+      ],
+      "exitCode": 0,
+      "attempts": 2,
+      "parsedRoleId": "reviewer",
+      "writeOccurred": false,
+      "mcpStarted": false,
+      "inheritedSystemDumpCreated": false,
+      "currentRouterSourceSha256": "718f8525b99e3fa77bc2c38f86db12b38f78b22575ce9f0d8798c52e82a70e8a",
+      "toolDeclarationsRemoved": false,
+      "note": "Actual current routeWithQwen in a separately spawned worker with isolated environment; first invalid/tool response repaired by a second classifier-only attempt. No executor task replay."
+    },
+    {
+      "kind": "tool_less_wildcard",
+      "requests": 1,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": true,
+      "structuredOutputAdvertised": false,
+      "dedicatedSystemObserved": true,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        [
+          "edit",
+          "glob",
+          "grep_search",
+          "notebook_edit",
+          "read_file",
+          "run_shell_command",
+          "skill",
+          "tool_call",
+          "tool_search",
+          "write_file"
+        ]
+      ],
+      "maxToolCalls": 0,
+      "exitCode": 0,
+      "writeOccurred": false,
+      "mcpStarted": false,
+      "budgetReported": false,
+      "plainResultPresent": true,
+      "plainEnvelopeKeys": [
+        "0",
+        "1",
+        "2"
+      ],
+      "parsedRoleId": "reviewer",
+      "toolExclusionOption": "*",
+      "toolDeclarationsRemoved": false
+    },
+    {
+      "kind": "tool_less_explicit18",
+      "requests": 1,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": true,
+      "structuredOutputAdvertised": false,
+      "dedicatedSystemObserved": true,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        [
+          "edit",
+          "monitor",
+          "notebook_edit",
+          "run_shell_command",
+          "write_file"
+        ]
+      ],
+      "maxToolCalls": 0,
+      "exitCode": 0,
+      "writeOccurred": false,
+      "mcpStarted": false,
+      "budgetReported": false,
+      "plainResultPresent": true,
+      "plainEnvelopeKeys": [
+        "0",
+        "1",
+        "2"
+      ],
+      "parsedRoleId": "reviewer",
+      "toolExclusionOption": "glob,grep_search,read_file,skill,tool_call,tool_search,agent,enter_worktree,exit_worktree,get_goal,list_agents,read_mcp_resource,record_artifact,report_findings,send_message,task_stop,update_goal,web_fetch",
+      "toolDeclarationsRemoved": false
+    },
+    {
+      "kind": "tool_less_explicit22",
+      "requests": 1,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": false,
+      "structuredOutputAdvertised": false,
+      "dedicatedSystemObserved": true,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        []
+      ],
+      "maxToolCalls": 0,
+      "exitCode": 0,
+      "writeOccurred": false,
+      "mcpStarted": false,
+      "budgetReported": false,
+      "plainResultPresent": true,
+      "plainEnvelopeKeys": [
+        "0",
+        "1",
+        "2"
+      ],
+      "parsedRoleId": "reviewer",
+      "toolExclusionOption": "glob,grep_search,read_file,skill,tool_call,tool_search,agent,enter_worktree,exit_worktree,get_goal,list_agents,read_mcp_resource,record_artifact,report_findings,send_message,task_stop,update_goal,web_fetch,edit,notebook_edit,run_shell_command,write_file",
+      "toolDeclarationsRemoved": true
+    }
+  ],
+  "sensitiveNegativeControl": "With the same malicious tool response and a budget of one, write_file creates the controlled sentinel; zero blocks it before execution.",
+  "cleanup": "Owned temporary CLI home, runtime, project, sentinel files and fixture listener removed in finally"
+}

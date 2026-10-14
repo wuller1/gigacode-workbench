@@ -1,0 +1,148 @@
+{
+  "paidProviderRequests": 2,
+  "model": "qwen/qwen3.7-flash",
+  "results": [
+    {
+      "probe": "current_1024",
+      "exitCode": 1,
+      "elapsedMs": 7971,
+      "parseCategory": "cli_failure_envelope",
+      "diagnosticCategories": [
+        "structured_contract"
+      ],
+      "provider": [
+        {
+          "requestedMaxTokens": 1024,
+          "finishReasons": [
+            "stop",
+            "stop"
+          ],
+          "toolNames": [],
+          "visibleCharacters": 271,
+          "reasoningCharacters": 1178,
+          "usage": {
+            "prompt_tokens": 10306,
+            "completion_tokens": 370,
+            "total_tokens": 10676,
+            "cost": 0.00035728,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.00035728,
+              "upstream_inference_prompt_cost": 0.00030918,
+              "upstream_inference_completions_cost": 0.0000481
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 289,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "httpStatus": 200
+        }
+      ]
+    },
+    {
+      "probe": "4096_and_explicit_structured_exception",
+      "exitCode": 1,
+      "elapsedMs": 5478,
+      "parseCategory": "cli_failure_envelope",
+      "diagnosticCategories": [
+        "structured_contract"
+      ],
+      "provider": [
+        {
+          "requestedMaxTokens": 4096,
+          "finishReasons": [
+            "stop",
+            "stop"
+          ],
+          "toolNames": [],
+          "visibleCharacters": 194,
+          "reasoningCharacters": 799,
+          "usage": {
+            "prompt_tokens": 10306,
+            "completion_tokens": 250,
+            "total_tokens": 10556,
+            "cost": 0.000151216,
+            "is_byok": false,
+            "prompt_tokens_details": {
+              "cached_tokens": 7936,
+              "cache_write_tokens": 0,
+              "audio_tokens": 0,
+              "video_tokens": 0
+            },
+            "cost_details": {
+              "upstream_inference_cost": 0.000151216,
+              "upstream_inference_prompt_cost": 0.000118716,
+              "upstream_inference_completions_cost": 0.0000325
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 186,
+              "image_tokens": 0,
+              "audio_tokens": 0
+            }
+          },
+          "httpStatus": 200
+        }
+      ]
+    }
+  ],
+  "evidence": "Actual Qwen headless requests through a private, bounded diagnostic proxy to OpenRouter. Only synthetic tasks and sanitized metadata; raw bodies, environment, headers and credentials are excluded.",
+  "diagnosis": "Both requests stopped normally below their output budget and returned plain text without calling structured_output; Qwen rejected the unmet --json-schema terminal-tool contract. Raising output tokens did not fix it.",
+  "scope": "Two additional external provider requests. This report diagnoses the output contract; it does not establish general routing quality. The diagnostic executable reported 0.25.0; target application probes use 0.25.1 and are separate. Matching anchors, if any, are compatibility observations rather than a complete runtime identity.",
+  "cliReportedVersion": "0.25.0",
+  "runtimeComparison": {
+    "targetAppVersion": "0.25.1",
+    "comparedSourceAnchors": [
+      {
+        "file": "cli-entry.js",
+        "privateSha256": "06c2be3fcb1b451931d3e100acc7edd3ff748c74189f6fcc70300b5cd758f8e6",
+        "appSha256": "06c2be3fcb1b451931d3e100acc7edd3ff748c74189f6fcc70300b5cd758f8e6",
+        "identical": true
+      },
+      {
+        "file": "cli.js",
+        "privateSha256": "5c9458c620e43aaf7946611ded2d3e51e799c74bbc58a618cbab119790bcf70c",
+        "appSha256": "96be25d7a110d2add8f63b8b1d3ac5b810c1ec91c58bdfad91d09c4a83ff2f24",
+        "identical": false
+      },
+      {
+        "file": "chunks/chunk-A5MAHML6.js",
+        "privateSha256": "71458d84f7e8933f963e0726647d1a0370753142afefdfb05ddcd0c5e1f68255",
+        "appSha256": "71458d84f7e8933f963e0726647d1a0370753142afefdfb05ddcd0c5e1f68255",
+        "identical": true
+      },
+      {
+        "file": "chunks/chunk-HO724RA7.js",
+        "identical": false,
+        "reason": "not present under both names"
+      },
+      {
+        "file": "chunks/acpAgent-FSCEU2SB.js",
+        "identical": false,
+        "reason": "not present under both names"
+      },
+      {
+        "file": "chunks/chunk-WCM7H5HK.js",
+        "identical": false,
+        "reason": "not present under both names"
+      },
+      {
+        "file": "chunks/chunk-DMQ2VTH6.js",
+        "identical": false,
+        "reason": "not present under both names"
+      },
+      {
+        "file": "chunks/chunk-BFTRLQJP.js",
+        "identical": false,
+        "reason": "not present under both names"
+      }
+    ]
+  }
+}

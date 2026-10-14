@@ -1,6 +1,6 @@
 # Назначение инструкций роли и их применение к исполнителю
 
-Статус: подробный контракт для реализации в GigaCode UI. Профили и базовые инструкции уже находятся в пакете; описанные ниже native services, экран предпросмотра и автоматическое переключение ещё не реализованы в пользовательском приложении. GigaCode CLI не изменяется. Результат чтения Qwen — свидетельство о закреплённом upstream, не выполненная проверка установленного форка.
+Статус: полный контракт и частичная реализация 0.5. Native host уже собирает CORE + одну роль, сохраняет версии и использует проверенный system append для Qwen 0.25.1; подробные доказательства и границы — ../../docs/suite/AGENT-HARNESS-AUDIT.md. Остальные native services/activation preview/full workflow поля ниже остаются целевыми до отдельной приёмки. Существующий workplace LLM-router сохраняется; его код и GigaCode 26.10.6 здесь недоступны. Исследование upstream не заменяет проверку установленного форка.
 
 Иерархия остаётся **Project → Task → роли внутри Task**. Роль определяет ответственность текущего исполнителя. Она не создаёт новую задачу, не выдаёт права и не заменяет workflow. Выбор следующей роли описан в [ROLE_ROUTING](ROLE_ROUTING.md); здесь определены состав её инструкций, способ доставки и проверяемая активация. Использовать существующие CatalogService, InstructionRegistry, PromptAssembler, Task writer, SessionService и ContextPacketBuilder/TaskPacketBuilder из [нативного переноса](NATIVE_WORKBENCH_MIGRATION.md) и [TASK_WORKSPACE](TASK_WORKSPACE.md), без второго controller.
 
@@ -10,7 +10,7 @@
 
 | Слой Workbench | Источник и назначение | Время жизни |
 |---|---|---|
-| Общая база | [SYSTEM_PROMPT.md](../SYSTEM_PROMPT.md) и применимый протокол [CORE.md](../CORE.md): помощь, конструктивная критика, факты, scope, честные результаты, вопросы, журнал и recovery | Неизменяемый snapshot версии для данного execution binding; смена роли его не переписывает |
+| Общая база | [CORE.md](../CORE.md): помощь, конструктивная критика, факты, scope, честные результаты, вопросы, журнал и recovery. [SYSTEM_PROMPT.md](../SYSTEM_PROMPT.md) — legacy/bootstrap entrypoint, не второй слой для повторной компиляции | Неизменяемый snapshot версии для данного execution binding; смена роли его не переписывает |
 | Scoped project policy | Проверенные инструкции текущего проекта, принятый процесс/SDD, режим `personal_fast` или `established_strict`, применимые ограничения среды | Привязана к project ID, пути, версии и области; не переносится в другой проект |
 | Role overlay | Ровно один основной встроенный `profiles/<profileId>.md` либо зарегистрированная immutable custom version по [CUSTOM_PROFILES](CUSTOM_PROFILES.md): ответственность, способ исследования, результат и ограничения | Зафиксирована на исполнение/этап вместе с применимым project override; не все роли одновременно |
 | Stage contract | Snapshot workflow/stage: цель этапа, обязательные артефакты, checks, возвраты и действующие budgets | Источник — текущий run, а не пересказ модели |

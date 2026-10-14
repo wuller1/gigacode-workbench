@@ -1,0 +1,56 @@
+name: Agent harness on Windows
+
+on:
+  push:
+    branches: [main]
+    paths: ['app/**', 'workbench/**', '.github/workflows/agent-harness.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  harness-windows:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: app
+    env:
+      CI: true
+      CSC_IDENTITY_AUTO_DISCOVERY: false
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22.23.3'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci --include=optional
+      - run: node ../tools/check-bundle.mjs
+      - run: npm test
+      - run: npm run build
+      - name: Real Qwen system placement (local protocol provider, no external model)
+        timeout-minutes: 3
+        run: node tools/test-prompt-binding-live.mjs --capture-local-provider
+      - name: Real Qwen classifier isolation and negative controls
+        timeout-minutes: 3
+        run: node tools/test-qwen-router-offline.mjs
+      - name: Actual desktop role and instruction UX
+        timeout-minutes: 3
+        run: node tools/test-roles-ui.mjs
+      - name: Actual chat cancel, queue and resume
+        timeout-minutes: 3
+        run: node tools/test-chat-live.mjs
+      - name: Retain exact Windows evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agent-harness-windows-${{ github.sha }}
+          path: |
+            docs/suite/evidence/agent-runtime-qwen
+            docs/suite/evidence/agent-runtime-ui
+          retention-days: 14

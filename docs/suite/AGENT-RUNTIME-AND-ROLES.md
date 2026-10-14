@@ -1,5 +1,7 @@
 # Agent runtime, роли и отказоустойчивость
 
+Статус 0.5: часть этого целевого контракта реализована и проверена в [AGENT-HARNESS-AUDIT](AGENT-HARNESS-AUDIT.md). Native compiler использует CORE + одну роль; SYSTEM_PROMPT — legacy entrypoint. Остальные fields/services ниже являются целевыми там, где не подтверждены аудитом и исходниками.
+
 Этот документ связывает уже подготовленные профили и процессы Workbench с нативным UI. Он не объявляет новые возможности GigaCode CLI: системный prompt, выбор модели, reasoning, steering, subagents и MCP используются только после capability probe и фактического readback конкретной сборки.
 
 ## Единица работы
@@ -13,7 +15,7 @@
 Prompt assembler собирает immutable snapshot в таком порядке:
 
 1. ограничения платформы, разрешения и подтверждённые возможности CLI;
-2. базовые правила [`workbench/SYSTEM_PROMPT.md`](../../workbench/SYSTEM_PROMPT.md) и применимая часть [`CORE.md`](../../workbench/CORE.md): помощь, факты, качество, журнал, честные проверки, конструктивная критика;
+2. общие правила [`CORE.md`](../../workbench/CORE.md); [`SYSTEM_PROMPT.md`](../../workbench/SYSTEM_PROMPT.md) служит entrypoint для legacy/bootstrap и не дублируется в native compiler: помощь, факты, качество, журнал, честные проверки, конструктивная критика;
 3. versioned project rules и выбранный режим качества;
 4. Task contract: цель, scope, requirements, acceptance, решения, открытые вопросы и запреты;
 5. ровно один role overlay из `workbench/profiles/`;

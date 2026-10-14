@@ -9,7 +9,7 @@ Data runtime: перед переносом БД прочитай [DATABASE-RUNT
 1. перенести и активировать Workbench;
 2. сохранить полезные сведения прежней обвязки в общей памяти;
 3. адаптировать уже подключённые MCP к профилям;
-4. проверить установленный GigaCode CLI 26.9.75 и подключить его к приложению;
+4. проверить установленный GigaCode CLI 26.10.6 и подключить его к приложению;
 5. продолжить существующий проект GigaCode UI с учётом уже реализованного результата.
 
 Выполняй работу самостоятельно. Не останавливайся после чтения документов, составления плана или сообщения «настроено». Не проси пользователя повторить требования из этого репозитория. Задавай вопрос только при реальном блокере, который нельзя установить из открытого проекта, локальной конфигурации, сохранённого checkpoint или безопасного read-only осмотра. Обычные обратимые действия локальной настройки уже поручены.
@@ -32,7 +32,7 @@ Data runtime: перед переносом БД прочитай [DATABASE-RUNT
 
 Проверь и запиши с происхождением:
 
-- версию GigaCode CLI; ожидаемая версия пользователя — 26.9.75;
+- версию GigaCode CLI; актуальная ожидаемая версия пользователя — **26.10.6**; 26.9.75 в прежних отчётах является историческим baseline и не подтверждает новую установку;
 - фактическую CLI-команду или entrypoint и поддерживаемые ACP-аргументы;
 - Windows PowerShell 5.1, LanguageMode и доступность записи;
 - действующий `GIGACODE_SYSTEM_MD`, личный `GIGACODE.md`, каталоги памяти и профилей;
@@ -64,7 +64,7 @@ Data runtime: перед переносом БД прочитай [DATABASE-RUNT
 4. Определи `TargetRoot` из фактической конфигурации GigaCode; обычный вариант — `$env:USERPROFILE\.gigacode`. Не зашивай имя пользователя или диск.
 5. Подготовь новый личный `GIGACODE.md`, сохранив предметные ограничения пользователя и удалив конфликтующие процессные правила старой обвязки. Добавь короткие указатели на установленный Workbench, `local-context.json`, общую память и checkpoint.
 6. Запусти `install-user.ps1` сначала с `-PlanOnly`, проверь точный список изменений и конфликты. Примени установку только с возвращённым `ExpectedPlanHash` и теми же параметрами.
-7. Передавай `-GlobalContextPath` на подготовленный личный контекст. `-SetUserSystemPrompt` используй для порученной настройки `GIGACODE_SYSTEM_MD`, сохранив прежнее значение для восстановления.
+7. Передавай `-GlobalContextPath` на подготовленный личный контекст. Сохрани существующий `GIGACODE_SYSTEM_MD` с происхождением и способом отката; не меняй его ради смены ролей. `-SetUserSystemPrompt` — только для действительно проверенной и выбранной legacy установки. Для App используй процессный CORE + role binding из раздела 4а ниже; неизвестный GigaCode пока получает context-only без догадки о Qwen flags.
 8. `-IncludeAgents` применяй только после проверки формата нативных субагентов и реальных tool allowlists. Последовательные профили должны работать и без этого флага.
 9. Сохрани receipt, резервные копии, фактические пути и результаты проверок. Не устанавливай hooks и не запускай onboarding существующих репозиториев.
 
@@ -97,7 +97,7 @@ Data runtime: перед переносом БД прочитай [DATABASE-RUNT
 - `<memory_store>/bootstrap/gigacode-ui-handoff.json`;
 - `<memory_store>/bootstrap/gigacode-ui-handoff.md`.
 
-В них должны быть: `RepoRoot`, установленный Workbench, `TargetRoot`, memory store, receipt/backup, версии, MCP inventory/bindings, результаты probe, активация системного промпта, известный путь UI-репозитория, текущий этап, открытые ограничения и точный следующий шаг.
+В них должны быть: `RepoRoot`, установленный Workbench, `TargetRoot`, memory store, receipt/backup, версии, MCP inventory/bindings, результаты probe, фактический delivery mode/receipt инструкций и состояние router adapter, известный путь UI-репозитория, текущий этап, открытые ограничения и точный следующий шаг.
 
 Если изменение `GIGACODE_SYSTEM_MD` требует перезапуска:
 
@@ -105,9 +105,33 @@ Data runtime: перед переносом БД прочитай [DATABASE-RUNT
 2. сообщи пользователю только о необходимости полностью перезапустить GigaCode;
 3. в новой сессии сам найди checkpoint;
 4. не проси повторно прислать это поручение;
-5. проверь фактическую загрузку system prompt, `/workbench`, памяти, профилей и MCP.
+5. проверь фактическую загрузку legacy entrypoint/CORE, `/workbench`, памяти, профилей и MCP. Не называй ответ модели доказательством system placement; режим и scope подтверждения сохраняй отдельно.
 
 Выполни короткую безопасную проверку памяти между сессиями. Не используй ответ модели «всё работает» как доказательство; нужны readback, файлы или наблюдаемое поведение.
+
+## 4а. Перенеси роли, системные инструкции и рабочий LLM-router
+
+Это обязательная часть миграции обвязки. Не заменяй существующий удачный маршрутизатор встроенным fallback и не создавай второй controller рядом с ним.
+
+1. Сохрани backup/checkpoint текущих промптов, каталога ролей, router, session IDs и настроек запуска. Установи, где находятся общая политика, профиль, project rules, task context и реальные CLI settings. Сравни с `workbench/CORE.md`, `workbench/profiles/*.md`, `app/electron/prompt-binding.ts`, `app/electron/role-router.ts` и точкой `new WorkbenchService` в `app/electron/main.ts`. Переноси matching shared types/service contracts совместно.
+2. Общая исполняемая база — **CORE + ровно один профиль**. `SYSTEM_PROMPT.md` — legacy/bootstrap entrypoint, его не нужно повторно компилировать поверх CORE. Project policy, принятые требования и короткий task packet передаются отдельно. Не встраивай каталог, всю историю/SDD/память в system append.
+3. `compileInstructions` создаёт immutable текст, source hashes и fingerprint. `discoverPromptCapability`/`planPromptBinding` выбирают delivery. Текущая allowlisted source evidence относится к точным bytes **Qwen 0.25.1**, а не GigaCode 26.10.6. Для неизвестного Giga сохраняй **context-only** до source review и ACP-проверки реальной сборки. Не меняй family/version ради включения append.
+4. Найди действующий workplace LLM-router и подключи через **`WorkbenchOptions.routeProfile`** — тип `RoleRouter` из `app/electron/role-router.ts`. Adapter получает `RoleRoutingInput` и `AbortSignal`, возвращает `{profileId, reason, confidence}`. Используй request + conversation + task + project + доступные IDs; сопоставь поля прежнего router с этим контрактом. ID должен существовать, reason непустой, confidence 0..1; host валидирует ответ. Adapter уважает abort/deadline, не выполняет задачу и не выдаёт permissions. Credentials/context payload в диагностике не печатай.
+5. Передай adapter в существующий `new WorkbenchService({ ..., routeProfile })`. Не удаляй более качественную workplace router logic; оберни её проверенным контрактом. Headless Qwen router предназначен только для подтверждённого Qwen. Giga без adapter сохраняет текущую роль и `roleRouting.source=retained`: это ограниченный режим, **не готовая автоматическая маршрутизация** и не keyword-эквивалент LLM-router.
+6. Сохрани девять действующих workplace IDs и пользовательские настройки. Architect/database/designer/security/technical-writer добавляй как проверяемое расширение, не скрытую замену при импорте. Custom roles сохраняют ID/version/description/source, переименование не разрывает историю.
+7. Сравни варианты на одинаковых безопасных задачах: brief с противоречием, «теперь реализуй» после описания, локальная UI-правка, SQL/schema, диагностика, независимое review. Сначала structural/fixture без модели; model-сравнение — в уже разрешённом бюджете. Фиксируй профиль, пригодность результата, неподтверждённые утверждения, время/tokens при доступности. Доказуемо лучший существующий вариант сохрани; при несовместимых преимуществах подготовь diff/аргументы и один вопрос о конкретном варианте, а не о выборе роли.
+8. Проверь invalid/invented role, low confidence, router timeout/abort и изменение task/project/catalog во время routing. Очередь не потребляется отменённым решением; старое решение не исполняется после существенного изменения входов. Смена роли применяется на безопасной idle boundary, сохраняет Task/решения/evidence/pending и не меняет env/system file другого исполнителя.
+9. Process-scoped append сохраняет native CLI base. Существующие user system override/dump settings, duplicate append, Windows command-line overflow и непроверенный entrypoint требуют совместимого fallback/решения, не глобальной перезаписи. Не выдумывай append-file flag. `prepared` — план, `active` — наблюдаемая граница адаптера, не доказательство obedience/полного provider request.
+10. Сохрани receipt: source hashes, CLI path/version/fingerprint, delivery mode/reason/evidence scope, router adapter/version, проверки и непроверенное. Показывай роль/состояние компактно без ручного selector. Продолжи уже порученный UI-срез с checkpoint.
+
+Минимальная локальная регрессия из `app` под Windows PowerShell 5.1:
+
+```powershell
+npm.cmd exec --offline -- vitest run tests/prompt-binding.test.ts tests/role-routing.test.ts tests/agent-runtime.test.ts
+if ($LASTEXITCODE -ne 0) { throw 'Role/prompt regression failed' }
+```
+
+Эти tests подтверждают host/compiler/fixture, а не GigaCode совместимость. Бесплатный `node tools/test-prompt-binding-live.mjs` относится к вложенному allowlisted Qwen и выполняет только ACP initialize/new; это не Giga probe. Целевой GigaCode проверяй отдельно по `docs/MANUAL_ACP_PROBE.md`. Аудит текущего среза — `docs/suite/AGENT-HARNESS-AUDIT.md`; если его нет во взятой ревизии, используй код/тесты и зафиксируй отсутствие, не выдумывай результаты.
 
 ## 5. Подключи установленный GigaCode к приложению
 
@@ -190,7 +214,7 @@ Language acceptance требует доступной команды `python` с
 
 Сохрани несохранённые пользовательские изменения. Сопоставь существующую заготовку с этим `RepoRoot`; не затирай её целиком и не переноси mock вместо backend. Прочитай `SUITE-UPGRADE-AGENT.md` и заполни `suite/migration-inventory.example.json`, затем загружай только документы карточки из `suite/implementation-plan.json`. Для миграции прежних workflows дополнительно используй `workbench/START-GIGACODE-UI.md`. Источник фактов о готовности — `docs/IMPLEMENTATION_STATUS.md` и код, а не полный roadmap.
 
-Сохрани существующий LLM-router: fallback этого репозитория не заменяет его. Переноси проверенный недостающий контракт с полной цепочкой imports и matching shared types, а не отдельный экран поверх старого backend. SQL/IDE сохранение, host activityRevision, `expectedCloseActivity` и общий close barrier переносятся совместно по Data/IDE handoff.
+Сохрани существующий LLM-router и подключи через `WorkbenchOptions.routeProfile` по разделу 4а: retained/context fallback этого репозитория не заменяет его. Переноси проверенный недостающий контракт с полной цепочкой imports и matching shared types, а не отдельный экран поверх старого backend. SQL/IDE сохранение, host activityRevision, `expectedCloseActivity` и общий close barrier переносятся совместно по Data/IDE handoff.
 
 Первая работа на целевом репозитории:
 
@@ -212,7 +236,8 @@ Language acceptance требует доступной команды `python` с
 - прежняя конфигурация сохранена и существует путь отката;
 - общая память создана, миграция имеет отчёт и не содержит секретов;
 - MCP inventory и profile bindings основаны на реальных schemas;
-- активация system prompt проверена после требуемого перезапуска;
+- CORE + одна роль доставлены подтверждённым способом; append/context-only и границы доказательства видны; legacy activation проверена после перезапуска, если применялась;
+- рабочий LLM-router сохранён и подключён через adapter, либо retained-mode явно отмечен незавершённой автоматизацией;
 - GigaCode ACP/model/reasoning проверены на доступном бесплатном metadata уровне;
 - существующий UI-репозиторий определён или запрошен ровно один недостающий путь;
 - следующий UI-срез начат, если нет внешнего блокера;

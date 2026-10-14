@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-14T11:00:21.117Z",
+  "cli": "@qwen-code/qwen-code@0.25.1",
+  "model": "qwen/qwen3.7-flash",
+  "evidence": "actual CLI and external real-model routing; synthetic cases, no development-task execution",
+  "hostClassifierDispatches": 12,
+  "passed": 8,
+  "failed": 4,
+  "results": [
+    {
+      "id": "functional-brief",
+      "expected": "analyst",
+      "actual": "analyst",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 6471
+    },
+    {
+      "id": "criticism-is-not-formal-sdd",
+      "expected": "analyst",
+      "pass": false,
+      "transportFailure": true,
+      "elapsedMs": 7531
+    },
+    {
+      "id": "explicit-sdd",
+      "expected": "spec",
+      "actual": "analyst",
+      "confidence": 0.9,
+      "pass": false,
+      "elapsedMs": 12419
+    },
+    {
+      "id": "contextual-implementation",
+      "expected": "backend",
+      "pass": false,
+      "transportFailure": true,
+      "elapsedMs": 6476
+    },
+    {
+      "id": "small-ui-fix",
+      "expected": "frontend",
+      "actual": "frontend",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 6219
+    },
+    {
+      "id": "postgres-performance",
+      "expected": "database",
+      "actual": "database",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 7251
+    },
+    {
+      "id": "jenkins-operation",
+      "expected": "devops",
+      "actual": "devops",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 7310
+    },
+    {
+      "id": "investigate-failure",
+      "expected": "diagnostics",
+      "actual": "diagnostics",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 5825
+    },
+    {
+      "id": "independent-review",
+      "expected": "reviewer",
+      "actual": "reviewer",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 6617
+    },
+    {
+      "id": "behavior-acceptance",
+      "expected": "qa",
+      "actual": "qa",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 6387
+    },
+    {
+      "id": "personal-electron-slice",
+      "expected": "gigacode-ui",
+      "actual": "gigacode-ui",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 6655
+    },
+    {
+      "id": "existing-user-guide",
+      "expected": "technical-writer",
+      "pass": false,
+      "transportFailure": true,
+      "elapsedMs": 8024
+    }
+  ],
+  "limitations": "Small single-model sample; does not establish superiority, workplace-model quality, Giga compatibility or all task outcomes."
+}

@@ -5,6 +5,7 @@ import os from "node:os";
 import { fileURLToPath } from "node:url";
 import { WorkbenchService } from "../electron/service.js";
 import { AtomicStore } from "../electron/store.js";
+import type { RoleRouter } from "../electron/role-router.js";
 import {
   AcpConnection,
   classifyTransportText,
@@ -24,7 +25,7 @@ async function temporary() {
   folders.push(directory);
   return directory;
 }
-async function setup() {
+async function setup(routeProfile?: RoleRouter) {
   const root = await temporary();
   const data = path.join(root, "data"),
     bundle = path.join(root, "bundle"),
@@ -48,6 +49,7 @@ async function setup() {
     dataDir: data,
     bundleDir: bundle,
     emit: (e) => events.push(e),
+    routeProfile,
   });
   await service.init();
   services.push(service);
@@ -639,8 +641,16 @@ describe("durable backend", () => {
       (await logs(x.project)).find((l) => l.type === "permission").result,
     ).toEqual({ outcome: { outcome: "selected", optionId: "once" } });
   });
-  it("routes roles automatically from request and project context", async () => {
-    const x = await setup();
+  it("applies the LLM router decision from request and project context", async () => {
+    const x = await setup(async (input) => {
+      expect(input.project.name).toBe("Test");
+      expect(input.request).toContain("UI/UX");
+      return {
+        profileId: "designer",
+        reason: "Основной результат — UI/UX макет.",
+        confidence: 0.95,
+      };
+    });
     await x.service.invoke("session.send", {
       id: x.a.id,
       text: "Спроектируй UI/UX макет и проверь удобство интерфейса.",

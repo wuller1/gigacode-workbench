@@ -6,7 +6,7 @@
 
 ## Границы и источники
 
-- Подтверждённые детали upstream: [QWEN_BASELINE.md](QWEN_BASELINE.md), закреплённая ревизия и ссылки на код. GigaCode 26.9.75 проверяется отдельно на рабочем компьютере.
+- Подтверждённые детали upstream: [QWEN_BASELINE.md](QWEN_BASELINE.md), закреплённая ревизия и ссылки на код. Текущая цель — GigaCode 26.10.6: фактические executable/version/hash, справка и поведение проверяются отдельно на рабочем компьютере. Историческое исследование для 26.9.75 не подтверждает новую сборку.
 - Архитектурные референсы и готовые компоненты: [OPEN_SOURCE_RESEARCH.md](OPEN_SOURCE_RESEARCH.md). Заимствовать отдельное решение, сохраняя лицензию, вместо переноса чужого backend целиком.
 - Профиль, живые проверки и диагностические маршруты: [GIGACODE_UI.md](GIGACODE_UI.md), [PARALLEL_SESSIONS_FIX.md](PARALLEL_SESSIONS_FIX.md).
 - Визуальная система и измерения: [UI_REFERENCES.md](UI_REFERENCES.md), [DESIGN_QUALITY.md](DESIGN_QUALITY.md), [ICON_LIBRARY.md](ICON_LIBRARY.md), [ASSET_RIGHTS.md](ASSET_RIGHTS.md).

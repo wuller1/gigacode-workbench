@@ -1,0 +1,126 @@
+{
+  "status": "passed",
+  "platform": "darwin",
+  "scope": "Actual shipped Electron App, actual IPC/AtomicStore/WorkbenchService and local ACP fixture. No model, corporate MCP, Windows or native append acceptance claimed.",
+  "passed": [
+    {
+      "name": "Actual session.prepare produces context-only prepared receipt without sending a task",
+      "elapsedMs": 286
+    },
+    {
+      "name": "Retained router shows actual Analyst rather than a false Auto after a completed real fixture turn",
+      "elapsedMs": 225
+    },
+    {
+      "name": "Desktop composer fits 1000 and 1440 pixels",
+      "elapsedMs": 140
+    },
+    {
+      "name": "Settings exposes active context delivery and current fingerprint on the real completed executor",
+      "elapsedMs": 85
+    },
+    {
+      "name": "Builtin clone saves through actual profile editor and host without changing builtin or active binding",
+      "elapsedMs": 198
+    },
+    {
+      "name": "UTF-8 byte overflow is rejected in real profile UI and retains the saved version",
+      "elapsedMs": 532
+    },
+    {
+      "name": "Malformed Unicode is rejected through actual renderer IPC without corrupting saved instructions",
+      "elapsedMs": 15
+    },
+    {
+      "name": "Desktop Roles settings fit 1000 and 1440 pixels in light theme",
+      "elapsedMs": 337
+    }
+  ],
+  "expectedRejections": [
+    "UTF-8 byte overflow: rejected; editor draft and saved profile preserved",
+    "Invalid UTF-16 Unicode: rejected by real service over actual renderer IPC"
+  ],
+  "rendererErrors": [],
+  "widths": [
+    {
+      "viewport": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "composerLeft": 262,
+      "composerRight": 981
+    },
+    {
+      "viewport": 1440,
+      "documentClient": 1440,
+      "documentScroll": 1440,
+      "composerClient": 792,
+      "composerScroll": 792,
+      "composerLeft": 457.5,
+      "composerRight": 1249.5
+    },
+    {
+      "viewport": 1440,
+      "documentClient": 1440,
+      "documentScroll": 1440,
+      "composerClient": 792,
+      "composerScroll": 792,
+      "composerLeft": 457.5,
+      "composerRight": 1249.5,
+      "settingsClient": 848,
+      "settingsScroll": 848
+    },
+    {
+      "viewport": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "composerLeft": 262,
+      "composerRight": 981,
+      "settingsClient": 848,
+      "settingsScroll": 848
+    }
+  ],
+  "provenance": {
+    "sha256": {
+      "src/App.tsx": "24a0718367c98b052dcdc368e7f1800f9190bead0f55e92eb7814961a18519ef",
+      "src/SettingsView.tsx": "737149d0df1e10457ce7cdac69457f1ba24fe0c316254ef42cb14839f7516aa2",
+      "src/styles.css": "8ec016a2a51752769faa91bb128bd0712c059b2d548359d15c61456a99f48997",
+      "electron/service.ts": "bed5f77f0dbe8edb690aef3c55858e062b8658a954ab2a50bfcd370ab5ae84ee",
+      "electron/prompt-binding.ts": "806dccde598e529f93cfef4121fe9e6543d16778c546d65fc0873028d07c7521",
+      "electron/role-router.ts": "6de165e29a8c772d6ee5ea1138329da3f34ae43795d2a292415d844791d4f138",
+      "electron/preload.ts": "08e8dabebfa14df73b9295c7dcaa3c08450628686ff9723f8729fedbb4af8ea5",
+      "shared/types.ts": "931889a8d58fc4add95cac7c6d8e959bae7d8515204544c14a5ad519c7b74f4d",
+      "dist-electron/main.cjs": "8eed6e2c23e6448324a35916d521b1883a5a5edaacbb8f0da567b478c78dd073",
+      "dist-electron/preload.cjs": "089cefee118d4335518e4dd90819506adde2a2696d9eafd2ee28ec75f56fb767",
+      "../workbench/CORE.md": "94b4e494471775f492389f31563b1f071c7977d0ae781cc01af0fbd1c384da53",
+      "../workbench/profiles/analyst.md": "81437e3f1258b7fe5de3ff37d531a5b8b8c3d27c95f741b0c6d30d6cccbf11c2",
+      "dist/assets/ClusterPanel-B-T5figm.js": "08b0a2c9d39bf64691e3e3241772e6ea763e09590b46da9a505ed3afb4309c48",
+      "dist/assets/DatabasePanel-BV0lp_kd.js": "cc37bdb493cb011d54ca8474a113ce37bb0fbd3cd9399f8036995fb60e34b2a6",
+      "dist/assets/DatabasePanel-DKx5hzdU 2.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+      "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+      "dist/assets/JenkinsPanel-Cc9OEFVi.js": "ecc476ce4abae666c742851724c9faccaf30ac720f86a047c65422c708854768",
+      "dist/assets/OperationsSettings-CG8Ne5Ha.js": "c34d2e7ad80afa6215b6f496beef265add91d348e14298cd89c104db0b4ce448",
+      "dist/assets/dist-NCTH-79- 2.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+      "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+      "dist/assets/index-Dgo_msad.js": "6708e6a9bdf08ad4cf8b9c19244d620dfc6a068593b663c15c4cb937a403487c",
+      "dist/assets/index-jJ59orzg 2.css": "5e21e6886bf4ac107b72d597de6d151cd8b9965009e983b13be1253f2fd8e1ae",
+      "dist/assets/index-jJ59orzg.css": "5e21e6886bf4ac107b72d597de6d151cd8b9965009e983b13be1253f2fd8e1ae",
+      "dist/assets/ops-ui-8eM9bX_B 2.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+      "dist/assets/ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+      "dist/assets/ops-ui-eS3kfzCy.js": "56287487fd8fe48e6821fe848b9bca8a6608b2d0087ca6a0815e00a4a4ca48d0"
+    },
+    "unchangedDuringRun": true,
+    "changed": []
+  },
+  "screenshots": [
+    "roles-composer-dark-1440.png",
+    "roles-settings-light-1000.png"
+  ],
+  "cleanup": {
+    "application": "closed",
+    "ownedData": "removed"
+  }
+}

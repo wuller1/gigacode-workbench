@@ -38,6 +38,7 @@ export interface Message {
   tools?: ToolCall[];
   elapsedMs?: number;
   outcome?: "completed" | "cancelled" | "unknown";
+  instructionFingerprint?: string;
 }
 export interface QueueItem {
   id: string;
@@ -63,6 +64,19 @@ export interface Session {
   profileId: string;
   profileReason?: string;
   profileConfidence?: number;
+  roleRouting?: { source: "llm" | "retained"; reason: string; at: string };
+  instructionBinding?: {
+    schemaVersion: 1;
+    delivery: "append_system" | "context_only";
+    state: "prepared" | "active" | "closed";
+    profileId: string;
+    fingerprint: string;
+    contentHash: string;
+    runtimeFingerprint: string;
+    runtimeVersion?: string;
+    evidenceScope: "reviewed_qwen_0.25.1_source" | "unverified_runtime";
+    reason: string;
+  };
   model: string;
   reasoning: string;
   status: Status;

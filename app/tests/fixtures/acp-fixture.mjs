@@ -13,7 +13,7 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
   if(request.id==='permission-fixture' && request.result){log({type:'permission',result:request.result}); if(pending){result(pending.id,{stopReason:'end_turn'});pending=undefined;}return;}
   switch(request.method){
     case 'initialize':result(request.id,{protocolVersion:1,agentCapabilities:{},agentInfo:{name:'fixture',version:'1'}});break;
-    case 'session/new':current='session-'+process.pid;log({type:'session_new',pid:process.pid});result(request.id,{sessionId:current,configOptions:configs()});break;
+    case 'session/new':current='session-'+process.pid;log({type:'session_new',pid:process.pid});if(process.argv.includes('--hold-new-session'))setTimeout(()=>result(request.id,{sessionId:current,configOptions:configs()}),450);else result(request.id,{sessionId:current,configOptions:configs()});break;
     case 'session/set_config_option':
       if(request.params.configId==='model')model=request.params.value;else reasoning=request.params.value;
       log({type:'config_start',id:request.params.configId});
@@ -23,6 +23,7 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
       log({type:'prompt',pid:process.pid,sessionId:current,command,content,model,reasoning});pending={id:request.id,command};
       update({sessionUpdate:'agent_message_chunk',content:{type:'text',text:'start:'+command+' '}});
       if(command==='exit'){process.exit(3);break;}
+      if(command==='ignore-cancel')break;
       if(command==='malformed'){process.stdout.write('<html><title>Gateway 502</title><script>secret()</script><body>bad gateway</body></html>\n');break;}
       if(command==='permission'){write({jsonrpc:'2.0',id:'permission-fixture',method:'session/request_permission',params:{sessionId:current,toolCall:{title:'Read a fixture'},options:[{optionId:'once',name:'Allow once',kind:'allow_once'},{optionId:'no',name:'Deny',kind:'reject_once'}]}});break;}
       if(command==='plan')update({sessionUpdate:'plan',entries:[{content:'Read evidence',status:'completed',priority:'high'},{content:'Implement',status:'in_progress',priority:'medium'}]});
@@ -40,6 +41,6 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
       }
       setTimeout(()=>{if(pending?.id!==request.id)return;update({sessionUpdate:'agent_message_chunk',content:{type:'text',text:'done:'+command}});result(request.id,{stopReason:'end_turn'});pending=undefined;},command.startsWith('hold ui')?120000:command.startsWith('hold')?450:30);break;
     }
-    case 'session/cancel':if(pending){const capture=pending;log({type:'cancel',command:capture.command});setTimeout(()=>{if(pending===capture){result(capture.id,{stopReason:'cancelled'});pending=undefined;}},140);}break;
+    case 'session/cancel':if(pending){const capture=pending;log({type:'cancel',command:capture.command});if(capture.command==='ignore-cancel')break;setTimeout(()=>{if(pending===capture){result(capture.id,{stopReason:'cancelled'});pending=undefined;}},140);}break;
   }
 });

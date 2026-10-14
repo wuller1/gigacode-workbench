@@ -266,6 +266,60 @@
     "default_by_project_mode": {
       "personal_fast": "automaticWithinScope",
       "established_strict": "assisted"
+    },
+    "selection_owner": "llm_router_with_validated_host_activation",
+    "manual_profile_selection": false,
+    "switch_policy": {
+      "inputs": [
+        "current_request",
+        "conversation_goal_and_recent_delta",
+        "project_policy_and_domain",
+        "task_stage_and_accepted_requirements",
+        "current_role_and_pending_work",
+        "verified_runtime_capabilities"
+      ],
+      "one_primary_role_per_executor": true,
+      "prefer_current_role_when_sufficient": true,
+      "recompute_on": [
+        "meaningful_user_scope_change",
+        "stage_transition",
+        "new_evidence_changes_required_expertise",
+        "current_role_mismatch"
+      ],
+      "do_not_recompute_on": [
+        "panel_open",
+        "tab_focus",
+        "same_request_retry",
+        "preview_render"
+      ],
+      "scope_or_permission_change_from_role": false,
+      "activation": "immutable_capture_at_safe_boundary; pending operations and running turn keep prior binding",
+      "uncertain_choice": "preserve safe current role or address missing facts; do not ask user to choose a role catalog",
+      "independent_review": "separate execution inspecting sources; relabeling author is not independence",
+      "keyword_fallback": "explicit degraded mode only; not equivalent to the requested LLM-only workplace router"
+    },
+    "migration": {
+      "preserve_workplace_llm_router": true,
+      "existing_workplace_profiles": [
+        "analyst",
+        "spec",
+        "backend",
+        "frontend",
+        "devops",
+        "qa",
+        "reviewer",
+        "diagnostics",
+        "gigacode-ui"
+      ],
+      "additional_profile_templates": [
+        "architect",
+        "database",
+        "designer",
+        "security",
+        "technical-writer"
+      ],
+      "activate_additional_roles_automatically_on_import": false,
+      "compare_before_replace": "evaluate current prompts/router against actual tasks; preserve better existing behavior, do not overwrite customizations silently"
     }
   },
   "context_budget_policy": {
@@ -273,5 +327,18 @@
     "nominal_window_tokens": 256000,
     "window_source": "user_reported_verify_actual_runtime",
     "load_all_roles_or_journals": false
+  },
+  "prompt_composition_policy": {
+    "common_base": "CORE.md",
+    "legacy_entrypoint": "SYSTEM_PROMPT.md",
+    "role_overlay": "profiles/<profileId>.md",
+    "one_overlay": true,
+    "project_and_task_context": "bounded separate versioned inputs",
+    "preserve_native_cli_instructions": true,
+    "preferred_delivery": "verified_native_append",
+    "fallback_delivery": "honestly_reported_context_only",
+    "capability_probe": "actual executable/version/ACP surface; upstream support does not verify GigaCode fork",
+    "cache": "versioned non-secret source fingerprint; no LLM call for deterministic prompt composition",
+    "quality_claim": "architecture preference, not measured model superiority until representative A/B evaluation"
   }
 }

@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-14T11:03:03.220Z",
+  "cli": "@qwen-code/qwen-code@0.25.1",
+  "model": "qwen/qwen3.7-flash",
+  "evidence": "actual CLI and external real-model routing; synthetic cases, no development-task execution",
+  "hostClassifierDispatches": 12,
+  "passed": 9,
+  "failed": 3,
+  "results": [
+    {
+      "id": "functional-brief",
+      "expected": "analyst",
+      "actual": "analyst",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 6641
+    },
+    {
+      "id": "criticism-is-not-formal-sdd",
+      "expected": "analyst",
+      "actual": "analyst",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 6294
+    },
+    {
+      "id": "explicit-sdd",
+      "expected": "spec",
+      "actual": "spec",
+      "confidence": 0.9,
+      "pass": true,
+      "elapsedMs": 7926
+    },
+    {
+      "id": "contextual-implementation",
+      "expected": "backend",
+      "actual": "backend",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 6851
+    },
+    {
+      "id": "small-ui-fix",
+      "expected": "frontend",
+      "actual": "frontend",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 6088
+    },
+    {
+      "id": "postgres-performance",
+      "expected": "database",
+      "pass": false,
+      "failure": "Router CLI failed; the task request was not executed.",
+      "elapsedMs": 6121
+    },
+    {
+      "id": "jenkins-operation",
+      "expected": "devops",
+      "pass": false,
+      "failure": "Router returned an invalid role decision.",
+      "elapsedMs": 5370
+    },
+    {
+      "id": "investigate-failure",
+      "expected": "diagnostics",
+      "actual": "diagnostics",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 7698
+    },
+    {
+      "id": "independent-review",
+      "expected": "reviewer",
+      "actual": "reviewer",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 6515
+    },
+    {
+      "id": "behavior-acceptance",
+      "expected": "qa",
+      "pass": false,
+      "failure": "Router returned an invalid role decision.",
+      "elapsedMs": 6036
+    },
+    {
+      "id": "personal-electron-slice",
+      "expected": "gigacode-ui",
+      "actual": "gigacode-ui",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 8032
+    },
+    {
+      "id": "existing-user-guide",
+      "expected": "technical-writer",
+      "actual": "technical-writer",
+      "confidence": 0.9,
+      "pass": true,
+      "elapsedMs": 7496
+    }
+  ],
+  "limitations": "Small single-model sample; does not establish superiority, workplace-model quality, Giga compatibility or all task outcomes."
+}

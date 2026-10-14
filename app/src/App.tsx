@@ -1265,11 +1265,11 @@ function Chat({
               title={`${profileName(
                 state.profiles.find((p) => p.id === session.profileId),
                 session.profileId,
-              )} · ${session.profileReason || "Роль выбрана автоматически"}`}
+              )} · ${session.profileReason || "Выбор роли ожидается"}${session.instructionBinding ? ` · ${session.instructionBinding.delivery === "append_system" ? "Системное дополнение" : "Контекст"} · ${session.instructionBinding.state} · ${session.instructionBinding.fingerprint.slice(0, 12)} · ${session.instructionBinding.reason}` : ""}`}
             >
               <Icon name="profile" size={14} />
               <span>
-                {session.profileConfidence === 0
+                {session.profileConfidence === 0 && !session.roleRouting
                   ? "Авто"
                   : profileName(
                       state.profiles.find((p) => p.id === session.profileId),

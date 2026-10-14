@@ -3,6 +3,8 @@ name: Windows desktop
 on:
   push:
     branches: [main]
+    # Evidence/publication updates do not change the already tested runtime.
+    paths-ignore: ['docs/**', 'README.md']
   pull_request:
   workflow_dispatch:
 

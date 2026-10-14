@@ -1,0 +1,395 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "scope": "Bounded local synthetic microbenchmark of actual AtomicStore/WorkbenchService methods; no CLI, LLM, network, credentials or corporate data.",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1",
+    "filesystem": "owned temporary local directory; actual fsync/rename"
+  },
+  "sourceHashes": {
+    "app/electron/store.ts": "115e1473ca4c4807ead220dc50320623c87290508d650ba52ab64e9fde14086c",
+    "app/electron/service.ts": "da37dc31d00ff9e50a5727f04acb0e6c10d15ddcc7e988e34af7bf8d77835f65",
+    "app/electron/main.ts": "575495a0ab215c302d267b48a6f6745ebf9bbf8b90e55d0eee17da25733a88f1",
+    "app/src/api.ts": "965b0f78c7719697844969212e39d1df18638e36c4e47e8b9557afed97e4d26e",
+    "app/src/App.tsx": "24a0718367c98b052dcdc368e7f1800f9190bead0f55e92eb7814961a18519ef",
+    "app/electron/prompt-binding.ts": "0d01a2de8aa78e7ec479c44d9e54c79da8a58a4548cafe31b2fe5d48f04cef12"
+  },
+  "cases": [
+    {
+      "targetJsonBytes": 500000,
+      "actualJsonBytes": 500000,
+      "sessions": 8,
+      "messages": 160,
+      "publicSnapshotJsonBytes": 499515,
+      "structuredCloneRead": {
+        "samples": 8,
+        "minMs": 0.21,
+        "medianMs": 0.268,
+        "p95Ms": 0.521,
+        "maxMs": 0.521,
+        "rawMs": [
+          0.28,
+          0.271,
+          0.521,
+          0.21,
+          0.237,
+          0.258,
+          0.265,
+          0.273
+        ]
+      },
+      "stringifyCurrent": {
+        "samples": 8,
+        "minMs": 0.295,
+        "medianMs": 0.368,
+        "p95Ms": 0.408,
+        "maxMs": 0.408,
+        "rawMs": [
+          0.33,
+          0.401,
+          0.398,
+          0.408,
+          0.31,
+          0.295,
+          0.37,
+          0.366
+        ]
+      },
+      "publicSnapshotRead": {
+        "samples": 8,
+        "minMs": 0.179,
+        "medianMs": 0.181,
+        "p95Ms": 0.339,
+        "maxMs": 0.339,
+        "rawMs": [
+          0.182,
+          0.179,
+          0.181,
+          0.179,
+          0.18,
+          0.182,
+          0.339,
+          0.186
+        ]
+      },
+      "threePublicSnapshotReads": {
+        "samples": 8,
+        "minMs": 0.519,
+        "medianMs": 0.68,
+        "p95Ms": 0.828,
+        "maxMs": 0.828,
+        "rawMs": [
+          0.677,
+          0.713,
+          0.828,
+          0.52,
+          0.519,
+          0.68,
+          0.68,
+          0.726
+        ]
+      },
+      "atomicStoreUpdate": {
+        "samples": 4,
+        "minMs": 20.959,
+        "medianMs": 21.167,
+        "p95Ms": 21.667,
+        "maxMs": 21.667,
+        "rawMs": [
+          21.319,
+          21.667,
+          20.959,
+          21.015
+        ]
+      },
+      "serviceChangeIncludingRevisionClone": {
+        "samples": 4,
+        "minMs": 17.085,
+        "medianMs": 20.255,
+        "p95Ms": 21.376,
+        "maxMs": 21.376,
+        "rawMs": [
+          17.085,
+          20.373,
+          20.138,
+          21.376
+        ]
+      },
+      "logicalSnapshotBytesPerUpdate": 1000000,
+      "sourceFlushTimerMs": 60,
+      "logicalSnapshotMiBPerSecondAtSustained60msFlush": 15.89,
+      "threeWindowPublicJsonEquivalentMiBPerSecondAt60ms": 23.82,
+      "scalingEstimatesNote": "Byte volumes are source-based upper-cadence logical JSON estimates, not measured physical disk throughput or Electron IPC traffic; coalescing may lower realized cadence.",
+      "repeatedTaskScope": {
+        "turns": 10,
+        "descriptionCharacters": 12000,
+        "assembledPromptCharacters": 121370,
+        "scopeTextCharactersRepeated": 120000,
+        "scopeIncludedInEveryTurn": true,
+        "tokens": "not measured; native CLI system/tools/history overhead is unknown"
+      }
+    },
+    {
+      "targetJsonBytes": 5000000,
+      "actualJsonBytes": 5000000,
+      "sessions": 40,
+      "messages": 800,
+      "publicSnapshotJsonBytes": 4997725,
+      "structuredCloneRead": {
+        "samples": 8,
+        "minMs": 3.337,
+        "medianMs": 4.519,
+        "p95Ms": 6.086,
+        "maxMs": 6.086,
+        "rawMs": [
+          3.337,
+          3.363,
+          4.454,
+          5.168,
+          6.086,
+          3.706,
+          4.584,
+          5.056
+        ]
+      },
+      "stringifyCurrent": {
+        "samples": 8,
+        "minMs": 3.087,
+        "medianMs": 4.351,
+        "p95Ms": 5.034,
+        "maxMs": 5.034,
+        "rawMs": [
+          4.417,
+          4.739,
+          3.937,
+          4.668,
+          4.286,
+          5.034,
+          3.087,
+          3.717
+        ]
+      },
+      "publicSnapshotRead": {
+        "samples": 8,
+        "minMs": 2.287,
+        "medianMs": 2.443,
+        "p95Ms": 5.717,
+        "maxMs": 5.717,
+        "rawMs": [
+          2.353,
+          2.42,
+          2.465,
+          2.401,
+          2.606,
+          4.707,
+          5.717,
+          2.287
+        ]
+      },
+      "threePublicSnapshotReads": {
+        "samples": 8,
+        "minMs": 7.17,
+        "medianMs": 7.557,
+        "p95Ms": 8.952,
+        "maxMs": 8.952,
+        "rawMs": [
+          8.839,
+          8.952,
+          8.839,
+          7.17,
+          7.194,
+          7.384,
+          7.729,
+          7.215
+        ]
+      },
+      "atomicStoreUpdate": {
+        "samples": 4,
+        "minMs": 41.027,
+        "medianMs": 42.462,
+        "p95Ms": 44.048,
+        "maxMs": 44.048,
+        "rawMs": [
+          44.048,
+          42.941,
+          41.027,
+          41.983
+        ]
+      },
+      "serviceChangeIncludingRevisionClone": {
+        "samples": 4,
+        "minMs": 42.088,
+        "medianMs": 43.516,
+        "p95Ms": 45.174,
+        "maxMs": 45.174,
+        "rawMs": [
+          43.945,
+          42.088,
+          43.088,
+          45.174
+        ]
+      },
+      "logicalSnapshotBytesPerUpdate": 10000000,
+      "sourceFlushTimerMs": 60,
+      "logicalSnapshotMiBPerSecondAtSustained60msFlush": 158.95,
+      "threeWindowPublicJsonEquivalentMiBPerSecondAt60ms": 238.31,
+      "scalingEstimatesNote": "Byte volumes are source-based upper-cadence logical JSON estimates, not measured physical disk throughput or Electron IPC traffic; coalescing may lower realized cadence.",
+      "repeatedTaskScope": {
+        "turns": 10,
+        "descriptionCharacters": 12000,
+        "assembledPromptCharacters": 121370,
+        "scopeTextCharactersRepeated": 120000,
+        "scopeIncludedInEveryTurn": true,
+        "tokens": "not measured; native CLI system/tools/history overhead is unknown"
+      }
+    }
+  ],
+  "limitations": [
+    "Four timed samples per durable-write path, eight per CPU/read path; descriptive local timings, not a production latency benchmark.",
+    "No Electron IPC serialization, real renderer parse/Markdown/layout, Windows/VARM/remote disk, LLM latency or tokenizer inference measured.",
+    "Source-level scaling and payload-volume estimates are distinguished from observed timings.",
+    "Synthetic data max 5,000,000 JSON bytes, all owned files removed after run."
+  ],
+  "sourceUnchangedDuringRun": true,
+  "sourceChanged": [],
+  "cleanup": {
+    "ownedDataRemoved": true,
+    "servicesDisposed": true,
+    "noCliStarted": true
+  },
+  "methodology": {
+    "compiledActualSource": "esbuild bundle of app/electron/service.ts loaded in a temporary Node process; actual AtomicStore and WorkbenchService methods, including validateState and durable fsync/rename",
+    "syntheticShape": "4 projects, 8 or 40 tasks/sessions, 20 messages/session, built-in profiles loaded from current workbench. ASCII content padded to exactly 500000 / 5000000 JSON bytes.",
+    "timedWriteMutation": "Append five ASCII characters to one message; store.update also increments revision, service.change performs its actual revision increment and notification revision read.",
+    "warmup": "One unreported call immediately before each sampled method.",
+    "samples": "4 durable writes per method/case; 8 read/CPU samples; raw values included.",
+    "revisionBroadcast": "emit callback only counts, no attached renderer. threePublicSnapshotReads measures 3 actual host snapshot reads, not IPC/rendering.",
+    "retainedScope": "Task description set to 12000 ASCII chars; 10 calls to actual buildPrompt(hasContext=true) with short distinct follow-ups. No model prompts sent.",
+    "maxSingleDataBytes": 5000000,
+    "transientProbeSha256": "1119c70f7a4af7a7d7f1c5c47447387cd26be809c6b2d0593302090405c5f223"
+  },
+  "remainingFindings": [
+    {
+      "priority": 1,
+      "id": "full-state-durable-stream-writes",
+      "status": "remaining",
+      "finding": "Streaming persists the entire application state and previous snapshot for every coalesced batch; even a few characters require full clone, validation, two JSON serializations and two fsync/rename snapshots.",
+      "sourceEvidence": [
+        {
+          "path": "app/electron/service.ts",
+          "line": 2234,
+          "observation": "Streaming flush timer is 60 ms, not 180 ms."
+        },
+        {
+          "path": "app/electron/service.ts",
+          "line": 2255,
+          "observation": "Flush delegates the batch to full change/store.update."
+        },
+        {
+          "path": "app/electron/store.ts",
+          "line": 122,
+          "observation": "Full structuredClone per transaction."
+        },
+        {
+          "path": "app/electron/store.ts",
+          "line": 126,
+          "observation": "Full draft stringify, plus previous snapshot stringify at 131."
+        },
+        {
+          "path": "app/electron/store.ts",
+          "line": 131,
+          "observation": "Two atomic snapshot writes per update."
+        },
+        {
+          "path": "app/electron/store.ts",
+          "line": 145,
+          "observation": "File fsync per atomic snapshot; directory fsync also runs on POSIX."
+        }
+      ],
+      "observed": "500kB AtomicStore update median 21.167 ms ; 5 MB median 42.462 ms. Actual service.change 5 MB median 43.516 ms. Local Apple M1 / macOS / Node 26.8.1 ; 4 samples each, no Windows inference.",
+      "scalingInference": "At a hypothetical sustained 60 ms flush cadence, two 5 MB logical snapshots correspond to 158.95 MiB/s of serialized snapshot bytes. This is a source-based logical volume estimate, not measured physical disk throughput. Serial queue coalescing may lower cadence and increase lag.",
+      "nextSlice": "Versioned append-only journal/WAL for small stream deltas and operation intents with periodic snapshots. Preserve single writer, durable acknowledgements, unknown-outcome recovery, crash replay and migration/rollback; do not merely drop fsync or weaken evidence."
+    },
+    {
+      "priority": 1,
+      "id": "whole-app-snapshot-fanout-and-chat-render",
+      "status": "partially_mitigated_after_baseline",
+      "finding": "Every state change broadcasts a revision to all windows; every subscribed renderer fetches a full public AppState, including unrelated sessions/history/profile prompts. Host clones again just to read revision. The chat renders all retained messages rather than a windowed transcript.",
+      "sourceEvidence": [
+        {
+          "path": "app/electron/service.ts",
+          "line": 391,
+          "observation": "store.read() clones full state to obtain revision."
+        },
+        {
+          "path": "app/electron/service.ts",
+          "line": 379,
+          "observation": "snapshot() clones full persisted store before dropping private fields."
+        },
+        {
+          "path": "app/electron/main.ts",
+          "line": 65,
+          "observation": "Global event fans out to every open window when targetWindowId is absent."
+        },
+        {
+          "path": "app/src/api.ts",
+          "line": 38,
+          "observation": "Renderer refresh invokes full state.get."
+        },
+        {
+          "path": "app/src/api.ts",
+          "line": 55,
+          "observation": "Every state.changed schedules refresh; in-flight coalescing avoids overlapping reads but still retains full-state fetch semantics."
+        },
+        {
+          "path": "app/src/App.tsx",
+          "line": 1057,
+          "observation": "session.messages.map renders the whole active transcript; Markdown at 1084."
+        }
+      ],
+      "observed": "Three actual host snapshot reads median 0.680 ms at 500 kB and 7.557 ms at 5 MB. Public snapshot JSON equivalent is 499515 / 4997725 bytes. Electron IPC serialization, React render, Markdown and layout were not timed.",
+      "nextSlice": "Revisioned per-project/session deltas with resync/full snapshot only after gap, subscription scoping, lazy transcript pages and virtualized/message-memoized rendering. Keep stale-event generation checks, unread/background execution, multi-window ownership and lossless recoverability.",
+      "finalCandidateMitigation": "Only the extra full-store revision clone is removed. Full snapshot fetch/fanout and transcript rendering remain. Baseline sourceEvidence and timings are retained as historical evidence."
+    },
+    {
+      "priority": 2,
+      "id": "repeated-task-prefix-and-host-only-context-budget",
+      "status": "remaining",
+      "finding": "Task goal/scope excerpt up to 12000 characters is added on every turn even after context is established. Input guard checks assembled host string length only, not native CLI history/system/tools/media/output reserve.",
+      "sourceEvidence": [
+        {
+          "path": "app/electron/service.ts",
+          "line": 1766,
+          "observation": "Common instruction packet is initial-context only."
+        },
+        {
+          "path": "app/electron/service.ts",
+          "line": 1793,
+          "observation": "Goal/scope excerpt is outside initial-context guard and repeats on every turn."
+        },
+        {
+          "path": "app/electron/service.ts",
+          "line": 1799,
+          "observation": "180000 JavaScript-character guard covers host payload only."
+        },
+        {
+          "path": "app/electron/mcp.ts",
+          "line": 895,
+          "observation": "Addressed task_history already provides retained context access."
+        }
+      ],
+      "observed": "10 calls to actual buildPrompt(hasContext=true) each include the 12000-character unchanged scope: 120000 scope characters repeated. This is character measurement, not tokenizer/provider context usage.",
+      "nextSlice": "Capture accepted scope revision/fingerprint, send initial scope then bounded meaningful delta/reference when unchanged, with retrieval/resync after CLI compaction/restart. Add provider/runtime-aware context accounting when observable; retain estimated/unknown distinction and reserve output. Never silently delete accepted scope or assume CLI memory from local cache."
+    }
+  ],
+  "finalCandidateNote": {
+    "serviceSha256": "2acd147abc523108946b6c89874b6d92e62a15ca625b69dd59c4139e33d8a907",
+    "verifiedSourceChange": "WorkbenchService.change returns result and revision from the same AtomicStore transaction and emits that revision directly. The redundant full-store read/clone for state.changed.revision has been eliminated.",
+    "remaining": "Full-state clone/serialization/two durable snapshots, full public snapshot fanout and non-windowed transcript rendering, and repeated task-scope/context-budget limitations remain.",
+    "timingScope": "All timing samples in this report are historical baseline measurements for sourceHashes above, before the redundant revision clone was removed. They are not final-candidate performance measurements.",
+    "speedClaim": "No final-candidate speedup or benchmark superiority claimed; only the removed operation is confirmed by source inspection."
+  }
+}

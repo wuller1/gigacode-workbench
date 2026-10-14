@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-14T11:25:42.293Z",
+  "cli": "@qwen-code/qwen-code@0.25.1",
+  "model": "qwen/qwen3.7-flash",
+  "evidence": "actual CLI and external real-model routing; synthetic cases, no development-task execution",
+  "hostClassifierDispatches": 12,
+  "hostClassifierLaunches": 18,
+  "routerSourceSha256": "136432fa882996d779d241a775ab70980ad1a787b3071b7a4e603dc176e62acb",
+  "passed": 10,
+  "failed": 2,
+  "results": [
+    {
+      "id": "functional-brief",
+      "expected": "analyst",
+      "actual": "analyst",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 5336
+    },
+    {
+      "id": "criticism-is-not-formal-sdd",
+      "expected": "analyst",
+      "actual": "analyst",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 5086
+    },
+    {
+      "id": "explicit-sdd",
+      "expected": "spec",
+      "pass": false,
+      "failure": "Router CLI failed (exit 55); the task request was not executed.",
+      "elapsedMs": 13544
+    },
+    {
+      "id": "contextual-implementation",
+      "expected": "backend",
+      "actual": "backend",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 5666
+    },
+    {
+      "id": "small-ui-fix",
+      "expected": "frontend",
+      "actual": "frontend",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 15736
+    },
+    {
+      "id": "postgres-performance",
+      "expected": "database",
+      "actual": "database",
+      "confidence": 0.9,
+      "pass": true,
+      "elapsedMs": 11109
+    },
+    {
+      "id": "jenkins-operation",
+      "expected": "devops",
+      "pass": false,
+      "failure": "Router CLI failed (exit 55); the task request was not executed.",
+      "elapsedMs": 12571
+    },
+    {
+      "id": "investigate-failure",
+      "expected": "diagnostics",
+      "actual": "diagnostics",
+      "confidence": 0.9,
+      "pass": true,
+      "elapsedMs": 7129
+    },
+    {
+      "id": "independent-review",
+      "expected": "reviewer",
+      "actual": "reviewer",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 12253
+    },
+    {
+      "id": "behavior-acceptance",
+      "expected": "qa",
+      "actual": "qa",
+      "confidence": 1,
+      "pass": true,
+      "elapsedMs": 12051
+    },
+    {
+      "id": "personal-electron-slice",
+      "expected": "gigacode-ui",
+      "actual": "gigacode-ui",
+      "confidence": 0.95,
+      "pass": true,
+      "elapsedMs": 7460
+    },
+    {
+      "id": "existing-user-guide",
+      "expected": "technical-writer",
+      "actual": "technical-writer",
+      "confidence": 0.9,
+      "pass": true,
+      "elapsedMs": 6344
+    }
+  ],
+  "limitations": "Small single-model sample; does not establish superiority, workplace-model quality, Giga compatibility or all task outcomes."
+}

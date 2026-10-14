@@ -1,0 +1,148 @@
+{
+  "createdAt": "2026-10-14T11:48:20.267358+00:00",
+  "scope": "Independent runtime API audit and targeted corrections; not a complete product, corporate MCP, model quality, or Windows acceptance",
+  "baselineCommit": "f9594c7db91ab6c30c40d42afb2177b5f9360fca",
+  "candidate": "Uncommitted jointly edited candidate; final release provenance must bind the final commit separately",
+  "environment": {
+    "node": "v26.8.1",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "sourceHashes": {
+    "app/electron/mcp.ts": "b1c031551913cc87ddd866331639d7a4b04b3eebdf69404013a7b8bccf7ac1bd",
+    "app/tests/agent-runtime.test.ts": "495e5894f2641f25e61955e826b7226949189a9e448a5029ef8d9bfe4a730d7a",
+    "app/tools/test-qwen-router-offline.mjs": "168c8bc82430d2bc8c5b998302b104174624af672f71fe1689be49dca585e92c",
+    "app/electron/service.ts": "da37dc31d00ff9e50a5727f04acb0e6c10d15ddcc7e988e34af7bf8d77835f65",
+    "app/tests/fixtures/acp-fixture.mjs": "fcdfb0de187df9c36597351735caa7e26c085df6e76f25b22dd34fde4c8261a2"
+  },
+  "verification": {
+    "command": "cd app && npx vitest run tests/agent-runtime.test.ts tests/ui-mcp-native.test.ts tests/ide-mcp.test.ts tests/operations-gateway.test.ts tests/backend.test.ts tests/role-routing.test.ts tests/prompt-binding.test.ts",
+    "passed": 117,
+    "failed": 0,
+    "files": 7,
+    "targetedMcpSubset": {
+      "passed": 30,
+      "files": 4,
+      "breakdown": {
+        "agent-runtime.test.ts": 22,
+        "ui-mcp-native.test.ts": 2,
+        "ide-mcp.test.ts": 3,
+        "operations-gateway.test.ts": 3
+      }
+    },
+    "typecheck": {
+      "command": "cd app && npx tsc --noEmit",
+      "exitCode": 0
+    }
+  },
+  "corrections": [
+    {
+      "issue": "Advertised agent_spawn always passed the forbidden manual profileId to session.create",
+      "state": "fixed",
+      "mechanism": "Atomic host agent.spawn with durable operationId; optional advisory profile hint; exact authenticated parent binding",
+      "verification": "Actual MCP HTTP to WorkbenchService, concurrent retry deduplication, changed-payload rejection, invalid and foreign scope rejection"
+    },
+    {
+      "issue": "recover could reset a newly admitted turn while awaiting retirement of the old process",
+      "state": "fixed",
+      "mechanism": "Synchronous per-session configuring reservation and durable queue pause before process disposal",
+      "verification": "Deterministic disposal barrier and simultaneous send/resume/pump; exact continuation and preserved checkpoint"
+    },
+    {
+      "issue": "Bounded checkpoints lacked a way to retrieve omitted task scope and plan details",
+      "state": "fixed",
+      "mechanism": "Versioned task_context character/item pages with explicit lengths/truncation and scope validation",
+      "verification": "Oversized description exact roundtrip; plan pages and long todo detail retrieval; foreign and invalid cursor rejection"
+    },
+    {
+      "issue": "Agent status returned unbounded child lists and large output tails",
+      "state": "fixed",
+      "mechanism": "Default 10/max 20 workers, 1500 UTF-8 byte result tails, 64 KiB final response cap",
+      "verification": "25 workers and large CJK/emoji output; pages 20+5, intact tail, no replacement characters, explicit truncation and foreign scope rejection"
+    },
+    {
+      "issue": "Superseded ACP binding reused a still-valid bearer; slow upload could pass old initial authentication",
+      "state": "fixed",
+      "mechanism": "New random bearer at every binding; explicit revokeBinding lifecycle hook; authentication initially, after body consumption, and before tool dispatch; cancelled ACP process retired at a terminal boundary before continuation",
+      "verification": "Old bearer returns 401; independent session remains usable; deterministic partial-body rotation returns 401 with zero invocations; immediate revoke and actual Workbench compact retire old binding; cancel→resume uses a different ACP PID and a fresh usable MCP binding with checkpoint"
+    },
+    {
+      "issue": "Historic instruction fingerprints were not discoverable through agent history and a retained version needed session-bound retrieval",
+      "state": "fixed",
+      "mechanism": "instruction_snapshot reads only hashes referenced by the bound conversation; task_history lists current and per-message fingerprints; immutable content is bound into the instruction manifest",
+      "verification": "Actual MCP HTTP across analyst→reviewer execution: old instructions remain retrievable as reference, current binding is unchanged, valid foreign stored snapshot and forged scope/hash/offset are rejected"
+    },
+    {
+      "issue": "Prepared and completed conversations accumulated unlimited warm ACP processes",
+      "state": "fixed",
+      "mechanism": "Serialized LRU pool bounds safe idle processes to maxConcurrent, reserves admission before yielding, persists checkpoint and closes/revokes binding before owned disposal; recently used processes are reused",
+      "verification": "Prepare four owners with cap two; hot reuse retains the same PID; active and queued owners remain protected; eviction resumes in a different PID with checkpoint, full retained history, historical instruction snapshot and fresh MCP bearer, without replay"
+    },
+    {
+      "issue": "CLI could accept cancel notification but never return a terminal prompt response",
+      "state": "fixed",
+      "mechanism": "Bounded 10-second cancellation watchdog (50ms fixture override), owned process retirement and durable UNKNOWN/paused state for dispatched work; priority input is preserved and automatic replay refused",
+      "verification": "Ignoring-cancel fixture reaches UNKNOWN, preserves priority input and blocks queue.resume until explicit recovery; both fresh startup and warm-client routing cancellation preserve undispatched input and retire revoked bindings"
+    },
+    {
+      "issue": "A worker inherited parent.model rather than the actual accepted ACP model configuration",
+      "state": "fixed",
+      "mechanism": "Atomic spawn clones accepted parent configValues into a separate child map; pending changes are excluded; model is restored first against the child catalog, then reasoning",
+      "verification": "Parent model switched to fixture-reasoning with low reasoning; child actual prompt uses both values, and a later parent switch to fixture-fast does not change the second child prompt"
+    }
+  ],
+  "sensitiveNegativeControls": [
+    {
+      "baseline": "HEAD service.ts before recover correction",
+      "observation": {
+        "wronglyAdmitted": true,
+        "regressionWouldFail": true
+      },
+      "method": "Isolated compiled baseline, same process-retirement barrier, no production source mutation"
+    },
+    {
+      "baseline": "HEAD MCP handler with rotation added but without post-body recheck",
+      "observation": {
+        "httpStatus": 200,
+        "hostInvocations": 1,
+        "regressionWouldFail": true
+      },
+      "method": "Isolated compiled baseline and deterministic partial-body barrier; fake host invoker only"
+    },
+    {
+      "evidence": "offline-router.json",
+      "observation": "Qwen tool budget 0 blocks advertised write_file before execution; budget 1 creates the controlled sentinel",
+      "method": "Actual Qwen 0.25.1 against loopback SSE fixture, no real LLM or external credentials",
+      "additionalStructuredGuard": "Dedicated small classifier system + profile-enum JSON schema + two-turn limit + ordinary-tool budget zero: pure structured_output exits 0 and parses reviewer; a mixed batch containing write_file before structured_output also exits 0 with no write.",
+      "currentRouterGuard": "Actual current routeWithQwen in separate environment-isolated workers: invalid JSON, invalid role and forbidden tool response each cause two classifier-only attempts and two local provider requests, then return reviewer without writes, MCP startup, inherited system prompt or system dump. Six eager tools are excluded; twelve other declarations remain, protected by the zero-execution budget.",
+      "exploratoryExclusion": "Literal wildcard leaves 10 declared tools; explicit 18 leaves five; explicit 22 leaves zero. The 22-tool alternative is not the selected runtime because separate live-model evaluation found worse behavior."
+    }
+  ],
+  "remainingLimits": [
+    {
+      "area": "Already admitted operations",
+      "detail": "Revocation blocks requests not yet admitted to host tool dispatch. An already admitted action may have effects; preserve operation IDs/receipts, reconcile observed state, and never claim revocation rolls back a remote write."
+    },
+    {
+      "area": "Managed agents",
+      "detail": "This slice is not a full DAG/lease/quota/worktree-isolation scheduler. Shared workspace requires actual coordination and verified ownership."
+    },
+    {
+      "area": "Questions",
+      "detail": "Non-permission tool question interruption and timeout lifecycle still needs stronger stale-answer handling; a saved answer must not be claimed delivered to a lost tool invocation."
+    },
+    {
+      "area": "Memory and logging",
+      "detail": "Global reference notes and retained transcripts exist; complete scoped project knowledge, semantic decision indexing and exhaustive untruncated raw event capture are not proved by role instructions."
+    },
+    {
+      "area": "Model and target runtime",
+      "detail": "No comparative old/new LLM quality evaluation and no workplace GigaCode 26.10.6 acceptance. Qwen loopback fixtures prove protocol guard behavior, not model intelligence or corporate compatibility."
+    },
+    {
+      "area": "Resource and cancellation boundaries",
+      "detail": "Only safe idle executors count toward the LRU warm pool cap (equal to maxConcurrent). Active, queued, configuring and unresolved owners are deliberately excluded; this is not a hard cap on all process memory. The 10-second cancellation deadline stops only the owned CLI process; external operations may still require reconciliation. No TTL or extra background runtime controller is introduced."
+    }
+  ],
+  "offlineQwenGuardScenarios": 11
+}

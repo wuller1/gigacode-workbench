@@ -66,6 +66,8 @@ export interface AcpOptions {
   executable: string;
   args: string[];
   cwd: string;
+  /** Complete child-only environment, useful for isolated probes; never mutates process.env. */
+  env?: NodeJS.ProcessEnv;
   onUpdate?: (params: any) => void;
   onPermission?: (params: any) => Promise<any>;
   onClose?: (error: Error) => void;
@@ -76,6 +78,7 @@ export function launchSpec(
   executable: string,
   args: string[],
   platform = process.platform,
+  inheritedEnv: NodeJS.ProcessEnv = process.env,
 ): {
   file: string;
   args: string[];
@@ -85,10 +88,10 @@ export function launchSpec(
   if (
     !executable ||
     /[\r\n\0]/.test(executable) ||
-    args.some((a) => typeof a !== "string" || /[\r\n\0]/.test(a))
+    args.some((a) => typeof a !== "string" || /\0/.test(a))
   )
     throw new Error("Invalid CLI executable or arguments.");
-  const env = { ...process.env };
+  const env = { ...inheritedEnv };
   if (/\.(?:c?js|mjs)$/i.test(executable)) {
     if (process.versions.electron) env.ELECTRON_RUN_AS_NODE = "1";
     return {
@@ -103,7 +106,7 @@ export function launchSpec(
         "Windows command wrappers require Windows; choose the CLI JavaScript entrypoint or executable.",
       );
     // cmd has different escaping from CreateProcess. Reject expansion/metacharacters instead of guessing.
-    if ([executable, ...args].some((a) => /[&|<>^%!()"`]/.test(a)))
+    if ([executable, ...args].some((a) => /[\r\n&|<>^%!()"`]/.test(a)))
       throw new Error(
         "Unsafe .cmd arguments; choose the CLI .js entrypoint or .exe instead.",
       );
@@ -166,7 +169,12 @@ export class AcpConnection {
   }
   async start(): Promise<any> {
     if (this.child) throw new Error("ACP connection has already started.");
-    const spec = launchSpec(this.options.executable, this.options.args);
+    const spec = launchSpec(
+      this.options.executable,
+      this.options.args,
+      process.platform,
+      this.options.env ?? process.env,
+    );
     this.child = spawn(spec.file, spec.args, {
       cwd: this.options.cwd,
       env: spec.env,

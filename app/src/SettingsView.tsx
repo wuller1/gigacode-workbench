@@ -479,6 +479,54 @@ export function SettingsView({
                   Помощь агента
                 </button>
               </div>
+              <p className="fine-print">
+                LLM выбирает роль по запросу, беседе и задаче. Общая база и
+                инструкции одной роли собираются в отдельную версию для
+                исполнителя. Способ передачи зависит от проверенных возможностей
+                CLI.
+              </p>
+              {state.sessions.some((s) => s.instructionBinding) && (
+                <details className="fine-print">
+                  <summary>Применённые инструкции</summary>
+                  {state.sessions
+                    .filter((s) => s.instructionBinding)
+                    .slice(-12)
+                    .map((s) => (
+                      <p key={s.id}>
+                        <strong>{s.title}</strong> ·{" "}
+                        {profileName(
+                          state.profiles.find((p) => p.id === s.profileId),
+                        )}
+                        {" · "}
+                        {s.instructionBinding!.delivery === "append_system"
+                          ? "Системное дополнение"
+                          : "Контекст"}
+                        {" · "}
+                        {s.instructionBinding!.fingerprint.slice(0, 12)}
+                        {" · "}
+                        {s.instructionBinding!.state === "prepared"
+                          ? "Подготовлено"
+                          : s.instructionBinding!.state === "closed"
+                            ? "Соединение закрыто"
+                            : "Применено к исполнителю"}
+                        <br />
+                        {s.instructionBinding!.delivery === "append_system"
+                          ? "Общие правила и одна роль добавлены к встроенным инструкциям CLI."
+                          : "Системное дополнение для этого CLI не подтверждено; инструкции передаются через контекст."}
+                        <details>
+                          <summary>Основание проверки</summary>
+                          {s.instructionBinding!.reason}
+                        </details>
+                        {s.roleRouting?.source === "retained" && (
+                          <>
+                            <br />
+                            {s.roleRouting.reason}
+                          </>
+                        )}
+                      </p>
+                    ))}
+                </details>
+              )}
               <div className="profile-list">
                 {state.profiles
                   .filter((p) =>
@@ -657,6 +705,7 @@ export function SettingsView({
               <textarea
                 readOnly={profile.builtin}
                 rows={13}
+                aria-label="Инструкции"
                 value={profile.prompt || ""}
                 onChange={(e) =>
                   setProfile({ ...profile, prompt: e.target.value })
