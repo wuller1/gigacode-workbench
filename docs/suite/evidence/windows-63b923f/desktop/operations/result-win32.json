@@ -1,0 +1,205 @@
+{
+  "suite": "operations-upstream-live",
+  "status": "passed",
+  "started": "2026-10-14T19:06:45.324Z",
+  "ended": "2026-10-14T19:07:53.144Z",
+  "environment": {
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v22.23.3",
+    "uiMode": "source App and its actual MCP provider",
+    "scope": "Actual OpsService → stdio MCP → two secured real Jenkins instances; Kubernetes not run; no provider/model/corporate access",
+    "vaultBoundary": "Ephemeral test AES-GCM vault, Electron OS credential encryption verified separately"
+  },
+  "passed": 11,
+  "cases": [
+    {
+      "name": "Actual stdio MCP discovers the pinned secured Jenkins server",
+      "elapsedMs": 489
+    },
+    {
+      "name": "Real root pagination and nested folder identity",
+      "elapsedMs": 135
+    },
+    {
+      "name": "Real Jenkins parameter discovery validates booleans and choices",
+      "elapsedMs": 194
+    },
+    {
+      "name": "Prepared trigger has no side effect and duplicate execute creates one actual build",
+      "elapsedMs": 6337
+    },
+    {
+      "name": "Actual progressive log preserves Unicode and its upstream byte cursor",
+      "elapsedMs": 43
+    },
+    {
+      "name": "Absent Pipeline and JUnit plugins remain explicitly unsupported",
+      "elapsedMs": 34
+    },
+    {
+      "name": "Actual running freestyle build is stopped and reconciles to ABORTED",
+      "elapsedMs": 10142
+    },
+    {
+      "name": "Actual non-runnable-node queue entry can be cancelled without creating a build",
+      "elapsedMs": 262
+    },
+    {
+      "name": "Shared connection favorites and project fences are enforced by actual service",
+      "elapsedMs": 15
+    },
+    {
+      "name": "A second real Jenkins instance has isolated jobs and routing",
+      "elapsedMs": 12321
+    },
+    {
+      "name": "Durable Operations restart preserves receipts, bindings and encrypted credentials",
+      "elapsedMs": 402
+    }
+  ],
+  "failedCases": [],
+  "observations": {
+    "upstream": {
+      "jenkins": {
+        "version": "2.580.1",
+        "warSha256": "393bf2476352dd726519fd1f92ce66eac7d23c0936e6967420b717060c4c40d0",
+        "plugins": [
+          {
+            "name": "commons-lang3-api",
+            "version": "3.21.0-122.v6a_ea_4fd34049",
+            "sha1": "CNyk6YwkL9Se1Fyj39gdTIX20Gk=",
+            "sha256Observed": "4d6194f8d3b3f2b69264f0403fe5a51846236a41f4e363f6aae45f82f7761657",
+            "source": "https://plugins.jenkins.io/api/plugin/commons-lang3-api",
+            "download": "https://updates.jenkins.io/download/plugins/commons-lang3-api/3.21.0-122.v6a_ea_4fd34049/commons-lang3-api.hpi"
+          },
+          {
+            "name": "ionicons-api",
+            "version": "94.vcc3065403257",
+            "sha1": "594kBrMGiuhTjBe53vJ8P9/9AcY=",
+            "sha256Observed": "95f3504375d628d887425ccdf32d5606a230261ee42dc683f13958d8e973ac3f",
+            "source": "https://plugins.jenkins.io/api/plugin/ionicons-api",
+            "download": "https://updates.jenkins.io/download/plugins/ionicons-api/94.vcc3065403257/ionicons-api.hpi"
+          },
+          {
+            "name": "cloudbees-folder",
+            "version": "6.1106.v3a_d9a_6d2465e",
+            "sha1": "Iqnkt/oldPguA9pHzj6t1weOfX4=",
+            "sha256Observed": "4ccfcfe145a1b36aef61f19187e8aa74eb3c90fdb9c9bfce865e09aa13c8a70a",
+            "source": "https://plugins.jenkins.io/api/plugin/cloudbees-folder",
+            "download": "https://updates.jenkins.io/download/plugins/cloudbees-folder/6.1106.v3a_d9a_6d2465e/cloudbees-folder.hpi"
+          }
+        ],
+        "csrf": "DefaultCrumbIssuer enabled; actual user API token"
+      }
+    },
+    "jenkinsCatalog": [
+      {
+        "id": "Disabled",
+        "kind": "hudson.model.FreeStyleProject",
+        "runnable": false
+      },
+      {
+        "id": "Hold",
+        "kind": "hudson.model.FreeStyleProject",
+        "runnable": true
+      },
+      {
+        "id": "Queued",
+        "kind": "hudson.model.FreeStyleProject",
+        "runnable": true
+      },
+      {
+        "id": "Team",
+        "kind": "com.cloudbees.hudson.plugins.folder.Folder",
+        "runnable": false
+      }
+    ],
+    "jenkinsBuild": {
+      "receiptId": "766d0547-52fb-45f0-899b-8893a2940bc6",
+      "queueId": "1",
+      "number": 1,
+      "result": "SUCCESS"
+    },
+    "jenkinsProgressiveOffsets": {
+      "opaqueUpstreamCursor": "651",
+      "plainUtf8BodyBytes": 651,
+      "explanation": "Raw offsets include ConsoleNotes; plain UTF-8 body length is not a Jenkins byte cursor",
+      "actualLogFileBytes": 651,
+      "consoleNoteObserved": true
+    },
+    "jenkinsLog": {
+      "pages": 1,
+      "unicodeObserved": true,
+      "characters": 643
+    },
+    "secondJenkins": {
+      "version": "2.580.1",
+      "independentHome": true,
+      "independentQueueAndBuild": true
+    },
+    "ui": {
+      "status": "passed",
+      "passed": 12,
+      "screenshots": [
+        "D:\\a\\gigacode-workbench\\gigacode-workbench\\app\\test-results\\operations\\operations-jenkins-dark-win32.png",
+        "D:\\a\\gigacode-workbench\\gigacode-workbench\\app\\test-results\\operations\\operations-jenkins-light-win32.png"
+      ]
+    },
+    "changeEvents": 140
+  },
+  "sourceHashes": {
+    "electron/operations/catalog.ts": "f508f4c44be21716a224189365ad9f8448453f130c6054e7378dd50baa632cb8",
+    "electron/operations/client.ts": "ed38b98dcacafeff7d74909adb35c9a0e364220673bacce6576df4faea566ac9",
+    "electron/operations/errors.ts": "4a93fa1b2d7e443dfc8283f52501fc30fb5289b0d3dd1a7c3a489eab065b902c",
+    "electron/operations/http.ts": "673045d68800078a76e6bcca909a8c62667b684c740dec3bdec3726bf1e13085",
+    "electron/operations/jenkins-logs.ts": "493e91611655ad59aba6026ecd7fc4b4c1d4dd9c5ed062266923253dea1cde0c",
+    "electron/operations/jenkins.ts": "3a104c3229d9901dfc493e5cd7b765d6a501a2021df04068557415a2ccbbcde0",
+    "electron/operations/kubernetes.ts": "0b370c3059e6167dd006125fe07c6bba3b0f527a03ce2c33f3a54b9cca3dec11",
+    "electron/operations/protocol.ts": "28a35878a8b9583b5256d4d7986f6963fa1115ebdd36a002d1bee264160440f7",
+    "electron/operations/provider.ts": "dda93ba26f10fb3e999d21600dee71a77517fe2c6ce33cbd04a707d10e80a1d1",
+    "electron/operations/service.ts": "9ae07292eb02c019b11c62f417af1c40da3b799d26fff85732d6adabcbe738d4",
+    "shared/operations.ts": "eff22761fde3e312835f63d8ad6dd907f1f2bf38714e72244f4a1ea1896a3d8f",
+    "tools/ops-test-assets.mjs": "dd46a48ee463005aad8a9835a52c246f4882e1a53895ec74796568797925e68f",
+    "tools/ops-test-servers.mjs": "9c73158d557b08f27c24af4c09187e8a96a0b09ebb764d3599dcfbaaa756706d",
+    "tools/test-operations-live.mjs": "fc91ca991985bf082c4c70b1a40c71a52aff4e3daf59690924e810c6de1b0820",
+    "tests/fixtures/ops-ui-checks.mjs": "824bdd961e203e75bd0b4ca3dca0bc75ad3af83f8ea0b2425b024713c425a280",
+    "electron/main.ts": "8331093492e00ceef03583885abd6d1240579d8654b62573976254348e30ef34",
+    "electron/mcp.ts": "4362c8217ff4a163dd7e48b476602ff3b246925b5f2f42b88f52a789d1e72d85",
+    "src/App.tsx": "20f2a1f522cad024ad1be6b24092ac4c167a991d7ac1f5ce47272ad440c7ca55",
+    "src/Workspace.tsx": "d11e4f10208998c6afe9bb51b7612e0db6d5d6977b515f17fa373418a3271762",
+    "src/SettingsView.tsx": "925a71646ccf81c2b5fe72474088756f95b998ab3ea0e534b857df15501afd32",
+    "src/JenkinsPanel.tsx": "3d92d1d9b6e06a3fc539dce1f5b7cedf5d30f944a3053e88d53b46a6ba7ef60d",
+    "src/ClusterPanel.tsx": "ce2aa4b9cc808c94c86874e92b592640386989b26a80bbbfbb86522cbf60be1b",
+    "src/OperationsSettings.tsx": "d43aa156d1d68f95d4b8d7b797e38d024539eaee8615571625937bd322932566",
+    "src/ToolBoundary.tsx": "c5201b14523d6d8fb08ba944c49402a8bf766d87193ac3ccf7ae137b97f2b5c8",
+    "src/ops-ui.tsx": "3dad227d49fa638842878f8c7349121e509c480b8d05ce99a3608f1d13d31131",
+    "src/operations.css": "b9038c0975357f06516a9486a00a960e5095beb0ede08ae6e24a40fb9309c03e"
+  },
+  "cleanup": [
+    {
+      "status": "fulfilled"
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "pid": 2668,
+        "exited": true,
+        "exitCode": 1,
+        "signal": null
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": [
+        {
+          "pid": 6988,
+          "exited": true,
+          "exitCode": 1,
+          "signal": null
+        },
+        null
+      ]
+    }
+  ]
+}

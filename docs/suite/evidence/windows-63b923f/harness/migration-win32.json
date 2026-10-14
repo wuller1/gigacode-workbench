@@ -1,0 +1,26 @@
+{
+  "runId": 38619290397,
+  "runtimeCandidate": "63b923f9590ed381067b77de79ae58dfd9bca32f",
+  "os": "win32",
+  "step": "Desktop migration and PowerShell UTF-8 compatibility",
+  "conclusion": "success",
+  "command": "node --test ../tools/test-upgrade-workbench.mjs",
+  "reportKind": "GitHub Actions log excerpt",
+  "lines": [
+    "# Subtest: rejects ZIP traversal, symlink entries, duplicate/case-colliding names and corrupt content",
+    "ok 26 - rejects ZIP traversal, symlink entries, duplicate/case-colliding names and corrupt content",
+    "  ---",
+    "  duration_ms: 7.5552",
+    "  type: 'test'",
+    "  ...",
+    "1..26",
+    "# tests 26",
+    "# suites 0",
+    "# pass 26",
+    "# fail 0",
+    "# cancelled 0",
+    "# skipped 0",
+    "# todo 0",
+    "# duration_ms 19233.383"
+  ]
+}

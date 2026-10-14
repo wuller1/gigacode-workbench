@@ -7,7 +7,7 @@
 | Требование | Реализация и предел |
 | --- | --- |
 | Flash без тяжёлого процесса для мелких задач | CORE quick/standard/deep, одна активная роль, адресные recipes/история, короткие пакеты исполнителей. Реальное качество рассуждений корпоративных моделей проверяется на месте. |
-| Цикл 227414 → 203202 | Structured usage + conservative host estimate, ранняя смена owned executor на чистой границе, bounded recovery packet; два бесполезных renewal удерживают цикл. |
+| Цикл 227414 → 203202 | Structured usage + conservative host estimate, ранняя смена owned executor на чистой границе, bounded recovery packet; два бесполезных host renewal удерживают очередь. Внутренний native цикл распознаётся/прерывается только для изученного Qwen при notices и фактическом usage; неизвестный Giga требует telemetry/adapter. |
 | Наблюдение контекста | Точный reviewed Qwen read-only reader, ACP usage, workplace contextUsage adapter; оценка байтов отдельно от фактического tokenizer. Скрытый native контекст недоступен без реальных показаний. |
 | Проверка удержания | Опциональный изолированный callback, случайные значения в пяти местах, предварительная верхняя цена всей серии, durable dispatch/receipt, запрет повторов UNKNOWN. В desktop платный транспорт автоматически не подключён. |
 | Отсутствие зрения | Host MCP не отдаёт inline images. Настроенный bridge получает настоящий PNG и возвращает текст. Native tools стороннего CLI контролируются только его фактическими возможностями; инструкции запрещают выдавать текст за собственное зрение. |
@@ -35,7 +35,11 @@
 
 ## Как проверять результат
 
-Источники фактов: [actual Electron report](evidence/flash-runtime-ui/report.json), [unit report](evidence/flash-runtime-ui/unit-local.json), [native Qwen read-only](evidence/flash-runtime-ui/managed-qwen-readonly.json), [UI kit gallery](../../ui-kit/evidence/desktop/report.json). Читайте status, source hashes, платформу, cases и cleanup; наличие файла само по себе не означает pass. Failed iterations сохранены отдельно. Локальная приёмка: 529 passed / 46 skipped; полный actual Electron 16/16; migration 26/26; UI kit 20/20 desktop + 4/4 contracts. Windows run и архив публикации добавляются после приёмки зафиксированного candidate.
+Источники фактов: [actual Electron report](evidence/flash-runtime-ui/report.json), [unit report](evidence/flash-runtime-ui/unit-local.json), [native Qwen read-only](evidence/flash-runtime-ui/managed-qwen-readonly.json), [UI kit gallery](../../ui-kit/evidence/desktop/report.json). Читайте status, source hashes, платформу, cases и cleanup; наличие файла само по себе не означает pass. Failed iterations сохранены отдельно. Локальная приёмка: 529 passed / 46 skipped; полный actual Electron 16/16; migration 26/26; UI kit 20/20 desktop + 4/4 contracts.
+
+**Native Windows, candidate `63b923f`:** [agent harness](https://github.com/wuller1/gigacode-workbench/actions/runs/38619290397) и [полный desktop](https://github.com/wuller1/gigacode-workbench/actions/runs/38619290374) завершились успешно. Unit **524 passed / 0 failed / 51 skipped**; actual flash Electron **16/16**, роли **8/8**, переходы **6/6**, renderer resilience **8/8**, native Qwen read-only **2/2**, desktop migration **26/26**. Источники: [harness provenance](evidence/windows-63b923f/harness/harness-provenance.json), [migration step](evidence/windows-63b923f/harness/migration-win32.json), [desktop provenance](evidence/windows-63b923f/desktop/desktop-provenance.json). ZIP artifacts проверены по GitHub digest и CRC; reports сохраняются исходными bytes. Полный Windows run включает source/packaged IDE/Data/Jenkins, PowerShell 5.1, native PTY/Sharp, NSIS/portable и имя GigaCode.exe/вложенные ресурсы. UI kit gallery остаётся отдельной macOS-проверкой, не приёмкой всех экранов приложения.
+
+Первый Windows candidate `8b40c31` дал два test-fixture отказа: удаление временного Qwen-каталога до закрытия Windows handles и сравнение canonical Windows path с raw path. Исправления сохраняют исходные оракулы; повтор на `63b923f` прошёл. Same-generation route accounting исправлен отдельно до финального прогона. Финальная публикация добавляет docs/evidence к этому runtime candidate.
 
 Из корня:
 

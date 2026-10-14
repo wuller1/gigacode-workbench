@@ -1,0 +1,566 @@
+{
+  "schemaVersion": 1,
+  "runtimeCandidate": "63b923f9590ed381067b77de79ae58dfd9bca32f",
+  "runId": 38619290374,
+  "runUrl": "https://github.com/wuller1/gigacode-workbench/actions/runs/38619290374",
+  "runConclusion": "success",
+  "retrievedAt": "2026-10-14T19:24:36.065339+00:00",
+  "job": "windows-x64",
+  "jobUrl": "https://github.com/wuller1/gigacode-workbench/actions/runs/38619290374/job/116043335918",
+  "jobConclusion": "success",
+  "artifacts": [
+    {
+      "artifactId": 11922468513,
+      "artifactName": "ide-diagnostics-windows-63b923f9590ed381067b77de79ae58dfd9bca32f",
+      "githubDigest": "sha256:5103de04a52cd6dd992fea57523fbb62e0618e0dd62e866093b6e2a1453d1b86",
+      "artifactCreatedAt": "2026-10-14T19:17:10Z",
+      "runtimeCandidate": "63b923f9590ed381067b77de79ae58dfd9bca32f",
+      "archiveBytes": 54115,
+      "archiveSha256": "5103de04a52cd6dd992fea57523fbb62e0618e0dd62e866093b6e2a1453d1b86",
+      "githubDigestMatched": true,
+      "archiveCrcChecked": true,
+      "members": [
+        {
+          "name": "workbench-ide-live-6BbYuw-1-result.json",
+          "bytes": 40930,
+          "crc32": "98779fb3"
+        },
+        {
+          "name": "workbench-ide-live-6BbYuw-2-backend.log",
+          "bytes": 74434,
+          "crc32": "a9dbfc2e"
+        },
+        {
+          "name": "workbench-ide-live-6BbYuw-3-frontend.jsonl",
+          "bytes": 33328,
+          "crc32": "ebdfe121"
+        },
+        {
+          "name": "workbench-ide-live-6BbYuw-4-host.jsonl",
+          "bytes": 72432,
+          "crc32": "7c3d8e41"
+        },
+        {
+          "name": "workbench-ide-live-DdDcQS-1-result.json",
+          "bytes": 40930,
+          "crc32": "971f7484"
+        },
+        {
+          "name": "workbench-ide-live-DdDcQS-3-frontend.jsonl",
+          "bytes": 35515,
+          "crc32": "db29c494"
+        },
+        {
+          "name": "workbench-ide-live-DdDcQS-4-host.jsonl",
+          "bytes": 80497,
+          "crc32": "f8359d18"
+        },
+        {
+          "name": "workbench-ide-live-DdDcQS-2-backend.log",
+          "bytes": 71225,
+          "crc32": "1ebc0b5d"
+        }
+      ],
+      "selectedFiles": [
+        {
+          "archiveMember": "workbench-ide-live-6BbYuw-1-result.json",
+          "path": "ide-diagnostics/workbench-ide-live-6BbYuw-1-result.json",
+          "bytes": 40930,
+          "sha256": "ad65fb02f44169428c579d5a0d4ac0bb486255e47a719e02a1e11d19ea0e49fc",
+          "originalBytesPreserved": true
+        },
+        {
+          "archiveMember": "workbench-ide-live-DdDcQS-1-result.json",
+          "path": "ide-diagnostics/workbench-ide-live-DdDcQS-1-result.json",
+          "bytes": 40930,
+          "sha256": "2e09bbaf5a71269f87f3b2ea597853f01f4cadc372c464d9cb7c01eb42f1c429",
+          "originalBytesPreserved": true
+        }
+      ],
+      "verboseLogsCopied": false
+    },
+    {
+      "artifactId": 11921603982,
+      "artifactName": "operations-evidence-windows-63b923f9590ed381067b77de79ae58dfd9bca32f",
+      "githubDigest": "sha256:55119b1cbae3bd8b9be82b2fe438f85f26290fecba68ff48c9bdf1e17282f5d4",
+      "artifactCreatedAt": "2026-10-14T19:17:51Z",
+      "runtimeCandidate": "63b923f9590ed381067b77de79ae58dfd9bca32f",
+      "archiveBytes": 280398,
+      "archiveSha256": "55119b1cbae3bd8b9be82b2fe438f85f26290fecba68ff48c9bdf1e17282f5d4",
+      "githubDigestMatched": true,
+      "archiveCrcChecked": true,
+      "members": [
+        {
+          "name": "app/test-results/operations/operations-jenkins-dark-win32.png",
+          "bytes": 73338,
+          "crc32": "5b54f512"
+        },
+        {
+          "name": "app/test-results/operations/operations-jenkins-dark-win32-packaged.png",
+          "bytes": 73170,
+          "crc32": "9d7e8c20"
+        },
+        {
+          "name": "app/test-results/operations/operations-jenkins-light-win32-packaged.png",
+          "bytes": 72435,
+          "crc32": "2f828a07"
+        },
+        {
+          "name": "app/test-results/operations/operations-jenkins-light-win32.png",
+          "bytes": 72501,
+          "crc32": "c68a34d6"
+        },
+        {
+          "name": "app/test-results/operations/result-ui-win32-packaged.json",
+          "bytes": 2184,
+          "crc32": "2749343d"
+        },
+        {
+          "name": "app/test-results/operations/result-ui-win32.json",
+          "bytes": 3563,
+          "crc32": "89631bab"
+        },
+        {
+          "name": "app/test-results/operations/result-win32.json",
+          "bytes": 8237,
+          "crc32": "b5cfaaf7"
+        },
+        {
+          "name": "app/test-results/operations/result-win32-packaged.json",
+          "bytes": 8256,
+          "crc32": "801fe09a"
+        }
+      ],
+      "selectedFiles": [
+        {
+          "archiveMember": "app/test-results/operations/operations-jenkins-dark-win32.png",
+          "path": "operations/operations-jenkins-dark-win32.png",
+          "bytes": 73338,
+          "sha256": "ecc0adfa065480b8bc1640caf2f36398024cc1bfb0bf22e047bc02e21784f0a4",
+          "originalBytesPreserved": true
+        },
+        {
+          "archiveMember": "app/test-results/operations/operations-jenkins-dark-win32-packaged.png",
+          "path": "operations/operations-jenkins-dark-win32-packaged.png",
+          "bytes": 73170,
+          "sha256": "c6054f20a8956904fc5fd96b4b855b8135030a83d1cbc1eb101a44f353ae4361",
+          "originalBytesPreserved": true
+        },
+        {
+          "archiveMember": "app/test-results/operations/operations-jenkins-light-win32-packaged.png",
+          "path": "operations/operations-jenkins-light-win32-packaged.png",
+          "bytes": 72435,
+          "sha256": "54a4c6387c0b32156b3f8fcc0be749adcbb1090236173839abfe6cdde78d93bc",
+          "originalBytesPreserved": true
+        },
+        {
+          "archiveMember": "app/test-results/operations/operations-jenkins-light-win32.png",
+          "path": "operations/operations-jenkins-light-win32.png",
+          "bytes": 72501,
+          "sha256": "cb31316073cea586060f7f45cea5e35c5587418be84783a5f67c2d510dc43581",
+          "originalBytesPreserved": true
+        },
+        {
+          "archiveMember": "app/test-results/operations/result-ui-win32-packaged.json",
+          "path": "operations/result-ui-win32-packaged.json",
+          "bytes": 2184,
+          "sha256": "dd6e9b68f9587d597ff78282f95d71de990dc6f0ec2d64689d53cc78aa3ed24c",
+          "originalBytesPreserved": true
+        },
+        {
+          "archiveMember": "app/test-results/operations/result-ui-win32.json",
+          "path": "operations/result-ui-win32.json",
+          "bytes": 3563,
+          "sha256": "e50242790082ee907945448d47c84443dc7c032b992fd2a1533e26b27f463449",
+          "originalBytesPreserved": true
+        },
+        {
+          "archiveMember": "app/test-results/operations/result-win32.json",
+          "path": "operations/result-win32.json",
+          "bytes": 8237,
+          "sha256": "1d38df51271dc143ce0e8a0addbc56c6c48c11e72edfed588255a838cfc08b8b",
+          "originalBytesPreserved": true
+        },
+        {
+          "archiveMember": "app/test-results/operations/result-win32-packaged.json",
+          "path": "operations/result-win32-packaged.json",
+          "bytes": 8256,
+          "sha256": "e18fbf7658166cee2a9905d19eaf020e47380d9c075a8bb33dc6d9505b124b61",
+          "originalBytesPreserved": true
+        }
+      ],
+      "verboseLogsCopied": false
+    },
+    {
+      "artifactId": 11921703939,
+      "artifactName": "database-evidence-windows-63b923f9590ed381067b77de79ae58dfd9bca32f",
+      "githubDigest": "sha256:6e38217f65a947527ffccf59a74e50f0a790c2636a5b04b4a20a6dab7dc00fd9",
+      "artifactCreatedAt": "2026-10-14T19:17:49Z",
+      "runtimeCandidate": "63b923f9590ed381067b77de79ae58dfd9bca32f",
+      "archiveBytes": 175878,
+      "archiveSha256": "6e38217f65a947527ffccf59a74e50f0a790c2636a5b04b4a20a6dab7dc00fd9",
+      "githubDigestMatched": true,
+      "archiveCrcChecked": true,
+      "members": [
+        {
+          "name": "docs/suite/evidence/database-runtime-light-win32-packaged.png",
+          "bytes": 54819,
+          "crc32": "777f4507"
+        },
+        {
+          "name": "docs/suite/evidence/database-runtime-dark-win32-packaged.png",
+          "bytes": 54899,
+          "crc32": "5f3ff67c"
+        },
+        {
+          "name": "docs/suite/evidence/database-runtime-ui-win32-packaged.json",
+          "bytes": 7040,
+          "crc32": "6da45d6d"
+        },
+        {
+          "name": "docs/suite/evidence/database-runtime-relations-win32-packaged.png",
+          "bytes": 70031,
+          "crc32": "ce1a097b"
+        }
+      ],
+      "selectedFiles": [
+        {
+          "archiveMember": "docs/suite/evidence/database-runtime-light-win32-packaged.png",
+          "path": "database-packaged/database-runtime-light-win32-packaged.png",
+          "bytes": 54819,
+          "sha256": "b09e0dbe90975206888366fc44f01b10427c5bdde37ad7ffee409081ae4a2271",
+          "originalBytesPreserved": true
+        },
+        {
+          "archiveMember": "docs/suite/evidence/database-runtime-dark-win32-packaged.png",
+          "path": "database-packaged/database-runtime-dark-win32-packaged.png",
+          "bytes": 54899,
+          "sha256": "34335e9370eb0dbf2b0bc945be8607d317ae3d59c3caad6aebd30d07ea016960",
+          "originalBytesPreserved": true
+        },
+        {
+          "archiveMember": "docs/suite/evidence/database-runtime-ui-win32-packaged.json",
+          "path": "database-packaged/database-runtime-ui-win32-packaged.json",
+          "bytes": 7040,
+          "sha256": "dee36a77679c738b7dcd2e6f45ca6e8d30c9b314322e330ebea4e67255af46fd",
+          "originalBytesPreserved": true
+        },
+        {
+          "archiveMember": "docs/suite/evidence/database-runtime-relations-win32-packaged.png",
+          "path": "database-packaged/database-runtime-relations-win32-packaged.png",
+          "bytes": 70031,
+          "sha256": "f73df41d5a1b3544f1d25b0cd7ae4ee1509c69445cb0e1f39ca04addaf9ce02f",
+          "originalBytesPreserved": true
+        }
+      ],
+      "verboseLogsCopied": false
+    }
+  ],
+  "ide": [
+    {
+      "mode": "source",
+      "report": "ide-diagnostics/workbench-ide-live-DdDcQS-1-result.json",
+      "observedSuccessfulChecks": 44,
+      "errors": [],
+      "failure": null,
+      "modeAssociation": {
+        "method": "Exact LIVE_IDE_REPORT path in the successful GitHub job step log",
+        "step": "Real IDE language, edit, refactor, task, debug and recovery checks",
+        "at": "2026-10-14T19:09:33.3883457Z",
+        "temporaryDirectoryName": "workbench-ide-live-DdDcQS"
+      },
+      "embeddedSourceHashesProvided": false,
+      "nativeDarkLightCaptureExercised": true,
+      "nativeScreenshotFilesExported": false,
+      "explicitCleanupReportExported": false,
+      "cleanupEvidence": {
+        "successfulStepIncludesFinalBoundedNormalClose": true,
+        "driver": "app/tools/test-ide-live.mjs",
+        "driverSha256": "14a513aee8ef46a0f6a590b05fc7dbd3f2a04c9b0a244db0c21986f41d859a48",
+        "separatePIDReceiptProvided": false
+      }
+    },
+    {
+      "mode": "packaged",
+      "report": "ide-diagnostics/workbench-ide-live-6BbYuw-1-result.json",
+      "observedSuccessfulChecks": 44,
+      "errors": [],
+      "failure": null,
+      "modeAssociation": {
+        "method": "Exact LIVE_IDE_REPORT path in the successful GitHub job step log",
+        "step": "Launch and verify actual packaged IDE languages and recovery",
+        "at": "2026-10-14T19:13:33.6104055Z",
+        "temporaryDirectoryName": "workbench-ide-live-6BbYuw"
+      },
+      "embeddedSourceHashesProvided": false,
+      "nativeDarkLightCaptureExercised": true,
+      "nativeScreenshotFilesExported": false,
+      "explicitCleanupReportExported": false,
+      "cleanupEvidence": {
+        "successfulStepIncludesFinalBoundedNormalClose": true,
+        "driver": "app/tools/test-ide-live.mjs",
+        "driverSha256": "14a513aee8ef46a0f6a590b05fc7dbd3f2a04c9b0a244db0c21986f41d859a48",
+        "separatePIDReceiptProvided": false
+      }
+    }
+  ],
+  "operations": [
+    {
+      "mode": "source",
+      "apiReport": "operations/result-win32.json",
+      "apiPassed": 11,
+      "apiFailed": 0,
+      "uiReport": "operations/result-ui-win32.json",
+      "uiPassed": 12,
+      "uiErrors": [],
+      "sourceHashes": {
+        "count": 26,
+        "mismatches": []
+      },
+      "buildHashes": {
+        "locallyComparedCount": 15,
+        "mismatches": [],
+        "packagedFilesNotDownloaded": []
+      },
+      "apiCleanup": [
+        {
+          "status": "fulfilled"
+        },
+        {
+          "status": "fulfilled",
+          "value": {
+            "pid": 2668,
+            "exited": true,
+            "exitCode": 1,
+            "signal": null
+          }
+        },
+        {
+          "status": "fulfilled",
+          "value": [
+            {
+              "pid": 6988,
+              "exited": true,
+              "exitCode": 1,
+              "signal": null
+            },
+            null
+          ]
+        }
+      ],
+      "uiCleanupEvidence": {
+        "passedReportWrittenAfterBoundedElectronAndProxyCleanup": true,
+        "driver": "app/tests/fixtures/ops-ui-checks.mjs",
+        "driverSha256": "824bdd961e203e75bd0b4ca3dca0bc75ad3af83f8ea0b2425b024713c425a280"
+      },
+      "scope": "Actual OpsService → stdio MCP → two secured real Jenkins instances; Kubernetes not run; no provider/model/corporate access",
+      "vaultBoundary": "Ephemeral test AES-GCM vault, Electron OS credential encryption verified separately"
+    },
+    {
+      "mode": "packaged",
+      "apiReport": "operations/result-win32-packaged.json",
+      "apiPassed": 11,
+      "apiFailed": 0,
+      "uiReport": "operations/result-ui-win32-packaged.json",
+      "uiPassed": 12,
+      "uiErrors": [],
+      "sourceHashes": {
+        "count": 26,
+        "mismatches": []
+      },
+      "buildHashes": {
+        "locallyComparedCount": 0,
+        "mismatches": [],
+        "packagedFilesNotDownloaded": [
+          {
+            "path": "release/win-unpacked/GigaCode.exe",
+            "sha256RecordedByPackagedTest": "3d252675818487412363bcee4fb2d9981aeaa39bb63f563ff4c18bea0236d9ae",
+            "independentlyDownloaded": false
+          },
+          {
+            "path": "release/win-unpacked/resources/app.asar",
+            "sha256RecordedByPackagedTest": "dcba9d92dc0775940243929eb55801742eadd7178d25c12d6c92295604489ac5",
+            "independentlyDownloaded": false
+          }
+        ]
+      },
+      "apiCleanup": [
+        {
+          "status": "fulfilled"
+        },
+        {
+          "status": "fulfilled",
+          "value": {
+            "pid": 6364,
+            "exited": true,
+            "exitCode": 1,
+            "signal": null
+          }
+        },
+        {
+          "status": "fulfilled",
+          "value": [
+            {
+              "pid": 7036,
+              "exited": true,
+              "exitCode": 1,
+              "signal": null
+            },
+            null
+          ]
+        }
+      ],
+      "uiCleanupEvidence": {
+        "passedReportWrittenAfterBoundedElectronAndProxyCleanup": true,
+        "driver": "app/tests/fixtures/ops-ui-checks.mjs",
+        "driverSha256": "824bdd961e203e75bd0b4ca3dca0bc75ad3af83f8ea0b2425b024713c425a280"
+      },
+      "scope": "Actual OpsService → stdio MCP → two secured real Jenkins instances; Kubernetes not run; no provider/model/corporate access",
+      "vaultBoundary": "Ephemeral test AES-GCM vault, Electron OS credential encryption verified separately"
+    }
+  ],
+  "databasePackaged": {
+    "report": "database-packaged/database-runtime-ui-win32-packaged.json",
+    "passed": 25,
+    "rendererErrors": [],
+    "sourceHashes": {
+      "count": 41,
+      "mismatches": []
+    },
+    "runtime": {
+      "node": "24.21.0",
+      "electron": "44.7.0",
+      "chrome": "152.0.7977.130"
+    },
+    "scope": "Real Electron renderer/IPC/stdio MCP/PostgreSQL, isolated cluster. No workplace MCP, GigaCode fork, VARM or unsupported platform claim.",
+    "cleanupEvidence": {
+      "lastUIAssertionAwaitsNativeQuitAndDurableStateReadback": true,
+      "separatePIDReceiptProvided": false
+    }
+  },
+  "databaseSourceAlreadyCollected": {
+    "directory": "database-source",
+    "notModifiedByThisCollection": true,
+    "originalProvenanceSha256": "c0a61a25af164836e489b976d0b54cbc1199f65fcca6d6d6824f1b59ca704397",
+    "originalProvenance": {
+      "runtimeCandidate": "63b923f9590ed381067b77de79ae58dfd9bca32f",
+      "runId": 38619290374,
+      "runUrl": "https://github.com/wuller1/gigacode-workbench/actions/runs/38619290374",
+      "job": "database-x64",
+      "jobConclusion": "success",
+      "artifactId": 11921710572,
+      "artifactName": "database-source-evidence-windows-63b923f9590ed381067b77de79ae58dfd9bca32f",
+      "archiveBytes": 179375,
+      "archiveSha256": "235922819598fe0c0cddccb3ff97e4b27b69116c328a5eb0f21677dc1de883ab",
+      "githubDigestMatched": true,
+      "archiveCrcChecked": true,
+      "retrievedAt": "2026-10-14T19:08:57.263268+00:00"
+    },
+    "livePassed": 44,
+    "liveFailed": 0,
+    "uiPassed": 25,
+    "rendererErrors": [],
+    "liveSourceHashes": {
+      "count": 41,
+      "mismatches": []
+    },
+    "uiSourceHashes": {
+      "count": 41,
+      "mismatches": []
+    }
+  },
+  "packaging": {
+    "steps": [
+      {
+        "name": "Actual isolated Jenkins, Operations MCP and desktop acceptance",
+        "number": 20,
+        "conclusion": "success"
+      },
+      {
+        "name": "Real IDE language, edit, refactor, task, debug and recovery checks",
+        "number": 21,
+        "conclusion": "success"
+      },
+      {
+        "name": "Stage the self-contained IDE runtime",
+        "number": 22,
+        "conclusion": "success"
+      },
+      {
+        "name": "Build unpacked Windows application",
+        "number": 23,
+        "conclusion": "success"
+      },
+      {
+        "name": "Packaged application database provider and desktop acceptance",
+        "number": 24,
+        "conclusion": "success"
+      },
+      {
+        "name": "Packaged application Jenkins and Operations desktop acceptance",
+        "number": 25,
+        "conclusion": "success"
+      },
+      {
+        "name": "Launch and verify actual packaged IDE languages and recovery",
+        "number": 26,
+        "conclusion": "success"
+      },
+      {
+        "name": "Build NSIS and portable from verified application (never publish)",
+        "number": 27,
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify packaged CLI and self-hosting references, then calculate artifact hashes",
+        "number": 28,
+        "conclusion": "success"
+      },
+      {
+        "name": "Collect isolated IDE test diagnostics",
+        "number": 29,
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload isolated IDE diagnostics",
+        "number": 30,
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload unsigned Windows build artifacts",
+        "number": 31,
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload packaged database acceptance reports and isolated diagnostics",
+        "number": 32,
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload isolated Operations reports",
+        "number": 33,
+        "conclusion": "success"
+      }
+    ],
+    "unpackedApplicationExecutable": "GigaCode.exe",
+    "applicationSha256RecordedByPackagedUITest": "3d252675818487412363bcee4fb2d9981aeaa39bb63f563ff4c18bea0236d9ae",
+    "appAsarSha256RecordedByPackagedUITest": "dcba9d92dc0775940243929eb55801742eadd7178d25c12d6c92295604489ac5",
+    "installerFilesObservedInSuccessfulStepLog": [
+      "GigaCode-Setup-0.7.0-preview.1-x64.exe",
+      "GigaCode-0.7.0-preview.1-x64-portable.exe"
+    ],
+    "bundledCLIReportedVersion": "0.25.1",
+    "largeWindowsBinaryArtifactDownloaded": false,
+    "codeSigningIndependentlyVerified": false
+  },
+  "copiedOriginalFileCount": 14,
+  "copiedScreenshotCount": 7,
+  "screenshotsContainOnlyIsolatedFixtures": true,
+  "limitations": [
+    "Actual Windows hosted CI with isolated PostgreSQL/Jenkins/Theia fixtures; no workplace credentials, corporate service, VARM or GigaCode 26.10.6 acceptance.",
+    "Operations exercised two secured real Jenkins instances; Kubernetes/OpenShift were not run by this live suite.",
+    "IDE result bytes were exported, but the artifact collector did not retain its native workspace PNGs or explicit cleanup/PID receipts; successful native capture and final normal close are established by the recorded checks and successful job steps.",
+    "The large installer/binary artifact was not downloaded; executable/asar hashes are recorded observations from the packaged UI test, not a separate local binary verification.",
+    "No verbose IDE backend/frontend/host logs were copied. Full archive member names, CRCs and authenticated GitHub ZIP digests retain traceability."
+  ]
+}

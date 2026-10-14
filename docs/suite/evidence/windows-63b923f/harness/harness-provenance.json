@@ -1,0 +1,53 @@
+{
+  "runtimeCandidate": "63b923f9590ed381067b77de79ae58dfd9bca32f",
+  "runId": 38619290397,
+  "runUrl": "https://github.com/wuller1/gigacode-workbench/actions/runs/38619290397",
+  "conclusion": "success",
+  "artifactId": 11921092828,
+  "archiveBytes": 3191830,
+  "archiveSha256": "80c4802a6b5cd9e978a35338f564dc4955089fe039e807fa7b1df7c2a5797792",
+  "archiveCrcChecked": true,
+  "retrievedAt": "2026-10-14T19:02:04.323315+00:00",
+  "schemaVersion": 1,
+  "githubDigestMatched": true,
+  "acceptance": {
+    "unit": {
+      "passed": 524,
+      "failed": 0,
+      "skipped": 51
+    },
+    "actualFlashDesktopCases": 16,
+    "rolesDesktopCases": 8,
+    "roleTransitionsCases": 6,
+    "rendererResilienceCases": 8,
+    "nativeQwenReadonlyCases": 2,
+    "migrationCases": 26,
+    "paidProviderRequests": 0
+  },
+  "scope": "Native Windows; actual Electron and unmodified readonly Qwen with owned ACP/MCP/loopback protocol peers. Not corporate GigaCode26.10.6, real flash model capacity or workplace text vision semantics.",
+  "copyPolicy": "Current root reports and current fixture screenshots; historical attempt receipts and Darwin failure screenshots carried in the upstream artifact were excluded from this Windows directory. Original historical evidence remains elsewhere in the repository; full archive SHA/CRC above still refer to the downloaded original ZIP.",
+  "excludedHistoricalArtifactMembers": [
+    "renderer-resilience-ui/attempt-1791987603115-failed.json",
+    "renderer-resilience-ui/attempt-1791988326909-failed.json",
+    "renderer-resilience-ui/attempt-1791988731750-passed.json",
+    "renderer-resilience-ui/attempt-1791989042253-failed.json",
+    "renderer-resilience-ui/attempt-1791989323472-passed.json",
+    "renderer-resilience-ui/attempt-1791990908343-passed.json",
+    "renderer-resilience-ui/attempt-1791991933358-passed.json",
+    "renderer-resilience-ui/attempt-1791992829710-passed.json",
+    "renderer-resilience-ui/attempt-1791994788007-passed.json",
+    "renderer-resilience-ui/failure-darwin.png",
+    "role-transitions-ui/attempt-1791985101219-failed.json",
+    "role-transitions-ui/attempt-1791985212023-passed.json",
+    "role-transitions-ui/attempt-1791988379333-passed.json",
+    "role-transitions-ui/attempt-1791988735810-passed.json",
+    "role-transitions-ui/attempt-1791989038967-passed.json",
+    "role-transitions-ui/attempt-1791989319250-passed.json",
+    "role-transitions-ui/attempt-1791990904424-passed.json",
+    "role-transitions-ui/attempt-1791991922355-passed.json",
+    "role-transitions-ui/attempt-1791992819387-passed.json",
+    "role-transitions-ui/attempt-1791993659553-passed.json",
+    "role-transitions-ui/attempt-1791994777529-passed.json",
+    "role-transitions-ui/failure-darwin.png"
+  ]
+}

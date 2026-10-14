@@ -1,0 +1,14 @@
+{
+  "runtimeCandidate": "63b923f9590ed381067b77de79ae58dfd9bca32f",
+  "runId": 38619290374,
+  "runUrl": "https://github.com/wuller1/gigacode-workbench/actions/runs/38619290374",
+  "job": "database-x64",
+  "jobConclusion": "success",
+  "artifactId": 11921710572,
+  "artifactName": "database-source-evidence-windows-63b923f9590ed381067b77de79ae58dfd9bca32f",
+  "archiveBytes": 179375,
+  "archiveSha256": "235922819598fe0c0cddccb3ff97e4b27b69116c328a5eb0f21677dc1de883ab",
+  "githubDigestMatched": true,
+  "archiveCrcChecked": true,
+  "retrievedAt": "2026-10-14T19:08:57.263268+00:00"
+}
