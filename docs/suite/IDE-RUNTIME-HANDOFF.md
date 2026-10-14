@@ -112,3 +112,23 @@ Windows CI на commit `0f9d8eb` прошёл **40 языковых/IDE сцен
 До первого запроса popup вызывает `session.prepare`: initialize/new/config без model prompt. Подготовка дедуплицируется; пустая ACP-сессия сохраняется при первом автоматическом выборе роли. Проверка полного приложения — `npm.cmd run test:chat`, она использует настоящий backend/IPC/диск/CLI-процесс и локального ACP peer, а не платную модель.
 
 В текущем host transport inventory MCP не меняется от роли. Если корпоративный adapter начнёт передавать разные MCP bindings для разных ролей, включи identity/version этого inventory в transport fingerprint: нельзя переиспользовать подготовленную ACP-сессию с прежним набором инструментов только потому, что CLI-команда и cwd совпадают.
+
+## Проверяемое завершение native test runner
+
+Перед `ide.tests.run` прочитай `ide.tests.list`: дождись завершения discovery, проверь `startPending`, `busy` и выполняющиеся runs. Один запуск возвращает фактический новый `runId`; последующий readback фильтруется именно по нему. Старый успешный run и строка `OK`/`FAIL` в output не подтверждают результат нового. Завершённый run без structured outcomes считается неполным. State 4 означает assertion failure, state 6 — ошибку выполнения; это не pass. При `TEST_RUN_START_UNCONFIRMED` запрос не повторяется: pending fence остаётся до наблюдаемого появления native run. Сначала сверить `tests.list`; перезапуск engine, если необходим, проходит обычную защиту несохранённых документов.
+
+Ограничение native API: закреплённая Theia передаёт название в extension host, но не сохраняет request ID/name в `TestRunRequest`. Receipt помечен `attribution: new-controller-run`, `requestIdSupported: false`. Одновременный ручной запуск того же native controller нельзя строго связать с запросом агента. Для доказуемой приёмки один controller не получает конкурирующих пользовательских запусков; не выдавать этот receipt за сквозную exactly-once корреляцию.
+
+Живой прогон выявил в закреплённом `ms-python.python` 2026.4.0 потерю последнего unittest-результата: process exit отменял pipe прежде доставки FAIL. Отдельный Windows-аудит обнаружил, что `onClose` может опередить асинхронный decoder. Установщик `ide/tools/install-plugins.mjs` применяет узкий обратимый patch `patch-python-results.mjs` и к свежему, и к cached plugin. Проверяются версия, полный SHA исходного VSIX, JavaScript bundle и Python sender. После всех результатов и coverage sender пишет конечный marker в тот же поток. Только unittest включает сохранение decoder callbacks до этого marker; нормальное закрытие канала не заменяет marker. После выхода процесса неполный поток получает явную ошибку в пределах 6 секунд; пользовательская отмена остаётся немедленной. Default pytest/discovery path не меняется. Это совместимость конкретного закреплённого расширения, не универсальная правка любых Python plugins и не изменение CLI.
+
+При обновлении расширения неизвестный SHA останавливает установку. Не удаляй guard, не редактируй установленный bundle вручную и не принимай случайный успешный rerun за устранение гонки. Сначала повтори независимые regression checks (настоящий извлечённый pinned adapter, decoder ordering и Python sender), затем native PASS → намеренный FAIL → исправленный PASS через Electron и exact run ID:
+
+```powershell
+# После npm run setup:ide, из app:
+node --test ../ide/tools/test-python-result-drain.mjs
+node tools/test-ide-live.mjs --languages
+```
+
+JSON patch record внутри `plugins/ms-python.python` содержит upstream/patched/helper hashes и поставляется со staged IDE. Лицензия MIT и авторство расширения сохраняются; собственный helper имеет Apache-2.0. Source ZIP содержит patcher/helper/tests; установленные plugins готовятся по lock и не копируются из чужого рабочего профиля.
+
+`ide.capture` не разворачивает и не фокусирует окно автоматически. Скрытая/свёрнутая поверхность либо нулевой размер дают `IDE_CAPTURE_NOT_VISIBLE`; ожидание Chromium ограничено 10 секундами. После снимка host повторно сверяет владельца, видимость и bounds, отклоняет пустое изображение и не публикует artifact после timeout. Имена PNG имеют UUID, поэтому параллельные снимки не перезаписывают друг друга. Если снимок недоступен, агент фиксирует этот факт и предлагает открыть нужную IDE-панель; DOM/readback не выдаётся за просмотр изображения. Живая приёмка использует только собственное тестовое окно: проверяет отказ при minimize без нового artifact, затем восстанавливает это окно для настоящего снимка обеих тем.

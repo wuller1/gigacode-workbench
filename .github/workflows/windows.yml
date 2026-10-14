@@ -14,7 +14,64 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Fail on source Data regressions before spending time on IDE installation and
+  # Windows packaging. This job intentionally installs no IDE engine/toolchains.
+  database-x64:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: app
+    env:
+      CI: true
+      CSC_IDENTITY_AUTO_DISCOVERY: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Pinned Node.js 22
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          # Matches the independent IDE runtime pin; never floats to a new 22.x.
+          node-version: '22.23.3'
+          architecture: x64
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install locked app dependencies including native optional packages
+        run: npm ci --include=optional
+
+      - name: Typecheck and build source renderer/main/provider
+        run: npm run build
+
+      - name: Real PostgreSQL engine, stdio MCP and COPY source acceptance
+        timeout-minutes: 5
+        run: node tools/test-database-live.mjs
+
+      - name: Actual source Electron Data workspace acceptance
+        timeout-minutes: 5
+        run: node tools/test-database-live.mjs --ui
+
+      - name: Upload source database evidence and isolated failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: database-source-evidence-windows-${{ github.sha }}
+          path: |
+            docs/suite/evidence/database-runtime-live-win32.json
+            docs/suite/evidence/database-runtime-ui-win32.json
+            docs/suite/evidence/database-runtime-dark-win32.png
+            docs/suite/evidence/database-runtime-light-win32.png
+            docs/suite/evidence/database-runtime-relations-win32.png
+            app/test-results/database
+          if-no-files-found: warn
+          retention-days: 14
+
   windows-x64:
+    needs: database-x64
     runs-on: windows-2022
     timeout-minutes: 60
     defaults:
@@ -30,10 +87,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Node.js 22
+      - name: Pinned Node.js 22
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: '22'
+          node-version: '22.23.3'
           architecture: x64
           cache: npm
           cache-dependency-path: app/package-lock.json
@@ -55,6 +112,10 @@ jobs:
         id: ide-setup
         timeout-minutes: 20
         run: npm run setup:ide
+
+      - name: Python structured result pipe race and incomplete-result regression
+        timeout-minutes: 2
+        run: node --test ../ide/tools/test-python-result-drain.mjs
 
       - name: Save verified IDE downloads before acceptance tests
         if: steps.ide-downloads.outputs.cache-hit != 'true'
@@ -159,14 +220,6 @@ jobs:
         timeout-minutes: 2
         run: node tools/test-chat-live.mjs
 
-      - name: Real PostgreSQL engine, stdio MCP, COPY and desktop data checks
-        timeout-minutes: 5
-        run: |
-          node tools/test-database-live.mjs
-          if ($LASTEXITCODE -ne 0) { throw 'Database engine acceptance failed' }
-          node tools/test-database-live.mjs --ui
-          if ($LASTEXITCODE -ne 0) { throw 'Database desktop acceptance failed' }
-
       - name: Real IDE language, edit, refactor, task, debug and recovery checks
         timeout-minutes: 12
         run: npm run test:ide:languages
@@ -259,14 +312,14 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Upload database acceptance reports and isolated diagnostics
+      - name: Upload packaged database acceptance reports and isolated diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: database-evidence-windows-${{ github.sha }}
           path: |
-            docs/suite/evidence/database-runtime-*win32*.json
-            docs/suite/evidence/database-runtime-*win32*.png
+            docs/suite/evidence/database-runtime-*-win32-packaged.json
+            docs/suite/evidence/database-runtime-*-win32-packaged.png
             app/test-results/database
           if-no-files-found: warn
           retention-days: 14

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "status": "verified-live-darwin",
+  "level": "live Electron / real Theia / real Python, Java, React and native shutdown",
+  "at": "2026-10-14T05:24:38.772Z",
+  "platform": "darwin",
+  "caseCount": 45,
+  "rendererErrors": [],
+  "actualReportSha256": "0c0720d1531b44be7dc5899584dda4c5051962323f9cefb7a5d4619ef49c880a",
+  "sourceHashes": {
+    "app/tools/test-ide-live.mjs": "6805301295c35463716359cf0785c4a1e4f5a09488edabb6c83972d321285431",
+    "ide/extensions/workbench-bridge/src/execution.ts": "10602bd8b2eef9d96618dfad8d24adeb0ec341ae0b5ad91fa8159d7fb6d682e8",
+    "ide/tools/python-result-drain.cjs": "0312d1d9e5c445e08d8b8756666a26dc51bad51e88e12a9371f8c276a8fe53e3",
+    "ide/tools/patch-python-results.mjs": "3a20aada299b7dda200aba68dfb822777ce8aa45b8d7bec1d360e28aa16c6f52",
+    "ide/tools/install-plugins.mjs": "3d09a6424752c63077c5a4e8164f8cd14ecac4f35e4ec0343811e7c5399a9866",
+    "ide/tools/test-python-result-drain.mjs": "72a43eb89089e7952b2e3f35881c590ba5b40f7e0f5bdbf1a278a1588d89854e"
+  },
+  "pythonPatch": {
+    "patch": "WORKBENCH_PYTHON_RESULT_DRAIN",
+    "extension": "ms-python.python",
+    "version": "2026.4.0",
+    "vsixSha256": "232aeafb01f069824fdd92d3e628c1c442bbcfa1d3cc945ff97076340bb2b4a6",
+    "upstreamBundleSha256": "9fa56140dc194262dadc0e55ffc5b974eb5e10a1cbd11d36f33c52ac164aa8ce",
+    "patchedBundleSha256": "54d80f13d0837e1cb349d528a91524fa2b5589fb9519358bd3ba683883a7579a",
+    "upstreamSenderSha256": "33622f619cce6916e43d15285be06b17b32b3a21203212399f0a292b140cb16a",
+    "patchedSenderSha256": "d05ec2a6ebb3638b26361af999b1e33ac006b09d9a98a4e0b99f0eb6f66c203a",
+    "helperSha256": "0312d1d9e5c445e08d8b8756666a26dc51bad51e88e12a9371f8c276a8fe53e3",
+    "behavior": "Wait for final same-stream structured result barrier after process exit; 6s incomplete-result deadline; user cancellation remains immediate."
+  },
+  "limitations": [
+    "Windows source and packaged acceptance still require their own current-head run.",
+    "Native TestRunRequest does not carry our request ID/name. The receipt identifies a new controller run; concurrent human starts in the same native controller cannot be attributed exactly. The isolated acceptance run had no competing human requests.",
+    "This is tested IDE/Data functionality, not full IntelliJ Ultimate parity."
+  ]
+}

@@ -171,7 +171,10 @@ export function DatabaseRelations({
         height: entry.contentRect.height,
       });
     });
-    observer.observe(element);
+    // A classic horizontal scrollbar changes only the content box. Re-centering
+    // on that change moves a dragged card away from the captured pointer. Only
+    // a real change of the allocated viewport should update the canvas origin.
+    observer.observe(element, { box: "border-box" });
     return () => observer.disconnect();
   }, []);
 
@@ -251,8 +254,10 @@ export function DatabaseRelations({
     const next = clampZoom(
       Math.min(
         1,
-        (viewportSize.width - 16) / world.width,
-        (viewportSize.height - 16) / world.height,
+        ((viewport.current?.clientWidth ?? viewportSize.width) - 16) /
+          world.width,
+        ((viewport.current?.clientHeight ?? viewportSize.height) - 16) /
+          world.height,
       ),
     );
     setCenterExtent(world);

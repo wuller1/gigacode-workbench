@@ -1,5 +1,5 @@
 {
-  "status": "verified-macos-current-windows-pending",
+  "status": "macos-verified-windows-pending",
   "previousWindowsPass": "396be5b9c5cc071e8cf319f786158df0b0b15bf3",
   "findings": [
     {
@@ -7,56 +7,56 @@
       "priority": 1,
       "problem": "Cell editor indexed a mutable page, allowing a result/page transition to change target row",
       "fix": "Capture console/result/offset/optimistic row key; block transitions until editing/staging resolved; keyboard navigation",
-      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
     },
     {
       "id": "D-UX-02",
       "priority": 1,
       "problem": "Routine document could fall through generic execute while definition loading; restart adopted changed server baseline",
       "fix": "Host routine-only apply, persistent committed/session baseline, terminal receipt, explicit CAS DDL reload preserving prior text",
-      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
     },
     {
       "id": "D-UX-03",
       "priority": 1,
       "problem": "Debounced SQL and unmounted failed drafts could be lost on tab/window close",
       "fix": "Shared retained draft queue, awaited tab/window flush, dynamic read-only, window freeze, repeat-quit protection",
-      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
     },
     {
       "id": "D-UX-04",
       "priority": 2,
       "problem": "Retargeted old documents looked like new-server data",
       "fix": "Target fingerprint required for object reuse; explicit previous-server read-only banner; lost lease state",
-      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
     },
     {
       "id": "D-UX-05",
       "priority": 2,
       "problem": "Empty SQL editor and JSON metadata waste desktop space",
       "fix": "Table grid first; optional SQL area; compact metadata tabs and actual directed FK graph",
-      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
     },
     {
       "id": "D-UX-06",
       "priority": 1,
       "problem": "Async waitForFunction predicate Promise was treated as immediate success by installed Playwright",
       "fix": "Await actual evaluated value in Node poll; explicit negative control for async false",
-      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
     },
     {
       "id": "D-UX-07",
       "priority": 1,
       "problem": "Equal sibling keys for SQL/metadata caused retained editors during production React refresh",
       "fix": "Unique key namespaces and explicit single editor ownership; one-editor invariant across metadata refresh",
-      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
     },
     {
       "id": "D-UX-08",
       "priority": 1,
       "problem": "Native Quit silently rolled back an active manual transaction; forgiving status errors could be mistaken for safety",
       "fix": "Strict parallel fresh status with a 5-second SDK timeout/cancellation. Status failure cannot erase a previously known open transaction. Active, failed, busy, opening or unavailable leases block shutdown; reject new windows during the barrier",
-      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
     },
     {
       "id": "IDE-UX-09",
@@ -84,7 +84,42 @@
       "priority": 1,
       "problem": "A later parallel acceptance rerun exposed a readiness gap: the selected result could differ from the page currently available for grid editing",
       "fix": "canEdit now requires page.id === resultId and page.offset === offset. DOM result identity/editability and aria-busy expose actual readiness; the UI test waits for the latest completed job's result ID before F2",
-      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
+    },
+    {
+      "id": "D-UX-13",
+      "priority": 2,
+      "problem": "Classic Windows scrollbars appearing during drag can change viewport content size and recenter a graph card below its pointer",
+      "fix": "Observe allocated border-box rather than classic scrollbar content resize; fit uses current client size. Regression requires 55x25 screen-pixel pointer tracking within 2px across scrollbar appearance at reduced zoom.",
+      "verification": "Current macOS 25-case Electron acceptance passed, including classic scrollbar geometry regression. Historical Windows a922fac failed; retained failed-run evidence is not a current pass."
+    },
+    {
+      "id": "D-UX-14",
+      "priority": 1,
+      "problem": "A close confirmation could roll back work submitted by a second window/agent; completed changes and transaction calls may create no new query job.",
+      "fix": "Synchronous close fence, fresh UI recheck and host-owned activityRevision for all mutating dispatch. expectedCloseActivity is compared inside the per-console queue before Rollback. Host rejects hiding busy/active/failed sessions and rejects new mutations after hide; background reads cannot erase a refusal.",
+      "verification": "44 actual PostgreSQL cases include both close/query orders, manual table changes without a new job, rollbackTo invalidation and retained private/public values. 25 actual Data UI cases include a real second request while the rollback question is open."
+    },
+    {
+      "id": "IDE-UX-15",
+      "priority": 1,
+      "problem": "Pinned Python unittest adapter cancelled the structured result pipe at process exit; async decoder callbacks could also be disposed by an earlier onClose. FAIL in output did not guarantee a native test result.",
+      "fix": "Version/full-SHA checked reversible patch for pinned Python 2026.4.0: final same-stream result/coverage barrier, unittest-only queued callback drain, explicit incomplete error within 6s and immediate user cancellation. Native test bridge returns a fresh run ID, blocks overlapping starts and preserves an unknown-start fence.",
+      "verification": "18 deterministic regression cases passed with actual extracted upstream adapter/pipe and real Python sender, including negative controls. Full current macOS IDE45 passed native fresh PASS -> intentional structured FAIL -> repaired PASS. Windows pending."
+    },
+    {
+      "id": "IDE-UX-16",
+      "priority": 2,
+      "problem": "A screenshot of a minimized native IDE could wait indefinitely; timestamp-only names could collide across parallel captures.",
+      "fix": "Explicit hidden/minimized/zero-size refusal; 10s native capture deadline with no focus or visibility changes; post-capture identity/bounds/visibility and nonempty image checks; UUID artifact names. Test captures have phase-specific deadlines.",
+      "verification": "Current IDE45 actual Electron run verified minimized refusal without an artifact, restored only the fixture-owned window and captured real native IDE in both themes. Windows pending."
+    },
+    {
+      "id": "D-TEST-17",
+      "priority": 2,
+      "problem": "A test dispatched window.new after fast rejected shutdown had already ended, mislabelling a valid new window as a barrier bypass.",
+      "fix": "Probe window.new from the actual renderer prepareClose event before its readyToClose acknowledgement, establishing the tested interval without an arbitrary delay.",
+      "verification": "Current 25-case real Electron/PostgreSQL acceptance passed. The production shutdown guard was retained."
     }
   ],
   "remainingLimits": [
@@ -94,7 +129,8 @@
     "Retained unsaved renderer drafts survive tab unmount, not an OS/process crash; acknowledged SQL/operation receipts persist",
     "Untitled, out-of-workspace and oversized dirty IDE documents require explicit Save As; shutdown does not silently save all files",
     "A live IDE renderer can rescue its buffer after backend failure; Unacknowledged last keystrokes after renderer/OS loss are not guaranteed recoverable",
-    "Full DataGrip/Ultimate parity remains open in feature matrices"
+    "Full DataGrip/Ultimate parity remains open in feature matrices",
+    "Native TestRunRequest discards our request name/ID; simultaneous human starts in the same controller cannot be attributed exactly. Isolated acceptance used no competing human native starts."
   ],
   "previousRecordedVerification": {
     "scope": "Historical snapshot only; these counts and source-hash statements are not current-source certification",
@@ -106,19 +142,20 @@
     "remaining": "Current Windows source/package acceptance pending; workplace GigaCode and VARM not available"
   },
   "verification": {
-    "status": "verified-macos-current-windows-pending",
+    "status": "macos-verified-windows-pending",
     "unit": 116,
     "platformSkips": 2,
-    "databaseLiveSkipsWithoutIsolatedCluster": 43,
-    "databaseLive": 43,
+    "databaseLiveSkipsWithoutIsolatedCluster": 44,
+    "databaseLive": 44,
     "databaseDesktop": 25,
     "ideDesktop": 45,
     "legacyDesktop": 16,
     "fullApplicationChat": 3,
     "ideDependencies": 9,
     "offlineRecoveryFaultCases": 2,
-    "sourceHashes": "Current Database reports and IDE report record matching source SHA-256; no workplace/GigaCode/VARM claim",
-    "windows": "New source and packaged acceptance pending; previousWindowsPass remains historical",
-    "remaining": "Windows source/package run and release; workplace GigaCode and VARM unavailable. Full DataGrip/Ultimate parity remains open."
+    "sourceHashes": "Current Data reports match 41 source SHA-256; current IDE report identifies 81 tracked source SHA-256. Python patch provenance records runtime bundle/sender/helper hashes.",
+    "windows": "a922fac failed Relations drag after 43 PostgreSQL passes; current source/package run required.",
+    "remaining": "Windows source/package run and release; workplace GigaCode and VARM unavailable. Full DataGrip/Ultimate parity remains open.",
+    "pythonPipeRegression": 18
   }
 }

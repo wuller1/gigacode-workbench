@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "status": "verified-live-darwin",
+  "level": "live Electron / real Theia / real Python, Java, React, minimized capture refusal and native shutdown",
+  "at": "2026-10-14T05:40:58.232Z",
+  "platform": "darwin",
+  "caseCount": 45,
+  "rendererErrors": [],
+  "localRunId": "workbench-ide-live-dm1U9G",
+  "actualReportSha256": "0929b9a0b057d545e142472087077a7bb2e43bf12fdb15f97b84a4ea03651b96",
+  "sourceHashes": {
+    "app/electron/ide.ts": "7d967137936e16c06bcb93778e5604b18927139984c6d6112c437687415ff143",
+    "app/tools/test-ide-live.mjs": "86d9d84648d04c382abe95094d100caf86fc9be0c023407f97807a54dd34bcbe",
+    "ide/extensions/workbench-bridge/src/execution.ts": "10602bd8b2eef9d96618dfad8d24adeb0ec341ae0b5ad91fa8159d7fb6d682e8",
+    "ide/tools/python-result-drain.cjs": "3a94b64fa222c5ff944534750894712d080944bd94c52a366d99ec14cf897ffb",
+    "ide/tools/patch-python-results.mjs": "24190461f9c45d79469d86e3e65eaee9a95df419fa1b2851fb315ad77b274679",
+    "ide/tools/install-plugins.mjs": "3d09a6424752c63077c5a4e8164f8cd14ecac4f35e4ec0343811e7c5399a9866",
+    "ide/tools/test-python-result-drain.mjs": "504ccd1d8a4c8c9274a4156817d11029890a14721793d7616a53255c9c7bda1b"
+  },
+  "pythonPatch": {
+    "patch": "WORKBENCH_PYTHON_RESULT_DRAIN",
+    "extension": "ms-python.python",
+    "version": "2026.4.0",
+    "vsixSha256": "232aeafb01f069824fdd92d3e628c1c442bbcfa1d3cc945ff97076340bb2b4a6",
+    "upstreamBundleSha256": "9fa56140dc194262dadc0e55ffc5b974eb5e10a1cbd11d36f33c52ac164aa8ce",
+    "patchedBundleSha256": "4170ad9788f9054c686c1784e942c0892be6f12ca3a95c216b2434b452dd7656",
+    "upstreamSenderSha256": "33622f619cce6916e43d15285be06b17b32b3a21203212399f0a292b140cb16a",
+    "patchedSenderSha256": "d05ec2a6ebb3638b26361af999b1e33ac006b09d9a98a4e0b99f0eb6f66c203a",
+    "helperSha256": "3a94b64fa222c5ff944534750894712d080944bd94c52a366d99ec14cf897ffb",
+    "behavior": "Unittest keeps queued JSONRPC callbacks alive after reader close, waits for final same-stream result barrier after process exit; 6s incomplete-result deadline; user cancellation remains immediate. Default pytest/discovery pipe behavior is unchanged."
+  },
+  "captureGuard": {
+    "minimizedCaptureRefused": true,
+    "noArtifactOnMinimizedRefusal": true,
+    "actualDarkAndLightComposites": true,
+    "nonemptyActualNativePng": true,
+    "productionNeverRestoresOrFocusesWindow": true,
+    "fixtureRestoresOnlyItsOwnWindowForPixelAcceptance": true
+  },
+  "limitations": [
+    "Windows source and packaged acceptance still require their own current-head run.",
+    "Native TestRunRequest does not carry our request ID/name. The receipt identifies a new controller run; concurrent human starts in the same native controller cannot be attributed exactly. The isolated acceptance run had no competing human requests.",
+    "This verifies the stated IDE functionality, not full IntelliJ Ultimate parity."
+  ]
+}

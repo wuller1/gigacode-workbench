@@ -440,10 +440,13 @@ describe.skipIf(!url)(
         });
         const applied = await f.apply(2);
         const current = await f.read();
-        await f.service.invoke("database.console.update", {
-          ...f.params,
-          revision: current.revision,
-          closed: true,
+        // Historical versions could hide an active console. Seed that legacy
+        // visibility flag while keeping its real PostgreSQL transaction alive;
+        // the current console.update gate intentionally forbids creating it.
+        await (f.service as any).store.update((state: any) => {
+          state.consoles.find(
+            (c: DatabaseConsole) => c.id === current.id,
+          ).closed = true;
         });
         await expect(f.service.assertShutdownReady()).rejects.toThrow(
           /Перед закрытием завершите транзакции БД.*Commit или Rollback/,
@@ -520,6 +523,278 @@ describe.skipIf(!url)(
       }
     }, 30000);
 
+    it("host close and execution gates prevent both orders of the close/query race without changing data", async () => {
+      const f = await fixture(),
+        tableName = f.name + "_data";
+      const captureActivity = async (params: {
+        projectId: string;
+        consoleId: string;
+      }) => {
+        const state = await f.service.snapshot(params.projectId),
+          document = state.consoles.find((c) => c.id === params.consoleId)!,
+          lease = state.leases.find((l) => l.id === document.leaseId);
+        return {
+          revision: document.activityRevision!,
+          lastJob: state.jobs.filter((j) => j.consoleId === document.id).at(-1)
+            ?.id,
+          token: JSON.stringify([
+            document.leaseId,
+            document.activityRevision || 0,
+            state.jobs.filter((j) => j.consoleId === document.id).at(-1)?.id,
+            document.pendingEffect?.operationId,
+            document.lastResolution?.operationId,
+            lease?.transaction,
+          ]),
+        };
+      };
+      try {
+        await f.service.invoke("database.transaction", {
+          ...f.params,
+          action: "mode",
+          mode: "manual",
+        });
+        const applied = await f.apply(2);
+        let current = await f.read();
+        await expect(
+          f.service.invoke("database.console.update", {
+            ...f.params,
+            revision: current.revision,
+            closed: true,
+          }),
+        ).rejects.toThrow(/Commit или Rollback/);
+        current = await f.read();
+        expect(current.closed).not.toBe(true);
+        expect(current.routineBaseline!.session!.hash).toBe(
+          applied.routine.appliedHash,
+        );
+        const privateSource = await f.service.invoke("database.describe", {
+          ...f.params,
+          oid: current.object!.oid,
+          kind: "function",
+        });
+        expect(privateSource.hash).toBe(applied.routine.appliedHash);
+        expect(await f.value()).toBe(1);
+        const expectedCloseActivity = (await captureActivity(f.params)).token;
+        const afterApproval = await f.apply(3);
+        await expect(
+          f.service.invoke("database.transaction", {
+            ...f.params,
+            action: "rollback",
+            expectedCloseActivity,
+          }),
+        ).rejects.toThrow(/появилась новая операция/);
+        const retainedSource = await f.service.invoke("database.describe", {
+          ...f.params,
+          oid: current.object!.oid,
+          kind: "function",
+        });
+        expect(retainedSource.hash).toBe(afterApproval.routine.appliedHash);
+        expect(await f.value()).toBe(1);
+        await f.service.invoke("database.transaction", {
+          ...f.params,
+          action: "rollback",
+        });
+        current = await f.read();
+        await f.service.invoke("database.console.update", {
+          ...f.params,
+          revision: current.revision,
+          closed: true,
+        });
+        expect((await f.read()).closed).toBe(true);
+        await expect(f.apply(3)).rejects.toThrow(/Консоль закрыта/);
+        expect(await f.value()).toBe(1);
+
+        const q = await f.service.invoke("database.console.create", {
+          projectId: f.params.projectId,
+          connectionId: f.connection.id,
+          title: "Close race SQL",
+        });
+        const params = { projectId: f.params.projectId, consoleId: q.id };
+        await f.service.invoke("database.console.open", params);
+        let sql = await f.service.invoke("database.console.read", params);
+        await f.service.invoke("database.console.update", {
+          ...params,
+          revision: sql.revision,
+          closed: true,
+        });
+        await expect(
+          f.service.invoke("database.execute", {
+            ...params,
+            sql: ddl(f.name, 11),
+            operationId: randomUUID(),
+          }),
+        ).rejects.toThrow(/Консоль закрыта/);
+        expect(await f.value()).toBe(1);
+        sql = await f.service.invoke("database.console.read", params);
+        await f.service.invoke("database.console.update", {
+          ...params,
+          revision: sql.revision,
+          closed: false,
+        });
+        const running = await f.service.invoke("database.execute", {
+          ...params,
+          sql: "SELECT pg_sleep(30)",
+          operationId: randomUUID(),
+        });
+        sql = await f.service.invoke("database.console.read", params);
+        await expect(
+          f.service.invoke("database.console.update", {
+            ...params,
+            revision: sql.revision,
+            closed: true,
+          }),
+        ).rejects.toThrow(/Операция выполняется/);
+        expect(
+          (await f.service.invoke("database.console.read", params)).closed,
+        ).toBe(false);
+        await f.service.invoke("database.cancel", params);
+        let terminal: any;
+        for (let i = 0; i < 200; i++) {
+          terminal = (await f.service.snapshot(f.params.projectId)).jobs.find(
+            (j) => j.id === running.id,
+          );
+          if (terminal?.status !== "running") break;
+          await new Promise((resolve) => setTimeout(resolve, 25));
+        }
+        expect(terminal?.status).toBe("cancelled");
+        sql = await f.service.invoke("database.console.read", params);
+        await f.service.invoke("database.console.update", {
+          ...params,
+          revision: sql.revision,
+          closed: true,
+        });
+        expect(
+          (await f.service.invoke("database.console.read", params)).closed,
+        ).toBe(true);
+        expect(await f.value()).toBe(1);
+
+        // changes has no job and clears its receipt marker after success. It
+        // must nevertheless invalidate approval of an older active transaction.
+        await admin.query(
+          `CREATE TABLE public.${tableName}(id integer PRIMARY KEY, value integer); INSERT INTO public.${tableName} VALUES(1,1)`,
+        );
+        const rowKey = (
+          await admin.query(
+            `SELECT tableoid::text,ctid::text,xmin::text FROM public.${tableName} WHERE id=1`,
+          )
+        ).rows[0];
+        sql = await f.service.invoke("database.console.read", params);
+        await f.service.invoke("database.console.update", {
+          ...params,
+          revision: sql.revision,
+          closed: false,
+        });
+        await f.service.invoke("database.transaction", {
+          ...params,
+          action: "mode",
+          mode: "manual",
+        });
+        await f.service.invoke("database.transaction", {
+          ...params,
+          action: "begin",
+        });
+        const beforeChanges = await captureActivity(params);
+        const changed = await f.service.invoke("database.changes", {
+          ...params,
+          oid: rowKey.tableoid,
+          operationId: randomUUID(),
+          changes: [{ kind: "update", key: rowKey, values: { value: "2" } }],
+        });
+        expect(changed.committed).toBe(false);
+        const afterChanges = await captureActivity(params);
+        expect(afterChanges.lastJob).toBe(beforeChanges.lastJob);
+        expect(afterChanges.revision).toBeGreaterThan(beforeChanges.revision);
+        await expect(
+          f.service.invoke("database.transaction", {
+            ...params,
+            action: "rollback",
+            expectedCloseActivity: beforeChanges.token,
+          }),
+        ).rejects.toThrow(/появилась новая операция/);
+        expect(
+          (await f.service.invoke("database.console.read", params))
+            .activityRevision,
+        ).toBe(afterChanges.revision);
+
+        // A completed Rollback to savepoint also has no job and leaves the
+        // transaction active. Conservatively invalidate the earlier approval.
+        await f.service.invoke("database.transaction", {
+          ...params,
+          action: "savepoint",
+          name: "after_changes",
+        });
+        const beforeRollbackTo = await captureActivity(params);
+        await f.service.invoke("database.transaction", {
+          ...params,
+          action: "rollbackTo",
+          name: "after_changes",
+        });
+        const afterRollbackTo = await captureActivity(params);
+        expect(afterRollbackTo.lastJob).toBe(beforeRollbackTo.lastJob);
+        expect(afterRollbackTo.revision).toBeGreaterThan(
+          beforeRollbackTo.revision,
+        );
+        await expect(
+          f.service.invoke("database.transaction", {
+            ...params,
+            action: "rollback",
+            expectedCloseActivity: beforeRollbackTo.token,
+          }),
+        ).rejects.toThrow(/появилась новая операция/);
+        const verification = await f.service.invoke("database.execute", {
+          ...params,
+          sql: `SELECT value FROM public.${tableName} WHERE id=1`,
+          operationId: randomUUID(),
+        });
+        let verified: any;
+        for (let i = 0; i < 200; i++) {
+          verified = (await f.service.snapshot(params.projectId)).jobs.find(
+            (j) => j.id === verification.id,
+          );
+          if (verified?.status !== "running") break;
+          await new Promise((resolve) => setTimeout(resolve, 25));
+        }
+        expect(verified.status).toBe("completed");
+        const privateRows = await f.service.invoke("database.page", {
+          ...params,
+          resultId: verified.results[0].id,
+          limit: 1,
+        });
+        expect(privateRows.values).toEqual([["2"]]);
+        expect(
+          (
+            await admin.query(
+              `SELECT value FROM public.${tableName} WHERE id=1`,
+            )
+          ).rows[0].value,
+        ).toBe(1);
+        await f.service.invoke("database.transaction", {
+          ...params,
+          action: "rollback",
+          expectedCloseActivity: (await captureActivity(params)).token,
+        });
+        sql = await f.service.invoke("database.console.read", params);
+        await f.service.invoke("database.console.update", {
+          ...params,
+          revision: sql.revision,
+          closed: true,
+        });
+        const state = JSON.parse(
+          await fs.readFile(
+            path.join(f.options.dataDir, "database/state.json"),
+            "utf8",
+          ),
+        );
+        expect(
+          state.consoles.find((c: DatabaseConsole) => c.id === q.id)
+            .activityRevision,
+        ).toBeUndefined();
+      } finally {
+        await f.close();
+        await admin.query(`DROP TABLE IF EXISTS public.${tableName}`);
+      }
+    }, 30000);
+
     it("retains an unknown auto-Commit effect after actual acknowledgement loss and never repeats DDL", async () => {
       const target = new URL(url!),
         sockets = new Set<Socket>();
@@ -584,6 +859,19 @@ describe.skipIf(!url)(
         expect(current.pendingEffect?.kind).toBe("routine");
         expect(current.pendingEffect?.phase).toBe("unknown");
         const operationId = current.pendingEffect!.operationId;
+        await f.service.invoke("database.console.update", {
+          ...f.params,
+          revision: current.revision,
+          closed: true,
+        });
+        current = await f.read();
+        expect(current.closed).toBe(true);
+        expect(current.pendingEffect!.operationId).toBe(operationId);
+        await f.service.invoke("database.console.update", {
+          ...f.params,
+          revision: current.revision,
+          closed: false,
+        });
         await f.restart();
         current = await f.read();
         expect(current.pendingEffect!.operationId).toBe(operationId);

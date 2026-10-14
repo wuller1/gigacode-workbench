@@ -1,5 +1,7 @@
 # GigaCode Workbench
 
+Проверка текущего среза на macOS: **116 unit/protocol, 44 PostgreSQL, 25 Data UI, 45 IDE/language/recovery и 18 Python pipe regressions**. Защищены закрытие с параллельными запросами, последний результат native Python runner и снимки скрытой IDE. Текущая Windows-приёмка ещё требуется; [аудит и точные границы](docs/suite/IDE-RUNTIME-AUDIT.md) отделяют прежние результаты.
+
 Обновление Data workspace: PostgreSQL/MCP консоли, inline grid с клавиатурой, transactions, сохранённая версия routine DDL, компактный metadata inspector, настоящая диаграмма FK, EXPLAIN, потоковые CSV/SQL/XLSX, durable history и защита unknown writes. [Перенос, проверки и открытые DataGrip gaps](docs/suite/DATABASE-RUNTIME-HANDOFF.md). Полное соответствие DataGrip ещё не объявляется.
 
 Обновление 14.10.2026: добавлена рабочая IDE на Theia с Java/Python/frontend расширениями, общими с агентом buffers, семантическими операциями, build/test/debug bridge и восстановлением. Установка, перенос и границы проверки: [IDE-RUNTIME-HANDOFF](docs/suite/IDE-RUNTIME-HANDOFF.md). Полная матрица Ultimate остаётся отдельной пофункциональной приёмкой.

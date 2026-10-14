@@ -1,0 +1,11 @@
+{
+  "commit": "a922fac55929de3efcc8b9f603074222a104b0e0",
+  "run": "https://github.com/wuller1/gigacode-workbench/actions/runs/38512105951",
+  "conclusion": "failure",
+  "observed": {
+    "postgresqlPassed": 43,
+    "desktopPassedBeforeFailure": 11,
+    "failedScenario": "Relations drag exact pointer tracking at 72% zoom with classic scrollbars"
+  },
+  "scope": "Historical failed run; source Data acceptance stopped at diagram drag. IDE, packaged runtime and installers were not executed."
+}

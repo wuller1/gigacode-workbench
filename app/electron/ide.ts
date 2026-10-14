@@ -438,14 +438,67 @@ export class IdeService {
     if (method === "ide.capture") {
       const entry = await this.ensure(projectId);
       await entry.ready;
-      const image = await entry.view.webContents.capturePage();
+      const bounds = entry.view.getBounds();
+      const owner = entry.windowId
+        ? BrowserWindow.fromId(entry.windowId)
+        : undefined;
+      const visible = () =>
+        this.views.get(entry.engine.id) === entry &&
+        !entry.view.webContents.isDestroyed() &&
+        entry.visible &&
+        entry.view.getVisible() &&
+        owner &&
+        !owner.isDestroyed() &&
+        owner.isVisible() &&
+        !owner.isMinimized();
+      if (!visible() || bounds.width < 1 || bounds.height < 1)
+        throw new Error(
+          "IDE_CAPTURE_NOT_VISIBLE: Редактор скрыт или окно свёрнуто; снимок не получен. Видимость и фокус окна не изменялись.",
+        );
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const image = await Promise.race([
+        entry.view.webContents.capturePage(undefined, {
+          stayHidden: true,
+          stayAwake: true,
+        }),
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(
+            () =>
+              reject(
+                new Error(
+                  "IDE_CAPTURE_TIMEOUT: Редактор не предоставил снимок за 10 секунд; снимок не сохранён.",
+                ),
+              ),
+            10_000,
+          );
+        }),
+      ]).finally(() => clearTimeout(timer));
+      const currentBounds = entry.view.getBounds();
+      if (
+        this.shutdownPreparing ||
+        this.closing ||
+        !visible() ||
+        currentBounds.x !== bounds.x ||
+        currentBounds.y !== bounds.y ||
+        currentBounds.width !== bounds.width ||
+        currentBounds.height !== bounds.height
+      )
+        throw new Error(
+          "IDE_CAPTURE_STALE: Видимость или расположение редактора изменились во время снимка; повторно проверьте текущую панель.",
+        );
+      const size = image.getSize();
+      if (image.isEmpty() || size.width < 1 || size.height < 1)
+        throw new Error("IDE_CAPTURE_EMPTY: Редактор вернул пустой снимок.");
+      const png = image.toPNG();
+      if (!png.length)
+        throw new Error("IDE_CAPTURE_EMPTY: Редактор вернул пустой PNG.");
       const file = path.join(
         this.options.dataDir,
         "artifacts",
-        `ide-${Date.now()}.png`,
+        `ide-${Date.now()}-${randomUUID()}.png`,
       );
       await fs.mkdir(path.dirname(file), { recursive: true });
-      await fs.writeFile(file, image.toPNG());
+      await fs.writeFile(file, png);
       return { path: file };
     }
     return this.rpc(projectId, method.slice(4), p);

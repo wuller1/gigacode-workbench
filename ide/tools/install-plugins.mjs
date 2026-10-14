@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import { patchPythonResults } from './patch-python-results.mjs';
 const require = createRequire(import.meta.url);
 const yauzl = require('yauzl');
 const semver = require('semver');
@@ -110,7 +111,12 @@ async function install(spec) {
         await writeFile(lockPath, JSON.stringify(lock, null, 2) + '\n');
     }
     console.log(`Verified ${key}`);
-    if (!cacheOnly) await unpack(file, spec.id, pinned.sha256);
+    if (!cacheOnly) {
+        await unpack(file, spec.id, pinned.sha256);
+        // unpack's source marker can skip an already cached directory. Verify
+        // the exact reversible runtime patch on every install, including that case.
+        if (spec.id === 'ms-python.python') await patchPythonResults(root);
+    }
 }
 // Clear deployment artifacts for a different target, preserving the content-addressed download cache.
 if (!cacheOnly) for (const file of await readdir(directory)) if (file.endsWith('.vsix')) await rm(path.join(directory, file));

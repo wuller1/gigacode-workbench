@@ -22,6 +22,7 @@ export class ExecutionService {
     @inject(DebugSessionManager) private readonly debug!: DebugSessionManager;
     private taskChoices = new Map<string, { task: TaskConfiguration; token: number }>();
     private taskRuns = new Map<number, { taskId: number; label?: string; state: string; exitCode?: number; error?: string }>();
+    private pendingTestStarts = new Set<string>();
     private pageLimit(p: Record<string, any>) { return Math.min(1000,Math.max(1,Math.floor(Number(p.limit)||200))); }
     private allTests(items: readonly TestItem[]): TestItem[] { return items.flatMap(item => [item, ...this.allTests(item.tests)]); }
     async invoke(method: string, p: Record<string, any>): Promise<unknown> {
@@ -39,7 +40,7 @@ export class ExecutionService {
         }
         if (['tests.run','tasks.run','debug.start'].includes(method)) { const dirty = this.editors.all.filter(widget => widget.editor.document.dirty); if (dirty.length) throw new Error('UNSAVED_DOCUMENTS: save only task-relevant files at their current revisions before running; never save unrelated edits to bypass this check. ' + JSON.stringify(dirty.slice(0,20).map(widget => widget.editor.document.uri))); }
         if (method === 'tests.list') return { refreshing: this.tests.isRefreshing, controllers: this.tests.getControllers().filter(controller => !p.controllerId || controller.id === p.controllerId).map(controller => ({
-            id: controller.id, label: controller.label, profiles: controller.testRunProfiles.map(profile => ({ label: profile.label, kind: profile.kind, isDefault: profile.isDefault })),
+            id: controller.id, label: controller.label, startPending: this.pendingTestStarts.has(controller.id), profiles: controller.testRunProfiles.map(profile => ({ label: profile.label, kind: profile.kind, isDefault: profile.isDefault })),
             totalTests: this.allTests(controller.tests).length, offset: Math.max(0,Number(p.offset)||0), tests: this.allTests(controller.tests).slice(Math.max(0,Number(p.offset)||0),Math.max(0,Number(p.offset)||0)+this.pageLimit(p)).map(item => ({ id: item.id, label: item.label, uri: item.uri?.toString(), range: item.range, parentId: item.parent?.id, busy: item.busy, error: item.error })),
             runs: controller.testRuns.filter(run=>!p.runId || run.id===p.runId).slice(-3).map(run => ({ id: run.id, name: run.name, running: run.isRunning,
                 totalResults: run.items.length, items: run.items.slice(Math.max(0,Number(p.offset)||0),Math.max(0,Number(p.offset)||0)+this.pageLimit(p)).map(item => ({ id: item.id, label: item.label, result: run.getTestState(item) })),
@@ -47,14 +48,43 @@ export class ExecutionService {
         if (method === 'tests.refresh') { this.tests.refresh(); return { requested: true, requiresReadback: true }; }
         if (method === 'tests.run') {
             const controller = this.tests.getControllers().find(value => value.id === p.controllerId); if (!controller) throw new Error('TEST_CONTROLLER_UNAVAILABLE');
+            if (this.tests.isRefreshing) throw new Error('TESTS_REFRESHING: wait for test discovery before starting a run');
+            if (this.pendingTestStarts.has(controller.id) || controller.testRuns.some(run => run.isRunning)) throw new Error('TEST_RUN_IN_PROGRESS: inspect the current run instead of starting another');
             const candidates = controller.testRunProfiles.filter(profile => profile.kind === (p.debug ? TestRunProfileKind.Debug : TestRunProfileKind.Run) && (!p.profile || profile.label === p.profile));
             const profile = candidates.find(value => value.isDefault) || (candidates.length === 1 ? candidates[0] : undefined);
             if (!profile) throw new Error('SELECT_AVAILABLE_TEST_PROFILE');
             const available = this.allTests(controller.tests);
+            if (available.some(item => item.busy)) throw new Error('TESTS_DISCOVERY_BUSY: wait for the test tree to finish updating');
             const included = Array.isArray(p.testIds) && p.testIds.length ? p.testIds.map((id: string) => { const test = available.find(value => value.id === id); if (!test) throw new Error('TEST_NOT_FOUND'); return test; }) : available.filter(item => !item.tests.length);
             if (!included.length) throw new Error('NO_DISCOVERED_TESTS');
-            profile.run('Workbench agent', included, [], true);
-            return { requested: true, controllerId: controller.id, profile: profile.label, includedCount: included.length, paths: included.slice(0,20).map((item: TestItem) => item.path), requiresReadback: true };
+            // profile.run is fire-and-forget in the native Theia API. A dispatch
+            // alone is not evidence that a run exists (stale item paths can be
+            // ignored by the extension host). Subscribe before dispatch and
+            // return the actual newly created run ID, never an older result.
+            const previous = new Set(controller.testRuns.map(run => run.id));
+            this.pendingTestStarts.add(controller.id);
+            const runId = await new Promise<string>((resolve, reject) => {
+                const subscription = controller.onRunsChanged(() => {
+                    const created = controller.testRuns.filter(run => !previous.has(run.id));
+                    if (!created.length) return;
+                    clearTimeout(timer); subscription.dispose(); this.pendingTestStarts.delete(controller.id);
+                    if (created.length !== 1) reject(new Error('TEST_RUN_START_AMBIGUOUS: inspect native runs before retrying'));
+                    else resolve(created[0].id);
+                });
+                const timer = setTimeout(() => {
+                    // Keep the pending fence and listener after an unknown
+                    // outcome: a delayed native run must not cause a duplicate
+                    // execution. Its eventual creation releases the fence.
+                    reject(new Error('TEST_RUN_START_UNCONFIRMED: no native run receipt; inspect tests.list before retrying'));
+                }, 30_000);
+                try { profile.run('Workbench agent', included, [], true); }
+                catch (error) { clearTimeout(timer); subscription.dispose(); this.pendingTestStarts.delete(controller.id); reject(error); }
+            });
+            // Native extensions choose their own TestRun name; Theia does not
+            // propagate our request name/ID into TestRunRequest. This receipt
+            // identifies a new controller run, not proven ownership if a
+            // person concurrently starts the same controller in native UI.
+            return { requested: true, runId, attribution: 'new-controller-run', requestIdSupported: false, controllerId: controller.id, profile: profile.label, includedCount: included.length, paths: included.slice(0,20).map((item: TestItem) => item.path), requiresReadback: true };
         }
         if (method === 'tests.cancel') {
             const run = this.tests.getControllers().find(controller => controller.id === p.controllerId)?.testRuns.find(value => value.id === p.runId);

@@ -70,6 +70,7 @@ export class DatabaseService {
   private jobs = new Map<string, DatabaseJob>();
   private pending = new Map<string, Promise<any>>();
   private operations = new Map<string, Promise<any>>();
+  private activityRevisions = new Map<string, number>();
   private disposing = false;
   constructor(
     private options: {
@@ -130,7 +131,13 @@ export class DatabaseService {
       .consoles.find((c) => c.id === id && c.projectId === projectId);
     if (!c) throw new Error("Консоль другого проекта или не существует");
     this.connection(c.connectionId, projectId);
-    return c;
+    return { ...c, activityRevision: this.activityRevisions.get(c.id) || 0 };
+  }
+  private recordActivity(consoleId: string) {
+    this.activityRevisions.set(
+      consoleId,
+      (this.activityRevisions.get(consoleId) || 0) + 1,
+    );
   }
   private async client(id: string) {
     if (!this.clients.has(id)) {
@@ -273,6 +280,59 @@ export class DatabaseService {
       ? session.hash
       : baseline.committedHash;
   }
+  private async assertConsoleCanHide(c: DatabaseConsole) {
+    const running = () =>
+      [...this.jobs.values()].some(
+        (j) => j.consoleId === c.id && j.status === "running",
+      );
+    if (c.pendingEffect?.phase === "submitting" || this.pending.has(c.id))
+      throw new Error(
+        "Операция выполняется. Дождитесь завершения или отмените её перед закрытием вкладки.",
+      );
+    if (c.leaseId) {
+      const cached = this.leases.get(c.leaseId);
+      // Hiding an already-lost session with a durable unknown intent does not
+      // dispose it, clear the intent, or imply success. Keep recovery available.
+      if (
+        cached?.transaction === "unknown" &&
+        !cached.busy &&
+        c.pendingEffect?.phase === "unknown" &&
+        !running()
+      )
+        return;
+      let state: any;
+      try {
+        const existing = this.clients.get(c.connectionId);
+        if (!existing) throw new Error("Нет MCP-подключения");
+        state = await (await existing).call("status", {}, { timeoutMs: 5000 });
+        const fresh: DatabaseLease | undefined = state.leases.find(
+          (lease: DatabaseLease) => lease.id === c.leaseId,
+        );
+        if (!fresh)
+          throw new Error("Нет подтверждения состояния физической сессии");
+        this.leases.set(fresh.id, fresh);
+      } catch {
+        throw new Error(
+          "Не удалось подтвердить состояние консоли перед закрытием. Восстановите связь и проверьте транзакцию либо явно выполните Disconnect после сверки.",
+        );
+      }
+      for (const job of state.jobs)
+        if (job.consoleId === c.id) this.jobs.set(job.id, job);
+      const lease = this.leases.get(c.leaseId)!;
+      if (lease.busy || running())
+        throw new Error(
+          "Операция выполняется. Дождитесь завершения или отмените её перед закрытием вкладки.",
+        );
+      if (["active", "failed"].includes(lease.transaction))
+        throw new Error(
+          "Перед закрытием вкладки завершите транзакцию: выполните Commit или Rollback.",
+        );
+    } else if (running()) {
+      throw new Error(
+        "Операция ещё не завершена. Проверьте её исход перед закрытием вкладки.",
+      );
+    }
+  }
   private async waitRoutine(
     c: DatabaseConsole,
     client: DatabaseMcpClient,
@@ -372,6 +432,7 @@ export class DatabaseService {
       connections: this.publicConnections(projectId),
       consoles: consoles.map((c) => ({
         ...c,
+        activityRevision: this.activityRevisions.get(c.id) || 0,
         pendingEffect: c.pendingEffect
           ? { ...c.pendingEffect, intent: undefined }
           : undefined,
@@ -819,6 +880,7 @@ export class DatabaseService {
         (typeof p.sql !== "string" || Buffer.byteLength(p.sql) > 2 * 1024 ** 2)
       )
         throw new Error("SQL слишком большой");
+      if (p.closed === true) await this.assertConsoleCanHide(c);
       if (p.revision !== c.revision && typeof p.sql === "string") {
         await this.store.update((s) => {
           s.recoveries ??= [];
@@ -882,6 +944,7 @@ export class DatabaseService {
       }
       const existing = this.pending.get(c.id);
       if (existing) return existing;
+      this.recordActivity(c.id);
       const opening = (async () => {
         const client = await this.client(c.connectionId),
           connection = this.connection(c.connectionId, p.projectId);
@@ -935,6 +998,7 @@ export class DatabaseService {
     }
     const client = await this.client(c.connectionId);
     if (op === "console.disconnect") {
+      this.recordActivity(c.id);
       if (c.leaseId) {
         const l = this.leases.get(c.leaseId);
         try {
@@ -1065,8 +1129,53 @@ export class DatabaseService {
       throw new Error(
         "Для изменения DDL откройте отдельный документ процедуры или функции",
       );
+    if (
+      c.closed &&
+      ["execute", "table", "routineApply", "import", "changes"].includes(op)
+    )
+      throw new Error(
+        "Консоль закрыта. Откройте её вкладку или создайте новую консоль перед выполнением операции.",
+      );
     const args = { ...p, leaseId: c.leaseId, consoleId: c.id };
     delete args.projectId;
+    if (
+      op === "transaction" &&
+      p.action === "rollback" &&
+      p.expectedCloseActivity !== undefined
+    ) {
+      // This comparison runs inside the per-console operation queue. A UI-only
+      // status recheck would leave a gap for a second writer before Rollback.
+      const activity = JSON.stringify([
+        c.leaseId,
+        this.activityRevisions.get(c.id) || 0,
+        [...this.jobs.values()].filter((j) => j.consoleId === c.id).at(-1)?.id,
+        c.pendingEffect?.operationId,
+        c.lastResolution?.operationId,
+        c.leaseId ? this.leases.get(c.leaseId)?.transaction : undefined,
+      ]);
+      if (
+        typeof p.expectedCloseActivity !== "string" ||
+        p.expectedCloseActivity !== activity
+      )
+        throw new Error(
+          "В другой сессии появилась новая операция. Проверьте её и повторите закрытие вкладки.",
+        );
+    }
+    delete args.expectedCloseActivity;
+    // These calls may change a transaction without creating a job (changes,
+    // savepoint, rollbackTo). Invalidate old close approvals before dispatch,
+    // including conservative invalidation when the provider later refuses.
+    if (
+      [
+        "execute",
+        "table",
+        "changes",
+        "routineApply",
+        "import",
+        "transaction",
+      ].includes(op)
+    )
+      this.recordActivity(c.id);
     if (
       ["page", "dropResult", "export"].includes(op) &&
       ![...this.jobs.values()].some(

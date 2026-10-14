@@ -32,6 +32,8 @@ export type DatabaseConsole = {
   title: string;
   sql: string;
   revision: number;
+  /** Host-owned session activity counter; not persisted or a caller permission. */
+  readonly activityRevision?: number;
   closed?: boolean;
   updatedAt: string;
   mode: "auto" | "manual";

@@ -585,8 +585,11 @@ try {
     },
   );
   await check(
-    "Relations graph reads actual foreign keys, supports keyboard/drag/zoom and opens related table",
+    "Relations graph reads actual foreign keys and follows pointer across classic scrollbar appearance at reduced zoom",
     async () => {
+      const reducedGraph = await p.addStyleTag({
+        content: ".db-relations { width:min(550px,100%); max-width:550px }",
+      });
       await p.getByRole("button", { name: "Связи", exact: true }).click();
       const graph = p.getByRole("region", {
         name: "Диаграмма внешних ключей",
@@ -612,6 +615,23 @@ try {
           (await inspector.innerText()).includes("CASCADE"),
         "FK columns/actions missing",
       );
+      // macOS horizontal scrollbars remain overlays even with custom scrollbar
+      // CSS. Reserve the same 16px content-box space as a classic track when
+      // real overflow appears; the allocated border box must stay unchanged.
+      await graph.evaluate((element) => {
+        const viewport = element.querySelector(".db-relations-viewport");
+        const stage = element.querySelector(".db-relations-stage");
+        viewport.classicTrackObserver = new MutationObserver(() => {
+          viewport.style.borderBottom =
+            viewport.scrollWidth > viewport.clientWidth + 1
+              ? "16px solid transparent"
+              : "0px";
+        });
+        viewport.classicTrackObserver.observe(stage, {
+          attributes: true,
+          attributeFilter: ["style"],
+        });
+      });
       const header = p.getByRole("button", {
         name: "Таблица public.desktop_data, выбранная",
         exact: true,
@@ -657,6 +677,12 @@ try {
       await header.hover({ position: { x: 30, y: 15 } });
       const box = await header.boundingBox();
       const dragBefore = await card.boundingBox();
+      const viewportBefore = await graph
+        .locator(".db-relations-viewport")
+        .evaluate((element) => ({
+          clientHeight: element.clientHeight,
+          offsetHeight: element.offsetHeight,
+        }));
       const nodeOid = await card.getAttribute("data-oid");
       await p.mouse.move(box.x + 30, box.y + 15);
       await p.mouse.down();
@@ -671,14 +697,36 @@ try {
         const graph = document.querySelector(".db-relations");
         return graph && !graph.dataset.dragging;
       });
+      await p.waitForFunction(({ clientHeight, offsetHeight }) => {
+        const viewport = document.querySelector(".db-relations-viewport");
+        const moved = viewport
+          .querySelector('.db-relations-node[aria-label="public.desktop_data"]')
+          .getBoundingClientRect();
+        const key = [
+          viewport.clientHeight,
+          viewport.offsetHeight,
+          moved.x,
+          moved.y,
+        ].join(":");
+        const previous = viewport.stableDragGeometry;
+        viewport.stableDragGeometry = {
+          key,
+          frames: previous?.key === key ? previous.frames + 1 : 0,
+        };
+        return (
+          viewport.clientHeight <= clientHeight - 15 &&
+          viewport.offsetHeight === offsetHeight &&
+          viewport.stableDragGeometry.frames >= 3
+        );
+      }, viewportBefore);
       await p.waitForFunction(({ x, y }) => {
         const moved = document
           .querySelector('.db-relations-node[aria-label="public.desktop_data"]')
           .getBoundingClientRect();
-        return moved.x > x + 50 && moved.y > y + 20;
+        return Math.abs(moved.x - x - 55) < 2 && Math.abs(moved.y - y - 25) < 2;
       }, dragBefore);
       assert(
-        (await card.boundingBox()).x > dragBefore.x + 50,
+        Math.abs((await card.boundingBox()).x - dragBefore.x - 55) < 2,
         "Dragging graph table did not follow pointer",
       );
       assert(
@@ -686,6 +734,14 @@ try {
           "",
         "Dragging selected table text instead of moving its header",
       );
+      await graph.evaluate((element) => {
+        const viewport = element.querySelector(".db-relations-viewport");
+        viewport.classicTrackObserver.disconnect();
+        delete viewport.classicTrackObserver;
+        delete viewport.stableDragGeometry;
+        viewport.style.removeProperty("border-bottom");
+      });
+      await reducedGraph.evaluate((element) => element.remove());
       await p
         .getByRole("button", {
           name: "Уменьшить масштаб диаграммы",
@@ -724,7 +780,7 @@ try {
     },
   );
   await check(
-    "Document close, reopen and switching preserve the independent SQL document",
+    "Document close rejects work added during confirmation; reopen and switching preserve independent SQL",
     async () => {
       // Create this scenario's transaction explicitly, rather than relying on
       // a previous test leaving a manual session open.
@@ -741,6 +797,55 @@ try {
       const closeTransaction = p.getByRole("dialog", {
         name: "Откатить транзакцию и закрыть вкладку?",
       });
+      await closeTransaction.waitFor();
+      // Simulate a real second window/agent submitting to the same console
+      // while the first window is waiting for the user's rollback approval.
+      const stateBeforeApproval = await invoke("database.snapshot", {
+        projectId: project.id,
+      });
+      const closingConsole = stateBeforeApproval.consoles.find(
+        (c) => c.title === "desktop_data" && !c.closed,
+      );
+      const concurrentJob = await invoke("database.execute", {
+        projectId: project.id,
+        consoleId: closingConsole.id,
+        sql: "SELECT 19 AS submitted_during_close_question",
+        operationId: crypto.randomUUID(),
+      });
+      await waitForHost(
+        p,
+        async ({ projectId, jobId }) => {
+          const state = await window.workbench.invoke("database.snapshot", {
+            projectId,
+          });
+          return state.jobs.some(
+            (j) => j.id === jobId && j.status === "completed",
+          );
+        },
+        { projectId: project.id, jobId: concurrentJob.id },
+      );
+      await closeTransaction
+        .getByRole("button", { name: "Подтвердить", exact: true })
+        .click();
+      await closeTransaction.waitFor({ state: "hidden" });
+      await p
+        .locator(".db-error")
+        .filter({ hasText: "появилась новая операция" })
+        .waitFor();
+      const refused = await invoke("database.snapshot", {
+        projectId: project.id,
+      });
+      assert(
+        !refused.consoles.find((c) => c.id === closingConsole.id).closed &&
+          refused.leases.some(
+            (l) =>
+              l.id === closingConsole.leaseId && l.transaction === "active",
+          ),
+        "Stale approval hid the document or rolled back new work",
+      );
+      await p
+        .getByRole("button", { name: "Закрыть desktop_data", exact: true })
+        .click();
       await closeTransaction.waitFor();
       await closeTransaction
         .getByRole("button", { name: "Подтвердить", exact: true })
@@ -1316,15 +1421,24 @@ try {
       await p
         .getByRole("button", { name: "Закрыть сообщение", exact: true })
         .click();
-      const newWindowBlocked = await app.evaluate(
-        async ({ app, BrowserWindow }) => {
-          const window = BrowserWindow.getAllWindows()[0];
-          app.quit();
-          return window.webContents.executeJavaScript(
-            'window.workbench.invoke("window.new").then(() => false, () => true)',
-          );
-        },
-      );
+      // Send from the actual prepareClose event, before this renderer sends its
+      // readyToClose acknowledgement. Calling executeJavaScript after app.quit
+      // can arrive after a fast, correctly rejected preflight has already ended.
+      await p.evaluate(() => {
+        window.closeWindowProbe = new Promise((resolve) => {
+          const off = window.workbench.subscribe((event) => {
+            if (event.type !== "window.prepareClose") return;
+            off();
+            window.workbench.invoke("window.new").then(
+              () => resolve(false),
+              () => resolve(true),
+            );
+          });
+        });
+      });
+      await app.evaluate(({ app }) => app.quit());
+      const newWindowBlocked = await p.evaluate(() => window.closeWindowProbe);
+      await p.evaluate(() => delete window.closeWindowProbe);
       assert(
         newWindowBlocked,
         "A new window bypassed the global shutdown save barrier",

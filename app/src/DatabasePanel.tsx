@@ -99,6 +99,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     [history, setHistory] = useState(false),
     [metrics, setMetrics] = useState<any>();
   const gridRef = useRef<HTMLTableElement>(null);
+  const closingConsole = useRef<string | undefined>(undefined);
   const flushers = useRef(new Map<string, () => Promise<number>>());
   const registerFlush = useCallback(
     (id: string, flush?: () => Promise<number>) => {
@@ -210,7 +211,8 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
         revision.current++;
       }
     } catch (e: any) {
-      if (currentProject.current === pid) setError(e.message);
+      if (currentProject.current === pid)
+        setError((previous) => previous || e.message);
     } finally {
       refreshing.current = false;
     }
@@ -230,6 +232,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
   }, [snapshot.consoles]);
   useEffect(() => {
     setSnapshot(empty);
+    setError("");
     setCatalog({ schemas: [], objects: [] });
     setPage(undefined);
     setResultId("");
@@ -252,12 +255,21 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
       unsub?.();
     };
   }, [refresh, visible]);
-  const attempt = async (fn: () => Promise<any>) => {
-    setError("");
+  const attempt = async (fn: () => Promise<any>, clearError = true) => {
+    const pid = currentProject.current,
+      consoleId = activeId.current;
+    // Background reads must not erase a refusal from the user's last action.
+    if (clearError) setError("");
     try {
       return await fn();
     } catch (e: any) {
-      setError(e.message);
+      if (
+        currentProject.current === pid &&
+        (clearError || activeId.current === consoleId)
+      )
+        setError((previous) =>
+          clearError ? e.message : previous || e.message,
+        );
       return undefined;
     }
   };
@@ -358,7 +370,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
       !busy &&
       catalogKey.current !== requestCatalogKey
     )
-      void attempt(loadCatalog);
+      void attempt(loadCatalog, false);
   }, [snapshot, active?.id, active?.leaseId, requestCatalogKey, !!busy]);
   useEffect(() => {
     const id = active?.id;
@@ -405,7 +417,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
         limit: Math.min(pageSize, result?.source?.pageSize || pageSize),
       });
       if (!cancelled) setPage(r);
-    });
+    }, false);
     return () => {
       cancelled = true;
     };
@@ -434,8 +446,10 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
       consoleId,
     );
     awaitingQuery.current[consoleId] = r.id;
-    setResultId("");
-    setOffset(0);
+    if (activeId.current === consoleId) {
+      setResultId("");
+      setOffset(0);
+    }
     await refresh();
     return r;
   };
@@ -460,7 +474,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
       if (["function", "procedure"].includes(c.object!.kind))
         setDetail((v) => ({ ...v, [c.id]: definition }));
       else setTable((v) => ({ ...v, [c.id]: definition }));
-    });
+    }, false);
   }, [active?.id, active?.leaseId, !!busy]);
   useEffect(() => {
     const c = active;
@@ -490,7 +504,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
               : c.routineBaseline?.committedHash),
         },
       }));
-    });
+    }, false);
   }, [
     active?.id,
     job?.id,
@@ -527,7 +541,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
       !staleTarget &&
       !lostConnection
     )
-      void attempt(loadRelations);
+      void attempt(loadRelations, false);
   }, [active?.id, view, !!t, !!lease, !!busy, staleTarget, lostConnection]);
   const openObject = async (o: DatabaseObject) => {
     if (!active) return;
@@ -733,37 +747,75 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
   const gridLocked =
     !!edit || !!staged.length || !!busy || windowClosing || !!closing;
   const close = async (c: DatabaseConsole) => {
+    if (closingConsole.current)
+      throw new Error("Дождитесь завершения закрытия SQL-вкладки.");
     if (edit?.consoleId === c.id)
       throw new Error("Сначала сохраните или отмените редактирование ячейки.");
-    const ownLease = snapshot.leases.find((l) => l.id === c.leaseId);
-    if (
-      ownLease?.busy ||
-      snapshot.jobs.some((j) => j.consoleId === c.id && j.status === "running")
-    )
-      throw new Error(
-        "Операция выполняется. Дождитесь завершения или отмените её перед закрытием вкладки.",
-      );
-    if (ownLease && ["active", "failed"].includes(ownLease.transaction)) {
+    closingConsole.current = c.id;
+    setClosing(c.id);
+    try {
+      const currentState = async () => {
+        const state: DatabaseSnapshot = await dataCall("database.snapshot", {
+          projectId: c.projectId,
+        });
+        const document = state.consoles.find((d) => d.id === c.id);
+        const ownLease = state.leases.find((l) => l.id === document?.leaseId);
+        if (
+          !document ||
+          document.pendingEffect?.phase === "submitting" ||
+          ownLease?.busy ||
+          state.jobs.some((j) => j.consoleId === c.id && j.status === "running")
+        )
+          throw new Error(
+            "Операция выполняется или документ изменился. Дождитесь завершения перед закрытием вкладки.",
+          );
+        return {
+          ownLease,
+          operation: JSON.stringify([
+            document.leaseId,
+            document.activityRevision || 0,
+            state.jobs.filter((j) => j.consoleId === c.id).at(-1)?.id,
+            document.pendingEffect?.operationId,
+            document.lastResolution?.operationId,
+            ownLease?.transaction,
+          ]),
+        };
+      };
+      const before = await currentState();
       if (
-        !(await ask("Откатить транзакцию и закрыть вкладку?", {
+        before.ownLease &&
+        ["active", "failed"].includes(before.ownLease.transaction)
+      ) {
+        if (
+          !(await ask("Откатить транзакцию и закрыть вкладку?", {
+            confirm: true,
+            message:
+              "Закрытая вкладка не должна оставлять незаметные блокировки. Отмена сохранит её открытой.",
+          }))
+        )
+          return;
+        // Another window/agent can work while the question is open. Approval
+        // of the earlier transaction must not roll back newly submitted work.
+        const after = await currentState();
+        if (after.operation !== before.operation)
+          throw new Error(
+            "В другой сессии появилась новая операция. Проверьте её и повторите закрытие вкладки.",
+          );
+        await invoke(
+          "transaction",
+          { action: "rollback", expectedCloseActivity: after.operation },
+          c.id,
+        );
+      }
+      if (
+        (changes[c.id] || []).length &&
+        !(await ask("Скрыть вкладку с несохранёнными строками?", {
           confirm: true,
           message:
-            "Закрытая вкладка не должна оставлять незаметные блокировки. Отмена сохранит её открытой.",
+            "Изменения останутся в этой вкладке до применения или отмены.",
         }))
       )
         return;
-      await invoke("transaction", { action: "rollback" }, c.id);
-    }
-    if (
-      (changes[c.id] || []).length &&
-      !(await ask("Скрыть вкладку с несохранёнными строками?", {
-        confirm: true,
-        message: "Изменения останутся в этой вкладке до применения или отмены.",
-      }))
-    )
-      return;
-    setClosing(c.id);
-    try {
       await flushers.current.get(c.id)?.();
       const latest = await invoke("console.read", {}, c.id);
       await invoke(
@@ -773,6 +825,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
       );
       await refresh();
     } finally {
+      closingConsole.current = undefined;
       setClosing(undefined);
     }
   };
@@ -1030,6 +1083,17 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                     <IconButton
                       icon="close"
                       label={"Закрыть " + c.title}
+                      disabled={
+                        windowClosing ||
+                        !!closing ||
+                        c.pendingEffect?.phase === "submitting" ||
+                        snapshot.leases.some(
+                          (l) => l.id === c.leaseId && l.busy,
+                        ) ||
+                        snapshot.jobs.some(
+                          (j) => j.consoleId === c.id && j.status === "running",
+                        )
+                      }
                       onClick={() => void attempt(() => close(c))}
                     />
                   </div>

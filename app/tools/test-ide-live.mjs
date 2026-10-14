@@ -97,14 +97,7 @@ try {
   async function until(name, read, accept, timeout = 90_000) {
     const start = Date.now(); let value;
     do { value = await read(); if (accept(value)) return value;
-      if (name.startsWith('Native IDE test run')) {
-        const controllerId=name.slice('Native IDE test run '.length), controller=value.controllers?.find(c=>c.id===controllerId);
-        const latest=controller?.runs.at(-1);
-        if(latest && !latest.running && !latest.items.some(item=>item.result?.state===3)) {
-          await fs.writeFile(path.join(temporary,'native-test-failure.json'),JSON.stringify({controller},null,2));
-          throw new Error('Actual IDE test runner finished without any passing test: '+JSON.stringify(latest));
-        }
-      } await new Promise(resolve => setTimeout(resolve, 500)); } while (Date.now() - start < timeout);
+      await new Promise(resolve => setTimeout(resolve, 500)); } while (Date.now() - start < timeout);
     await fs.writeFile(path.join(temporary,'timeout-'+name.replaceAll(/[^a-zA-Z0-9]+/g,'-')+'.json'),JSON.stringify(value,null,2));
     throw new Error(name + ' timeout; last=' + JSON.stringify(value).slice(0, 3000));
   }
@@ -198,24 +191,44 @@ try {
     if(!built.stdout.includes('BUILD SUCCESS') || !built.stdout.includes('Tests run: 1')) throw new Error('Actual Spring/Maven/JUnit fixture did not pass');
     record('Real Java21 Spring Maven JUnit build',built.stdout.slice(-1800));
     await invoke('ide.tests.refresh');
-    const discovered=await until('Actual Java/Python test discovery',()=>invoke('ide.tests.list'),value=>!value.refreshing && value.controllers.some(c=>c.tests.some(t=>t.label==='test_greeting')),180_000);
+    const discovered=await until('Actual Java/Python test discovery',()=>invoke('ide.tests.list'),value=>!value.refreshing && value.controllers.some(c=>c.tests.some(t=>t.label==='test_greeting')) && value.controllers.every(c=>c.tests.every(t=>!t.busy)),180_000);
     record('Native test controllers discover real tests',discovered.controllers.map(c=>({id:c.id,tests:c.tests.length,profiles:c.profiles})));
+    async function nativeRun(controllerId, expectedState, label) {
+      const requested=await invoke('ide.tests.run',{controllerId});
+      if(typeof requested.runId!=='string'||!requested.runId)throw new Error('Native test request has no actual new-run receipt: '+JSON.stringify(requested));
+      console.log('NATIVE_TEST_REQUEST',JSON.stringify(requested));
+      const observed=await until(label,async()=>{
+        const value=await invoke('ide.tests.list',{controllerId,runId:requested.runId});
+        const run=value.controllers.find(c=>c.id===controllerId)?.runs.find(r=>r.id===requested.runId);
+        if(run&&!run.running) {
+          const hasExpected=run.items.some(item=>item.result?.state===expectedState);
+          const unexpected=run.items.some(item=>item.result?.state===6||(expectedState===3&&item.result?.state===4));
+          if(!hasExpected||unexpected) {
+            // A native adapter ending before its structured result arrives is
+            // an actual failure. Text output, old passes and rerunning cannot
+            // turn that incomplete run into a successful assertion.
+            await fs.writeFile(path.join(temporary,'native-test-failure.json'),JSON.stringify({requested,expectedState,run,value},null,2));
+            throw new Error('Actual native test run completed with missing or unexpected structured result: '+JSON.stringify(run));
+          }
+        }
+        return value;
+      },value=>value.controllers.find(c=>c.id===controllerId)?.runs.some(r=>r.id===requested.runId&&!r.running&&r.items.some(item=>item.result?.state===expectedState)),240_000);
+      return observed.controllers.find(c=>c.id===controllerId).runs.find(r=>r.id===requested.runId);
+    }
     for(const controller of discovered.controllers.filter(c=>['python-tests','java'].includes(c.id))) {
-      const requested = await invoke('ide.tests.run',{controllerId:controller.id}); console.log('NATIVE_TEST_REQUEST',JSON.stringify(requested));
-      const observed=await until('Native IDE test run '+controller.id,()=>invoke('ide.tests.list'),value=>value.controllers.find(c=>c.id===controller.id)?.runs.some(run=>!run.running && run.items.some(item=>item.result?.state===3)),240_000);
-      const run=observed.controllers.find(c=>c.id===controller.id).runs.at(-1);
-      if(run.items.some(item=>[4,6].includes(item.result?.state)))throw new Error('Native IDE tests failed '+JSON.stringify(run));
+      const run=await nativeRun(controller.id,3,'Native IDE test run '+controller.id);
       record('Native IDE test runner passed actual tests: '+controller.id,run);
       if(controller.id==='python-tests') {
         const file=path.join(fixture,'python/test_greeting.py'),original=await fs.readFile(file,'utf8');
         await fs.writeFile(file,original.replace('"Hello, Workbench"','"Intentional failing expectation"'));
-        await invoke('ide.tests.run',{controllerId:controller.id});
-        const failed=await until('Native Python failure is observed',()=>invoke('ide.tests.list',{controllerId:controller.id}),value=>value.controllers[0]?.runs.some(r=>r.id!==run.id&&!r.running&&r.items.some(item=>item.result?.state===4)));
-        record('Native test runner reports actual assertion failure',failed.controllers[0].runs.at(-1));
-        await fs.writeFile(file,original);await invoke('ide.tests.run',{controllerId:controller.id});
-        const failedId=failed.controllers[0].runs.at(-1).id;
-        const repaired=await until('Native Python rerun after fixing failure',()=>invoke('ide.tests.list',{controllerId:controller.id}),value=>value.controllers[0]?.runs.some(r=>r.id!==run.id&&r.id!==failedId&&!r.running&&r.items.some(item=>item.result?.state===3)));
-        record('Native test runner passes after actual repair',repaired.controllers[0].runs.at(-1));
+        const failed=await nativeRun(controller.id,4,'Native Python failure is observed');
+        if(failed.id===run.id)throw new Error('Python failure reused an old test-run ID');
+        if(!failed.items.some(item=>item.result?.state===4&&JSON.stringify(item.result.messages).includes('Intentional failing expectation')))throw new Error('Python structured failure did not identify the actual changed assertion: '+JSON.stringify(failed));
+        record('Native test runner reports actual assertion failure',failed);
+        await fs.writeFile(file,original);
+        const repaired=await nativeRun(controller.id,3,'Native Python rerun after fixing failure');
+        if([run.id,failed.id].includes(repaired.id))throw new Error('Python repair reused an old test-run ID');
+        record('Native test runner passes after actual repair',repaired);
       }
     }
   }
@@ -289,18 +302,58 @@ try {
   if(await page.locator('section.conversation-area').isVisible())throw new Error('Maximizing IDE did not hide chat');
   await ideHeader.getByRole('button',{name:'Вернуть расположение',exact:true}).click();
   await invoke('ide.layout',{explorer:true,bottom:false});
+  // A screenshot request must never hang or silently restore a person's
+  // minimized window. Exercise the production refusal against this fixture's
+  // own window, then restore only that test window for actual pixel acceptance.
+  const artifactDirectory=path.join(env.WORKBENCH_DATA_DIR,'artifacts');
+  const captureFiles=async()=>{try{return(await fs.readdir(artifactDirectory)).filter(name=>/^ide-.*\.png$/.test(name)).sort()}catch(error){if(error.code==='ENOENT')return[];throw error}};
+  const beforeMinimizedCapture=await captureFiles();
+  let minimizedCaptureRefused=false;
+  try {
+    await application.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].minimize());
+    await until('Test-owned window minimized for capture refusal',()=>application.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].isMinimized()),value=>value===true,5000);
+    let timer;const started=Date.now();
+    try {
+      await Promise.race([invoke('ide.capture'),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Minimized IDE capture did not return a bounded explicit refusal')),5000)})]);
+      throw new Error('Minimized IDE capture unexpectedly succeeded');
+    } catch(error) {
+      if(!String(error).includes('IDE_CAPTURE_NOT_VISIBLE'))throw error;
+      if(Date.now()-started>=5000)throw new Error('Minimized IDE capture refusal was too late');
+      minimizedCaptureRefused=true;
+    } finally {clearTimeout(timer)}
+    if(JSON.stringify(await captureFiles())!==JSON.stringify(beforeMinimizedCapture))throw new Error('Refused minimized capture created a screenshot artifact');
+  } finally {
+    await application.evaluate(({BrowserWindow})=>{const window=BrowserWindow.getAllWindows()[0];if(window.isMinimized())window.restore();window.showInactive()});
+  }
+  await until('Test-owned window restored for real pixel acceptance',()=>application.evaluate(({BrowserWindow})=>{const window=BrowserWindow.getAllWindows()[0];return window.isVisible()&&!window.isMinimized()}),value=>value===true,5000);
   for (const theme of ['dark','light']) {
     await invoke('settings.update',{patch:{theme}});
     await page.waitForFunction(theme=>document.documentElement.dataset.theme===theme,theme);
     await until('Native '+theme+' theme matches the host',()=>invoke('ide.status'),value=>value.theme?.toLowerCase().includes(theme));
     await new Promise(resolve=>setTimeout(resolve,300));
-    const surfaces=await application.evaluate(async ({BrowserWindow})=> {
+    console.log('CAPTURE_PHASE',theme,'host then native');
+    const surfaces=await application.evaluate(async ({BrowserWindow},theme)=> {
       const win=BrowserWindow.getAllWindows()[0], [width,height]=win.getContentSize();
-      const base=(await win.capturePage()).toPNG().toString('base64');
+      const capture=async(target,phase)=>{
+        if(win.isMinimized()||!win.isVisible())throw new Error('CAPTURE_NOT_VISIBLE '+phase);
+        let timer;
+        const image=await Promise.race([target.capturePage(undefined,{stayHidden:true,stayAwake:true}),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('CAPTURE_TIMEOUT '+phase+' '+JSON.stringify({visible:win.isVisible(),minimized:win.isMinimized()}))),10000)})]).finally(()=>clearTimeout(timer));
+        const size=image.getSize();
+        if(image.isEmpty()||size.width<1||size.height<1)throw new Error('CAPTURE_EMPTY '+phase);
+        if(win.isMinimized()||!win.isVisible())throw new Error('CAPTURE_STALE '+phase);
+        const png=image.toPNG();if(!png.length)throw new Error('CAPTURE_EMPTY_PNG '+phase);
+        return png.toString('base64');
+      };
+      const base=await capture(win,'host-'+theme);
       const children=[];
-      for(const child of win.contentView.children)if(child.webContents && child.getVisible() && child.webContents.getURL().startsWith('http://localhost:')) children.push({bounds:child.getBounds(),png:(await child.webContents.capturePage()).toPNG().toString('base64')});
+      for(const child of win.contentView.children)if(child.webContents && child.getVisible() && child.webContents.getURL().startsWith('http://localhost:')) {
+        const bounds=child.getBounds();if(bounds.width<1||bounds.height<1)throw new Error('CAPTURE_ZERO_NATIVE_BOUNDS '+theme);
+        const png=await capture(child.webContents,'native-'+theme);
+        if(!child.getVisible()||JSON.stringify(child.getBounds())!==JSON.stringify(bounds))throw new Error('CAPTURE_STALE_NATIVE_BOUNDS '+theme);
+        children.push({bounds,png});
+      }
       return {base,width,height,children};
-    });
+    },theme);
     const base=Buffer.from(surfaces.base,'base64'),meta=await sharp(base).metadata(),scale=meta.width/surfaces.width;
     const layers=[];for(const child of surfaces.children)layers.push({input:await sharp(Buffer.from(child.png,'base64')).resize(Math.round(child.bounds.width*scale),Math.round(child.bounds.height*scale)).toBuffer(),left:Math.round(child.bounds.x*scale),top:Math.round(child.bounds.y*scale)});
     if(!layers.length)throw new Error('Native IDE not visible after panel layout changes');
@@ -316,7 +369,7 @@ try {
   await fs.writeFile(path.join(temporary, 'native-ui.json'), JSON.stringify(native, null, 2));
   console.log('Native UI:', native.text.slice(0, 2500));
   const capture = await page.evaluate(async (projectId) => window.workbench.invoke('ide.capture', { projectId }), project.id);
-  record('Native editor screenshot', capture);
+  record('Native editor screenshot', {...capture,minimizedCaptureRefused,noArtifactOnMinimizedRefusal:true});
 
   const nativePage = application.context().pages().find(candidate => candidate.url() === native.url);
   if (!nativePage) throw new Error('Playwright cannot observe the actual native Theia page');
