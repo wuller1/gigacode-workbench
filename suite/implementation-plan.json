@@ -996,7 +996,7 @@
         "docs/suite/evidence/database-runtime-live-darwin.json",
         "docs/suite/evidence/database-runtime-ui.json"
       ],
-      "remaining": "Partial native PostgreSQL runtime and macOS tests; full scope, global dependencies, workplace adapter and Windows acceptance remain open."
+      "remaining": "Native PostgreSQL slice passed macOS and Windows ed5144c source/packaged acceptance. Full scope, global dependencies and workplace adapter remain open."
     },
     {
       "id": "S7-02",
@@ -1026,7 +1026,7 @@
         "docs/suite/evidence/database-runtime-live-darwin.json",
         "docs/suite/evidence/database-runtime-ui.json"
       ],
-      "remaining": "Partial native PostgreSQL runtime and macOS tests; full scope, global dependencies, workplace adapter and Windows acceptance remain open."
+      "remaining": "Native PostgreSQL slice passed macOS and Windows ed5144c source/packaged acceptance. Full scope, global dependencies and workplace adapter remain open."
     },
     {
       "id": "S7-03",
@@ -1066,7 +1066,7 @@
         "IUP-135",
         "IUP-136"
       ],
-      "remaining": "Partial native PostgreSQL runtime and macOS tests; full scope, global dependencies, workplace adapter and Windows acceptance remain open."
+      "remaining": "Native PostgreSQL slice passed macOS and Windows ed5144c source/packaged acceptance. Full scope, global dependencies and workplace adapter remain open."
     },
     {
       "id": "SD-01",

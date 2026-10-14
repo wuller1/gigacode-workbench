@@ -1,5 +1,5 @@
 {
-  "status": "macos-verified-windows-pending",
+  "status": "macos-and-windows-source-packaged-verified",
   "previousWindowsPass": "396be5b9c5cc071e8cf319f786158df0b0b15bf3",
   "findings": [
     {
@@ -7,56 +7,56 @@
       "priority": 1,
       "problem": "Cell editor indexed a mutable page, allowing a result/page transition to change target row",
       "fix": "Capture console/result/offset/optimistic row key; block transitions until editing/staging resolved; keyboard navigation",
-      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. The named native slice also passed Windows ed5144c: 44 PostgreSQL, 25 source and 25 packaged Data cases; full DataGrip and workplace scope remain open."
     },
     {
       "id": "D-UX-02",
       "priority": 1,
       "problem": "Routine document could fall through generic execute while definition loading; restart adopted changed server baseline",
       "fix": "Host routine-only apply, persistent committed/session baseline, terminal receipt, explicit CAS DDL reload preserving prior text",
-      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. The named native slice also passed Windows ed5144c: 44 PostgreSQL, 25 source and 25 packaged Data cases; full DataGrip and workplace scope remain open."
     },
     {
       "id": "D-UX-03",
       "priority": 1,
       "problem": "Debounced SQL and unmounted failed drafts could be lost on tab/window close",
       "fix": "Shared retained draft queue, awaited tab/window flush, dynamic read-only, window freeze, repeat-quit protection",
-      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. The named native slice also passed Windows ed5144c: 44 PostgreSQL, 25 source and 25 packaged Data cases; full DataGrip and workplace scope remain open."
     },
     {
       "id": "D-UX-04",
       "priority": 2,
       "problem": "Retargeted old documents looked like new-server data",
       "fix": "Target fingerprint required for object reuse; explicit previous-server read-only banner; lost lease state",
-      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. The named native slice also passed Windows ed5144c: 44 PostgreSQL, 25 source and 25 packaged Data cases; full DataGrip and workplace scope remain open."
     },
     {
       "id": "D-UX-05",
       "priority": 2,
       "problem": "Empty SQL editor and JSON metadata waste desktop space",
       "fix": "Table grid first; optional SQL area; compact metadata tabs and actual directed FK graph",
-      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. The named native slice also passed Windows ed5144c: 44 PostgreSQL, 25 source and 25 packaged Data cases; full DataGrip and workplace scope remain open."
     },
     {
       "id": "D-UX-06",
       "priority": 1,
       "problem": "Async waitForFunction predicate Promise was treated as immediate success by installed Playwright",
       "fix": "Await actual evaluated value in Node poll; explicit negative control for async false",
-      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. The named native slice also passed Windows ed5144c: 44 PostgreSQL, 25 source and 25 packaged Data cases; full DataGrip and workplace scope remain open."
     },
     {
       "id": "D-UX-07",
       "priority": 1,
       "problem": "Equal sibling keys for SQL/metadata caused retained editors during production React refresh",
       "fix": "Unique key namespaces and explicit single editor ownership; one-editor invariant across metadata refresh",
-      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. The named native slice also passed Windows ed5144c: 44 PostgreSQL, 25 source and 25 packaged Data cases; full DataGrip and workplace scope remain open."
     },
     {
       "id": "D-UX-08",
       "priority": 1,
       "problem": "Native Quit silently rolled back an active manual transaction; forgiving status errors could be mistaken for safety",
       "fix": "Strict parallel fresh status with a 5-second SDK timeout/cancellation. Status failure cannot erase a previously known open transaction. Active, failed, busy, opening or unavailable leases block shutdown; reject new windows during the barrier",
-      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. The named native slice also passed Windows ed5144c: 44 PostgreSQL, 25 source and 25 packaged Data cases; full DataGrip and workplace scope remain open."
     },
     {
       "id": "IDE-UX-09",
@@ -84,7 +84,7 @@
       "priority": 1,
       "problem": "A later parallel acceptance rerun exposed a readiness gap: the selected result could differ from the page currently available for grid editing",
       "fix": "canEdit now requires page.id === resultId and page.offset === offset. DOM result identity/editability and aria-busy expose actual readiness; the UI test waits for the latest completed job's result ID before F2",
-      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. Current Windows source and packaged acceptance pending."
+      "verification": "44 live PostgreSQL cases and 25 production Electron Data cases passed on the recorded macOS working-tree snapshot. The named native slice also passed Windows ed5144c: 44 PostgreSQL, 25 source and 25 packaged Data cases; full DataGrip and workplace scope remain open."
     },
     {
       "id": "D-UX-13",
@@ -157,5 +157,13 @@
     "windows": "a922fac failed Relations drag after 43 PostgreSQL passes; current source/package run required.",
     "remaining": "Windows source/package run and release; workplace GigaCode and VARM unavailable. Full DataGrip/Ultimate parity remains open.",
     "pythonPipeRegression": 18
+  },
+  "windowsVerification": {
+    "commit": "ed5144c84ba7c4da4b4203a3804d94e724956584",
+    "run": "https://github.com/wuller1/gigacode-workbench/actions/runs/38521851028",
+    "postgresqlPassed": 44,
+    "sourceDesktopPassed": 25,
+    "packagedDesktopPassed": 25,
+    "reports": "database-windows-ed5144c/provenance.json"
   }
 }

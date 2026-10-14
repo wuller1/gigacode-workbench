@@ -1,0 +1,31 @@
+{
+  "commit": "ed5144c84ba7c4da4b4203a3804d94e724956584",
+  "run": "https://github.com/wuller1/gigacode-workbench/actions/runs/38521851028",
+  "conclusion": "success",
+  "observed": {
+    "postgresqlPassed": 44,
+    "sourceDesktopPassed": 25,
+    "packagedDesktopPassed": 25
+  },
+  "reports": [
+    {
+      "name": "database-runtime-ui-win32.json",
+      "cases": 25,
+      "sourceHashCount": 41,
+      "sha256": "fa0b29503f2d8f468802a7d79042e45e4260cf808240ca9cc0f11533fec08964"
+    },
+    {
+      "name": "database-runtime-live-win32.json",
+      "cases": 44,
+      "sourceHashCount": 41,
+      "sha256": "13ffd7afa274e9f5fe66280c3ffb6ce87889d34a963c1f03edd1b84d4fbefd0a"
+    },
+    {
+      "name": "database-runtime-ui-win32-packaged.json",
+      "cases": 25,
+      "sourceHashCount": 41,
+      "sha256": "67073baf8202edb6510c1c7ec0835579869819061547cc2afd65f818e2b7840e"
+    }
+  ],
+  "scope": "Actual PostgreSQL 14.24 on Windows and real Electron Data source/packaged acceptance; isolated resources only. 41 source hashes in each report match this checked-out runtime. GigaCode fork, corporate MCP, VARM, manual installer execution and full DataGrip parity remain unverified."
+}

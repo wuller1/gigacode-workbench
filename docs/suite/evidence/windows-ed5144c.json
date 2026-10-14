@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "status": "verified-live-windows-source-and-packaged",
+  "commit": "ed5144c84ba7c4da4b4203a3804d94e724956584",
+  "run": "https://github.com/wuller1/gigacode-workbench/actions/runs/38521851028",
+  "conclusion": "success",
+  "completedAt": "2026-10-14T06:46:13Z",
+  "counts": {
+    "unitProtocolPassed": 116,
+    "unitSkippedPlatform": 2,
+    "unitSkippedLivePostgresCoveredSeparately": 44,
+    "postgresqlPassed": 44,
+    "dataSourcePassed": 25,
+    "dataPackagedPassed": 25,
+    "ideSourcePassed": 44,
+    "idePackagedPassed": 44,
+    "pythonPipeRegressionPassed": 18,
+    "ideDependencyPassed": 9,
+    "electronModalComposerPassed": 16,
+    "fullAppChatPassed": 3
+  },
+  "ideReports": [
+    {
+      "packaged": false,
+      "cases": 44,
+      "rawResultSha256": "854a9830a8ab0a8182a6a5c94221473545369a277dea2ea50461c3498497e133",
+      "fixtureRun": "workbench-ide-live-UaIInR"
+    },
+    {
+      "packaged": true,
+      "cases": 44,
+      "rawResultSha256": "4c797c2696e14fe5e77d0dedcb77ad2dfb2aee7837177ca4e7c75cfe8eb16588",
+      "fixtureRun": "workbench-ide-live-qkQ38o"
+    }
+  ],
+  "legacyPowerShell": "Actual Windows PowerShell 5.1; legacy controller/docs/install/memory and Node design suites passed.",
+  "nativeDependencies": "Actual Windows x64 PTY output/exit/cleanup/natural Node exit and Sharp load passed.",
+  "packaging": {
+    "nsisBuilt": true,
+    "portableBuilt": true,
+    "packagedQwenVersion": "0.25.1",
+    "resourceAndArtifactHashChecksPassed": true,
+    "manualInstallerExecution": false
+  },
+  "ciLogSha256": "7cb2bfd07566305905538f8f1c220a43d813d1ce04f4501b9ca08719befa51d2",
+  "scope": "Results certify the named runtime snapshot and scenarios. Source archive release may add only documentation/evidence after this commit. No model credentials or paid prompts were used; corporate GigaCode/VARM/MCP/certificates and full Ultimate/DataGrip parity are not certified.",
+  "jobs": [
+    {
+      "name": "database-x64",
+      "conclusion": "success",
+      "completedAt": "2026-10-14T06:25:06Z"
+    },
+    {
+      "name": "windows-x64",
+      "conclusion": "success",
+      "completedAt": "2026-10-14T06:46:13Z"
+    }
+  ]
+}

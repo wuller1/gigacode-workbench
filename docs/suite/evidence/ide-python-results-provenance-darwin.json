@@ -38,7 +38,7 @@
     "fixtureRestoresOnlyItsOwnWindowForPixelAcceptance": true
   },
   "limitations": [
-    "Windows source and packaged acceptance still require their own current-head run.",
+    "Separate Windows ed5144c acceptance passed 44 source and 44 packaged IDE scenarios; this macOS report itself remains platform-specific. See windows-ed5144c.json.",
     "Native TestRunRequest does not carry our request ID/name. The receipt identifies a new controller run; concurrent human starts in the same native controller cannot be attributed exactly. The isolated acceptance run had no competing human requests.",
     "This verifies the stated IDE functionality, not full IntelliJ Ultimate parity."
   ],
