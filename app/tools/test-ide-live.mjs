@@ -45,32 +45,55 @@ let testFailed = false;
 const keep = process.argv.includes('--keep-open');
 const packaged = process.argv.includes('--packaged');
 const record = (name, observed) => { results.push({ name, observed }); console.log('PASS', name, JSON.stringify(observed).slice(0, 400)); };
+async function bounded(name, operation, timeout) {
+  let timer;
+  try { return await Promise.race([operation,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('HARNESS_TIMEOUT '+name+' after '+timeout+' ms')),timeout)})]); }
+  finally {clearTimeout(timer)}
+}
+let cleanupAttempt;
 // A correctly blocked shutdown must not hang failed-test cleanup. Only this
 // isolated Electron app and its currently registered fixture engines are owned.
 async function forceOwnedCleanup() {
   if (!application) return;
+  if(cleanupAttempt)return cleanupAttempt;
+  cleanupAttempt=(async()=>{
+  const phases=[];
+  const note=(phase,detail={})=>{const event={at:new Date().toISOString(),phase,...detail};phases.push(event);console.error('IDE_TEST_CLEANUP_PHASE',JSON.stringify(event))};
+  const ownedApplication=application,child=ownedApplication.process();
+  if(process.platform==='win32') {
+    // Keep the parent alive until taskkill takes its process-tree snapshot.
+    // Killing app first can orphan its detached IDE/JDK descendants and their
+    // inherited pipes. This PID comes directly from our own launch handle.
+    if(child?.pid&&child.exitCode===null&&child.signalCode===null) {
+      note('windows-owned-electron-tree',{pid:child.pid});
+      try { await exec('taskkill.exe',['/PID',String(child.pid),'/T','/F'],{timeout:5000,windowsHide:true,maxBuffer:512_000});note('windows-tree-terminated',{pid:child.pid}); }
+      catch(error){note('windows-tree-termination-error',{pid:child.pid,error:String(error)});child.kill('SIGKILL');}
+    } else note('owned-electron-already-exited',{pid:child?.pid,exitCode:child?.exitCode});
+    await bounded('forced-playwright-transport-close',ownedApplication.close(),1000).catch(error=>note('transport-close',{error:String(error)}));
+    note('complete',{pid:child?.pid,exitCode:child?.exitCode,signal:child?.signalCode});
+    await fs.writeFile(path.join(temporary,'cleanup.json'),JSON.stringify({platform:process.platform,phases},null,2));
+    return;
+  }
   const canonicalFixture = await fs.realpath(fixture);
-  const engines = await Promise.race([
-    application.evaluate(async ({ BrowserWindow }) => {
+  const engines = await bounded('owned-engine-discovery',ownedApplication.evaluate(async ({ BrowserWindow }) => {
       const host = BrowserWindow.getAllWindows().find(window => !window.isDestroyed());
       return host ? host.webContents.executeJavaScript('window.workbench?.invoke("ide.list", {})').catch(() => []) : [];
-    }).catch(() => []),
-    new Promise(resolve => setTimeout(() => resolve([]), 3000)),
-  ]);
+    }),3000).catch(error=>{note('engine-discovery-error',{error:String(error)});return[]});
   const ownedPids = engines.filter(engine =>
     typeof engine.root === 'string' &&
     (process.platform === 'win32' ? engine.root.toLowerCase() === canonicalFixture.toLowerCase() : engine.root === canonicalFixture) &&
     Number.isSafeInteger(engine.pid) && engine.pid > 1,
   ).map(engine => engine.pid);
-  await Promise.race([
-    application.evaluate(({ app }) => app.exit(0)).catch(() => {}),
-    new Promise(resolve => setTimeout(resolve, 3000)),
-  ]);
-  application.process()?.kill('SIGKILL');
+  await bounded('owned-app-exit',ownedApplication.evaluate(({ app }) => app.exit(0)),3000).catch(error=>note('app-exit',{error:String(error)}));
+  child?.kill('SIGKILL');
   for (const pid of ownedPids) {
-    if (process.platform === 'win32') await exec('taskkill.exe', ['/PID', String(pid), '/T', '/F']).catch(() => {});
-    else { try { process.kill(-pid, 'SIGKILL'); } catch { /* This test engine already exited. */ } }
+    try { process.kill(-pid, 'SIGKILL');note('owned-engine-group-terminated',{pid}); } catch {note('owned-engine-already-exited',{pid})}
   }
+  await bounded('forced-playwright-transport-close',ownedApplication.close(),1000).catch(error=>note('transport-close',{error:String(error)}));
+  note('complete',{pid:child?.pid,ownedEnginePids:ownedPids});
+  await fs.writeFile(path.join(temporary,'cleanup.json'),JSON.stringify({platform:process.platform,phases},null,2));
+  })();
+  return cleanupAttempt;
 }
 try {
   const executablePath = packaged ? path.join(root, 'release/win-unpacked/GigaCode Workbench.exe') : require('electron');
@@ -392,6 +415,11 @@ try {
 
   // Create through Theia's real command palette, then type through Monaco's
   // keyboard input. A manufactured dirty object would not test this failure.
+  // Keep this isolated fixture's expected bytes explicit on every platform.
+  // The production IDE retains its ordinary OS/project EOL preferences.
+  const untitledEol=await invoke('ide.preferences',{name:'files.eol',value:'\n'});
+  const verifiedUntitledEol=await invoke('ide.preferences',{name:'files.eol'});
+  if(untitledEol.value!=='\n'||verifiedUntitledEol.value!=='\n')throw new Error('Native IDE did not apply the fixture LF preference before creating Untitled');
   await application.evaluate(({ webContents }, id) => webContents.fromId(id).focus(), native.id);
   await nativePage.keyboard.press('F1');
   const commandInput = nativePage.locator('.quick-input-widget input:visible');
@@ -402,6 +430,7 @@ try {
   const untitledText = '// Native Untitled shutdown fixture · ' + Date.now() + '\n';
   await nativePage.keyboard.insertText(untitledText);
   await until('Native Untitled keyboard text', () => nativeBuffer(untitledUri), value => value.dirty && value.text === untitledText);
+  if(process.argv.includes('--probe-failed-cleanup'))throw new Error('INTENTIONAL_CLEANUP_PROBE: actual unsaved native Untitled buffer must not trap failed-test cleanup');
   await application.evaluate(({ app }) => app.quit());
   await page.locator('.error-toast').filter({ hasText: /Save\s?As/ }).waitFor();
   if (page.isClosed()) throw new Error('Quit destroyed an unsupported unsaved Untitled editor');
@@ -414,7 +443,7 @@ try {
   await nativePage.keyboard.insertText('// Still editable after refused Quit\n');
   const resumedUntitled = await nativeBuffer(untitledUri);
   if (!resumedUntitled.text.includes('Still editable after refused Quit')) throw new Error('Cancelled shutdown left the native IDE editor frozen');
-  record('Native Untitled keyboard text blocks Quit and the same editor remains visible and editable', { uri: untitledUri, view: restoredUntitledView, characters: resumedUntitled.text.length });
+  record('Native Untitled keyboard text blocks Quit and the same editor remains visible and editable', { uri: untitledUri, view: restoredUntitledView, characters: resumedUntitled.text.length, fixtureEol:verifiedUntitledEol.value });
   // Explicitly discard only this test-created Untitled buffer after verifying
   // its contents. Product shutdown itself must never do this or save all files.
   await nativePage.evaluate(() => window.workbenchIDE.invoke('command', { id: 'workbench.action.revertAndCloseActiveEditor', args: [] }).then(() => undefined));
@@ -472,20 +501,30 @@ try {
   console.log('LIVE_IDE_REPORT', path.join(temporary, 'result.json'));
 } catch (error) {
   testFailed = true;
-  if(application) {
-    const channels=await application.evaluate(async ({webContents})=>{const view=webContents.getAllWebContents().find(v=>v.getURL().startsWith('http://localhost:'));if(!view)return [];const channels=await view.executeJavaScript('window.workbenchIDE.invoke("output")');const logs=[];for(const channel of channels)logs.push(await view.executeJavaScript('window.workbenchIDE.invoke("output",'+JSON.stringify({channel:channel.name,limit:12000})+')'));return logs;}).catch(error=>({error:String(error)}));
-    await fs.writeFile(path.join(temporary,'native-output.json'),JSON.stringify(channels,null,2));
-    const native = await application.evaluate(async ({webContents})=>{const view=webContents.getAllWebContents().find(v=>v.getURL().startsWith('http://localhost:'));return view ? {status:await view.executeJavaScript('window.workbenchIDE?.invoke("status")').catch(e=>String(e)), text: await view.executeJavaScript('document.body.innerText.slice(-10000)')} : {};}).catch(()=>({})); await fs.writeFile(path.join(temporary,'native-error.json'), JSON.stringify(native,null,2)); console.error('NATIVE_ERROR',JSON.stringify(native).slice(-4000)); }
-  console.error('LIVE_IDE_FAILED', String(error), String(error?.stdout||'').slice(-5000), String(error?.stderr||'').slice(-5000), 'data:', temporary);
-  await fs.writeFile(path.join(temporary, 'result.json'), JSON.stringify({ results, errors, failure: String(error), temporary }, null, 2));
   process.exitCode = 1;
+  // Persist the primary failure before optional CDP diagnostics: an unresponsive
+  // native renderer must not erase the original evidence or trap failure exit.
+  await fs.writeFile(path.join(temporary, 'result.json'), JSON.stringify({ results, errors, failure: String(error), temporary }, null, 2));
+  console.error('LIVE_IDE_FAILED', String(error), String(error?.stdout||'').slice(-5000), String(error?.stderr||'').slice(-5000), 'data:', temporary);
+  if(application) {
+    const channels=await bounded('failure-native-output',application.evaluate(async ({webContents})=>{const view=webContents.getAllWebContents().find(v=>v.getURL().startsWith('http://localhost:'));if(!view)return [];const channels=await view.executeJavaScript('window.workbenchIDE.invoke("output")');const logs=[];for(const channel of channels)logs.push(await view.executeJavaScript('window.workbenchIDE.invoke("output",'+JSON.stringify({channel:channel.name,limit:12000})+')'));return logs;}),5000).catch(error=>({error:String(error)}));
+    await fs.writeFile(path.join(temporary,'native-output.json'),JSON.stringify(channels,null,2));
+    const native = await bounded('failure-native-state',application.evaluate(async ({webContents})=>{const view=webContents.getAllWebContents().find(v=>v.getURL().startsWith('http://localhost:'));return view ? {status:await view.executeJavaScript('window.workbenchIDE?.invoke("status")').catch(e=>String(e)), text: await view.executeJavaScript('document.body.innerText.slice(-10000)')} : {};}),5000).catch(error=>({error:String(error)})); await fs.writeFile(path.join(temporary,'native-error.json'), JSON.stringify(native,null,2)); console.error('NATIVE_ERROR',JSON.stringify(native).slice(-4000)); }
 } finally {
   if (keep && application) { console.log('IDE QA window retained for inspection.'); await new Promise(() => {}); }
-  if (testFailed) await forceOwnedCleanup();
+  if (testFailed) {
+    await forceOwnedCleanup().catch(error=>console.error('IDE_TEST_CLEANUP_FAILED',String(error)));
+    // Failure evidence and owned-process cleanup are complete. Do not leave
+    // failed CI alive on inherited Windows stdio or a stale inspector socket.
+    process.exit(1);
+  }
   else if (application) {
-    await Promise.race([
-      application.close(),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Test-owned app cleanup timed out')), 15_000)),
-    ]).catch(async error => { console.error('IDE_TEST_CLEANUP', String(error)); await forceOwnedCleanup(); });
+    try {await bounded('normal-owned-app-close',application.close(),15_000)}
+    catch(error) {
+      console.error('IDE_TEST_CLEANUP',String(error));
+      await fs.writeFile(path.join(temporary,'result.json'),JSON.stringify({results,errors,failure:'Final test-owned application cleanup failed: '+String(error),temporary},null,2));
+      await forceOwnedCleanup().catch(cleanupError=>console.error('IDE_TEST_CLEANUP_FAILED',String(cleanupError)));
+      process.exit(1);
+    }
   }
 }

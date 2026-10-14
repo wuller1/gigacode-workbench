@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "commit": "50cb8e07bcb77ce0b3f8062ff14ca1f62cd91c60",
+  "run": "https://github.com/wuller1/gigacode-workbench/actions/runs/38518306635",
+  "conclusion": "failure",
+  "artifact": "ide-diagnostics-windows-50cb8e07bcb77ce0b3f8062ff14ca1f62cd91c60",
+  "rawResultSHA256": "25bdcb1d73f7dc7d1770953d3f00a3c12fa37eacb520ba45dfd749af591734ad",
+  "observed": {
+    "postgresqlPassed": 44,
+    "sourceDataDesktopPassed": 25,
+    "sourceIdePassedBeforeFailure": 40,
+    "pythonPipeRegressionPassed": 18,
+    "failedScenario": "Native Untitled keyboard text exact equality: fixture expected LF, Windows created CRLF",
+    "cleanup": "Harness did not exit after writing its failure report; the CI step reached its 12-minute timeout."
+  },
+  "scope": "Historical failed run. Native Python PASS/FAIL/repair and screenshot/minimized refusal cases passed. The actual Untitled buffer contained the exact expected characters followed by CRLF. Remaining native shutdown cases, packaged IDE/Data checks and installers were not executed. This failure must not be treated as full Windows acceptance.",
+  "sanitization": "Only the isolated temporary run root was replaced with <FIXTURE_RUN>. Raw result hash identifies the original artifact."
+}

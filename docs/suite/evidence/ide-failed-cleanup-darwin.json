@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "status": "verified-expected-failure-exit",
+  "at": "2026-10-14T06:22:14.398511+00:00",
+  "platform": "darwin",
+  "command": "node app/tools/test-ide-live.mjs --probe-failed-cleanup",
+  "actualExitCode": 1,
+  "expectedExitCode": 1,
+  "failure": "Error: INTENTIONAL_CLEANUP_PROBE: actual unsaved native Untitled buffer must not trap failed-test cleanup",
+  "completedScenariosBeforeInjectedFailure": 31,
+  "actualNativeUntitledTyped": true,
+  "cleanup": {
+    "platform": "darwin",
+    "phases": [
+      {
+        "at": "2026-10-14T06:21:21.642Z",
+        "phase": "owned-engine-group-terminated",
+        "pid": 35250
+      },
+      {
+        "at": "2026-10-14T06:21:21.679Z",
+        "phase": "complete",
+        "pid": 34688,
+        "ownedEnginePids": [
+          35250
+        ]
+      }
+    ]
+  },
+  "ownedRootProcessIdsConfirmedGone": [
+    34688,
+    35250
+  ],
+  "rawResultSha256": "3be46a018bec7219e034921504a6b4ae6f41e4471f533a0b748ca35002f9b7a1",
+  "rawCleanupSha256": "cca7e7435eaaccdafe90451bc95df7f8181c6c1115e4922a1691288baa762ef5",
+  "sourceHashes": {
+    "app/tools/test-ide-live.mjs": "deb60c7e82f75d2667fffd5d31c29555f0482351649a7ef9b986cc2d07e9b559"
+  },
+  "scope": "Deliberate harness failure with an actual unsaved native Untitled document. Primary report and bounded diagnostics persisted, owned cleanup completed, harness exited 1. This is not a production scenario failure, a full IDE run, or a test of the Windows force-cleanup branch."
+}

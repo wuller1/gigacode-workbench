@@ -2,15 +2,15 @@
   "schemaVersion": 1,
   "status": "verified-live-darwin",
   "level": "live Electron / real Theia / real Python, Java, React, minimized capture refusal and native shutdown",
-  "at": "2026-10-14T05:40:58.232Z",
+  "at": "2026-10-14T06:21:36.192691+00:00",
   "platform": "darwin",
   "caseCount": 45,
   "rendererErrors": [],
-  "localRunId": "workbench-ide-live-dm1U9G",
-  "actualReportSha256": "0929b9a0b057d545e142472087077a7bb2e43bf12fdb15f97b84a4ea03651b96",
+  "localRunId": "workbench-ide-live-SjAlNL",
+  "actualReportSha256": "d9e12366b09634ba51000f373ac22a78af8349c47fe1f01f423763059c781739",
   "sourceHashes": {
     "app/electron/ide.ts": "7d967137936e16c06bcb93778e5604b18927139984c6d6112c437687415ff143",
-    "app/tools/test-ide-live.mjs": "86d9d84648d04c382abe95094d100caf86fc9be0c023407f97807a54dd34bcbe",
+    "app/tools/test-ide-live.mjs": "deb60c7e82f75d2667fffd5d31c29555f0482351649a7ef9b986cc2d07e9b559",
     "ide/extensions/workbench-bridge/src/execution.ts": "10602bd8b2eef9d96618dfad8d24adeb0ec341ae0b5ad91fa8159d7fb6d682e8",
     "ide/tools/python-result-drain.cjs": "3a94b64fa222c5ff944534750894712d080944bd94c52a366d99ec14cf897ffb",
     "ide/tools/patch-python-results.mjs": "24190461f9c45d79469d86e3e65eaee9a95df419fa1b2851fb315ad77b274679",
@@ -41,5 +41,6 @@
     "Windows source and packaged acceptance still require their own current-head run.",
     "Native TestRunRequest does not carry our request ID/name. The receipt identifies a new controller run; concurrent human starts in the same native controller cannot be attributed exactly. The isolated acceptance run had no competing human requests.",
     "This verifies the stated IDE functionality, not full IntelliJ Ultimate parity."
-  ]
+  ],
+  "fixtureEol": "LF set and read back only in isolated acceptance preferences; exact buffer equality remains required."
 }

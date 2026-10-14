@@ -46,6 +46,8 @@ Grid: F2/Enter начинает редактирование; Tab/Shift+Tab фи
 | `query-stream.ts`, `wire-limit.ts` | Завершение cursor после потери socket; ограничение PostgreSQL message до буферизации |
 | `app/shared/database.ts`, `sql.ts` | Общие DTO и lexer |
 | `app/src/DatabasePanel.tsx` | Data workspace, documents, tree, editor/grid/transfers |
+| `DatabaseConsoleEditor.tsx` | Общий SQL/routine editor, serial/CAS save, detached draft handoff и awaitable flush |
+| `DatabaseExplorer.tsx`, `DatabaseStructure.tsx`, `DatabaseRelations.tsx`, `database-structure.css`, `database-relations.css` | Компактное дерево, metadata inspector и настоящий FK graph |
 | `DatabaseSettings.tsx`, `DatabaseHistory.tsx`, `DatabaseEffect.tsx` | Настройка, история, сверка неизвестного исхода |
 | `SqlEditor.tsx`, `SqlPlan.tsx`, `database.css` | Редактор, план, desktop styles |
 | `app/electron/mcp.ts`, `main.ts` | Общий UI/agent dispatch, адресные project scopes и выбор файлов |
@@ -54,10 +56,12 @@ Grid: F2/Enter начинает редактирование; Tab/Shift+Tab фи
 
 Data — обычная панель общего docking tree, доступная рядом с IDE/чатом/браузером. Не создавать второй владелец подключения или отдельную «агентскую БД», которую пользователь не видит. MCP вызовы привязаны к console ID/project, а не к текущему фокусу окна.
 
+Переноси renderer/backend/shared вместе: registerFlush/preparingClose, `app/src/window-close.ts`, main/App close barrier, host assertConsoleCanHide/assertShutdownReady и expectedCloseActivity сохраняются одним контрактом. activityRevision — эфемерный host counter в snapshot/console.read; он не хранится как permission и не изменяется клиентом. Одного UI disable недостаточно для защиты от другого окна/агента. Полная цепочка imports обязательна; не заменяй недостающие владельцы заглушками.
+
 ## Настройка на Windows
 
 1. Сначала `WORK-COMPUTER-BOOTSTRAP.md`, затем `IDE-RUNTIME-HANDOFF.md` и этот документ. Требуется Node 22.19+ (рекомендуется закреплённый runtime), Git и доступ к пакетам; IDE setup описан отдельно. Для работы Data клиенту не нужен локальный PostgreSQL server.
-2. В `app/` выполнить `npm ci --include=optional`, `npm run build`, `npm start`. Сборка создаёт `dist-electron/database-provider.cjs`; в Windows package он входит вместе с основным кодом. CLI/GigaCode не модифицируются.
+2. В `app/` выполнить `npm.cmd ci --include=optional`, `npm.cmd run build`, `npm.cmd start`. Сборка создаёт `dist-electron/database-provider.cjs`; в Windows package он входит вместе с основным кодом. CLI/GigaCode не модифицируются.
 3. Создать подключение в UI. Для встроенного MCP указать host/port/database/user, пароль отдельным полем, SSL и при необходимости PEM CA. Для HTTPS указать URL без credentials, отдельный token, реальное имя credential header и prefix. Для stdio — executable и JSON-массив args, отдельное имя token environment variable. Не писать секреты в args/bindings/prompt/Git.
 4. Сохранить → Проверить подключение/inventory. Встроенный probe действительно открывает и закрывает PostgreSQL-сессию; remote probe проверяет доступный MCP inventory. Сам факт listTools не доказывает выполнение операций БД.
 5. Для корпоративного MCP сопоставить `operation → exact tool name`. Адаптер должен принимать поля Data DTO и возвращать `{value: ...}` либо совместимое structuredContent. Если существующий server имеет другую схему, написать тонкий адаптер и проверить его на собственном тестовом ресурсе. Не выдавать наличие произвольного SQL tool за готовую поддержку session, transactions, cancel, COPY и локальных file paths.
@@ -79,11 +83,11 @@ Query/table jobs, routine Apply, staged changes, Commit и import/export исп�
 
 ## Проверки и ограничения объёма
 
-Из `app/`:
+Из `app/` под Windows PowerShell 5.1 (на macOS используй `npm` вместо `npm.cmd`):
 
-```text
-npm test
-npm run build
+```powershell
+npm.cmd test
+npm.cmd run build
 node tools/test-database-live.mjs
 node tools/test-database-live.mjs --ui
 node tools/test-database-live.mjs --ui --packaged

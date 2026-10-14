@@ -286,7 +286,7 @@ jobs:
           const output=path.resolve('test-results/ide');fs.mkdirSync(output,{recursive:true});
           for(const name of fs.readdirSync(os.tmpdir()).filter(name=>name.startsWith('workbench-ide-live-'))) {
             const root=path.join(os.tmpdir(),name);let sequence=0;
-            function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,entry.name);if(entry.isDirectory()&&(['userdata','ide','logs'].includes(entry.name)||dir.endsWith(path.sep+'ide')))walk(full);else if(entry.isFile()&&(/^(result|native-error|native-output|native-test-failure|timeout-.*)\.json$/.test(entry.name)||['backend.log','frontend.jsonl','host.jsonl'].includes(entry.name)))fs.copyFileSync(full,path.join(output,name+'-'+(++sequence)+'-'+entry.name));}}
+            function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,entry.name);if(entry.isDirectory()&&(['userdata','ide','logs'].includes(entry.name)||dir.endsWith(path.sep+'ide')))walk(full);else if(entry.isFile()&&(/^(result|native-error|native-output|native-test-failure|cleanup|timeout-.*)\.json$/.test(entry.name)||['backend.log','frontend.jsonl','host.jsonl'].includes(entry.name)))fs.copyFileSync(full,path.join(output,name+'-'+(++sequence)+'-'+entry.name));}}
             walk(root);
           }
           '@ | node

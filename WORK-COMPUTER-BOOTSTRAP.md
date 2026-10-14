@@ -142,18 +142,35 @@ Data runtime: перед переносом БД прочитай [DATABASE-RUNT
 node tools\bundle-cli.mjs --source "C:\BuildInputs\GigaCode-runtime" --entry "ФАКТИЧЕСКИЙ_ОТНОСИТЕЛЬНЫЙ_ENTRYPOINT"
 ```
 
-При существующем runtime замена требует явного `--replace` после проверки источника. Затем собери приложение:
+При существующем runtime замена требует явного `--replace` после проверки источника. Затем выполни проверку исходников и упакованного приложения из `app` под Windows PowerShell 5.1. `npm.cmd` исключает случайный запуск заблокированного `npm.ps1`. Ошибка любого шага останавливает дальнейшую упаковку:
 
 ```powershell
-npm.cmd ci --include=optional
-npm.cmd run setup:ide
-npm.cmd test
-npm.cmd run test:ui
-npm.cmd run build
-node tools/test-chat-live.mjs
-node tools/test-ide-live.mjs
-npm.cmd run dist:win -- --publish never
+$ErrorActionPreference = 'Stop'
+function Invoke-WorkbenchCheck {
+    param([scriptblock]$Action)
+    . $Action
+    if ($LASTEXITCODE -ne 0) { throw "Workbench check failed: $Action" }
+}
+Invoke-WorkbenchCheck { npm.cmd ci --include=optional }
+Invoke-WorkbenchCheck { npm.cmd run setup:ide }
+Invoke-WorkbenchCheck { npm.cmd test }
+Invoke-WorkbenchCheck { npm.cmd run build }
+Invoke-WorkbenchCheck { npm.cmd run test:ui }
+Invoke-WorkbenchCheck { node tools/test-chat-live.mjs }
+Invoke-WorkbenchCheck { node --test ../ide/tools/test-python-result-drain.mjs }
+Invoke-WorkbenchCheck { node tools/test-ide-live.mjs --languages }
+Invoke-WorkbenchCheck { node tools/test-database-live.mjs }
+Invoke-WorkbenchCheck { node tools/test-database-live.mjs --ui }
+Invoke-WorkbenchCheck { npm.cmd run prepare:ide-package }
+Invoke-WorkbenchCheck { npm.cmd exec --offline -- electron-builder --win --dir --x64 --publish never }
+Invoke-WorkbenchCheck { node tools/test-database-live.mjs --ui --packaged }
+Invoke-WorkbenchCheck { node tools/test-ide-live.mjs --packaged --languages }
+Invoke-WorkbenchCheck { npm.cmd exec --offline -- electron-builder --win nsis portable --x64 --prepackaged release/win-unpacked --publish never }
 ```
+
+Обёртка выполняет scriptblock в текущей области и проверяет код последней native-команды. Это базовая семантика Windows PowerShell 5.1: [dot sourcing/scopes](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_scopes?view=powershell-5.1) и [LASTEXITCODE](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_automatic_variables?view=powershell-5.1).
+
+Language acceptance требует доступной команды `python` с модулем venv. Data harness требует PostgreSQL binaries (`WORKBENCH_PG_BIN`, `PGBIN` или обнаруженный локальный путь); он создаёт только собственный временный cluster, не использует рабочую БД. Если зависимости недоступны, запиши конкретный unverified check, заверши независимые шаги переноса и не объявляй полную приёмку. Установщики создаются из уже проверенного `win-unpacked`: не пересобирай его между packaged-проверкой и NSIS/portable. Платные model prompts этим блоком не вызываются.
 
 Проверь именно упакованное приложение: выбранный runtime/version, авторизацию вне runtime, ACP, короткий безопасный запрос, две сессии, restart и диагностируемый отказ на повреждённый манифест в отдельной тестовой копии.
 
@@ -172,6 +189,8 @@ npm.cmd run dist:win -- --publish never
 Если после этих адресных проверок путь неизвестен, задай пользователю один вопрос о пути. Не сканируй все диски.
 
 Сохрани несохранённые пользовательские изменения. Сопоставь существующую заготовку с этим `RepoRoot`; не затирай её целиком и не переноси mock вместо backend. Прочитай `SUITE-UPGRADE-AGENT.md` и заполни `suite/migration-inventory.example.json`, затем загружай только документы карточки из `suite/implementation-plan.json`. Для миграции прежних workflows дополнительно используй `workbench/START-GIGACODE-UI.md`. Источник фактов о готовности — `docs/IMPLEMENTATION_STATUS.md` и код, а не полный roadmap.
+
+Сохрани существующий LLM-router: fallback этого репозитория не заменяет его. Переноси проверенный недостающий контракт с полной цепочкой imports и matching shared types, а не отдельный экран поверх старого backend. SQL/IDE сохранение, host activityRevision, `expectedCloseActivity` и общий close barrier переносятся совместно по Data/IDE handoff.
 
 Первая работа на целевом репозитории:
 

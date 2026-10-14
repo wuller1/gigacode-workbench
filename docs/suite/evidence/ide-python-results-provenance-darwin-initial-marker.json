@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "verified-live-darwin",
+  "status": "historical-verified-live-darwin-initial-marker",
   "level": "live Electron / real Theia / real Python, Java, React and native shutdown",
   "at": "2026-10-14T05:24:38.772Z",
   "platform": "darwin",
@@ -31,5 +31,6 @@
     "Windows source and packaged acceptance still require their own current-head run.",
     "Native TestRunRequest does not carry our request ID/name. The receipt identifies a new controller run; concurrent human starts in the same native controller cannot be attributed exactly. The isolated acceptance run had no competing human requests.",
     "This is tested IDE/Data functionality, not full IntelliJ Ultimate parity."
-  ]
+  ],
+  "scope": "Historical initial-marker snapshot only. Later callback-drain and bounded capture changes are verified in the generic current provenance report; do not treat these earlier hashes as current-source certification."
 }

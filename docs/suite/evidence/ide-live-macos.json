@@ -14,10 +14,10 @@
     {
       "name": "Open real project file",
       "observed": {
-        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:6753961644473273",
+        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:5044197215209073",
         "uri": "file://<FIXTURE_RUN>/project/src/main.ts",
         "version": 1,
-        "revision": "2bcaf1ea-a6ab-49ff-a1d9-01f5662e6dcc:1",
+        "revision": "c66453de-c3b6-420b-a41c-24f612d4e6d6:1",
         "languageId": "typescript",
         "dirty": false,
         "lineCount": 4,
@@ -71,10 +71,10 @@
     {
       "name": "Edit same unsaved buffer without overwriting disk",
       "observed": {
-        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:6753961644473273",
+        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:5044197215209073",
         "uri": "file://<FIXTURE_RUN>/project/src/main.ts",
         "version": 2,
-        "revision": "2bcaf1ea-a6ab-49ff-a1d9-01f5662e6dcc:2",
+        "revision": "c66453de-c3b6-420b-a41c-24f612d4e6d6:2",
         "languageId": "typescript",
         "dirty": true,
         "lineCount": 4,
@@ -94,10 +94,10 @@
     {
       "name": "Duplicate operation does not apply twice",
       "observed": {
-        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:6753961644473273",
+        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:5044197215209073",
         "uri": "file://<FIXTURE_RUN>/project/src/main.ts",
         "version": 2,
-        "revision": "2bcaf1ea-a6ab-49ff-a1d9-01f5662e6dcc:2",
+        "revision": "c66453de-c3b6-420b-a41c-24f612d4e6d6:2",
         "languageId": "typescript",
         "dirty": true,
         "lineCount": 4,
@@ -122,10 +122,10 @@
     {
       "name": "Save verified on disk and diagnostics cleared",
       "observed": {
-        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:6753961644473273",
+        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:5044197215209073",
         "uri": "file://<FIXTURE_RUN>/project/src/main.ts",
         "version": 2,
-        "revision": "2bcaf1ea-a6ab-49ff-a1d9-01f5662e6dcc:2",
+        "revision": "c66453de-c3b6-420b-a41c-24f612d4e6d6:2",
         "languageId": "typescript",
         "dirty": false,
         "lineCount": 4,
@@ -172,7 +172,7 @@
     {
       "name": "Multi-file semantic rename preview",
       "observed": {
-        "proposalId": "ed0c332c-5d51-4d17-bf0c-f5638d008648",
+        "proposalId": "586db790-7acc-4fda-baa5-faee546a437b",
         "label": "Rename greet → welcome",
         "files": [
           {
@@ -194,7 +194,7 @@
         "filesTruncated": false,
         "editCount": 3,
         "applied": false,
-        "expiresAt": "2026-10-14T05:53:09.785Z",
+        "expiresAt": "2026-10-14T06:34:41.335Z",
         "preview": [
           {
             "uri": "file://<FIXTURE_RUN>/project/src/greet.ts",
@@ -236,7 +236,7 @@
     {
       "name": "Semantic rename updates actual usages",
       "observed": {
-        "proposalId": "ed0c332c-5d51-4d17-bf0c-f5638d008648",
+        "proposalId": "586db790-7acc-4fda-baa5-faee546a437b",
         "label": "Rename greet → welcome",
         "applied": true,
         "summary": "Made 9 text edits in 2 files",
@@ -258,7 +258,7 @@
     {
       "name": "Native refactoring preview is explicitly pending, not reported as applied",
       "observed": {
-        "proposalId": "ac6a2e31-f126-4a6b-a878-2955618be24f",
+        "proposalId": "728f1bfc-00a8-4694-b020-6a85f3863745",
         "previewOpened": true,
         "applied": false,
         "requiresReadback": true,
@@ -386,7 +386,7 @@
     },
     {
       "name": "Real Java21 Spring Maven JUnit build",
-      "observed": "resourceDirectory <FIXTURE_RUN>/project/java-maven/src/main/resources\n[INFO] \n[INFO] --- compiler:3.13.0:compile (default-compile) @ ide-fixture ---\n[INFO] Recompiling the module because of added or removed source files.\n[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/classes\n[INFO] \n[INFO] --- resources:3.3.1:testResources (default-testResources) @ ide-fixture ---\n[INFO] skip non existing resourceDirectory <FIXTURE_RUN>/project/java-maven/src/test/resources\n[INFO] \n[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ ide-fixture ---\n[INFO] Recompiling the module because of changed dependency.\n[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes\n[INFO] \n[INFO] --- surefire:3.5.2:test (default-test) @ ide-fixture ---\n[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider\n[INFO] \n[INFO] -------------------------------------------------------\n[INFO]  T E S T S\n[INFO] -------------------------------------------------------\n[INFO] Running dev.workbench.GreetingServiceTest\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 s -- in dev.workbench.GreetingServiceTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  3.600 s\n[INFO] Finished at: 2026-10-14T15:38:34+10:00\n[INFO] ------------------------------------------------------------------------\n"
+      "observed": "resourceDirectory <FIXTURE_RUN>/project/java-maven/src/main/resources\n[INFO] \n[INFO] --- compiler:3.13.0:compile (default-compile) @ ide-fixture ---\n[INFO] Recompiling the module because of added or removed source files.\n[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/classes\n[INFO] \n[INFO] --- resources:3.3.1:testResources (default-testResources) @ ide-fixture ---\n[INFO] skip non existing resourceDirectory <FIXTURE_RUN>/project/java-maven/src/test/resources\n[INFO] \n[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ ide-fixture ---\n[INFO] Recompiling the module because of changed dependency.\n[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes\n[INFO] \n[INFO] --- surefire:3.5.2:test (default-test) @ ide-fixture ---\n[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider\n[INFO] \n[INFO] -------------------------------------------------------\n[INFO]  T E S T S\n[INFO] -------------------------------------------------------\n[INFO] Running dev.workbench.GreetingServiceTest\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in dev.workbench.GreetingServiceTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  2.410 s\n[INFO] Finished at: 2026-10-14T16:19:57+10:00\n[INFO] ------------------------------------------------------------------------\n"
     },
     {
       "name": "Native test controllers discover real tests",
@@ -438,7 +438,7 @@
     {
       "name": "Native IDE test runner passed actual tests: python-tests",
       "observed": {
-        "id": "c2c3d188-0fc5-4dce-9c2e-d11c54cc6c69",
+        "id": "36cbed9b-d293-400b-8ee3-895cea984d50",
         "name": "Running Tests for Workspace(s): <FIXTURE_RUN>/project",
         "running": false,
         "totalResults": 1,
@@ -463,7 +463,7 @@
     {
       "name": "Native test runner reports actual assertion failure",
       "observed": {
-        "id": "521759e6-7805-4b69-8258-099e6d145447",
+        "id": "c5cd55e8-8bb9-43e6-a079-fcb8925e237f",
         "name": "Running Tests for Workspace(s): <FIXTURE_RUN>/project",
         "running": false,
         "totalResults": 1,
@@ -502,13 +502,13 @@
             }
           }
         ],
-        "output": "test_greeting (test_greeting.GreetingTest) ... FAIL\r\n\r\n======================================================================\r\nFAIL: test_greeting (test_greeting.GreetingTest)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"<FIXTURE_RUN>/project/python/test_greeting.py\", line 5, in test_greeting\r\n    self.assertEqual(greet(\"Workbench\"), \"Intentional failing expectation\")\r\nAssertionError: 'Hello, Workbench' != 'Intentional failing expectation'\r\n- Hello, Workbench\r\n+ Intentional failing expectation\r\n\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.002s\r\n\r\nFAILED (failures=1)\r\nFinished running tests!\r\n"
+        "output": "test_greeting (test_greeting.GreetingTest) ... FAIL\r\n\r\n======================================================================\r\nFAIL: test_greeting (test_greeting.GreetingTest)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"<FIXTURE_RUN>/project/python/test_greeting.py\", line 5, in test_greeting\r\n    self.assertEqual(greet(\"Workbench\"), \"Intentional failing expectation\")\r\nAssertionError: 'Hello, Workbench' != 'Intentional failing expectation'\r\n- Hello, Workbench\r\n+ Intentional failing expectation\r\n\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.001s\r\n\r\nFAILED (failures=1)\r\nFinished running tests!\r\n"
       }
     },
     {
       "name": "Native test runner passes after actual repair",
       "observed": {
-        "id": "66645c5e-4ad5-400d-bf04-8b1f474685e5",
+        "id": "2f7ae85b-ddce-42bf-ad0e-e607aab5a544",
         "name": "Running Tests for Workspace(s): <FIXTURE_RUN>/project",
         "running": false,
         "totalResults": 1,
@@ -533,7 +533,7 @@
     {
       "name": "Native IDE test runner passed actual tests: java",
       "observed": {
-        "id": "2e39bd1e-6213-4815-83ac-e40a6d519b01",
+        "id": "b4adf1ce-85ce-45be-ad0f-3922aafbf4a4",
         "name": "",
         "running": false,
         "totalResults": 1,
@@ -549,7 +549,7 @@
                 "ide-fixture@dev.workbench.GreetingServiceTest#greetsByName()"
               ],
               "state": 3,
-              "duration": 14
+              "duration": 13
             }
           }
         ],
@@ -586,7 +586,7 @@
           "threads": [
             {
               "id": 0,
-              "name": "debug.mjs [10812]"
+              "name": "debug.mjs [33605]"
             }
           ]
         }
@@ -1015,12 +1015,12 @@
       "name": "Actual mouse drag groups tabs in the same pane",
       "observed": {
         "kind": "split",
-        "id": "dfbaa1b9-00a7-4aba-a06d-302ba0908733",
+        "id": "2abc1d65-dadb-4520-8234-02ca59c8fd76",
         "axis": "x",
         "ratio": 0.34,
         "a": {
           "kind": "group",
-          "id": "6d24cdf8-9ddb-46cc-912c-f148ed911339",
+          "id": "88969463-d91b-4d2c-b2ed-a61dc9768556",
           "tabs": [
             "chat"
           ],
@@ -1028,7 +1028,7 @@
         },
         "b": {
           "kind": "group",
-          "id": "079da1cc-0cf1-4875-bd03-2bac4d39de69",
+          "id": "c61ecd75-dc6d-4222-a59f-1a63bb6d35e4",
           "tabs": [
             "files",
             "plan"
@@ -1068,7 +1068,7 @@
     {
       "name": "Native editor screenshot",
       "observed": {
-        "path": "<FIXTURE_RUN>/userdata/artifacts/ide-1791956358585-1393df6a-1186-4e67-b1d6-14624161b411.png",
+        "path": "<FIXTURE_RUN>/userdata/artifacts/ide-1791958822743-cb28e69c-1ef2-4989-8a7c-9009b3270a71.png",
         "minimizedCaptureRefused": true,
         "noArtifactOnMinimizedRefusal": true
       }
@@ -1087,7 +1087,8 @@
           },
           "id": 5
         },
-        "characters": 89
+        "characters": 89,
+        "fixtureEol": "\n"
       }
     },
     {
@@ -1119,7 +1120,7 @@
       "observed": {
         "characters": 94,
         "dirty": true,
-        "freshRevision": "d67932f5-e7b4-411e-ad93-789eb4e15c86:2"
+        "freshRevision": "adf99eca-fdb6-4d57-8c43-e91490269c16:2"
       }
     }
   ],
@@ -1130,12 +1131,12 @@
   "verification": {
     "platform": "macOS ARM64",
     "sourceState": "working-tree",
-    "baseCommit": "a922fac55929de3efcc8b9f603074222a104b0e0",
-    "at": "2026-10-14T05:39:30.939263+00:00",
+    "baseCommit": "50cb8e07bcb77ce0b3f8062ff14ca1f62cd91c60",
+    "at": "2026-10-14T06:21:36.192691+00:00",
     "command": "node app/tools/test-ide-live.mjs --languages",
     "passed": 45,
     "scope": "Real Electron/Theia/language/task/test/debug/recovery and minimized capture refusal; local offline ACP peer, no paid model or corporate MCP. Source hashes identify this tested working-tree snapshot.",
-    "rawReportSha256": "0929b9a0b057d545e142472087077a7bb2e43bf12fdb15f97b84a4ea03651b96",
+    "rawReportSha256": "d9e12366b09634ba51000f373ac22a78af8349c47fe1f01f423763059c781739",
     "sourceHashes": {
       "app/electron/acp.ts": "867fd974234acc8d4ebba987b1451cedbb40e6e49f09b6e42ea46f4ebdb5c07c",
       "app/electron/browser.ts": "18c63c48cce24dae8c7fd0d0f44ba684302fd37e2e5467c81d4cfa82d41cb860",
@@ -1201,7 +1202,7 @@
       "app/src/ui.tsx": "c393a5ba5856c58b75b4738ae8d3ccdf47a30b83531e61825f14fdc598692dcd",
       "app/src/window-close.ts": "196e50c3362d8c72178da07867131c055101a04af428d707d8339862c82eb5bb",
       "app/tests/ide-recovery-persist.test.ts": "d9c73005eec7ff7d2f5cc82cc84cc118b184c433943df239422ea36ac94ba95a",
-      "app/tools/test-ide-live.mjs": "86d9d84648d04c382abe95094d100caf86fc9be0c023407f97807a54dd34bcbe",
+      "app/tools/test-ide-live.mjs": "deb60c7e82f75d2667fffd5d31c29555f0482351649a7ef9b986cc2d07e9b559",
       "ide/extensions/workbench-bridge/package.json": "95bdbbe1f4f1b6cf08e347e6d0de483342c60a1d0839b2feff7b7eb4f6db7a19",
       "ide/extensions/workbench-bridge/src/backend-module.ts": "d25eb4f3dac1de81be4cb8bc7469aa9c3fe7b45989e53eb46f6e9e19a93d8a00",
       "ide/extensions/workbench-bridge/src/execution.ts": "10602bd8b2eef9d96618dfad8d24adeb0ec341ae0b5ad91fa8159d7fb6d682e8",
