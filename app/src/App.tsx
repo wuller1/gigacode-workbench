@@ -16,6 +16,7 @@ import {
   statusLabel,
   useSnapshot,
   useStored,
+  useDraftJournal,
   type Invoke,
 } from "./api";
 import {
@@ -44,9 +45,11 @@ import {
   toolStatus,
 } from "./labels";
 import { SettingsView } from "./SettingsView";
+import { type ChatDraft, type DraftEntry, plainRecord } from "./local-state";
+import { sanitizeUiDiagnostic } from "./ToolBoundary";
 
 type Attachment = { path: string; name: string };
-type Draft = { text: string; attachments: Attachment[] };
+type Draft = ChatDraft;
 const emptyDraft: Draft = { text: "", attachments: [] };
 export default function App() {
   return (
@@ -66,16 +69,14 @@ function Application() {
     [settingsSection, setSettingsSection] = useState("general"),
     [search, setSearch] = useState(false),
     [archive, setArchive] = useState(false),
-    [sidebar, setSidebar] = useStored("workbench.sidebar", true),
+    [sidebar, setSidebar] = useStored("workbench.sidebar", true, {
+      windowScoped: true,
+    }),
     [selection, setSelection] = useStored<{
       projectId?: string;
       taskId?: string;
       sessionId?: string;
-    }>("workbench.selection", {}),
-    [drafts, setDrafts] = useStored<Record<string, Draft>>(
-      "workbench.drafts.v1",
-      {},
-    ),
+    }>("workbench.selection", {}, { windowScoped: true }),
     [requested, setRequested] = useState<{
       id: PanelId | "chat";
       nonce: number;
@@ -85,6 +86,19 @@ function Application() {
       id: string;
       nonce: number;
     }>();
+  const {
+    drafts,
+    setDrafts,
+    read: readDraft,
+    foreign: foreignDraft,
+    restore: restoreDraft,
+  } = useDraftJournal();
+  const [runtimeFailure, setRuntimeFailure] = useState<{
+    reason: string;
+    persistence: "pending" | "saved" | "failed";
+  }>();
+  const [runtimeInfoReady, setRuntimeInfoReady] = useState(false),
+    [restarting, setRestarting] = useState(false);
   const panelRequestNonce = useRef(0);
   const ask = useAsk();
   const run: Invoke = useCallback(async (method, params = {}) => {
@@ -95,6 +109,39 @@ function Application() {
       setNotice(errorText(e));
       return undefined;
     }
+  }, []);
+  useEffect(() => {
+    let alive = true;
+    const receive = (payload: unknown) => {
+      if (
+        alive &&
+        plainRecord(payload) &&
+        typeof payload.reason === "string" &&
+        ["pending", "saved", "failed"].includes(payload.persistence)
+      )
+        setRuntimeFailure({
+          reason: sanitizeUiDiagnostic(payload.reason, 1000),
+          persistence: payload.persistence,
+        });
+    };
+    const off = window.workbench?.subscribe((event) => {
+      if (event.type === "runtime.stopped") receive(event.payload);
+    });
+    void window.workbench?.invoke("app.info").then(
+      (info) => {
+        if (alive) {
+          receive(info?.runtimeFailure);
+          setRuntimeInfoReady(true);
+        }
+      },
+      () => {
+        if (alive) setRuntimeInfoReady(true);
+      },
+    );
+    return () => {
+      alive = false;
+      off?.();
+    };
   }, []);
   useEffect(() => {
     const f = (e: Event) => setNotice((e as CustomEvent<string>).detail);
@@ -144,8 +191,9 @@ function Application() {
     sessions.find((s) => !s.parentId) ||
     sessions[0];
   useEffect(() => {
-    if (session?.id) void run("session.attach", { id: session.id });
-  }, [session?.id, run]);
+    if (session?.id && runtimeInfoReady && !runtimeFailure)
+      void run("session.attach", { id: session.id });
+  }, [session?.id, run, runtimeInfoReady, !!runtimeFailure]);
   useEffect(
     () =>
       window.workbench?.subscribe((event) => {
@@ -177,12 +225,18 @@ function Application() {
   );
   const selectedSessionId = session?.id;
   const draftKey = selectedSessionId || `project:${project?.id || "none"}`;
-  const draft = drafts[draftKey] || emptyDraft;
+  const draft = drafts[draftKey] || readDraft(draftKey);
+  const alternateDraft = foreignDraft(draftKey);
+  const draftRecovery =
+    alternateDraft &&
+    JSON.stringify(alternateDraft.value) !== JSON.stringify(draft)
+      ? alternateDraft
+      : undefined;
   const setDraft = (next: Draft | ((old: Draft) => Draft)) =>
     setDrafts((old) => ({
       ...old,
       [draftKey]:
-        typeof next === "function" ? next(old[draftKey] || emptyDraft) : next,
+        typeof next === "function" ? next(old[draftKey] || draft) : next,
     }));
   useEffect(() => {
     if (!state) return;
@@ -413,6 +467,37 @@ function Application() {
           />
         </div>
       </header>
+      {runtimeFailure && (
+        <div
+          className="runtime-stopped-banner"
+          role="status"
+          title={runtimeFailure.reason}
+        >
+          <Icon name="warning" size={15} />
+          <span>
+            Работа остановлена.{" "}
+            {runtimeFailure.persistence === "saved"
+              ? "История сохранена."
+              : runtimeFailure.persistence === "pending"
+                ? "Сохраняем сведения об остановке…"
+                : "Сохранение после сбоя не подтверждено."}{" "}
+            Запросы автоматически не повторяются.
+          </span>
+          <button
+            disabled={restarting}
+            onClick={async () => {
+              setRestarting(true);
+              try {
+                await run("app.restart");
+              } finally {
+                setRestarting(false);
+              }
+            }}
+          >
+            Перезапустить
+          </button>
+        </div>
+      )}
       <div className="app-body">
         {sidebar && (
           <aside className="sidebar">
@@ -735,6 +820,9 @@ function Application() {
                   session={session}
                   task={activeTask}
                   draft={draft}
+                  draftRecovery={draftRecovery}
+                  onRestoreDraft={(source) => restoreDraft(draftKey, source)}
+                  runtimeStopped={!runtimeInfoReady || !!runtimeFailure}
                   setDraft={setDraft}
                   run={run}
                   onError={setNotice}
@@ -887,6 +975,9 @@ function Chat({
   session,
   task,
   draft,
+  draftRecovery,
+  onRestoreDraft,
+  runtimeStopped,
   setDraft,
   run,
   onError,
@@ -899,6 +990,9 @@ function Chat({
   session: Session;
   task: Task;
   draft: Draft;
+  draftRecovery?: DraftEntry;
+  onRestoreDraft: (source: DraftEntry) => void;
+  runtimeStopped: boolean;
   setDraft: (d: Draft | ((old: Draft) => Draft)) => void;
   run: Invoke;
   onError: (s: string) => void;
@@ -908,6 +1002,8 @@ function Chat({
   refresh: () => Promise<void>;
 }) {
   const [sending, setSending] = useState(false),
+    [recoverDraft, setRecoverDraft] = useState(false),
+    [resumingPhase, setResumingPhase] = useState(false),
     [contextOpen, setContextOpen] = useState(false),
     [nearBottom, setNearBottom] = useState(true),
     [questionId, setQuestionId] = useState<string>(),
@@ -948,7 +1044,12 @@ function Chat({
     setNearBottom(true);
   };
   const send = async () => {
-    if (sending || (!draft.text.trim() && !draft.attachments.length)) return;
+    if (
+      runtimeStopped ||
+      sending ||
+      (!draft.text.trim() && !draft.attachments.length)
+    )
+      return;
     const captured = { ...draft },
       text = [
         draft.text.trim(),
@@ -1007,7 +1108,7 @@ function Chat({
   useEffect(() => {
     const request = ++branchRequest.current;
     setBranch("");
-    if (!project) return;
+    if (!project || runtimeStopped) return;
     void call("git.status", { projectId: project.id })
       .then((result) => {
         if (request === branchRequest.current)
@@ -1020,9 +1121,52 @@ function Chat({
       .catch(() => {
         if (request === branchRequest.current) setBranch("Не Git");
       });
-  }, [project?.id, session.status === "completed"]);
+  }, [project?.id, session.status === "completed", runtimeStopped]);
   const contextLimit =
     session.context.limitTokens || state.settings.contextLimit || undefined;
+  const roleLabel = (profileId: string) =>
+    profileName(
+      state.profiles.find((p) => p.id === profileId),
+      profileId,
+    );
+  const transition = session.roleTransition;
+  const transitionLabels = {
+    pending: "Готовится передача",
+    held: "Переход приостановлен",
+    ready: "Следующий этап подготовлен",
+    running: "Этап выполняется",
+    completed: "Этап завершён",
+    rejected: "Переход отклонён",
+    unknown: "Исход перехода неизвестен",
+  };
+  const transitionTarget = transition?.toProfileId || transition?.roleHint;
+  const transitionSummary = transition
+    ? `${transitionLabels[transition.status]}${transitionTarget ? ` · ${roleLabel(transitionTarget)}` : ""}: ${transition.holdReason || transition.reason}`
+    : undefined;
+  const transitionNotice =
+    transition &&
+    ["pending", "held", "ready", "rejected", "unknown"].includes(
+      transition.status,
+    )
+      ? transitionSummary
+      : undefined;
+  const roleHistory = (session.roleTransitionHistory || [])
+    .slice(-4)
+    .map(
+      (entry) =>
+        `${roleLabel(entry.fromProfileId)} → ${entry.toProfileId ? roleLabel(entry.toProfileId) : "роль уточняется"} · ${transitionLabels[entry.status]}`,
+    )
+    .join("\n");
+  const roleTooltip = [
+    `${roleLabel(session.profileId)} · ${session.profileReason || "Выбор роли ожидается"}`,
+    transitionSummary,
+    session.instructionBinding
+      ? `${session.instructionBinding.delivery === "append_system" ? "Системное дополнение" : "Контекст"} · ${session.instructionBinding.state} · ${session.instructionBinding.fingerprint.slice(0, 12)} · ${session.instructionBinding.reason}`
+      : undefined,
+    roleHistory ? `Последние этапы:\n${roleHistory}` : undefined,
+  ]
+    .filter(Boolean)
+    .join("\n");
   return (
     <>
       <div
@@ -1054,78 +1198,106 @@ function Chat({
           </div>
         ) : (
           <div className="message-list">
-            {session.messages.map((m) => (
-              <article
-                key={m.id}
-                aria-label={
-                  m.role === "user"
-                    ? "Сообщение пользователя"
-                    : m.role === "assistant"
-                      ? "Ответ агента"
-                      : "Системное сообщение"
-                }
-                className={`message message-${m.role}`}
-              >
-                <header>
-                  <time title={new Date(m.at).toLocaleString()}>
-                    {new Date(m.at).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </time>
-                  <IconButton
-                    icon="copy"
-                    label="Скопировать сообщение"
-                    onClick={() =>
-                      void run("clipboard.write", { text: m.content })
-                    }
-                  />
-                </header>
-                {m.content && <Markdown text={m.content} />}{" "}
-                {!!m.tools?.length && <ToolRows tools={m.tools} />}
-                {m.outcome && (
-                  <footer className="turn-outcome">
-                    {m.outcome === "completed" && m.elapsedMs !== undefined
-                      ? `Выполнено за ${elapsedLabel(m.elapsedMs)}`
-                      : m.outcome === "cancelled"
-                        ? "Остановлено"
-                        : "Результат требует проверки"}
-                  </footer>
+            {session.messages
+              .filter((m) => m.kind !== "role_continuation")
+              .map((m) => (
+                <article
+                  key={m.id}
+                  aria-label={
+                    m.role === "user"
+                      ? "Сообщение пользователя"
+                      : m.role === "assistant"
+                        ? "Ответ агента"
+                        : "Системное сообщение"
+                  }
+                  className={`message message-${m.role}`}
+                >
+                  <header>
+                    <time title={new Date(m.at).toLocaleString()}>
+                      {new Date(m.at).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </time>
+                    <IconButton
+                      icon="copy"
+                      label="Скопировать сообщение"
+                      onClick={() =>
+                        void run("clipboard.write", { text: m.content })
+                      }
+                    />
+                  </header>
+                  {m.content && <Markdown text={m.content} />}{" "}
+                  {!!m.tools?.length && <ToolRows tools={m.tools} />}
+                  {m.outcome && (
+                    <footer className="turn-outcome">
+                      {m.outcome === "completed" && m.elapsedMs !== undefined
+                        ? `Выполнено за ${elapsedLabel(m.elapsedMs)}`
+                        : m.outcome === "cancelled"
+                          ? "Остановлено"
+                          : "Результат требует проверки"}
+                    </footer>
+                  )}
+                </article>
+              ))}
+          </div>
+        )}
+        {session.error &&
+          !(transition?.status === "held" && transition.canResume) && (
+            <div
+              className={`session-error ${runtimeStopped ? "runtime-session-error" : ""}`}
+            >
+              <Icon name="warning" />
+              <div>
+                <strong>
+                  {session.status === "unknown"
+                    ? "Исход запроса не подтверждён"
+                    : "Не удалось продолжить"}
+                </strong>
+                {runtimeStopped ? (
+                  <>
+                    <p>
+                      Последний запрос прерван. После перезапуска проверьте
+                      возможные внешние изменения перед повтором.
+                    </p>
+                    <details>
+                      <summary>Сведения об остановке</summary>
+                      <p>{sanitizeUiDiagnostic(session.error, 2000)}</p>
+                    </details>
+                  </>
+                ) : (
+                  <>
+                    <p>{session.error}</p>
+                    <button
+                      onClick={async () => {
+                        if (
+                          await ask("Восстановить подключение?", {
+                            message:
+                              "Будет создана новая ACP-сессия с кратким контекстом. Предыдущий запрос не отправится повторно автоматически. Проверьте возможные внешние действия перед продолжением.",
+                            confirm: true,
+                          })
+                        )
+                          await run("session.recover", { id: session.id });
+                      }}
+                    >
+                      Восстановить сессию
+                    </button>
+                    <button onClick={onSettings}>Настройки</button>
+                  </>
                 )}
-              </article>
-            ))}
-          </div>
-        )}
-        {session.error && (
-          <div className="session-error">
-            <Icon name="warning" />
-            <div>
-              <strong>
-                {session.status === "unknown"
-                  ? "Исход запроса не подтверждён"
-                  : "Не удалось продолжить"}
-              </strong>
-              <p>{session.error}</p>
-              <button
-                onClick={async () => {
-                  if (
-                    await ask("Восстановить подключение?", {
-                      message:
-                        "Будет создана новая ACP-сессия с кратким контекстом. Предыдущий запрос не отправится повторно автоматически. Проверьте возможные внешние действия перед продолжением.",
-                      confirm: true,
-                    })
-                  )
-                    await run("session.recover", { id: session.id });
-                }}
-              >
-                Восстановить сессию
-              </button>
-              <button onClick={onSettings}>Настройки</button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
       <div className="composer-region">
+        {draftRecovery && (
+          <div className="draft-recovery-note">
+            <Icon name="clock" size={13} />
+            <button onClick={() => setRecoverDraft(true)}>
+              Сохранённый черновик из другого окна
+            </button>
+          </div>
+        )}
         {materials.length > 0 && (
           <div className="chat-materials">
             <Icon name="file" size={14} />
@@ -1164,19 +1336,53 @@ function Chat({
           </button>
         )}
         {(busy(session.status) ||
+          transitionNotice ||
           activeTodo ||
           workers.some((w) => busy(w.status))) && (
-          <div className="activity-line">
+          <div
+            className="activity-line"
+            data-role-transition-status={transition?.status}
+          >
             <Status
               status={
-                activeTodo && !busy(session.status) ? "waiting" : session.status
+                transition?.status === "unknown"
+                  ? "unknown"
+                  : transition?.status === "held" ||
+                      transition?.status === "rejected"
+                    ? "waiting"
+                    : activeTodo && !busy(session.status)
+                      ? "waiting"
+                      : session.status
               }
             />
-            <span>
-              {activeTodo && !busy(session.status)
-                ? `Осталось: ${activeTodo.text}`
-                : activeTodo?.text || statusLabel[session.status]}
+            <span
+              role={transitionNotice ? "status" : undefined}
+              aria-live={transitionNotice ? "polite" : undefined}
+              title={transitionNotice}
+            >
+              {transitionNotice ||
+                (activeTodo && !busy(session.status)
+                  ? `Осталось: ${activeTodo.text}`
+                  : activeTodo?.text || statusLabel[session.status])}
             </span>
+            {transition?.status === "held" && transition.canResume && (
+              <button
+                className="resume-phase"
+                disabled={resumingPhase}
+                title="Повторить выбор следующей роли. Выполненные действия не повторяются."
+                onClick={async () => {
+                  setResumingPhase(true);
+                  try {
+                    await run("queue.resume", { sessionId: session.id });
+                    await refresh();
+                  } finally {
+                    setResumingPhase(false);
+                  }
+                }}
+              >
+                Продолжить этап
+              </button>
+            )}
             {workers.length > 0 && (
               <button onClick={() => onPanel("workers")}>
                 <Icon name="agents" size={14} />
@@ -1190,6 +1396,7 @@ function Chat({
           sessionId={session.id}
           running={busy(session.status)}
           unknown={session.status === "unknown"}
+          stopped={runtimeStopped}
           invoke={async (method, params) => {
             const result = await call(method, params);
             await refresh();
@@ -1249,6 +1456,7 @@ function Chat({
             <IconButton
               icon="attach"
               label="Приложить файлы проекта"
+              disabled={runtimeStopped}
               onClick={() => void attach()}
             />
             <button
@@ -1262,10 +1470,8 @@ function Chat({
             <span className="composer-spacer" />
             <span
               className="composer-auto-profile"
-              title={`${profileName(
-                state.profiles.find((p) => p.id === session.profileId),
-                session.profileId,
-              )} · ${session.profileReason || "Выбор роли ожидается"}${session.instructionBinding ? ` · ${session.instructionBinding.delivery === "append_system" ? "Системное дополнение" : "Контекст"} · ${session.instructionBinding.state} · ${session.instructionBinding.fingerprint.slice(0, 12)} · ${session.instructionBinding.reason}` : ""}`}
+              data-role-transition-status={transition?.status}
+              title={roleTooltip}
             >
               <Icon name="profile" size={14} />
               <span>
@@ -1281,7 +1487,7 @@ function Chat({
               configs={configs}
               model={session.model || state.settings.model || "Модель CLI"}
               reasoning={session.reasoning}
-              disabled={busy(session.status)}
+              disabled={runtimeStopped || busy(session.status)}
               onSettings={onSettings}
               onPrepare={async () => {
                 await call("session.prepare", { id: session.id });
@@ -1309,7 +1515,10 @@ function Chat({
               }
               busy={busy(session.status)}
               sending={sending}
-              disabled={!draft.text.trim() && !draft.attachments.length}
+              disabled={
+                runtimeStopped ||
+                (!draft.text.trim() && !draft.attachments.length)
+              }
               onContext={() => setContextOpen(true)}
               onSend={() => void send()}
             />
@@ -1335,6 +1544,43 @@ function Chat({
             composer.current?.focus();
           }}
         />
+      )}
+      {recoverDraft && draftRecovery && (
+        <Modal
+          title="Сохранённый черновик"
+          onClose={() => setRecoverDraft(false)}
+        >
+          <div className="dialog-form">
+            <p>
+              Этот текст остался в другом окне. Текущий черновик будет сохранён
+              отдельно; сообщение не отправится.
+            </p>
+            <textarea
+              aria-label="Сохранённый черновик"
+              value={draftRecovery.value.text}
+              readOnly
+              rows={7}
+            />
+            {draftRecovery.value.attachments.map((file) => (
+              <p key={file.path}>{file.name}</p>
+            ))}
+            <div className="dialog-actions">
+              <button onClick={() => setRecoverDraft(false)}>
+                Оставить текущий
+              </button>
+              <button
+                className="primary"
+                onClick={() => {
+                  onRestoreDraft(draftRecovery);
+                  setRecoverDraft(false);
+                  composer.current?.focus();
+                }}
+              >
+                Восстановить черновик
+              </button>
+            </div>
+          </div>
+        </Modal>
       )}
       {contextOpen && (
         <Modal title="Контекст сессии" onClose={() => setContextOpen(false)}>
@@ -1405,6 +1651,7 @@ function QuestionOverlay({
   const [draft, setDraft] = useStored<{ text: string; optionId: string }>(
       `workbench.answer.${question.id}`,
       { text: "", optionId: "" },
+      { windowScoped: true },
     ),
     [sending, setSending] = useState(false);
   const titleId = `question-${question.id}`;

@@ -18,6 +18,7 @@ const evidence = path.join(repoRoot, "docs/suite/evidence/agent-runtime-ui");
 const temp = await fs.mkdtemp(path.join(os.tmpdir(), "workbench-roles-app-"));
 const projectPath = path.join(temp, "project");
 const passed = [],
+  bindingTransitions = [],
   resizeTransitions = [],
   capturedScreenshots = [],
   expectedRejections = [],
@@ -371,11 +372,24 @@ try {
       assert.equal(state.profileId, "analyst");
       assert.equal(state.instructionBinding.state, "active");
       const chip = page.locator(".composer-auto-profile");
+      const started = Date.now();
+      const beforeTitle = await chip.getAttribute("title");
       await poll(
-        async () => (await chip.innerText()).trim() === "Аналитик",
-        "retained role label",
+        async () =>
+          (await chip.innerText()).trim() === "Аналитик" &&
+          (await chip.getAttribute("title"))?.includes("active") &&
+          (await chip.getAttribute("title"))?.includes(
+            state.instructionBinding.fingerprint.slice(0, 12),
+          ),
+        "renderer accepted active instruction receipt",
       );
       const title = await chip.getAttribute("title");
+      bindingTransitions.push({
+        backendState: state.instructionBinding.state,
+        beforeTitle,
+        afterTitle: title,
+        elapsedMs: Date.now() - started,
+      });
       assert.match(title, /Контекст/);
       assert.match(title, /active/);
       assert.match(title, /не подключён|недоступна/);
@@ -656,6 +670,7 @@ try {
     rendererErrors,
     widths,
     resizeTransitions,
+    bindingTransitions,
     failureScreenshot,
     failureCaptureError,
     provenance: {

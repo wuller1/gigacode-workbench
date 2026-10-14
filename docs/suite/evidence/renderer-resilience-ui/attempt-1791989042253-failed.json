@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "recordedAt": "2026-10-14T14:39:04.894Z",
+  "platform": "darwin",
+  "scope": "Actual App + deterministic owned ACP process; response-fault injection only in automation, actual native renderer crash and actual main fatal handler. No model intelligence, GigaCode or Windows claim.",
+  "passed": [
+    {
+      "name": "Wrong-typed local preferences and draft data cannot blank the actual App or overwrite their original bytes",
+      "elapsedMs": 71
+    },
+    {
+      "name": "Actual owned ACP request runs once; queued message and per-window drafts stay independent",
+      "elapsedMs": 1179
+    },
+    {
+      "name": "Missed host notifications and transient snapshot failures recover without user interaction",
+      "elapsedMs": 4087
+    },
+    {
+      "name": "Timed-out out-of-order IPC response cannot replace the newer screen",
+      "elapsedMs": 5841
+    }
+  ],
+  "total": 8,
+  "failure": {
+    "test": "Native renderer crash reloads the same window while host PID generation queue and draft survive",
+    "message": "dark queue editor control text contrast 1.38 below4.5"
+  },
+  "proofs": [
+    {
+      "stage": "before faults",
+      "pid": 67182,
+      "generation": 1,
+      "sessionId": "eb6d1c09-a315-4ac4-af09-b4420c92d7b6",
+      "taskId": "fc68927c-5b66-49bd-9913-d985b0db29eb",
+      "queue": [
+        {
+          "id": "f8d1a716-501b-4e14-815b-bb7a4f669546",
+          "text": "Queued request must remain unsent during renderer recovery."
+        }
+      ],
+      "promptCount": 1,
+      "userMessages": 1,
+      "windowId": 1
+    },
+    {
+      "stage": "native failure diagnostics",
+      "windows": [
+        {
+          "id": 2,
+          "crashed": false,
+          "destroyed": false,
+          "url": "file:///Users/wuller/Documents/Codex/2026-10-09/new-chat/outputs/gigacode-workbench-github/app/dist/index.html"
+        },
+        {
+          "id": 1,
+          "crashed": false,
+          "destroyed": false,
+          "url": "file:///Users/wuller/Documents/Codex/2026-10-09/new-chat/outputs/gigacode-workbench-github/app/dist/index.html"
+        }
+      ]
+    },
+    {
+      "stage": "owned main diagnostic categories",
+      "categories": [
+        {
+          "kind": "started"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "renderer-recovery",
+          "windowId": 1,
+          "allowed": true,
+          "cause": {
+            "reason": "killed",
+            "exitCode": 2
+          }
+        },
+        {
+          "kind": "renderer-gone"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        },
+        {
+          "kind": "operation-start"
+        },
+        {
+          "kind": "operation-end"
+        }
+      ]
+    }
+  ],
+  "captures": [
+    "failure-darwin.png"
+  ],
+  "rendererErrors": [],
+  "sourceHashes": {
+    "src/App.tsx": "34b92fe05801fcaf3bd1472f7eef4d8ae3e631129197eec63d40c7e451bd4796",
+    "src/api.ts": "685ec5467aa5f97a6c4057cdb74174301138e8cab090c507f7de596a14e83433",
+    "src/snapshot-feed.ts": "a68c59d601beb5a75a705a34e82b2fca11c0448aeec5f10b412a884a78c825bd",
+    "src/local-state.ts": "964f4d86855f7694b3c8e7436040b8b1ccdcea58ed1ef3b15412bf7ed9b1292f",
+    "src/Workspace.tsx": "d11e4f10208998c6afe9bb51b7612e0db6d5d6977b515f17fa373418a3271762",
+    "src/ErrorBoundary.tsx": "e13f0a5d0b329145a8e38d82a22cdb7022e6ad95eb103049d15c33338fb70043",
+    "src/ToolBoundary.tsx": "c5201b14523d6d8fb08ba944c49402a8bf766d87193ac3ccf7ae137b97f2b5c8",
+    "src/QueueMessages.tsx": "def41a2ba59947f6c325721902f7eaaeb9034d886ddceed7e75a69a6d7282c79",
+    "src/queue-edit-journal.ts": "c556ca15922ef7cf8bf62bc957c280582f607da9d25bc90a29b979c66ac8e561",
+    "src/styles.css": "a1436fe6c578d51f519b69c3a4f26b88098bb3f513b395c57cce1a84a0ed3088",
+    "electron/preload.ts": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
+    "electron/main.ts": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
+    "electron/service.ts": "03d5fc8d1ddbe45b8217df48956026ef682aefbbd9463083308b4b5d2815adcd",
+    "electron/acp.ts": "3ffba600ff11ce50ad373b2bf54c3565bce65d3607d03ca6f50078ba70b579ab",
+    "electron/store.ts": "40382045034687e8a5af380cf6ed3a7c54a53a859f0c3a69d4e0f7d6e0ba04a5",
+    "electron/renderer-recovery.ts": "7be680151cc5bf3ab140d722bc9888f4113b51995a7a27e2a56ca8b547e640f3",
+    "shared/types.ts": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
+    "tests/fixtures/acp-fixture.mjs": "c6e8b243ac46a69329fddb33265c0eb86dc8052f7e801e4f78bc86dfb4b5e5d7",
+    "tools/test-renderer-resilience-ui.mjs": "ddda67a6a172334b9e7ee3e30a715b28e6643d8f9540c64a2994fbd503b7441c",
+    "dist-electron/main.cjs": "da1998aadd32e4f2959fcf01cf94fb53451e15b0bc37595cd33341984ccb4b4f",
+    "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
+    "dist/assets/ClusterPanel-CrKoD8FP.js": "dc55c138974de9af7308e06180b77eadd69642259d75c0b924bd045614d7edf4",
+    "dist/assets/DatabasePanel-BOasT_AU.js": "6c2791d1658a6ed755b8ac806a940b823ba74fac2a52d032f11f779abb6890db",
+    "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+    "dist/assets/JenkinsPanel-C2Y1pqRl.js": "c360dc7df1726e9b75e8c6005057f3ae056123ae0055941cf1385cc88dadde16",
+    "dist/assets/OperationsSettings-D6rtCkUl.js": "6331912205942414bea740fac9384674e651ed74989a1bb8f9c56e3fa31ca704",
+    "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+    "dist/assets/index-DKBB_P5y.css": "e020e6d841009120c71aa597a616a693339db60d8ade72b29376192e17d21d5b",
+    "dist/assets/index-DuzKtzHp.js": "21f779c020137b193dc9a9e1f2dd2ef9f42ec5205aa8857d1bdc6215e56411ad",
+    "dist/assets/ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+    "dist/assets/ops-ui-CIZZUfgG.js": "a834b01a1947818f9c29ada873f5ec883f18773b19b73af03426b3ba897607ec"
+  },
+  "sourceDrift": [],
+  "cleanup": {
+    "application": "closed",
+    "ownedData": "removed"
+  },
+  "externalProviderCalls": 0,
+  "realModelCalls": 0
+}

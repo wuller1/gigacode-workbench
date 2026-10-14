@@ -10,6 +10,7 @@ import {
 import { useStored } from "./api";
 import { IdePanel } from "./IdePanel";
 import { ToolBoundary } from "./ToolBoundary";
+import { plainRecord } from "./local-state";
 const DatabasePanel = lazy(() =>
   import("./DatabasePanel").then((module) => ({
     default: module.DatabasePanel,
@@ -69,23 +70,51 @@ type Layout = {
     Record<DockId, { target: DockId; edge: Edge; ratio?: number }>
   >;
 };
+function decodeLayout(value: unknown, fallback: Layout): Layout {
+  if (!plainRecord(value) || value.version !== 2) return fallback;
+  const locations: Layout["locations"] = {};
+  if (plainRecord(value.locations))
+    for (const [id, position] of Object.entries(value.locations))
+      if (
+        id in panels &&
+        plainRecord(position) &&
+        position.target in panels &&
+        ["left", "right", "top", "bottom", "center"].includes(position.edge)
+      )
+        locations[id as DockId] = {
+          target: position.target,
+          edge: position.edge,
+          ...(typeof position.ratio === "number" &&
+          Number.isFinite(position.ratio)
+            ? { ratio: Math.max(0.1, Math.min(0.9, position.ratio)) }
+            : {}),
+        };
+  return {
+    version: 2,
+    tree:
+      value.tree === null
+        ? null
+        : normalize(value.tree) || fallback.tree || group(["chat"]),
+    locations,
+  };
+}
 function initial(): Layout {
   try {
     const value = JSON.parse(
       localStorage.getItem("workbench.layout.v2") || "null",
     );
     if (value?.version === 2)
-      return {
+      return decodeLayout(value, {
         version: 2,
-        tree: normalize(value.tree),
-        locations: value.locations || {},
-      };
+        tree: group(["chat"]),
+        locations: {},
+      });
     const old = JSON.parse(
       localStorage.getItem("workbench.layout.v1") || "null",
     );
     let tree: DockTree = group(["chat"]);
     for (const side of ["right", "bottom"])
-      for (const id of old?.[side] || [])
+      for (const id of Array.isArray(old?.[side]) ? old[side] : [])
         if (id in panels && id !== "chat")
           tree = dock(
             tree,
@@ -114,6 +143,7 @@ export function Workspace({
   const [layout, setLayout] = useStored<Layout>(
     "workbench.layout.v2",
     initial(),
+    { windowScoped: true, decode: decodeLayout },
   );
   const [size, setSize] = useState({ width: 1000, height: 700 });
   const [mounted, setMounted] = useState(() => new Set(ids(layout.tree)));

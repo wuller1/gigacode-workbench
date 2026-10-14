@@ -1,0 +1,492 @@
+{
+  "status": "passed",
+  "platform": "darwin",
+  "scope": "Actual shipped Electron App, actual IPC/AtomicStore/WorkbenchService and local ACP fixture. No real model, corporate MCP or native append acceptance claimed; platform is recorded separately.",
+  "passed": [
+    {
+      "name": "Actual session.prepare produces context-only prepared receipt without sending a task",
+      "elapsedMs": 391
+    },
+    {
+      "name": "Retained router shows actual Analyst rather than a false Auto after a completed real fixture turn",
+      "elapsedMs": 323
+    },
+    {
+      "name": "Desktop composer fits 1000 and 1440 pixels",
+      "elapsedMs": 280
+    },
+    {
+      "name": "Settings exposes active context delivery and current fingerprint on the real completed executor",
+      "elapsedMs": 76
+    },
+    {
+      "name": "Builtin clone saves through actual profile editor and host without changing builtin or active binding",
+      "elapsedMs": 267
+    },
+    {
+      "name": "UTF-8 byte overflow is rejected in real profile UI and retains the saved version",
+      "elapsedMs": 203
+    },
+    {
+      "name": "Malformed Unicode is rejected from controlled profile UI without corrupting saved instructions",
+      "elapsedMs": 264
+    },
+    {
+      "name": "Desktop Roles settings fit 1000 and 1440 pixels in light theme",
+      "elapsedMs": 469
+    }
+  ],
+  "expectedRejections": [
+    "UTF-8 byte overflow: rejected; editor draft and saved profile preserved",
+    "Invalid UTF-16 Unicode: rejected from actual controlled profile UI and saved version preserved"
+  ],
+  "rendererErrors": [],
+  "widths": [
+    {
+      "requestedWidth": 1000,
+      "viewport": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "composerLeft": 262,
+      "composerRight": 981
+    },
+    {
+      "requestedWidth": 1440,
+      "viewport": 1440,
+      "documentClient": 1440,
+      "documentScroll": 1440,
+      "composerClient": 792,
+      "composerScroll": 792,
+      "composerLeft": 457.5,
+      "composerRight": 1249.5
+    },
+    {
+      "requestedWidth": 1440,
+      "viewport": 1440,
+      "documentClient": 1440,
+      "documentScroll": 1440,
+      "composerClient": 792,
+      "composerScroll": 792,
+      "composerLeft": 457.5,
+      "composerRight": 1249.5,
+      "settingsClient": 848,
+      "settingsScroll": 848
+    },
+    {
+      "requestedWidth": 1000,
+      "viewport": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "composerLeft": 262,
+      "composerRight": 981,
+      "settingsClient": 848,
+      "settingsScroll": 848
+    }
+  ],
+  "resizeTransitions": [
+    {
+      "requestedWidth": 1000,
+      "settled": true,
+      "frames": 4,
+      "elapsedMs": 67,
+      "samples": [
+        {
+          "elapsedMs": 0,
+          "viewport": 1000,
+          "dockViewportWidth": 758,
+          "dockViewportLeft": 242,
+          "canvasWidth": 758,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 262,
+          "composerRight": 981
+        },
+        {
+          "elapsedMs": 17,
+          "viewport": 1000,
+          "dockViewportWidth": 758,
+          "dockViewportLeft": 242,
+          "canvasWidth": 758,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 262,
+          "composerRight": 981
+        },
+        {
+          "elapsedMs": 33,
+          "viewport": 1000,
+          "dockViewportWidth": 758,
+          "dockViewportLeft": 242,
+          "canvasWidth": 758,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 262,
+          "composerRight": 981
+        },
+        {
+          "elapsedMs": 50,
+          "viewport": 1000,
+          "dockViewportWidth": 758,
+          "dockViewportLeft": 242,
+          "canvasWidth": 758,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 262,
+          "composerRight": 981
+        },
+        {
+          "elapsedMs": 67,
+          "viewport": 1000,
+          "dockViewportWidth": 758,
+          "dockViewportLeft": 242,
+          "canvasWidth": 758,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 262,
+          "composerRight": 981
+        }
+      ]
+    },
+    {
+      "requestedWidth": 1440,
+      "settled": true,
+      "frames": 5,
+      "elapsedMs": 77,
+      "samples": [
+        {
+          "elapsedMs": 0,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 296,
+          "composerRight": 995
+        },
+        {
+          "elapsedMs": 11,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 296,
+          "composerRight": 995
+        },
+        {
+          "elapsedMs": 26,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 42,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 60,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 77,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        }
+      ]
+    },
+    {
+      "requestedWidth": 1440,
+      "settled": true,
+      "frames": 11,
+      "elapsedMs": 169,
+      "samples": [
+        {
+          "elapsedMs": 2,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 3,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 20,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 36,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 53,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 70,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 86,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 103,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 120,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 136,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 153,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 169,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        }
+      ]
+    },
+    {
+      "requestedWidth": 1000,
+      "settled": true,
+      "frames": 4,
+      "elapsedMs": 56,
+      "samples": [
+        {
+          "elapsedMs": 0,
+          "viewport": 1000,
+          "dockViewportWidth": 758,
+          "dockViewportLeft": 242,
+          "canvasWidth": 758,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 262,
+          "composerRight": 981
+        },
+        {
+          "elapsedMs": 7,
+          "viewport": 1000,
+          "dockViewportWidth": 758,
+          "dockViewportLeft": 242,
+          "canvasWidth": 758,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 262,
+          "composerRight": 981
+        },
+        {
+          "elapsedMs": 23,
+          "viewport": 1000,
+          "dockViewportWidth": 758,
+          "dockViewportLeft": 242,
+          "canvasWidth": 758,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 262,
+          "composerRight": 981
+        },
+        {
+          "elapsedMs": 41,
+          "viewport": 1000,
+          "dockViewportWidth": 758,
+          "dockViewportLeft": 242,
+          "canvasWidth": 758,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 262,
+          "composerRight": 981
+        },
+        {
+          "elapsedMs": 56,
+          "viewport": 1000,
+          "dockViewportWidth": 758,
+          "dockViewportLeft": 242,
+          "canvasWidth": 758,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 262,
+          "composerRight": 981
+        }
+      ]
+    }
+  ],
+  "provenance": {
+    "sha256": {
+      "src/App.tsx": "24a0718367c98b052dcdc368e7f1800f9190bead0f55e92eb7814961a18519ef",
+      "src/SettingsView.tsx": "e274d09530ecc7877db16f89aae2b114f7e43aa8e4763330b9d2c0582156cea2",
+      "src/styles.css": "8ec016a2a51752769faa91bb128bd0712c059b2d548359d15c61456a99f48997",
+      "electron/service.ts": "2acd147abc523108946b6c89874b6d92e62a15ca625b69dd59c4139e33d8a907",
+      "electron/prompt-binding.ts": "6b1468c9dd753c7b4abc492c06ae9d1fd2d0aee6c220a65504dea2f7a84fbd44",
+      "electron/role-router.ts": "718f8525b99e3fa77bc2c38f86db12b38f78b22575ce9f0d8798c52e82a70e8a",
+      "electron/preload.ts": "08e8dabebfa14df73b9295c7dcaa3c08450628686ff9723f8729fedbb4af8ea5",
+      "shared/types.ts": "d62f5248eada83af0405e78f179a0b837aba154ed1e1f666a42a3e20d253a49a",
+      "dist-electron/main.cjs": "a97f9df15790f6b038e9e2bd0cde0e673419deba150af4f5581160ec9b2f1926",
+      "dist-electron/preload.cjs": "089cefee118d4335518e4dd90819506adde2a2696d9eafd2ee28ec75f56fb767",
+      "../workbench/CORE.md": "94b4e494471775f492389f31563b1f071c7977d0ae781cc01af0fbd1c384da53",
+      "tools/test-roles-ui.mjs": "e1176b345cf1e53dddc66df7fb991d8b3c5ba3bb3bf6759e060f3b3baeda9663",
+      "../workbench/profiles/analyst.md": "81437e3f1258b7fe5de3ff37d531a5b8b8c3d27c95f741b0c6d30d6cccbf11c2",
+      "../workbench/profiles/architect.md": "e1c687701e8f3705888f45b05e7352fdf28a11e8a647b29e62ebefea22eb33ad",
+      "../workbench/profiles/backend.md": "ed4cac535bb002fbaa5d82b7953e25a22ef35dc96ec629dd1edc1607a0c7d264",
+      "../workbench/profiles/database.md": "619f87a555a9d3a6f834ad1dd92c24a5ec4a893c6fdd3a12cbec4f5da4391e5b",
+      "../workbench/profiles/designer.md": "e9eb486894fd63e94297a8dac9584164da5d706074483a4e6732d34b98b25a79",
+      "../workbench/profiles/devops.md": "05ca52297f9a191b9fe7b9de6affe0af8ab1d53e2c1841dfcbe197abc27fe74a",
+      "../workbench/profiles/diagnostics.md": "ac294df40837a0dd8b226e213f7a7ddd9e0993252138d3a273872e0d71d8e2eb",
+      "../workbench/profiles/frontend.md": "c2c147ec4391206a09da02cb6e4dd289d6dbe0cb09212892667610d94305d7aa",
+      "../workbench/profiles/gigacode-ui.md": "4e5e615ad638dbea049a02d067629693b391d2a884bb7682f3a22ddb4c53c9e0",
+      "../workbench/profiles/qa.md": "5f8bf61325c4840908707cee85d5c0d19df03ab46dd4cadec5f25895f42bbf03",
+      "../workbench/profiles/reviewer.md": "59d2adc726726bb7461b9ba6e3c40f28cd631e567b902ed39aee90c34753940d",
+      "../workbench/profiles/security.md": "eb48df1300b48bf155cc09b35294aefd383bd5c5cb2910ec94678634672be0e8",
+      "../workbench/profiles/spec.md": "a9bc23ab2a85938f5b4ee2887fb7e4483c93164c83f2f8b4ec3f37821d043e7b",
+      "../workbench/profiles/technical-writer.md": "2df4753a59674a01a6276783cafa08f79cd9bf38583fb6bb5e062fcb7890ad47",
+      "dist/assets/ClusterPanel-xmSLTPG7.js": "1d1ecda48a40abe44865193977216ad5bdf8bfb7f970234a7434354e3b568cab",
+      "dist/assets/DatabasePanel-CkCKISsD.js": "802f8eea48519c88a403efd8e6a640906d323b12aa2bb3decdfd67772c2e1523",
+      "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+      "dist/assets/JenkinsPanel-C3iK-hjT.js": "64991664832bfc821e734ab77c03f818ecaae639531bb015d63ba6832de5ea98",
+      "dist/assets/OperationsSettings-D8B91qwa.js": "ff14cb972ffc99dfbe6aa7bd0b07a0b6d3a6474c00e4626bf8250c055f458c11",
+      "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+      "dist/assets/index-0ctxmUe6.js": "41be0e08c5b9c60ca47f6f473fa564b06966a708b99675337f6c61d30e9e9751",
+      "dist/assets/index-jJ59orzg.css": "5e21e6886bf4ac107b72d597de6d151cd8b9965009e983b13be1253f2fd8e1ae",
+      "dist/assets/ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+      "dist/assets/ops-ui-CXkbYrRF.js": "6db60c11155a9aa8ae5fc7287b59cff6c80fcfcbbac5899f72468003edc7322f"
+    },
+    "unchangedDuringRun": true,
+    "changed": []
+  },
+  "screenshots": [
+    "roles-composer-dark-1440.png",
+    "roles-settings-light-1000.png"
+  ],
+  "cleanup": {
+    "application": "closed",
+    "ownedData": "removed"
+  },
+  "visualInspection": {
+    "status": "inspected",
+    "scope": "Final actual App dark1440/light1000 native PNGs viewed after registry durability rebuild. Correct desktop bounds, visible Analyst and context-only/active receipt.",
+    "captureReadiness": "Dock viewport/canvas/chat commit and3stable rAF before geometry;2rAF before native capture. Original overflow assertions unchanged.",
+    "screenshotsSha256": {
+      "roles-composer-dark-1440.png": "1dfb6c00bd95c43f56704e6ae0a37bc25cea2e2d822a9e9acbab0705435512fa",
+      "roles-settings-light-1000.png": "fc7aa6b923a8ff5c7e66d7cbe2877b0626c89e62fae752d9bf7bdc90342c7633"
+    },
+    "limitations": "macOS actual App8/8; new Windows CI recheck remains separate. No real-model/Giga/native-append acceptance claimed."
+  }
+}

@@ -3,6 +3,9 @@ import type { HostEvent } from "../shared/types";
 contextBridge.exposeInMainWorld(
   "workbench",
   Object.freeze({
+    windowKey: process.argv
+      .find((arg) => arg.startsWith("--workbench-window-key="))
+      ?.slice("--workbench-window-key=".length),
     invoke: (method: string, params: Record<string, unknown> = {}) => {
       if (
         typeof method !== "string" ||

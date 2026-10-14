@@ -12,7 +12,7 @@ permissions:
 jobs:
   harness-windows:
     runs-on: windows-2022
-    timeout-minutes: 20
+    timeout-minutes: 25
     defaults:
       run:
         shell: pwsh
@@ -36,7 +36,7 @@ jobs:
       - name: Clear committed reports before recording this Windows run
         run: |
           $evidenceRoot = Join-Path (Split-Path $PWD.Path -Parent) 'docs/suite/evidence'
-          @('agent-runtime-qwen/system-placement.json', 'agent-runtime-qwen/offline-router.json', 'agent-runtime-ui/report.json', 'agent-runtime-ui/roles-composer-dark-1440.png', 'agent-runtime-ui/roles-settings-light-1000.png') | ForEach-Object {
+          @('agent-runtime-qwen/system-placement.json', 'agent-runtime-qwen/offline-router.json', 'agent-runtime-ui/report.json', 'agent-runtime-ui/roles-composer-dark-1440.png', 'agent-runtime-ui/roles-settings-light-1000.png', 'role-transitions-ui/report.json', 'renderer-resilience-ui/report.json') | ForEach-Object {
             Remove-Item (Join-Path $evidenceRoot $_) -Force -ErrorAction SilentlyContinue
           }
       - name: Real Qwen system placement (local protocol provider, no external model)
@@ -53,6 +53,12 @@ jobs:
       - name: Actual chat cancel, queue and resume
         timeout-minutes: 3
         run: node tools/test-chat-live.mjs
+      - name: In-task role transitions through actual Qwen and desktop
+        timeout-minutes: 4
+        run: node tools/test-role-transitions-ui.mjs
+      - name: Actual renderer crash, draft and runtime failure recovery
+        timeout-minutes: 4
+        run: node tools/test-renderer-resilience-ui.mjs
       - name: Retain exact Windows evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -66,4 +72,6 @@ jobs:
             docs/suite/evidence/agent-runtime-ui/roles-composer-dark-1440.png
             docs/suite/evidence/agent-runtime-ui/roles-settings-light-1000.png
             docs/suite/evidence/agent-runtime-ui/roles-failure-win32.png
+            docs/suite/evidence/role-transitions-ui/**
+            docs/suite/evidence/renderer-resilience-ui/**
           retention-days: 14

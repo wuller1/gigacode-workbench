@@ -1,0 +1,535 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "recordedAt": "2026-10-14T13:38:31.371Z",
+  "platform": "darwin",
+  "node": "v26.8.1",
+  "cliPackageVersion": "0.25.1",
+  "kind": "Actual App + unmodified Qwen + owned loopback protocol fixture; no real-model intelligence claim",
+  "fixtureIsolation": "Fresh CLI home/runtime/project; managed Qwen memory/dream/skill background agents disabled only in the owned test settings; MCP executor enabled, classifier safe-mode and execution budget unchanged.",
+  "passed": [
+    {
+      "name": "Renderer cannot impersonate the bound task executor to request a role transition",
+      "elapsedMs": 20
+    },
+    {
+      "name": "One human request routes Backend, then agent requests Diagnostics while preserving draft",
+      "elapsedMs": 2304
+    },
+    {
+      "name": "Held clean phase can resume from compact UI after classifier format failure without another human message",
+      "elapsedMs": 1518
+    },
+    {
+      "name": "Host LLM reroutes the same task to Diagnostics without human queue fabrication",
+      "elapsedMs": 1808
+    },
+    {
+      "name": "Frontend continues automatically with its own actual process and system fingerprint",
+      "elapsedMs": 1835
+    },
+    {
+      "name": "Compact actual role and on-demand completed phase history fit desktop dark and light",
+      "elapsedMs": 1274
+    }
+  ],
+  "total": 6,
+  "requests": [
+    {
+      "kind": "classifier",
+      "role": "backend",
+      "scriptedOutcome": "decision",
+      "toolNames": [
+        "agent",
+        "cron_create",
+        "cron_delete",
+        "cron_list",
+        "enter_worktree",
+        "exit_worktree",
+        "get_goal",
+        "list_agents",
+        "loop_wakeup",
+        "read_mcp_resource",
+        "record_artifact",
+        "report_findings",
+        "send_message",
+        "task_stop",
+        "update_goal",
+        "web_fetch"
+      ],
+      "bytes": 52766
+    },
+    {
+      "kind": "executor",
+      "role": "backend",
+      "stage": "discover_transition",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "calledTool": "tool_search",
+      "bytes": 81885
+    },
+    {
+      "kind": "executor",
+      "role": "backend",
+      "stage": "request_transition",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "calledTool": "tool_call",
+      "bytes": 83452
+    },
+    {
+      "kind": "executor",
+      "role": "backend",
+      "stage": "terminal",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "bytes": 84585
+    },
+    {
+      "kind": "executor",
+      "role": "backend",
+      "stage": "terminal",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "bytes": 86416
+    },
+    {
+      "kind": "classifier",
+      "role": "diagnostics",
+      "scriptedOutcome": "invalid_format",
+      "toolNames": [
+        "agent",
+        "cron_create",
+        "cron_delete",
+        "cron_list",
+        "enter_worktree",
+        "exit_worktree",
+        "get_goal",
+        "list_agents",
+        "loop_wakeup",
+        "read_mcp_resource",
+        "record_artifact",
+        "report_findings",
+        "send_message",
+        "task_stop",
+        "update_goal",
+        "web_fetch"
+      ],
+      "bytes": 53768
+    },
+    {
+      "kind": "classifier",
+      "role": "diagnostics",
+      "scriptedOutcome": "invalid_format",
+      "toolNames": [
+        "agent",
+        "cron_create",
+        "cron_delete",
+        "cron_list",
+        "enter_worktree",
+        "exit_worktree",
+        "get_goal",
+        "list_agents",
+        "loop_wakeup",
+        "read_mcp_resource",
+        "record_artifact",
+        "report_findings",
+        "send_message",
+        "task_stop",
+        "update_goal",
+        "web_fetch"
+      ],
+      "bytes": 53976
+    },
+    {
+      "kind": "classifier",
+      "role": "diagnostics",
+      "scriptedOutcome": "decision",
+      "toolNames": [
+        "agent",
+        "cron_create",
+        "cron_delete",
+        "cron_list",
+        "enter_worktree",
+        "exit_worktree",
+        "get_goal",
+        "list_agents",
+        "loop_wakeup",
+        "read_mcp_resource",
+        "record_artifact",
+        "report_findings",
+        "send_message",
+        "task_stop",
+        "update_goal",
+        "web_fetch"
+      ],
+      "bytes": 53768
+    },
+    {
+      "kind": "executor",
+      "role": "diagnostics",
+      "stage": "discover_transition",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "calledTool": "tool_search",
+      "bytes": 82678
+    },
+    {
+      "kind": "executor",
+      "role": "diagnostics",
+      "stage": "request_transition",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "calledTool": "tool_call",
+      "bytes": 84253
+    },
+    {
+      "kind": "executor",
+      "role": "diagnostics",
+      "stage": "terminal",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "bytes": 85385
+    },
+    {
+      "kind": "executor",
+      "role": "diagnostics",
+      "stage": "terminal",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "bytes": 87220
+    },
+    {
+      "kind": "classifier",
+      "role": "frontend",
+      "scriptedOutcome": "decision",
+      "toolNames": [
+        "agent",
+        "cron_create",
+        "cron_delete",
+        "cron_list",
+        "enter_worktree",
+        "exit_worktree",
+        "get_goal",
+        "list_agents",
+        "loop_wakeup",
+        "read_mcp_resource",
+        "record_artifact",
+        "report_findings",
+        "send_message",
+        "task_stop",
+        "update_goal",
+        "web_fetch"
+      ],
+      "bytes": 54248
+    },
+    {
+      "kind": "executor",
+      "role": "frontend",
+      "stage": "terminal",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "bytes": 84942
+    }
+  ],
+  "receipts": [
+    {
+      "role": "backend",
+      "sessionId": "0873c42b-25e2-4075-93af-70500e7926ee",
+      "taskId": "08fa63d7-6842-4cf0-9a6d-5fed91feb41b",
+      "pid": 34935,
+      "fingerprint": "d50cfe64bd2e4a76d8ed9c130f5907993975e79e80e7daaaf3f7b66b68a4d297",
+      "transitionStatus": "pending",
+      "retiredPriorPids": []
+    },
+    {
+      "role": "diagnostics",
+      "sessionId": "0873c42b-25e2-4075-93af-70500e7926ee",
+      "taskId": "08fa63d7-6842-4cf0-9a6d-5fed91feb41b",
+      "pid": 35015,
+      "fingerprint": "a47476bacb767172d26403f19fc3bfba1fa3241e50e14a55214456aba8d1e688",
+      "transitionStatus": "pending",
+      "retiredPriorPids": [
+        34935
+      ]
+    },
+    {
+      "role": "frontend",
+      "sessionId": "0873c42b-25e2-4075-93af-70500e7926ee",
+      "taskId": "08fa63d7-6842-4cf0-9a6d-5fed91feb41b",
+      "pid": 35082,
+      "fingerprint": "acb1c99fbe93c45accb0f0daaa4dc98760cef50e15c4518bf706508a3aac6dcf",
+      "transitionStatus": "running",
+      "retiredPriorPids": [
+        34935,
+        35015
+      ]
+    }
+  ],
+  "widths": [
+    {
+      "width": 1440,
+      "documentClient": 1440,
+      "documentScroll": 1440,
+      "composerClient": 792,
+      "composerScroll": 792,
+      "left": 457.5,
+      "right": 1249.5
+    },
+    {
+      "width": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "left": 262,
+      "right": 981
+    },
+    {
+      "width": 1440,
+      "documentClient": 1440,
+      "documentScroll": 1440,
+      "composerClient": 792,
+      "composerScroll": 792,
+      "left": 457.5,
+      "right": 1249.5
+    },
+    {
+      "width": 1440,
+      "documentClient": 1440,
+      "documentScroll": 1440,
+      "composerClient": 792,
+      "composerScroll": 792,
+      "left": 457.5,
+      "right": 1249.5
+    },
+    {
+      "width": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "left": 262,
+      "right": 981
+    },
+    {
+      "width": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "left": 262,
+      "right": 981,
+      "settingsClient": 848,
+      "settingsScroll": 848
+    },
+    {
+      "width": 1440,
+      "documentClient": 1440,
+      "documentScroll": 1440,
+      "composerClient": 792,
+      "composerScroll": 792,
+      "left": 457.5,
+      "right": 1249.5
+    },
+    {
+      "width": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "left": 262,
+      "right": 981
+    },
+    {
+      "width": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "left": 262,
+      "right": 981,
+      "settingsClient": 848,
+      "settingsScroll": 848
+    }
+  ],
+  "captures": [
+    "backend-pending-dark-1440.png",
+    "held-resumable-dark-1000.png",
+    "diagnostics-pending-dark-1440.png",
+    "frontend-running-dark-1440.png",
+    "composer-dark-1440.png",
+    "composer-dark-1000.png",
+    "history-dark-1000.png",
+    "composer-light-1440.png",
+    "composer-light-1000.png",
+    "history-light-1000.png"
+  ],
+  "rendererErrors": [],
+  "fixtureErrors": [],
+  "sourceHashes": {
+    "src/App.tsx": "4389e6f4b288e7c2208786fa1eb5506a9da4a6a0601cb5f3e13bed49bf1d4583",
+    "src/SettingsView.tsx": "22df05f952769ff01f0e020924703d7fa500f71528613527b9e2cb9921a07c66",
+    "src/styles.css": "f62ab989edee26b87aeddf52189fde2f3b1a6ceb2359f947f81bdbabb4caa464",
+    "electron/service.ts": "6be1b8ce286f95bdf5223f711260123fd9be8f82bb1cb05c1e9363d6d55ae54b",
+    "electron/main.ts": "c21f33d780bd184f0303eab3eca30d295e164df28ac84f1e49808d90e26d806d",
+    "electron/mcp.ts": "f9818d34a8251390215e0179d0cd17dd0e5b8894cd1bcfae79941aacc72e48c1",
+    "electron/prompt-binding.ts": "585a0b98a2963675b8e68db71f75d7d9369ab3d92a40cb7a5c511b7f01694277",
+    "electron/role-router.ts": "610306782b8909786871a1a603d4287e480e96a39fc0cb8a06a1a9ec0e502859",
+    "electron/preload.ts": "08e8dabebfa14df73b9295c7dcaa3c08450628686ff9723f8729fedbb4af8ea5",
+    "electron/acp.ts": "6d5e20e1bb07a8dcf195aac9408b8ff8db2f5dbdd3eac777a356e11df55459db",
+    "shared/types.ts": "8a5769611bd4a54da1d177bbdab61fc48fd630657df55a6b3a4f54fbace6dde1",
+    "dist-electron/main.cjs": "cc98132ee3e1b7840dc90bf1577b84818c23af3abbd064aff8c3b9e63a0e373c",
+    "dist-electron/preload.cjs": "089cefee118d4335518e4dd90819506adde2a2696d9eafd2ee28ec75f56fb767",
+    "tools/test-role-transitions-ui.mjs": "c01814be954d12d4f7a34066fe83b0c54b59653eb1f43bef62b1d515acbef639",
+    "../workbench/CORE.md": "b973e344e9291dcaf19d6594ff24d15c308380cc509027ef1336538167bba06f",
+    "../workbench/profiles/analyst.md": "81437e3f1258b7fe5de3ff37d531a5b8b8c3d27c95f741b0c6d30d6cccbf11c2",
+    "../workbench/profiles/architect.md": "e1c687701e8f3705888f45b05e7352fdf28a11e8a647b29e62ebefea22eb33ad",
+    "../workbench/profiles/backend.md": "ed4cac535bb002fbaa5d82b7953e25a22ef35dc96ec629dd1edc1607a0c7d264",
+    "../workbench/profiles/database.md": "619f87a555a9d3a6f834ad1dd92c24a5ec4a893c6fdd3a12cbec4f5da4391e5b",
+    "../workbench/profiles/designer.md": "e9eb486894fd63e94297a8dac9584164da5d706074483a4e6732d34b98b25a79",
+    "../workbench/profiles/devops.md": "05ca52297f9a191b9fe7b9de6affe0af8ab1d53e2c1841dfcbe197abc27fe74a",
+    "../workbench/profiles/diagnostics.md": "ac294df40837a0dd8b226e213f7a7ddd9e0993252138d3a273872e0d71d8e2eb",
+    "../workbench/profiles/frontend.md": "c2c147ec4391206a09da02cb6e4dd289d6dbe0cb09212892667610d94305d7aa",
+    "../workbench/profiles/gigacode-ui.md": "4e5e615ad638dbea049a02d067629693b391d2a884bb7682f3a22ddb4c53c9e0",
+    "../workbench/profiles/qa.md": "5f8bf61325c4840908707cee85d5c0d19df03ab46dd4cadec5f25895f42bbf03",
+    "../workbench/profiles/reviewer.md": "59d2adc726726bb7461b9ba6e3c40f28cd631e567b902ed39aee90c34753940d",
+    "../workbench/profiles/security.md": "eb48df1300b48bf155cc09b35294aefd383bd5c5cb2910ec94678634672be0e8",
+    "../workbench/profiles/spec.md": "a9bc23ab2a85938f5b4ee2887fb7e4483c93164c83f2f8b4ec3f37821d043e7b",
+    "../workbench/profiles/technical-writer.md": "2df4753a59674a01a6276783cafa08f79cd9bf38583fb6bb5e062fcb7890ad47",
+    "dist/assets/ClusterPanel-D84aVTEY.js": "7feda0f4746a5c723556882d9e2601989b32a4b35efede07c070c49db84464d5",
+    "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+    "dist/assets/DatabasePanel-DaVZoDrF.js": "fb629d3bd6f28fcdc980ee499bd103f7380c31dd71e7d746cae14a41781ba990",
+    "dist/assets/JenkinsPanel-CjG0rfzS.js": "e00c1a260366d5424a748d32b7754ea65fa6d2bd62f907c9ffa035148bf430fd",
+    "dist/assets/OperationsSettings-BtbBysYq.js": "79e4e8fd6bf90339dc883ec15a8fc0d20d6b2c059a93df81a0476a79552108d7",
+    "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+    "dist/assets/index-BFHna-eS.css": "a4112e2ca1bfaa6b160c52b30d6fa695df6c2587ebced58aecb6b4fa17b9afed",
+    "dist/assets/index-DmVJuYbc.js": "e0f70d113816d28cf47cd6ab42d0d1b405a6a96a3c335113889e05f1984dc4d2",
+    "dist/assets/ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+    "dist/assets/ops-ui-BG6lvj46.js": "49fc82fbe05fe22b52ed53c234e1abd5a9f3694e323536b22659b8cc462be77f"
+  },
+  "sourceDrift": [],
+  "cleanup": {
+    "application": "closed",
+    "ownedData": "removed"
+  },
+  "realModelCalls": 0,
+  "externalProviderCalls": 0
+}

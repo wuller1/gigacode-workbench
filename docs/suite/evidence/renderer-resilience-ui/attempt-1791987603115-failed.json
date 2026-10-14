@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "recordedAt": "2026-10-14T14:18:52.601Z",
+  "platform": "darwin",
+  "scope": "Actual App + deterministic owned ACP process; response-fault injection only in automation, actual native renderer crash and actual main fatal handler. No model intelligence, GigaCode or Windows claim.",
+  "passed": [
+    {
+      "name": "Wrong-typed local preferences and draft data cannot blank the actual App or overwrite their original bytes",
+      "elapsedMs": 86
+    }
+  ],
+  "total": 7,
+  "failure": {
+    "test": "Actual owned ACP request runs once; queued message and per-window drafts stay independent",
+    "message": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.attachment-list').getByText('evidence.txt', { exact: true }) to be visible\u001b[22m\n"
+  },
+  "proofs": [],
+  "captures": [
+    "failure-darwin.png"
+  ],
+  "rendererErrors": [],
+  "sourceHashes": {
+    "src/App.tsx": "99345b615321c80139c653e4a77f0b0c7cd0ed07204f7e01848f2eee04ba366e",
+    "src/api.ts": "685ec5467aa5f97a6c4057cdb74174301138e8cab090c507f7de596a14e83433",
+    "src/snapshot-feed.ts": "68464be478c251781ecaa1b882b53f1dea117f83505d0e84341a49f1a2dd0e04",
+    "src/local-state.ts": "03fe1a6d99679df6b32e0c7e871c668b6e0142cce8c45a5eed50a8b696509ec9",
+    "src/Workspace.tsx": "d11e4f10208998c6afe9bb51b7612e0db6d5d6977b515f17fa373418a3271762",
+    "src/ErrorBoundary.tsx": "e13f0a5d0b329145a8e38d82a22cdb7022e6ad95eb103049d15c33338fb70043",
+    "src/ToolBoundary.tsx": "c5201b14523d6d8fb08ba944c49402a8bf766d87193ac3ccf7ae137b97f2b5c8",
+    "src/styles.css": "7c3dc5042999f9f31f514d0f850fde727badd918acb59a6e11323e1294376930",
+    "electron/preload.ts": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
+    "electron/main.ts": "bd6b9f09763d4f3d125676e4123b837fe301e6b6469b93bca609346b9aea8f9c",
+    "electron/service.ts": "2d8a158c52495af3fdf01b09802d729306653528bb4444b9fec9df993bbec004",
+    "electron/acp.ts": "3ffba600ff11ce50ad373b2bf54c3565bce65d3607d03ca6f50078ba70b579ab",
+    "electron/store.ts": "40382045034687e8a5af380cf6ed3a7c54a53a859f0c3a69d4e0f7d6e0ba04a5",
+    "electron/renderer-recovery.ts": "7be680151cc5bf3ab140d722bc9888f4113b51995a7a27e2a56ca8b547e640f3",
+    "shared/types.ts": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
+    "tests/fixtures/acp-fixture.mjs": "c6e8b243ac46a69329fddb33265c0eb86dc8052f7e801e4f78bc86dfb4b5e5d7",
+    "tools/test-renderer-resilience-ui.mjs": "94db0d1bff25e890b9d6060ea16f653ca336cbb5760777971c80f37790f015c0",
+    "dist-electron/main.cjs": "098d89054784c6da49a4f2f6b40aeca3afe2d7887954d8ef75d1d278661d2b38",
+    "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
+    "dist/assets/ClusterPanel-C1yhnrnC.js": "c76a7f933de882a9f05584af71083a79b53896428a6d59cedf29901260a6c193",
+    "dist/assets/DatabasePanel-B8p4vifI.js": "78f5322ad8d23f51374fc33dae0cbcb49c0dc46d87107873f3784f1ad641e2f2",
+    "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+    "dist/assets/JenkinsPanel-D_nAkSFv.js": "349c3081e270a5d6c0537bc67914d8db8c31a3468ce47a0833673845133c20b6",
+    "dist/assets/OperationsSettings-DQxGXy8i.js": "4c31ffb2eaebd2881e19e15c66ddbe0f3b0c569c544f077f32227c966b7c6c97",
+    "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+    "dist/assets/index-Ba7qdSfj.js": "039bb8eb7c233c3706c2e26b6a99c9ea6649d8da63e2ceff0e86aae6e812cb6c",
+    "dist/assets/index-BkLga3T9.css": "83349c8c38c0ddf07e52ccafe7451ac2ac44d731e1cdf50d22da53710988604b",
+    "dist/assets/ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+    "dist/assets/ops-ui-CgOHtO2A.js": "8fa01c38a3f60d2b7a1321176b2d827ab9113b0a1eaafcf649ebf38419c67d3e"
+  },
+  "sourceDrift": [],
+  "cleanup": {
+    "application": "force-closed",
+    "ownedData": "removed"
+  },
+  "externalProviderCalls": 0,
+  "realModelCalls": 0
+}

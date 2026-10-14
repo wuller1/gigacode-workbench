@@ -2,8 +2,8 @@
   "probe": "qwen-system-binding-local-provider-placement",
   "platform": "darwin",
   "runtimeVersion": "0.25.1",
-  "runtimeFingerprint": "5f32d5c4f7963602bc9554126a19cfb1e906b6510710ca7724ba2e8836c7c3e8",
-  "hostBundleSha256": "010ff5a09b78c27e9208a6a276d6ded4e05411aee0ab38e4c1805ce09859d70a",
+  "runtimeFingerprint": "213ad0f7b863c70f8ae0ae99f461633a13c777c8a032bd719a56636d7e70bb7b",
+  "hostBundleSha256": "c01f63893956957b36af8eda31c7afc00cb4300c23d3e6fec1e8cff90d7b36fc",
   "helpVerified": true,
   "hostPromptDispatches": 2,
   "modelProvider": "owned loopback OpenAI protocol fixture",
@@ -24,9 +24,9 @@
         "system",
         "user"
       ],
-      "systemBytes": 39563,
-      "systemSha256": "ff56a7c1af79b72e054a1faf6bcc9d91ee0fc0f7f4618330786e1171e04c9233",
-      "compiledContentHash": "d57a42764793565bdd340bf3d38f2c0d96cfeda1d0d7038cd796495048312aae",
+      "systemBytes": 42691,
+      "systemSha256": "8f3825040edeb04e5196c22f32ffd556459f4c735d898f4fc587e6f46ffe3eff",
+      "compiledContentHash": "4e16ff7b9f6811543d686875d099436cc9f673f517ac02ec6617b81e4bb6d6f6",
       "toolDefinitionsOffered": 13,
       "observedToolCalls": 0,
       "stopReason": "end_turn"
@@ -44,9 +44,9 @@
         "system",
         "user"
       ],
-      "systemBytes": 37553,
-      "systemSha256": "1b5e66fef17074a5ec2fb564872bc2b937f59e7c2f8e5e6c244b18bab7a68dc2",
-      "compiledContentHash": "da0ce4d112613d0a5f4c4cb066c896f5d3d5f462903bf316d72d2cc5eac92e32",
+      "systemBytes": 40681,
+      "systemSha256": "fc91c88afbb3805e90b6f7ed1dfb844484072360d3078c82f9d8f9b59ae9caec",
+      "compiledContentHash": "d69971af25018a84b8c761e57de06a306d1fbef4249422b2f00b9607976e2f13",
       "toolDefinitionsOffered": 13,
       "observedToolCalls": 0,
       "stopReason": "end_turn"
@@ -57,8 +57,8 @@
     {
       "profileId": "analyst",
       "delivery": "append_system",
-      "contentHash": "d57a42764793565bdd340bf3d38f2c0d96cfeda1d0d7038cd796495048312aae",
-      "instructionFingerprint": "b8987e52b9158769b916877465ee20c16f151f8c5780ea7895b1f1826ba8b92a",
+      "contentHash": "4e16ff7b9f6811543d686875d099436cc9f673f517ac02ec6617b81e4bb6d6f6",
+      "instructionFingerprint": "f241257a86f344f377896f225f30166efa8945d5e88dab632a1750351702d2ca",
       "initialized": true,
       "newSession": true,
       "agent": {
@@ -73,8 +73,8 @@
     {
       "profileId": "reviewer",
       "delivery": "append_system",
-      "contentHash": "da0ce4d112613d0a5f4c4cb066c896f5d3d5f462903bf316d72d2cc5eac92e32",
-      "instructionFingerprint": "a1a19087fc629e292535260ac92f5baf932f32c169938d3d661eef8db0d5300f",
+      "contentHash": "d69971af25018a84b8c761e57de06a306d1fbef4249422b2f00b9607976e2f13",
+      "instructionFingerprint": "c2e27f40520f2fafeb68c27ac24cdcd35ed7520d723f884fd63a0fab1efaebf4",
       "initialized": true,
       "newSession": true,
       "agent": {

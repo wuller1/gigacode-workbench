@@ -28,8 +28,14 @@ export class AtomicStore<T extends object> {
             JSON.stringify({ pid: process.pid, token: this.token }),
           );
           await handle.sync();
-        } finally {
           await handle.close();
+        } catch (error) {
+          // We alone created this lock with wx. A failed initial write/sync
+          // must not strand a partial owner file after a transient disk fault.
+          // Existing locks take the EEXIST path and are never removed here.
+          await handle.close().catch(() => undefined);
+          await fs.unlink(lock).catch(() => undefined);
+          throw error;
         }
         this.locked = true;
         break;

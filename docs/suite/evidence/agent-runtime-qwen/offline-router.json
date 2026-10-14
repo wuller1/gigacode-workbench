@@ -1,5 +1,5 @@
 {
-  "createdAt": "2026-10-14T12:09:40.336Z",
+  "createdAt": "2026-10-14T14:18:47.380Z",
   "runtime": {
     "node": "v26.8.1",
     "platform": "darwin",
@@ -8,7 +8,7 @@
   },
   "transport": "Controlled loopback OpenAI SSE fixture; no real LLM or external provider calls",
   "scope": "Actual headless Qwen safe-mode isolation and ordinary-tool budget; exploratory pure structured_output exception; actual current routeWithQwen with dedicated classifier system, six eager tools denied, host JSON validation and bounded classifier retry. No routing-quality, GigaCode-compatibility, or ACP-executor-binding claim.",
-  "currentRouterSourceSha256": "718f8525b99e3fa77bc2c38f86db12b38f78b22575ce9f0d8798c52e82a70e8a",
+  "currentRouterSourceSha256": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
   "excluded22Status": "Exploratory alternative: removes provider tool declarations in this fixture, but not the selected runtime; separate live-model evaluation rejected it for worse routing behavior.",
   "scenarios": [
     {
@@ -32,6 +32,9 @@
           "tool_search",
           "write_file"
         ]
+      ],
+      "providerModelIds": [
+        "fixture"
       ],
       "maxToolCalls": 0,
       "exitCode": 0,
@@ -68,6 +71,9 @@
           "write_file"
         ]
       ],
+      "providerModelIds": [
+        "fixture"
+      ],
       "maxToolCalls": 0,
       "exitCode": 55,
       "writeOccurred": false,
@@ -96,6 +102,9 @@
           "tool_search",
           "write_file"
         ]
+      ],
+      "providerModelIds": [
+        "fixture"
       ],
       "maxToolCalls": 1,
       "exitCode": 53,
@@ -126,6 +135,9 @@
           "tool_search",
           "write_file"
         ]
+      ],
+      "providerModelIds": [
+        "fixture"
       ],
       "maxToolCalls": 0,
       "exitCode": 0,
@@ -163,6 +175,9 @@
           "tool_search",
           "write_file"
         ]
+      ],
+      "providerModelIds": [
+        "fixture"
       ],
       "maxToolCalls": 0,
       "exitCode": 0,
@@ -217,13 +232,17 @@
           "web_fetch"
         ]
       ],
+      "providerModelIds": [
+        "fixture",
+        "fixture"
+      ],
       "exitCode": 0,
       "attempts": 2,
       "parsedRoleId": "reviewer",
       "writeOccurred": false,
       "mcpStarted": false,
       "inheritedSystemDumpCreated": false,
-      "currentRouterSourceSha256": "718f8525b99e3fa77bc2c38f86db12b38f78b22575ce9f0d8798c52e82a70e8a",
+      "currentRouterSourceSha256": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
       "toolDeclarationsRemoved": false,
       "note": "Actual current routeWithQwen in a separately spawned worker with isolated environment; first invalid/tool response repaired by a second classifier-only attempt. No executor task replay."
     },
@@ -265,13 +284,17 @@
           "web_fetch"
         ]
       ],
+      "providerModelIds": [
+        "fixture",
+        "fixture"
+      ],
       "exitCode": 0,
       "attempts": 2,
       "parsedRoleId": "reviewer",
       "writeOccurred": false,
       "mcpStarted": false,
       "inheritedSystemDumpCreated": false,
-      "currentRouterSourceSha256": "718f8525b99e3fa77bc2c38f86db12b38f78b22575ce9f0d8798c52e82a70e8a",
+      "currentRouterSourceSha256": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
       "toolDeclarationsRemoved": false,
       "note": "Actual current routeWithQwen in a separately spawned worker with isolated environment; first invalid/tool response repaired by a second classifier-only attempt. No executor task replay."
     },
@@ -313,13 +336,121 @@
           "web_fetch"
         ]
       ],
+      "providerModelIds": [
+        "fixture",
+        "fixture"
+      ],
       "exitCode": 0,
       "attempts": 2,
       "parsedRoleId": "reviewer",
       "writeOccurred": false,
       "mcpStarted": false,
       "inheritedSystemDumpCreated": false,
-      "currentRouterSourceSha256": "718f8525b99e3fa77bc2c38f86db12b38f78b22575ce9f0d8798c52e82a70e8a",
+      "currentRouterSourceSha256": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
+      "toolDeclarationsRemoved": false,
+      "note": "Actual current routeWithQwen in a separately spawned worker with isolated environment; first invalid/tool response repaired by a second classifier-only attempt. No executor task replay."
+    },
+    {
+      "kind": "route_tool_flag_model",
+      "requests": 2,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": false,
+      "structuredOutputAdvertised": false,
+      "dedicatedSystemObserved": true,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        [
+          "agent",
+          "enter_worktree",
+          "exit_worktree",
+          "get_goal",
+          "list_agents",
+          "read_mcp_resource",
+          "record_artifact",
+          "report_findings",
+          "send_message",
+          "task_stop",
+          "update_goal",
+          "web_fetch"
+        ],
+        [
+          "agent",
+          "enter_worktree",
+          "exit_worktree",
+          "get_goal",
+          "list_agents",
+          "read_mcp_resource",
+          "record_artifact",
+          "report_findings",
+          "send_message",
+          "task_stop",
+          "update_goal",
+          "web_fetch"
+        ]
+      ],
+      "providerModelIds": [
+        "--max-tool-calls=1",
+        "--max-tool-calls=1"
+      ],
+      "exitCode": 0,
+      "attempts": 2,
+      "parsedRoleId": "reviewer",
+      "writeOccurred": false,
+      "mcpStarted": false,
+      "inheritedSystemDumpCreated": false,
+      "currentRouterSourceSha256": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
+      "toolDeclarationsRemoved": false,
+      "note": "Actual current routeWithQwen in a separately spawned worker with isolated environment; first invalid/tool response repaired by a second classifier-only attempt. No executor task replay."
+    },
+    {
+      "kind": "route_tool_flag_acp_model",
+      "requests": 2,
+      "projectContextLoaded": false,
+      "writeToolAdvertised": false,
+      "structuredOutputAdvertised": false,
+      "dedicatedSystemObserved": true,
+      "inheritedSystemObserved": false,
+      "declaredToolNames": [
+        [
+          "agent",
+          "enter_worktree",
+          "exit_worktree",
+          "get_goal",
+          "list_agents",
+          "read_mcp_resource",
+          "record_artifact",
+          "report_findings",
+          "send_message",
+          "task_stop",
+          "update_goal",
+          "web_fetch"
+        ],
+        [
+          "agent",
+          "enter_worktree",
+          "exit_worktree",
+          "get_goal",
+          "list_agents",
+          "read_mcp_resource",
+          "record_artifact",
+          "report_findings",
+          "send_message",
+          "task_stop",
+          "update_goal",
+          "web_fetch"
+        ]
+      ],
+      "providerModelIds": [
+        "--max-tool-calls=1",
+        "--max-tool-calls=1"
+      ],
+      "exitCode": 0,
+      "attempts": 2,
+      "parsedRoleId": "reviewer",
+      "writeOccurred": false,
+      "mcpStarted": false,
+      "inheritedSystemDumpCreated": false,
+      "currentRouterSourceSha256": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
       "toolDeclarationsRemoved": false,
       "note": "Actual current routeWithQwen in a separately spawned worker with isolated environment; first invalid/tool response repaired by a second classifier-only attempt. No executor task replay."
     },
@@ -344,6 +475,9 @@
           "tool_search",
           "write_file"
         ]
+      ],
+      "providerModelIds": [
+        "fixture"
       ],
       "maxToolCalls": 0,
       "exitCode": 0,
@@ -377,6 +511,9 @@
           "write_file"
         ]
       ],
+      "providerModelIds": [
+        "fixture"
+      ],
       "maxToolCalls": 0,
       "exitCode": 0,
       "writeOccurred": false,
@@ -402,6 +539,9 @@
       "inheritedSystemObserved": false,
       "declaredToolNames": [
         []
+      ],
+      "providerModelIds": [
+        "fixture"
       ],
       "maxToolCalls": 0,
       "exitCode": 0,

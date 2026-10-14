@@ -6,6 +6,8 @@
 
 Выбор роли отделён от её доставки: [ROLE_PROMPT_BINDING](ROLE_PROMPT_BINDING.md) определяет базу/project policy/overlay/packet, fingerprint и подтверждённую границу active. Для делегирования использовать [MANAGED_SUBAGENTS](MANAGED_SUBAGENTS.md), сохраняя единый Scheduler и run acceptance. В composer находится read-only role chip с reason/confidence/history, а не selector каталога. Эти документы читаются только при реализации соответствующего участка.
 
+Передача уже порученной работы между фазами **без нового сообщения пользователя** описана отдельно в [IN_TASK_ROLE_TRANSITIONS](IN_TASK_ROLE_TRANSITIONS.md): session-bound запрос → обычное завершение текущей фазы → host gates/router → host continuation. Это отличается от выбора роли для следующего пользовательского сообщения и не означает, что все workflows или DAG scheduler перенесены в App. Agent continuation не становится human message; текущий LLM-router сохраняется.
+
 ## 1. Четыре независимых решения
 
 | Решение | Что меняет | Чего не даёт автоматически |

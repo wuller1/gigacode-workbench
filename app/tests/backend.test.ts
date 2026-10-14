@@ -965,19 +965,21 @@ describe("durable backend", () => {
     ).toBe("done");
   });
   it.each([false, true])(
-    "contains a failed ACP output write without poisoning another real process (timed flush: %s)",
+    "stops unsafe execution after an ACP output write failure and preserves recovery evidence across restart (timed flush: %s)",
     async (timed) => {
       const x = await setup();
       const store = (x.service as any).store;
       const original = store.atomic.bind(store);
       let faults = 0;
+      let failedClient: AcpConnection | undefined;
       store.atomic = async (destination: string, content: string) => {
         if (
           !faults &&
           destination === store.filename &&
-          content.includes("start:FAULT_A")
+          content.includes(timed ? "start:hold FAULT_A" : "start:FAULT_A")
         ) {
           faults++;
+          failedClient = (x.service as any).live.get(x.a.id)?.client;
           throw Object.assign(new Error("CONTROLLED_TRANSIENT_EIO"), {
             code: "EIO",
           });
@@ -986,27 +988,46 @@ describe("durable backend", () => {
       };
       await x.service.invoke("session.send", {
         id: x.a.id,
-        text: timed ? "FAULT_A hold" : "FAULT_A",
+        text: timed ? "hold FAULT_A" : "FAULT_A",
       });
       await until(() => faults === 1);
-      if (timed)
-        expect(x.service.snapshot().sessions[0].status).toBe("running");
+      await x.service.quiesce("Observe the already requested storage stop.");
+      expect(failedClient?.alive).toBe(false);
+      expect((x.service as any).live.size).toBe(0);
       await until(() => x.service.snapshot().sessions[0].status === "unknown");
       const failed = x.service.snapshot().sessions[0];
       expect(failed.error).toContain("CONTROLLED_TRANSIENT_EIO");
       expect(failed.messages.at(-1)?.outcome).toBe("unknown");
       await expect(
         x.service.invoke("queue.resume", { sessionId: x.a.id }),
-      ).rejects.toThrow("Recover the unknown");
-      // A separate durable write proves that the fault has gone away; no prompt is retried.
-      await x.service.invoke("settings.update", {
+      ).rejects.toThrow("Runtime is stopped");
+      expect((await x.service.invoke("state.get")).sessions[0].status).toBe(
+        "unknown",
+      );
+      const diagnostic = await x.service.invoke("diagnostics.export");
+      expect(await fs.readFile(diagnostic.path, "utf8")).toContain(
+        "CONTROLLED_TRANSIENT_EIO",
+      );
+      await expect(
+        x.service.invoke("settings.update", { patch: { maxConcurrent: 3 } }),
+      ).rejects.toThrow("Runtime is stopped");
+      const resumed = new WorkbenchService({
+        dataDir: x.data,
+        bundleDir: x.bundle,
+        emit: () => undefined,
+      });
+      await resumed.init();
+      services.push(resumed);
+      await expect(
+        resumed.invoke("queue.resume", { id: x.a.id }),
+      ).rejects.toThrow(/unknown/i);
+      // A separate durable write after restart proves storage recovered; the uncertain prompt is never retried.
+      await resumed.invoke("settings.update", {
         patch: { maxConcurrent: 3 },
       });
-      await x.service.invoke("session.send", { id: x.b.id, text: "HEALTHY_B" });
-      await until(
-        () => x.service.snapshot().sessions[1].status === "completed",
-      );
-      const healthy = x.service.snapshot().sessions[1];
+      await resumed.invoke("session.send", { id: x.b.id, text: "HEALTHY_B" });
+      await until(() => resumed.snapshot().sessions[1].status === "completed");
+      const healthy = resumed.snapshot().sessions[1];
       expect(healthy.messages.at(-1)?.content).toBe(
         "start:HEALTHY_B done:HEALTHY_B",
       );
@@ -1015,7 +1036,7 @@ describe("durable backend", () => {
         (entry) => entry.type === "prompt",
       );
       expect(prompts.map((entry) => entry.command)).toEqual([
-        timed ? "FAULT_A hold" : "FAULT_A",
+        timed ? "hold FAULT_A" : "FAULT_A",
         "HEALTHY_B",
       ]);
       expect(new Set(prompts.map((entry) => entry.pid)).size).toBe(2);

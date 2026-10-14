@@ -1,6 +1,7 @@
 import { createServer, type Server } from "node:http";
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import { promises as fs } from "node:fs";
+import { TextDecoder } from "node:util";
 import type { AppState } from "../shared/types";
 import { opsReadOperations, opsActionOperations } from "../shared/operations";
 import {
@@ -16,6 +17,13 @@ type Tool = {
     required?: string[];
     additionalProperties: false;
   };
+};
+type McpRuntimeOptions = {
+  bodyTimeoutMs?: number;
+  maxPendingBodies?: number;
+  questionTimeoutMs?: number;
+  questionPollMs?: number;
+  onFault?: (error: Error) => void;
 };
 const str = { type: "string" },
   num = { type: "number" };
@@ -647,6 +655,22 @@ const tools: Tool[] = [
     ["path"],
   ),
   tool(
+    "role_transition_request",
+    "Request a host-managed handoff of the remaining authorized task to a different role. The hint is advisory: the host LLM router confirms the role. Current instructions remain active until this phase ends normally and the host validates the boundary. After acknowledgement, finish the phase normally; do not continue the handed-off work or invent another user message. Preserve the original goal, concrete progress and evidence references. Ordinary fixes and self-tests do not require another role. Pending questions, cancellation and unknown effects hold the handoff.",
+    {
+      operationId: { type: "string", minLength: 1, maxLength: 128 },
+      roleHint: { type: "string", minLength: 1, maxLength: 80 },
+      reason: { type: "string", minLength: 1, maxLength: 2000 },
+      continuation: { type: "string", minLength: 1, maxLength: 12000 },
+      evidenceRefs: {
+        type: "array",
+        maxItems: 16,
+        items: { type: "string", minLength: 1, maxLength: 1000 },
+      },
+    },
+    ["operationId", "reason", "continuation"],
+  ),
+  tool(
     "agent_spawn",
     "Delegate a bounded independent subtask within the SAME task. Supply a unique operationId; repeat the same ID and payload to retrieve the original child, never create a second child after an uncertain response. The optional profileId is a role hint for automatic routing, not a forced role. Shared workspace: no filesystem isolation is implied. Use analysis/review by default; coordinate file ownership before edits.",
     { title: str, profileId: str, prompt: str, operationId: str },
@@ -709,6 +733,8 @@ export class UiMcpServer {
   private server?: Server;
   private port = 0;
   private tokens = new Map<string, string>();
+  private generations = new Map<string, number>();
+  private pendingBodies = 0;
   private stopping = false;
   private opsTargets = new Map<
     string,
@@ -720,6 +746,7 @@ export class UiMcpServer {
   constructor(
     private snapshot: () => AppState,
     private invoke: (method: string, p: any, sessionId: string) => Promise<any>,
+    private options: McpRuntimeOptions = {},
   ) {}
   async start() {
     this.server = createServer(async (req, res) => {
@@ -743,6 +770,9 @@ export class UiMcpServer {
         res.end('{"error":"Unauthorized"}');
         return;
       }
+      // Capture the generation belonging to this bearer before reading a body
+      // or awaiting dispatch. A later process must never inherit this request.
+      const generation = id ? this.generations.get(id) : undefined;
       if (req.headers.origin) {
         res.writeHead(403);
         res.end('{"error":"Browser origins are not accepted"}');
@@ -753,13 +783,28 @@ export class UiMcpServer {
         res.end();
         return;
       }
+      if (this.pendingBodies >= (this.options.maxPendingBodies ?? 64)) {
+        res.writeHead(429);
+        res.end('{"error":"Too many pending request bodies"}');
+        return;
+      }
       let size = 0;
       const chunks: Buffer[] = [];
       try {
-        for await (const chunk of req) {
-          size += chunk.length;
-          if (size > 1024 * 1024) throw new Error("Request too large");
-          chunks.push(chunk);
+        this.pendingBodies++;
+        const bodyTimer = setTimeout(
+          () => req.destroy(new Error("MCP request body timed out")),
+          this.options.bodyTimeoutMs ?? 10000,
+        );
+        try {
+          for await (const chunk of req) {
+            size += chunk.length;
+            if (size > 1024 * 1024) throw new Error("Request too large");
+            chunks.push(chunk);
+          }
+        } finally {
+          clearTimeout(bodyTimer);
+          this.pendingBodies--;
         }
         // Reading an HTTP body yields. A new ACP process may have superseded
         // this binding while an old client was still uploading its request.
@@ -768,7 +813,11 @@ export class UiMcpServer {
           res.end('{"error":"Unauthorized"}');
           return;
         }
-        const message = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+        const message = JSON.parse(
+          new TextDecoder("utf-8", { fatal: true }).decode(
+            Buffer.concat(chunks),
+          ),
+        );
         if (!message || Array.isArray(message) || message.jsonrpc !== "2.0")
           throw new Error("Invalid JSON-RPC");
         if (message.id === undefined) {
@@ -796,7 +845,13 @@ export class UiMcpServer {
               id!,
               message.params?.name,
               message.params?.arguments || {},
+              generation,
+              () => currentBinding() && !res.destroyed,
             );
+            if (message.params?.name === "ask_user" && !currentBinding())
+              throw new Error(
+                "Question executor binding was retired before answer delivery",
+              );
             const content: any[] = [
               { type: "text", text: JSON.stringify(value ?? { ok: true }) },
             ];
@@ -857,21 +912,34 @@ export class UiMcpServer {
         }
         res.end(JSON.stringify({ jsonrpc: "2.0", id: message.id, result }));
       } catch {
-        res.writeHead(400);
-        res.end('{"error":"Invalid or oversized request"}');
+        if (!res.destroyed && !res.writableEnded) {
+          res.writeHead(400);
+          res.end('{"error":"Invalid or oversized request"}');
+        }
       }
     });
+    this.server.headersTimeout = 10000;
+    this.server.requestTimeout = 15000;
+    this.server.maxConnections = 256;
     await new Promise<void>((resolve, reject) => {
       this.server!.once("error", reject);
       this.server!.listen(0, "127.0.0.1", () => resolve());
     });
     this.port = (this.server.address() as any).port;
+    this.server.on("error", (error) => this.options.onFault?.(error));
   }
-  binding(sessionId: string) {
+  binding(sessionId: string, generation?: number) {
+    if (
+      generation !== undefined &&
+      (!Number.isSafeInteger(generation) || generation < 1)
+    )
+      throw new Error("Invalid MCP binding generation");
     // Each new ACP binding supersedes the previous client of this host session.
     // Already admitted actions keep their normal receipts/unknown semantics.
     const token = randomBytes(32).toString("hex");
     this.tokens.set(sessionId, token);
+    if (generation === undefined) this.generations.delete(sessionId);
+    else this.generations.set(sessionId, generation);
     return [
       {
         type: "http",
@@ -884,8 +952,15 @@ export class UiMcpServer {
   /** Retire the current client's authority before cancellation or process teardown. */
   revokeBinding(sessionId: string): void {
     this.tokens.delete(sessionId);
+    this.generations.delete(sessionId);
   }
-  private async call(sessionId: string, name: string, p: any) {
+  private async call(
+    sessionId: string,
+    name: string,
+    p: any,
+    generation?: number,
+    currentBinding: () => boolean = () => true,
+  ) {
     if (this.stopping) throw new Error("Application is closing");
     if (!tools.some((t) => t.name === name)) throw new Error("Unknown tool");
     const state = this.snapshot(),
@@ -1080,6 +1155,67 @@ export class UiMcpServer {
         { ...p, taskId: task.id },
         sessionId,
       );
+    if (name === "role_transition_request") {
+      if (!Number.isSafeInteger(generation) || generation! < 1)
+        throw new Error(
+          "Role transitions require a generation-bound executor.",
+        );
+      if (
+        !p ||
+        typeof p !== "object" ||
+        Array.isArray(p) ||
+        Object.keys(p).some(
+          (key) =>
+            ![
+              "operationId",
+              "roleHint",
+              "reason",
+              "continuation",
+              "evidenceRefs",
+            ].includes(key),
+        )
+      )
+        throw new Error("Invalid role transition arguments.");
+      for (const [key, max] of [
+        ["operationId", 128],
+        ["reason", 2000],
+        ["continuation", 12000],
+      ] as const)
+        if (
+          typeof p[key] !== "string" ||
+          !p[key].trim() ||
+          p[key].length > max ||
+          p[key].includes("\0")
+        )
+          throw new Error(`Invalid role transition ${key}.`);
+      if (
+        p.roleHint !== undefined &&
+        (typeof p.roleHint !== "string" ||
+          p.roleHint.length > 80 ||
+          !state.profiles?.some((profile) => profile.id === p.roleHint))
+      )
+        throw new Error(
+          "Choose an actual role ID from the current catalog, or omit the hint.",
+        );
+      if (
+        p.evidenceRefs !== undefined &&
+        (!Array.isArray(p.evidenceRefs) ||
+          p.evidenceRefs.length > 16 ||
+          p.evidenceRefs.some(
+            (ref: unknown) =>
+              typeof ref !== "string" ||
+              !ref.trim() ||
+              ref.length > 1000 ||
+              ref.includes("\0"),
+          ))
+      )
+        throw new Error("Invalid role transition evidence references.");
+      return this.invoke(
+        "role.transition.request",
+        { ...p, sessionId, generation },
+        sessionId,
+      );
+    }
     if (name === "agent_spawn") {
       if (
         !p ||
@@ -1228,10 +1364,13 @@ export class UiMcpServer {
       );
     }
     if (name === "ask_user") {
+      if (!currentBinding())
+        throw new Error("Question executor binding was retired");
       const question = await this.invoke(
         "question.create",
         {
           sessionId,
+          ...(generation === undefined ? {} : { generation }),
           title: p.title,
           options: (p.options || []).map((label: string, i: number) => ({
             id: String(i),
@@ -1241,13 +1380,16 @@ export class UiMcpServer {
         },
         sessionId,
       );
-      const deadline = Date.now() + 10 * 60 * 1000;
+      const deadline =
+        Date.now() + (this.options.questionTimeoutMs ?? 10 * 60 * 1000);
       while (Date.now() < deadline && !this.stopping) {
-        const current = this.snapshot().questions.find(
-          (q) => q.id === question.id,
-        );
-        if (current?.status === "answered") return { answer: current.answer };
-        const s = this.snapshot().sessions.find((s) => s.id === sessionId);
+        if (!currentBinding())
+          throw new Error(
+            "Question interrupted: the original executor binding was retired; its saved answer remains in task state",
+          );
+        const snapshot = this.snapshot();
+        const current = snapshot.questions.find((q) => q.id === question.id);
+        const s = snapshot.sessions.find((s) => s.id === sessionId);
         if (
           !s ||
           s.status === "cancelling" ||
@@ -1255,7 +1397,10 @@ export class UiMcpServer {
           s.status === "failed"
         )
           throw new Error("Question interrupted; no answer was supplied");
-        await new Promise((r) => setTimeout(r, 250));
+        if (current?.status === "answered") return { answer: current.answer };
+        await new Promise((r) =>
+          setTimeout(r, this.options.questionPollMs ?? 250),
+        );
       }
       throw new Error("No user answer yet; do not assume approval");
     }
@@ -1386,6 +1531,7 @@ export class UiMcpServer {
   async dispose() {
     this.stopping = true;
     this.tokens.clear();
+    this.generations.clear();
     this.opsTargets.clear();
     this.server?.closeAllConnections();
     await new Promise<void>((r) => {

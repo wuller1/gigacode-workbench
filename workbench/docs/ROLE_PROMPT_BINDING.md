@@ -4,6 +4,8 @@
 
 Иерархия остаётся **Project → Task → роли внутри Task**. Роль определяет ответственность текущего исполнителя. Она не создаёт новую задачу, не выдаёт права и не заменяет workflow. Выбор следующей роли описан в [ROLE_ROUTING](ROLE_ROUTING.md); здесь определены состав её инструкций, способ доставки и проверяемая активация. Использовать существующие CatalogService, InstructionRegistry, PromptAssembler, Task writer, SessionService и ContextPacketBuilder/TaskPacketBuilder из [нативного переноса](NATIVE_WORKBENCH_MIGRATION.md) и [TASK_WORKSPACE](TASK_WORKSPACE.md), без второго controller.
 
+Для передачи между фазами без нового human message применять [IN_TASK_ROLE_TRANSITIONS](IN_TASK_ROLE_TRANSITIONS.md): pending запрос не меняет binding текущего turn; после подтверждённого terminal/flush и router approval host сохраняет checkpoint, отзывает старую authority и назначает новый immutable CORE + role. Это host continuation в прежнем scope, не mid-tool system hot swap и не новое разрешение от пользователя.
+
 ## 1. Что означает «системный промпт по роли»
 
 Сначала собрать версионированные инструкции Workbench, затем отдельно определить, через какую **реально поддержанную поверхность** CLI они будут переданы. Название файла `SYSTEM_PROMPT.md`, заголовок «system» внутри текста и фраза модели «я применил профиль» сами по себе не устанавливают системный уровень сообщения.

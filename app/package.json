@@ -1,6 +1,6 @@
 {
   "name": "gigacode-workbench-ui",
-  "version": "0.5.0-preview.1",
+  "version": "0.6.0-preview.1",
   "private": true,
   "description": "A local desktop workspace for ACP coding agents",
   "license": "Apache-2.0",

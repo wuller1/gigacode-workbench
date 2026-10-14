@@ -13,6 +13,8 @@
 7. Проверь desktop state: подписки/cleanup, stale async responses, durable revisions/CAS, drafts/focus/scroll, active tabs и сохранение layout. Рендер не должен обновляться лишь после клика/ручного reload. Не регистрируй глобальные hotkeys/IPC authority по видимости чужой панели.
 8. Реализуй реальный путь и повтори исходный/соседний переход. Для гонки нужен порядок событий, для UI — наблюдение текущего build. Исправляй root cause в общем владельце, когда это входит в задачу; mock transport и красивый экран не скрывают отсутствующий backend.
 
+Dev-сервер, нужный после handoff, запускай через доступные `ide_tasks` → `ide_task_run`, проверяя existing running до запуска и сохраняя taskId/terminalId. Для нужной отладки используй `ide_debug_start` только известной launch-конфигурации; `ide_status` даёт фактические debugSessions, `ide_debug_request` — состояние. `ide_debug_stop`/`ide_task_cancel` применяй только к порученному ресурсу. `started`/`running` не означают HTTP-ready: проверь endpoint/браузер и `ide_terminal_output`. Эти IDE ресурсы принадлежат host, а не ACP executor. Их независимость подтверждается source; конкретное сохранение dev-сервера после реального handoff нужно проверить отдельно. Нет IDE/task пути — сообщи ограничение, не имитируй surviving detached server и не выдумывай terminal-create/write MCP.
+
 ## Дизайн и адресные контракты
 
 Выбери только нужный рецепт из `docs/DESIGN_IMPLEMENTATION_GUIDE.md`, tokens текущего проекта и актуальный screenshot. Дизайн критиковать и исправлять в том же срезе: ясность действия, плотность, alignment, hover/focus, empty/error и overflow. Иконки/motion — `docs/GRAPHICS_AND_MOTION.md`, права — `docs/ASSET_RIGHTS.md`. Анимация статуса отражает реальную работу, не заменяет feedback.

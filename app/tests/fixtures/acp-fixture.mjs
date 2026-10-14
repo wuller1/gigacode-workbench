@@ -19,11 +19,13 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
       log({type:'config_start',id:request.params.configId});
       setTimeout(()=>{log({type:'config_end',id:request.params.configId});result(request.id,{configOptions:configs()});},75);break;
     case 'session/prompt':{
-      const content=request.params.prompt[0].text;const command=content.includes('Current user message:\n')?content.split('Current user message:\n').at(-1):content.includes('Peer message:\n')?content.split('Peer message:\n').at(-1):content;
+      const content=request.params.prompt[0].text;const command=content.includes('Current host phase:\n')?content.split('Current host phase:\n').at(-1):content.includes('Current user message:\n')?content.split('Current user message:\n').at(-1):content.includes('Peer message:\n')?content.split('Peer message:\n').at(-1):content;
       log({type:'prompt',pid:process.pid,sessionId:current,command,content,model,reasoning});pending={id:request.id,command};
       update({sessionUpdate:'agent_message_chunk',content:{type:'text',text:'start:'+command+' '}});
       if(command==='exit'){process.exit(3);break;}
       if(command==='ignore-cancel')break;
+      if(command==='hold unresolved-tool'||command==='hold ui unresolved-tool')update({sessionUpdate:'tool_call',toolCallId:'unresolved-1',title:'Remote write',status:'in_progress'});
+      if(command==='hold tool-progress'||command==='hold ui tool-progress')update({sessionUpdate:'tool_call',toolCallId:'progress-1',title:'Run tests',status:'completed',rawInput:{command:'fixture test'},content:[{type:'content',content:{type:'text',text:'Actual fixture assertion passed'}}]});
       if(command==='malformed'){process.stdout.write('<html><title>Gateway 502</title><script>secret()</script><body>bad gateway</body></html>\n');break;}
       if(command==='permission'){write({jsonrpc:'2.0',id:'permission-fixture',method:'session/request_permission',params:{sessionId:current,toolCall:{title:'Read a fixture'},options:[{optionId:'once',name:'Allow once',kind:'allow_once'},{optionId:'no',name:'Deny',kind:'reject_once'}]}});break;}
       if(command==='plan')update({sessionUpdate:'plan',entries:[{content:'Read evidence',status:'completed',priority:'high'},{content:'Implement',status:'in_progress',priority:'medium'}]});
@@ -39,8 +41,10 @@ readline.createInterface({input:process.stdin}).on('line',line=>{
         update({...complete,toolCallId:'remote',_meta:{...complete._meta,artifacts:[{title:'Remote',storage:'external_url',url:'https://example.test'}]}});
         update({sessionUpdate:'tool_call_update',toolCallId:'title-only',title:'RecordArtifact: Recording artifact preview.html',status:'completed',rawInput:{workspacePath:'preview.html'}});
       }
-      setTimeout(()=>{if(pending?.id!==request.id)return;update({sessionUpdate:'agent_message_chunk',content:{type:'text',text:'done:'+command}});result(request.id,{stopReason:'end_turn'});pending=undefined;},command.startsWith('hold ui')?120000:command.startsWith('hold')?450:30);break;
+      setTimeout(()=>{if(pending?.id!==request.id)return;if(command==='hold crash-after-request'){process.exit(3);return;}update({sessionUpdate:'agent_message_chunk',content:{type:'text',text:'done:'+command}});result(request.id,{stopReason:command==='hold max-tokens'?'max_tokens':'end_turn'});pending=undefined;},command.startsWith('hold ui')?120000:command.startsWith('hold')?450:30);break;
     }
     case 'session/cancel':if(pending){const capture=pending;log({type:'cancel',command:capture.command});if(capture.command==='ignore-cancel')break;setTimeout(()=>{if(pending===capture){result(capture.id,{stopReason:'cancelled'});pending=undefined;}},140);}break;
+    case 'fixture/finish':if(pending){const capture=pending;update({sessionUpdate:'agent_message_chunk',content:{type:'text',text:'done:'+capture.command}});result(capture.id,{stopReason:request.params.stopReason||'end_turn'});pending=undefined;}result(request.id,{finished:true});break;
+    case 'fixture/crash':process.exit(3);break;
   }
 });

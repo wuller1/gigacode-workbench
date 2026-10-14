@@ -120,6 +120,7 @@ const server = createServer(async (request, response) => {
       inheritedSystemMarker,
     );
     (current.declaredToolNames ||= []).push(names);
+    (current.providerModelIds ||= []).push(body.model);
     const ordinaryCall = {
       index: 0,
       id: "controlled-write-probe",
@@ -142,7 +143,7 @@ const server = createServer(async (request, response) => {
       },
     };
     const delta = current.kind.startsWith("route_")
-      ? current.kind === "route_tool" && current.requests === 1
+      ? current.kind.startsWith("route_tool") && current.requests === 1
         ? { role: "assistant", tool_calls: [ordinaryCall] }
         : {
             role: "assistant",
@@ -400,7 +401,7 @@ async function run(kind, maxToolCalls) {
       child.kill("SIGKILL");
   }
 }
-async function runCurrentRouter(kind) {
+async function runCurrentRouter(kind, model = "fixture", acpModelOptions) {
   await fs.rm(writePath, { force: true });
   const inheritedSystem = path.join(temporary, "inherited-system.md");
   const inheritedDump = path.join(temporary, "MUST-NOT-DUMP-SYSTEM.md");
@@ -418,7 +419,8 @@ const profile = await routeWithQwen({
   request:"Review current changes",history:[],
   profiles:["analyst","reviewer"].map(id=>({id,name:id,description:id}))
 }, {
-  executable: ${JSON.stringify(cli)}, model:"fixture",
+  executable: ${JSON.stringify(cli)}, model:${JSON.stringify(model)},
+  acpModelOptions:${JSON.stringify(acpModelOptions)},
   authArgs:["--auth-type","openai","--openai-api-key","fixture-local-only","--openai-base-url",${JSON.stringify(endpoint)}],
   signal: AbortSignal.timeout(25000), onAttempt:()=>{attempts++;}
 });
@@ -495,6 +497,11 @@ process.stdout.write(JSON.stringify({attempts,profileId:profile.profileId,confid
     assert.equal(await exists(writePath), false);
     assert.equal(await exists(mcpPath), false);
     assert.equal(await exists(inheritedDump), false);
+    if (kind.startsWith("route_tool_flag"))
+      assert.deepEqual(current.providerModelIds, [
+        "--max-tool-calls=1",
+        "--max-tool-calls=1",
+      ]);
     return {
       ...current,
       exitCode,
@@ -525,6 +532,12 @@ try {
     await runCurrentRouter("route_invalid_json"),
     await runCurrentRouter("route_invalid_role"),
     await runCurrentRouter("route_tool"),
+    await runCurrentRouter("route_tool_flag_model", "--max-tool-calls=1"),
+    await runCurrentRouter(
+      "route_tool_flag_acp_model",
+      "--max-tool-calls=1(openai)",
+      ["--max-tool-calls=1(openai)"],
+    ),
     await run("tool_less_wildcard", 0),
     await run("tool_less_explicit18", 0),
     await run("tool_less_explicit22", 0),

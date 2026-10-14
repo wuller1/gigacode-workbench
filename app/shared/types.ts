@@ -39,6 +39,7 @@ export interface Message {
   elapsedMs?: number;
   outcome?: "completed" | "cancelled" | "unknown";
   instructionFingerprint?: string;
+  kind?: "role_continuation";
 }
 export interface QueueItem {
   id: string;
@@ -57,6 +58,27 @@ export interface ConfigOption {
   currentValue: string;
   options: { value: string; name: string }[];
 }
+export interface RoleTransition {
+  id: string;
+  operationId: string;
+  fromProfileId: string;
+  roleHint?: string;
+  toProfileId?: string;
+  status:
+    | "pending"
+    | "held"
+    | "ready"
+    | "running"
+    | "completed"
+    | "rejected"
+    | "unknown";
+  reason: string;
+  holdReason?: string;
+  /** Host-derived: safe, undispatched held phase may be explicitly resumed. */
+  canResume: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 export interface Session {
   id: string;
   taskId: string;
@@ -65,6 +87,8 @@ export interface Session {
   profileReason?: string;
   profileConfidence?: number;
   roleRouting?: { source: "llm" | "retained"; reason: string; at: string };
+  roleTransition?: RoleTransition;
+  roleTransitionHistory?: RoleTransition[];
   instructionBinding?: {
     schemaVersion: 1;
     delivery: "append_system" | "context_only";
@@ -115,6 +139,9 @@ export interface Question {
   kind: "permission" | "question";
   status: "pending" | "answered";
   answer?: string;
+  /** Host generation of the original tool channel; never an agent-supplied override. */
+  generation?: number;
+  deliveryStatus?: "saved" | "delivered" | "stale";
 }
 export interface Settings {
   cliPath: string;
@@ -146,6 +173,8 @@ export interface HostEvent {
   targetWindowId?: number;
 }
 export interface Bridge {
+  /** Host-assigned window storage identity, stable across renderer recovery. */
+  readonly windowKey?: string;
   invoke(method: string, params?: Record<string, unknown>): Promise<any>;
   subscribe(callback: (event: HostEvent) => void): () => void;
 }

@@ -123,11 +123,13 @@ Data runtime: перед переносом БД прочитай [DATABASE-RUNT
 8. Проверь invalid/invented role, low confidence, router timeout/abort и изменение task/project/catalog во время routing. Очередь не потребляется отменённым решением; старое решение не исполняется после существенного изменения входов. Смена роли применяется на безопасной idle boundary, сохраняет Task/решения/evidence/pending и не меняет env/system file другого исполнителя.
 9. Process-scoped append сохраняет native CLI base. Существующие user system override/dump settings, duplicate append, Windows command-line overflow и непроверенный entrypoint требуют совместимого fallback/решения, не глобальной перезаписи. Не выдумывай append-file flag. `prepared` — план, `active` — наблюдаемая граница адаптера, не доказательство obedience/полного provider request.
 10. Сохрани receipt: source hashes, CLI path/version/fingerprint, delivery mode/reason/evidence scope, router adapter/version, проверки и непроверенное. Показывай роль/состояние компактно без ручного selector. Продолжи уже порученный UI-срез с checkpoint.
+11. Перенеси автоматические этапы одной задачи по [IN_TASK_ROLE_TRANSITIONS](workbench/docs/IN_TASK_ROLE_TRANSITIONS.md): `role_transition_request` сохраняет намерение, а host продолжает после чистого terminal/flush и подтверждения LLM-router. Совместно перенеси service/types, MCP и main binding: `mcpServersForSession(sessionId, generation)` → `mcp.binding(sessionId, generation)`. Generation задаёт host, не модель. Внутренний continuation не попадает в очередь пользователя; новое сообщение пользователя имеет приоритет. Не заменяй этим механизмом уже более удачную workplace координацию без сравнения. Giga без проверенного router adapter не получает фиктивный автоматический переход.
+12. Сравни и перенеси [отказоустойчивость 0.6](docs/suite/RUNTIME-TRANSITIONS-RESILIENCE.md) единым контрактом: quiesce до ожидания диска, runtime.stopped/main fatal gate, generation-bound questions, ACP process ownership, read-only SnapshotFeed, window/session DraftJournal и bounded renderer recovery. Проверь реальные сбои, а не только успешный запуск. Существующие более полные retries/controller сохрани после сравнения; UNKNOWN не превращай в автоматический повтор. Настройки и работу пользователя не сбрасывай при импорте.
 
 Минимальная локальная регрессия из `app` под Windows PowerShell 5.1:
 
 ```powershell
-npm.cmd exec --offline -- vitest run tests/prompt-binding.test.ts tests/role-routing.test.ts tests/agent-runtime.test.ts
+npm.cmd exec --offline -- vitest run tests/prompt-binding.test.ts tests/role-routing.test.ts tests/agent-runtime.test.ts tests/role-transition.test.ts tests/role-transition-mcp.test.ts
 if ($LASTEXITCODE -ne 0) { throw 'Role/prompt regression failed' }
 ```
 

@@ -5,35 +5,35 @@
   "passed": [
     {
       "name": "Actual session.prepare produces context-only prepared receipt without sending a task",
-      "elapsedMs": 391
+      "elapsedMs": 310
     },
     {
       "name": "Retained router shows actual Analyst rather than a false Auto after a completed real fixture turn",
-      "elapsedMs": 323
+      "elapsedMs": 232
     },
     {
       "name": "Desktop composer fits 1000 and 1440 pixels",
-      "elapsedMs": 280
+      "elapsedMs": 281
     },
     {
       "name": "Settings exposes active context delivery and current fingerprint on the real completed executor",
-      "elapsedMs": 76
+      "elapsedMs": 81
     },
     {
       "name": "Builtin clone saves through actual profile editor and host without changing builtin or active binding",
-      "elapsedMs": 267
+      "elapsedMs": 187
     },
     {
       "name": "UTF-8 byte overflow is rejected in real profile UI and retains the saved version",
-      "elapsedMs": 203
+      "elapsedMs": 186
     },
     {
       "name": "Malformed Unicode is rejected from controlled profile UI without corrupting saved instructions",
-      "elapsedMs": 264
+      "elapsedMs": 199
     },
     {
       "name": "Desktop Roles settings fit 1000 and 1440 pixels in light theme",
-      "elapsedMs": 469
+      "elapsedMs": 432
     }
   ],
   "expectedRejections": [
@@ -92,7 +92,7 @@
       "requestedWidth": 1000,
       "settled": true,
       "frames": 4,
-      "elapsedMs": 67,
+      "elapsedMs": 53,
       "samples": [
         {
           "elapsedMs": 0,
@@ -106,7 +106,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 17,
+          "elapsedMs": 4,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -117,7 +117,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 33,
+          "elapsedMs": 20,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -128,7 +128,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 50,
+          "elapsedMs": 36,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -139,7 +139,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 67,
+          "elapsedMs": 53,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -155,7 +155,7 @@
       "requestedWidth": 1440,
       "settled": true,
       "frames": 5,
-      "elapsedMs": 77,
+      "elapsedMs": 78,
       "samples": [
         {
           "elapsedMs": 0,
@@ -169,7 +169,7 @@
           "composerRight": 995
         },
         {
-          "elapsedMs": 11,
+          "elapsedMs": 12,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -180,7 +180,7 @@
           "composerRight": 995
         },
         {
-          "elapsedMs": 26,
+          "elapsedMs": 29,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -191,7 +191,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 42,
+          "elapsedMs": 45,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -202,7 +202,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 60,
+          "elapsedMs": 61,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -213,7 +213,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 77,
+          "elapsedMs": 78,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -228,11 +228,11 @@
     {
       "requestedWidth": 1440,
       "settled": true,
-      "frames": 11,
-      "elapsedMs": 169,
+      "frames": 9,
+      "elapsedMs": 148,
       "samples": [
         {
-          "elapsedMs": 2,
+          "elapsedMs": 0,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -243,7 +243,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 3,
+          "elapsedMs": 15,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -254,7 +254,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 20,
+          "elapsedMs": 32,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -265,7 +265,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 36,
+          "elapsedMs": 48,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -276,7 +276,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 53,
+          "elapsedMs": 65,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -287,7 +287,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 70,
+          "elapsedMs": 82,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -298,7 +298,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 86,
+          "elapsedMs": 98,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -309,7 +309,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 103,
+          "elapsedMs": 115,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -320,7 +320,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 120,
+          "elapsedMs": 131,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -331,29 +331,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 136,
-          "viewport": 1440,
-          "dockViewportWidth": 1174,
-          "dockViewportLeft": 266,
-          "canvasWidth": 1174,
-          "canvasHeight": 795,
-          "chatWidth": 1174,
-          "composerLeft": 457.5,
-          "composerRight": 1249.5
-        },
-        {
-          "elapsedMs": 153,
-          "viewport": 1440,
-          "dockViewportWidth": 1174,
-          "dockViewportLeft": 266,
-          "canvasWidth": 1174,
-          "canvasHeight": 795,
-          "chatWidth": 1174,
-          "composerLeft": 457.5,
-          "composerRight": 1249.5
-        },
-        {
-          "elapsedMs": 169,
+          "elapsedMs": 148,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -369,7 +347,7 @@
       "requestedWidth": 1000,
       "settled": true,
       "frames": 4,
-      "elapsedMs": 56,
+      "elapsedMs": 51,
       "samples": [
         {
           "elapsedMs": 0,
@@ -383,7 +361,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 7,
+          "elapsedMs": 1,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -394,7 +372,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 23,
+          "elapsedMs": 18,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -405,7 +383,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 41,
+          "elapsedMs": 34,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -416,7 +394,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 56,
+          "elapsedMs": 51,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -429,20 +407,28 @@
       ]
     }
   ],
+  "bindingTransitions": [
+    {
+      "backendState": "active",
+      "beforeTitle": "Аналитик · Текущая роль сохранена: для этой версии CLI ещё не подключён проверенный LLM-маршрутизатор.\nКонтекст · active · f241257a86f3 · This exact CLI has no reviewed system-append mechanism. Workbench instructions will be supplied as context; no Qwen flags are guessed for a fork.",
+      "afterTitle": "Аналитик · Текущая роль сохранена: для этой версии CLI ещё не подключён проверенный LLM-маршрутизатор.\nКонтекст · active · f241257a86f3 · This exact CLI has no reviewed system-append mechanism. Workbench instructions will be supplied as context; no Qwen flags are guessed for a fork.",
+      "elapsedMs": 7
+    }
+  ],
   "provenance": {
     "sha256": {
-      "src/App.tsx": "24a0718367c98b052dcdc368e7f1800f9190bead0f55e92eb7814961a18519ef",
-      "src/SettingsView.tsx": "e274d09530ecc7877db16f89aae2b114f7e43aa8e4763330b9d2c0582156cea2",
-      "src/styles.css": "8ec016a2a51752769faa91bb128bd0712c059b2d548359d15c61456a99f48997",
-      "electron/service.ts": "2acd147abc523108946b6c89874b6d92e62a15ca625b69dd59c4139e33d8a907",
-      "electron/prompt-binding.ts": "6b1468c9dd753c7b4abc492c06ae9d1fd2d0aee6c220a65504dea2f7a84fbd44",
-      "electron/role-router.ts": "718f8525b99e3fa77bc2c38f86db12b38f78b22575ce9f0d8798c52e82a70e8a",
-      "electron/preload.ts": "08e8dabebfa14df73b9295c7dcaa3c08450628686ff9723f8729fedbb4af8ea5",
-      "shared/types.ts": "d62f5248eada83af0405e78f179a0b837aba154ed1e1f666a42a3e20d253a49a",
-      "dist-electron/main.cjs": "a97f9df15790f6b038e9e2bd0cde0e673419deba150af4f5581160ec9b2f1926",
-      "dist-electron/preload.cjs": "089cefee118d4335518e4dd90819506adde2a2696d9eafd2ee28ec75f56fb767",
-      "../workbench/CORE.md": "94b4e494471775f492389f31563b1f071c7977d0ae781cc01af0fbd1c384da53",
-      "tools/test-roles-ui.mjs": "e1176b345cf1e53dddc66df7fb991d8b3c5ba3bb3bf6759e060f3b3baeda9663",
+      "src/App.tsx": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
+      "src/SettingsView.tsx": "22df05f952769ff01f0e020924703d7fa500f71528613527b9e2cb9921a07c66",
+      "src/styles.css": "83d00d8fdb1cb4c9044547efcf52e7d049e462b81d3e0a590ad3fb4efda84605",
+      "electron/service.ts": "03d5fc8d1ddbe45b8217df48956026ef682aefbbd9463083308b4b5d2815adcd",
+      "electron/prompt-binding.ts": "585a0b98a2963675b8e68db71f75d7d9369ab3d92a40cb7a5c511b7f01694277",
+      "electron/role-router.ts": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
+      "electron/preload.ts": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
+      "shared/types.ts": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
+      "dist-electron/main.cjs": "da1998aadd32e4f2959fcf01cf94fb53451e15b0bc37595cd33341984ccb4b4f",
+      "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
+      "../workbench/CORE.md": "1cea28b6fcf01f409ca2af06c92fdbc929fdc4e489c65d6e2de836e0a1beda27",
+      "tools/test-roles-ui.mjs": "4c8a7ae10a43a2b8337d22a675c5dd7a3fa564d7f3f14bc2cd2c0240be1c5977",
       "../workbench/profiles/analyst.md": "81437e3f1258b7fe5de3ff37d531a5b8b8c3d27c95f741b0c6d30d6cccbf11c2",
       "../workbench/profiles/architect.md": "e1c687701e8f3705888f45b05e7352fdf28a11e8a647b29e62ebefea22eb33ad",
       "../workbench/profiles/backend.md": "ed4cac535bb002fbaa5d82b7953e25a22ef35dc96ec629dd1edc1607a0c7d264",
@@ -451,22 +437,22 @@
       "../workbench/profiles/devops.md": "05ca52297f9a191b9fe7b9de6affe0af8ab1d53e2c1841dfcbe197abc27fe74a",
       "../workbench/profiles/diagnostics.md": "ac294df40837a0dd8b226e213f7a7ddd9e0993252138d3a273872e0d71d8e2eb",
       "../workbench/profiles/frontend.md": "c2c147ec4391206a09da02cb6e4dd289d6dbe0cb09212892667610d94305d7aa",
-      "../workbench/profiles/gigacode-ui.md": "4e5e615ad638dbea049a02d067629693b391d2a884bb7682f3a22ddb4c53c9e0",
+      "../workbench/profiles/gigacode-ui.md": "f95c095102ef74fd64a107cca768e77b00d735effc4b562d32621bb0bdd11e06",
       "../workbench/profiles/qa.md": "5f8bf61325c4840908707cee85d5c0d19df03ab46dd4cadec5f25895f42bbf03",
       "../workbench/profiles/reviewer.md": "59d2adc726726bb7461b9ba6e3c40f28cd631e567b902ed39aee90c34753940d",
       "../workbench/profiles/security.md": "eb48df1300b48bf155cc09b35294aefd383bd5c5cb2910ec94678634672be0e8",
       "../workbench/profiles/spec.md": "a9bc23ab2a85938f5b4ee2887fb7e4483c93164c83f2f8b4ec3f37821d043e7b",
       "../workbench/profiles/technical-writer.md": "2df4753a59674a01a6276783cafa08f79cd9bf38583fb6bb5e062fcb7890ad47",
-      "dist/assets/ClusterPanel-xmSLTPG7.js": "1d1ecda48a40abe44865193977216ad5bdf8bfb7f970234a7434354e3b568cab",
-      "dist/assets/DatabasePanel-CkCKISsD.js": "802f8eea48519c88a403efd8e6a640906d323b12aa2bb3decdfd67772c2e1523",
+      "dist/assets/ClusterPanel-CbEPgavK.js": "1ac4e4825cc05a13fb579e4feef218ac7131b8d7343c3351fdeb08772bf13f90",
       "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
-      "dist/assets/JenkinsPanel-C3iK-hjT.js": "64991664832bfc821e734ab77c03f818ecaae639531bb015d63ba6832de5ea98",
-      "dist/assets/OperationsSettings-D8B91qwa.js": "ff14cb972ffc99dfbe6aa7bd0b07a0b6d3a6474c00e4626bf8250c055f458c11",
+      "dist/assets/DatabasePanel-GkJq4AhZ.js": "c5a9c92119450189ee30abb37871bcf88e8ef497ad0cbbfcfc2a7f54ae902dfd",
+      "dist/assets/JenkinsPanel-CaodMrQB.js": "04130077e31d5938de7958a1ef1fc545491134fc9a2b156b488bd50d3f0d06b6",
+      "dist/assets/OperationsSettings-BK0bYkTt.js": "0645df338f60893550acc67ca332d04226124d187542796f04164106cf422307",
       "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
-      "dist/assets/index-0ctxmUe6.js": "41be0e08c5b9c60ca47f6f473fa564b06966a708b99675337f6c61d30e9e9751",
-      "dist/assets/index-jJ59orzg.css": "5e21e6886bf4ac107b72d597de6d151cd8b9965009e983b13be1253f2fd8e1ae",
+      "dist/assets/index-BXB_vQjQ.css": "eb17e2528789cd5acc914e8fa08fa9728f98434340de7573a972d68f2d222353",
+      "dist/assets/index-htE_Fe71.js": "8069314856da216f5fc3f4e83c962c409cf48c6a4dda7c64206702f52374e496",
       "dist/assets/ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
-      "dist/assets/ops-ui-CXkbYrRF.js": "6db60c11155a9aa8ae5fc7287b59cff6c80fcfcbbac5899f72468003edc7322f"
+      "dist/assets/ops-ui-DcfkRURX.js": "421e6a01385e26a12aaedd3f91ecd9462832403f1b5d264a0a1c764a07e10e40"
     },
     "unchangedDuringRun": true,
     "changed": []
@@ -478,15 +464,5 @@
   "cleanup": {
     "application": "closed",
     "ownedData": "removed"
-  },
-  "visualInspection": {
-    "status": "inspected",
-    "scope": "Final actual App dark1440/light1000 native PNGs viewed after registry durability rebuild. Correct desktop bounds, visible Analyst and context-only/active receipt.",
-    "captureReadiness": "Dock viewport/canvas/chat commit and3stable rAF before geometry;2rAF before native capture. Original overflow assertions unchanged.",
-    "screenshotsSha256": {
-      "roles-composer-dark-1440.png": "1dfb6c00bd95c43f56704e6ae0a37bc25cea2e2d822a9e9acbab0705435512fa",
-      "roles-settings-light-1000.png": "fc7aa6b923a8ff5c7e66d7cbe2877b0626c89e62fae752d9bf7bdc90342c7633"
-    },
-    "limitations": "macOS actual App8/8; new Windows CI recheck remains separate. No real-model/Giga/native-append acceptance claimed."
   }
 }

@@ -1,0 +1,515 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "recordedAt": "2026-10-14T14:48:53.703Z",
+  "platform": "darwin",
+  "node": "v26.8.1",
+  "cliPackageVersion": "0.25.1",
+  "kind": "Actual App + unmodified Qwen + owned loopback protocol fixture; no real-model intelligence claim",
+  "fixtureIsolation": "Fresh CLI home/runtime/project; managed Qwen memory/dream/skill background agents disabled only in the owned test settings; MCP executor enabled, classifier safe-mode and execution budget unchanged.",
+  "passed": [
+    {
+      "name": "Renderer cannot impersonate the bound task executor to request a role transition",
+      "elapsedMs": 32
+    },
+    {
+      "name": "One human request routes Backend, then agent requests Diagnostics while preserving draft",
+      "elapsedMs": 4754
+    },
+    {
+      "name": "Held clean phase can resume from compact UI after classifier format failure without another human message",
+      "elapsedMs": 2042
+    },
+    {
+      "name": "Host LLM reroutes the same task to Diagnostics without human queue fabrication",
+      "elapsedMs": 2109
+    },
+    {
+      "name": "Frontend continues automatically with its own actual process and system fingerprint",
+      "elapsedMs": 2041
+    },
+    {
+      "name": "Compact actual role and on-demand completed phase history fit desktop dark and light",
+      "elapsedMs": 1047
+    }
+  ],
+  "total": 6,
+  "requests": [
+    {
+      "kind": "classifier",
+      "role": "backend",
+      "scriptedOutcome": "decision",
+      "toolNames": [
+        "agent",
+        "enter_worktree",
+        "exit_worktree",
+        "get_goal",
+        "list_agents",
+        "read_mcp_resource",
+        "record_artifact",
+        "report_findings",
+        "send_message",
+        "task_stop",
+        "update_goal",
+        "web_fetch"
+      ],
+      "bytes": 46011
+    },
+    {
+      "kind": "executor",
+      "role": "backend",
+      "stage": "discover_transition",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "calledTool": "tool_search",
+      "bytes": 82887
+    },
+    {
+      "kind": "executor",
+      "role": "backend",
+      "stage": "request_transition",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "calledTool": "tool_call",
+      "bytes": 84454
+    },
+    {
+      "kind": "executor",
+      "role": "backend",
+      "stage": "terminal",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "bytes": 85587
+    },
+    {
+      "kind": "executor",
+      "role": "backend",
+      "stage": "terminal",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "bytes": 87418
+    },
+    {
+      "kind": "classifier",
+      "role": "diagnostics",
+      "scriptedOutcome": "invalid_format",
+      "toolNames": [
+        "agent",
+        "enter_worktree",
+        "exit_worktree",
+        "get_goal",
+        "list_agents",
+        "read_mcp_resource",
+        "record_artifact",
+        "report_findings",
+        "send_message",
+        "task_stop",
+        "update_goal",
+        "web_fetch"
+      ],
+      "bytes": 47013
+    },
+    {
+      "kind": "classifier",
+      "role": "diagnostics",
+      "scriptedOutcome": "invalid_format",
+      "toolNames": [
+        "agent",
+        "enter_worktree",
+        "exit_worktree",
+        "get_goal",
+        "list_agents",
+        "read_mcp_resource",
+        "record_artifact",
+        "report_findings",
+        "send_message",
+        "task_stop",
+        "update_goal",
+        "web_fetch"
+      ],
+      "bytes": 47221
+    },
+    {
+      "kind": "classifier",
+      "role": "diagnostics",
+      "scriptedOutcome": "decision",
+      "toolNames": [
+        "agent",
+        "enter_worktree",
+        "exit_worktree",
+        "get_goal",
+        "list_agents",
+        "read_mcp_resource",
+        "record_artifact",
+        "report_findings",
+        "send_message",
+        "task_stop",
+        "update_goal",
+        "web_fetch"
+      ],
+      "bytes": 47013
+    },
+    {
+      "kind": "executor",
+      "role": "diagnostics",
+      "stage": "discover_transition",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "calledTool": "tool_search",
+      "bytes": 83680
+    },
+    {
+      "kind": "executor",
+      "role": "diagnostics",
+      "stage": "request_transition",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "calledTool": "tool_call",
+      "bytes": 85255
+    },
+    {
+      "kind": "executor",
+      "role": "diagnostics",
+      "stage": "terminal",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "bytes": 86387
+    },
+    {
+      "kind": "executor",
+      "role": "diagnostics",
+      "stage": "terminal",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "bytes": 88222
+    },
+    {
+      "kind": "classifier",
+      "role": "frontend",
+      "scriptedOutcome": "decision",
+      "toolNames": [
+        "agent",
+        "enter_worktree",
+        "exit_worktree",
+        "get_goal",
+        "list_agents",
+        "read_mcp_resource",
+        "record_artifact",
+        "report_findings",
+        "send_message",
+        "task_stop",
+        "update_goal",
+        "web_fetch"
+      ],
+      "bytes": 47493
+    },
+    {
+      "kind": "executor",
+      "role": "frontend",
+      "stage": "terminal",
+      "toolNames": [
+        "ask_user_question",
+        "edit",
+        "enter_plan_mode",
+        "exit_plan_mode",
+        "glob",
+        "grep_search",
+        "notebook_edit",
+        "read_file",
+        "run_shell_command",
+        "skill",
+        "tool_call",
+        "tool_search",
+        "write_file"
+      ],
+      "bytes": 85944
+    }
+  ],
+  "receipts": [
+    {
+      "role": "backend",
+      "sessionId": "323bdadb-2576-4ffa-a1e3-2d8f1faf774b",
+      "taskId": "f0c14598-ece3-4e01-8621-cf86ab5a8951",
+      "pid": 72308,
+      "fingerprint": "16db6030c5fa72f652e9ddd8fe5284cdec075714b32c7acf829248c9207ef32d",
+      "transitionStatus": "pending",
+      "retiredPriorPids": []
+    },
+    {
+      "role": "diagnostics",
+      "sessionId": "323bdadb-2576-4ffa-a1e3-2d8f1faf774b",
+      "taskId": "f0c14598-ece3-4e01-8621-cf86ab5a8951",
+      "pid": 72445,
+      "fingerprint": "4a432c319b473ad3b377c6b41bbb23ef40120bc03f1b2233f8daccb0a9aade13",
+      "transitionStatus": "pending",
+      "retiredPriorPids": [
+        72308
+      ]
+    },
+    {
+      "role": "frontend",
+      "sessionId": "323bdadb-2576-4ffa-a1e3-2d8f1faf774b",
+      "taskId": "f0c14598-ece3-4e01-8621-cf86ab5a8951",
+      "pid": 72503,
+      "fingerprint": "1ca495bbd2645420a97a317428a966982055903a037f9bf5d3b76a57f296ad1d",
+      "transitionStatus": "running",
+      "retiredPriorPids": [
+        72308,
+        72445
+      ]
+    }
+  ],
+  "widths": [
+    {
+      "width": 1440,
+      "documentClient": 1440,
+      "documentScroll": 1440,
+      "composerClient": 792,
+      "composerScroll": 792,
+      "left": 457.5,
+      "right": 1249.5
+    },
+    {
+      "width": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "left": 262,
+      "right": 981
+    },
+    {
+      "width": 1440,
+      "documentClient": 1440,
+      "documentScroll": 1440,
+      "composerClient": 792,
+      "composerScroll": 792,
+      "left": 457.5,
+      "right": 1249.5
+    },
+    {
+      "width": 1440,
+      "documentClient": 1440,
+      "documentScroll": 1440,
+      "composerClient": 792,
+      "composerScroll": 792,
+      "left": 457.5,
+      "right": 1249.5
+    },
+    {
+      "width": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "left": 262,
+      "right": 981
+    },
+    {
+      "width": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "left": 262,
+      "right": 981,
+      "settingsClient": 848,
+      "settingsScroll": 848
+    },
+    {
+      "width": 1440,
+      "documentClient": 1440,
+      "documentScroll": 1440,
+      "composerClient": 792,
+      "composerScroll": 792,
+      "left": 457.5,
+      "right": 1249.5
+    },
+    {
+      "width": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "left": 262,
+      "right": 981
+    },
+    {
+      "width": 1000,
+      "documentClient": 1000,
+      "documentScroll": 1000,
+      "composerClient": 719,
+      "composerScroll": 719,
+      "left": 262,
+      "right": 981,
+      "settingsClient": 848,
+      "settingsScroll": 848
+    }
+  ],
+  "captures": [
+    "backend-pending-dark-1440.png",
+    "held-resumable-dark-1000.png",
+    "diagnostics-pending-dark-1440.png",
+    "frontend-running-dark-1440.png",
+    "composer-dark-1440.png",
+    "composer-dark-1000.png",
+    "history-dark-1000.png",
+    "composer-light-1440.png",
+    "composer-light-1000.png",
+    "history-light-1000.png"
+  ],
+  "rendererErrors": [],
+  "fixtureErrors": [],
+  "sourceHashes": {
+    "src/App.tsx": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
+    "src/SettingsView.tsx": "22df05f952769ff01f0e020924703d7fa500f71528613527b9e2cb9921a07c66",
+    "src/styles.css": "83d00d8fdb1cb4c9044547efcf52e7d049e462b81d3e0a590ad3fb4efda84605",
+    "electron/service.ts": "03d5fc8d1ddbe45b8217df48956026ef682aefbbd9463083308b4b5d2815adcd",
+    "electron/main.ts": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
+    "electron/mcp.ts": "7e1235fa6a3764e4616694c0d123bb6ff62cde01556536674e3c926b8491b5c0",
+    "electron/prompt-binding.ts": "585a0b98a2963675b8e68db71f75d7d9369ab3d92a40cb7a5c511b7f01694277",
+    "electron/role-router.ts": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
+    "electron/preload.ts": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
+    "electron/acp.ts": "3ffba600ff11ce50ad373b2bf54c3565bce65d3607d03ca6f50078ba70b579ab",
+    "shared/types.ts": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
+    "dist-electron/main.cjs": "da1998aadd32e4f2959fcf01cf94fb53451e15b0bc37595cd33341984ccb4b4f",
+    "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
+    "tools/test-role-transitions-ui.mjs": "a02cec29c3b9b9e70b67740a1c4d7c404fc133f11c2c2e33fde680eb4c12c5cb",
+    "../workbench/CORE.md": "1cea28b6fcf01f409ca2af06c92fdbc929fdc4e489c65d6e2de836e0a1beda27",
+    "../workbench/profiles/analyst.md": "81437e3f1258b7fe5de3ff37d531a5b8b8c3d27c95f741b0c6d30d6cccbf11c2",
+    "../workbench/profiles/architect.md": "e1c687701e8f3705888f45b05e7352fdf28a11e8a647b29e62ebefea22eb33ad",
+    "../workbench/profiles/backend.md": "ed4cac535bb002fbaa5d82b7953e25a22ef35dc96ec629dd1edc1607a0c7d264",
+    "../workbench/profiles/database.md": "619f87a555a9d3a6f834ad1dd92c24a5ec4a893c6fdd3a12cbec4f5da4391e5b",
+    "../workbench/profiles/designer.md": "e9eb486894fd63e94297a8dac9584164da5d706074483a4e6732d34b98b25a79",
+    "../workbench/profiles/devops.md": "05ca52297f9a191b9fe7b9de6affe0af8ab1d53e2c1841dfcbe197abc27fe74a",
+    "../workbench/profiles/diagnostics.md": "ac294df40837a0dd8b226e213f7a7ddd9e0993252138d3a273872e0d71d8e2eb",
+    "../workbench/profiles/frontend.md": "c2c147ec4391206a09da02cb6e4dd289d6dbe0cb09212892667610d94305d7aa",
+    "../workbench/profiles/gigacode-ui.md": "f95c095102ef74fd64a107cca768e77b00d735effc4b562d32621bb0bdd11e06",
+    "../workbench/profiles/qa.md": "5f8bf61325c4840908707cee85d5c0d19df03ab46dd4cadec5f25895f42bbf03",
+    "../workbench/profiles/reviewer.md": "59d2adc726726bb7461b9ba6e3c40f28cd631e567b902ed39aee90c34753940d",
+    "../workbench/profiles/security.md": "eb48df1300b48bf155cc09b35294aefd383bd5c5cb2910ec94678634672be0e8",
+    "../workbench/profiles/spec.md": "a9bc23ab2a85938f5b4ee2887fb7e4483c93164c83f2f8b4ec3f37821d043e7b",
+    "../workbench/profiles/technical-writer.md": "2df4753a59674a01a6276783cafa08f79cd9bf38583fb6bb5e062fcb7890ad47",
+    "dist/assets/ClusterPanel-CbEPgavK.js": "1ac4e4825cc05a13fb579e4feef218ac7131b8d7343c3351fdeb08772bf13f90",
+    "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+    "dist/assets/DatabasePanel-GkJq4AhZ.js": "c5a9c92119450189ee30abb37871bcf88e8ef497ad0cbbfcfc2a7f54ae902dfd",
+    "dist/assets/JenkinsPanel-CaodMrQB.js": "04130077e31d5938de7958a1ef1fc545491134fc9a2b156b488bd50d3f0d06b6",
+    "dist/assets/OperationsSettings-BK0bYkTt.js": "0645df338f60893550acc67ca332d04226124d187542796f04164106cf422307",
+    "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+    "dist/assets/index-BXB_vQjQ.css": "eb17e2528789cd5acc914e8fa08fa9728f98434340de7573a972d68f2d222353",
+    "dist/assets/index-htE_Fe71.js": "8069314856da216f5fc3f4e83c962c409cf48c6a4dda7c64206702f52374e496",
+    "dist/assets/ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+    "dist/assets/ops-ui-DcfkRURX.js": "421e6a01385e26a12aaedd3f91ecd9462832403f1b5d264a0a1c764a07e10e40"
+  },
+  "sourceDrift": [],
+  "cleanup": {
+    "application": "closed",
+    "ownedData": "removed"
+  },
+  "realModelCalls": 0,
+  "externalProviderCalls": 0
+}

@@ -4,6 +4,7 @@ type Props = { title: string; children: ReactNode };
 type State = { failed: boolean; attempt: number };
 export function sanitizeUiDiagnostic(value: string, maximum: number): string {
   return value
+    .replace(/(Bearer\s+)[^\s"'<>]+/gi, "$1[redacted]")
     .replace(
       /(authorization\s*[:=]\s*(?:bearer|basic)\s+)[^\s<]+/gi,
       "$1[redacted]",
@@ -13,6 +14,7 @@ export function sanitizeUiDiagnostic(value: string, maximum: number): string {
       "$1[redacted]",
     )
     .replace(/(https?:\/\/)[^\s/@]+:[^\s/@]+@/gi, "$1[redacted]@")
+    .replace(/(https?:\/\/[^\s?#"'<>]+)[?#][^\s"'<>]*/gi, "$1?[redacted]")
     .slice(0, maximum);
 }
 

@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { StringDecoder } from "node:string_decoder";
+import { TextDecoder } from "node:util";
 import { launchSpec, windowsTreeTermination } from "./acp.js";
 import type { Profile } from "../shared/types.js";
 
@@ -25,6 +25,72 @@ export type RoleRouter = (
   signal: AbortSignal,
 ) => Promise<RoleDecision>;
 
+/** Exact Qwen 0.25.1 ACP selectors are not provider wire model IDs.
+ * Used only after source capability verification. Raw CLI IDs stay literal;
+ * opaque routes need endpoint/credential registry resolution, never stripping.
+ */
+export function qwenRouterModelSelection(
+  model: string | undefined,
+  advertisedModels: readonly string[] | undefined,
+  authArgs: readonly string[],
+): { model?: string; authArgs: string[] } {
+  const authentication = routerAuthenticationArgs(authArgs);
+  if (!model || advertisedModels === undefined)
+    return { model, authArgs: authentication };
+  if (!advertisedModels.includes(model))
+    throw new Error("The selected Qwen model is no longer advertised by ACP.");
+  const selector = model.trim();
+  const open = selector.lastIndexOf("(");
+  const close = selector.lastIndexOf(")");
+  const authType = selector.slice(open + 1, close);
+  const knownAuthTypes = new Set([
+    "openai",
+    "openai-responses",
+    "qwen-oauth",
+    "gemini",
+    "vertex-ai",
+    "anthropic",
+  ]);
+  if (
+    selector.startsWith("qwen-route:v1:") ||
+    open <= 0 ||
+    close !== selector.length - 1 ||
+    !knownAuthTypes.has(authType)
+  )
+    throw new Error(
+      "This Qwen ACP model selector needs an explicit endpoint and credential resolver; the role is retained.",
+    );
+  const wireModel = selector.slice(0, open);
+  if (wireModel.startsWith("$runtime|"))
+    throw new Error(
+      "A Qwen runtime model snapshot cannot be sent as a provider model ID.",
+    );
+  let currentAuth: string | undefined;
+  let hasExplicitOpenAISettings = false;
+  for (let i = 0; i < authentication.length; i++) {
+    const argument = authentication[i];
+    if (argument === "--auth-type") currentAuth = authentication[++i];
+    else if (argument.startsWith("--auth-type="))
+      currentAuth = argument.slice(12);
+    else if (/^--openai-(?:api-key|base-url)(?:=|$)/.test(argument))
+      hasExplicitOpenAISettings = true;
+  }
+  if (
+    (currentAuth && currentAuth !== authType) ||
+    (hasExplicitOpenAISettings &&
+      !["openai", "openai-responses"].includes(authType))
+  )
+    throw new Error(
+      "Cross-provider role routing requires an endpoint and credential resolver; previous provider credentials are not forwarded.",
+    );
+  return {
+    model: wireModel,
+    authArgs: currentAuth
+      ? authentication
+      : [...authentication, "--auth-type", authType],
+  };
+}
+
 /** Preserve explicit provider selection only; never inherit hooks/MCP/tools/worktree flags. */
 export function routerAuthenticationArgs(args: readonly string[]): string[] {
   const allowed = new Set([
@@ -44,6 +110,23 @@ export function routerAuthenticationArgs(args: readonly string[]): string[] {
     }
   }
   return result;
+}
+
+/** Exact Qwen 0.25.1 source: safe mode disables managed memory/dream/skill,
+ * but durable cron and the explicit team-memory env overrides need their own
+ * child-only gates. Keep native HOME/auth/settings; never mutate the parent.
+ */
+export function qwenRouterEnvironment(
+  inherited: NodeJS.ProcessEnv = process.env,
+): NodeJS.ProcessEnv {
+  const env = { ...inherited };
+  for (const key of Object.keys(env))
+    if (/^(?:QWEN|GIGACODE)_(?:SYSTEM_MD|WRITE_SYSTEM_MD)$/i.test(key))
+      delete env[key];
+  env.QWEN_CODE_DISABLE_CRON = "1";
+  env.QWEN_CODE_MEMORY_TEAM = "0";
+  env.QWEN_CODE_MEMORY_TEAM_SYNC = "0";
+  return env;
 }
 
 export function validateRoleDecision(
@@ -153,6 +236,7 @@ async function routeWithQwenOnce(
   options: {
     executable: string;
     model?: string;
+    acpModelOptions?: readonly string[];
     authArgs?: string[];
     signal: AbortSignal;
     repairFormat?: boolean;
@@ -199,8 +283,13 @@ async function routeWithQwenOnce(
     // the coding-agent persona here only; task executors keep their native base.
     const classifierSystem = prompt.slice(0, split);
     const classifierData = prompt.slice(split + 1);
+    const selection = qwenRouterModelSelection(
+      options.model,
+      options.acpModelOptions,
+      options.authArgs ?? [],
+    );
     const args = [
-      ...routerAuthenticationArgs(options.authArgs ?? []),
+      ...selection.authArgs,
       "--safe-mode",
       "--max-tool-calls",
       "0",
@@ -218,19 +307,17 @@ async function routeWithQwenOnce(
           : ""),
       "--exclude-tools",
       "glob,grep_search,read_file,skill,tool_call,tool_search",
-      ...(options.model ? ["--model", options.model] : []),
+      // One argument prevents a model ID beginning with '--' from becoming
+      // another yargs option and overriding the classifier's tool budget.
+      ...(selection.model ? [`--model=${selection.model}`] : []),
       "-p",
       "Return the role decision for the routing request supplied on stdin.",
     ];
-    const routerEnv = { ...process.env };
-    for (const key of Object.keys(routerEnv))
-      if (/^(?:QWEN|GIGACODE)_(?:SYSTEM_MD|WRITE_SYSTEM_MD)$/i.test(key))
-        delete routerEnv[key];
     const spec = launchSpec(
       options.executable,
       args,
       process.platform,
-      routerEnv,
+      qwenRouterEnvironment(),
     );
     const stdout = await new Promise<string>((resolve, reject) => {
       child = spawn(spec.file, spec.args, {
@@ -241,7 +328,7 @@ async function routeWithQwenOnce(
         windowsHide: true,
         windowsVerbatimArguments: spec.windowsVerbatimArguments,
       });
-      const decoder = new StringDecoder("utf8");
+      const decoder = new TextDecoder("utf-8", { fatal: true });
       let output = "",
         bytes = 0;
       child.stdout!.on("data", (chunk: Buffer) => {
@@ -251,7 +338,12 @@ async function routeWithQwenOnce(
           reject(new Error("Router output exceeded its budget."));
           return;
         }
-        output += decoder.write(chunk);
+        try {
+          output += decoder.decode(chunk, { stream: true });
+        } catch {
+          void terminate();
+          reject(new Error("Router output was invalid UTF-8."));
+        }
       });
       // Drain without storing credentials or gateway pages in a task transcript.
       child.stderr!.on("data", () => undefined);
@@ -269,7 +361,17 @@ async function routeWithQwenOnce(
               `Router CLI failed (exit ${code ?? "signal"}); the task request was not executed.`,
             ),
           );
-        else resolve(output + decoder.end());
+        else {
+          try {
+            resolve(output + decoder.decode());
+          } catch {
+            reject(
+              new Error(
+                "Router output ended with incomplete or invalid UTF-8.",
+              ),
+            );
+          }
+        }
       });
       options.signal.addEventListener("abort", abort, { once: true });
       if (options.signal.aborted) abort();
@@ -288,6 +390,7 @@ export async function routeWithQwen(
   options: {
     executable: string;
     model?: string;
+    acpModelOptions?: readonly string[];
     authArgs?: string[];
     signal: AbortSignal;
     onAttempt?: () => void;

@@ -4,7 +4,7 @@ import {
   type ChildProcessWithoutNullStreams,
 } from "node:child_process";
 import path from "node:path";
-import { StringDecoder } from "node:string_decoder";
+import { TextDecoder } from "node:util";
 
 export class AcpError extends Error {
   constructor(
@@ -74,6 +74,22 @@ export interface AcpOptions {
   onDiagnostic?: (text: string) => void;
   startupTimeoutMs?: number;
 }
+// yargs/hideBin skips one argv element in a packaged Electron process, even
+// with ELECTRON_RUN_AS_NODE. Node-mode children run a JS entrypoint and need
+// the usual two-element skip. Set this child-only marker before importing the
+// unchanged CLI; otherwise its entrypoint becomes a positional prompt.
+export const ELECTRON_NODE_ARGV_IMPORT =
+  "data:text/javascript,if(process.versions.electron%26%26process.env.ELECTRON_RUN_AS_NODE%3D%3D%3D'1')process.defaultApp%3Dtrue%3B";
+export function javascriptEntrypointArgs(
+  executable: string,
+  electron = Boolean(process.versions.electron),
+): string[] {
+  return [
+    "--expose-gc",
+    ...(electron ? ["--import", ELECTRON_NODE_ARGV_IMPORT] : []),
+    executable,
+  ];
+}
 export function launchSpec(
   executable: string,
   args: string[],
@@ -96,7 +112,7 @@ export function launchSpec(
     if (process.versions.electron) env.ELECTRON_RUN_AS_NODE = "1";
     return {
       file: process.execPath,
-      args: ["--expose-gc", executable, ...args],
+      args: [...javascriptEntrypointArgs(executable), ...args],
       env,
     };
   }
@@ -157,10 +173,14 @@ export class AcpConnection {
   >();
   private ended = false;
   private buffer = "";
-  private decoder = new StringDecoder("utf8");
+  private decoder = new TextDecoder("utf-8", { fatal: true });
+  private exitDrainTimer?: ReturnType<typeof setTimeout>;
   private promptActive = false;
   private ownedSession?: string;
   private stderr = "";
+  private stderrBuffer = "";
+  private stderrDiscarding = false;
+  private stderrDecoder = new TextDecoder("utf-8");
   private termination?: Promise<void>;
   capabilities: any;
   constructor(readonly options: AcpOptions) {}
@@ -181,17 +201,61 @@ export class AcpConnection {
       stdio: "pipe",
       shell: false,
       windowsHide: true,
+      // Own a separate POSIX process group so retiring this CLI also retires
+      // ordinary MCP/command descendants without signalling the app's group.
+      detached: process.platform !== "win32",
       windowsVerbatimArguments: spec.windowsVerbatimArguments,
     });
-    this.child.stdout.on("data", (chunk) =>
-      this.consume(this.decoder.write(chunk)),
-    );
-    this.child.stderr.on("data", (chunk) => {
-      this.stderr = redact(this.stderr + chunk.toString("utf8")).slice(-8192);
-      this.options.onDiagnostic?.(
-        redact(chunk.toString("utf8")).slice(0, 2048),
-      );
+    this.child.stdout.on("data", (chunk) => {
+      try {
+        this.consume(this.decoder.decode(chunk, { stream: true }));
+      } catch {
+        this.fail(
+          new AcpError(
+            "CLI produced invalid UTF-8 ACP output.",
+            this.promptActive,
+          ),
+        );
+      }
     });
+    this.child.stdout.once("end", () => {
+      if (this.ended) return;
+      try {
+        this.consume(this.decoder.decode());
+      } catch {
+        this.fail(
+          new AcpError(
+            "CLI ended with incomplete or invalid UTF-8 ACP output.",
+            this.promptActive,
+          ),
+        );
+        return;
+      }
+      if (this.buffer.trim())
+        this.fail(
+          new AcpError(
+            `CLI ended with an incomplete ACP frame. ${classifyTransportText(this.buffer).message}`,
+            this.promptActive,
+          ),
+        );
+      else
+        this.exitDrainTimer ||= setTimeout(
+          () =>
+            this.fail(
+              new AcpError(
+                `CLI output stream closed before process close. ${this.stderr}`,
+                this.promptActive,
+              ),
+            ),
+          1000,
+        );
+    });
+    this.child.stderr.on("data", (chunk) => {
+      this.consumeStderr(this.stderrDecoder.decode(chunk, { stream: true }));
+    });
+    this.child.stderr.once("end", () =>
+      this.consumeStderr(this.stderrDecoder.decode(), true),
+    );
     this.child.on("error", (error: NodeJS.ErrnoException) =>
       this.fail(
         new AcpError(
@@ -202,10 +266,25 @@ export class AcpConnection {
         ),
       ),
     );
-    this.child.on("exit", (code, signal) =>
+    // exit may precede the final pipe data. close follows drained stdio; an
+    // exited parent whose descendant holds a pipe must still fail boundedly.
+    this.child.on("exit", (code, signal) => {
+      if (this.ended) return;
+      this.exitDrainTimer ||= setTimeout(
+        () =>
+          this.fail(
+            new AcpError(
+              `CLI exited (${code ?? signal ?? "unknown"}) before its output stream closed. ${this.stderr}`,
+              this.promptActive,
+            ),
+          ),
+        1000,
+      );
+    });
+    this.child.on("close", (code, signal) =>
       this.fail(
         new AcpError(
-          `CLI exited (${code ?? signal ?? "unknown"}). ${this.stderr}`,
+          `CLI closed (${code ?? signal ?? "unknown"}). ${this.stderr}`,
           this.promptActive,
         ),
       ),
@@ -232,6 +311,35 @@ export class AcpConnection {
       throw new AcpError("Unsupported ACP protocol version.");
     }
     return this.capabilities;
+  }
+  private consumeStderr(text: string, end = false): void {
+    const publish = (line: string) => {
+      const safe =
+        Buffer.byteLength(line) > 8192
+          ? "[CLI stderr line exceeded 8 KiB; content omitted]"
+          : redact(line);
+      this.stderr = (this.stderr + safe + "\n").slice(-8192);
+      this.options.onDiagnostic?.(safe.slice(0, 2048));
+    };
+    this.stderrBuffer += text;
+    let index: number;
+    while ((index = this.stderrBuffer.indexOf("\n")) >= 0) {
+      if (!this.stderrDiscarding) publish(this.stderrBuffer.slice(0, index));
+      this.stderrBuffer = this.stderrBuffer.slice(index + 1);
+      this.stderrDiscarding = false;
+    }
+    if (Buffer.byteLength(this.stderrBuffer) > 8192) {
+      if (!this.stderrDiscarding)
+        publish("[CLI stderr line exceeded 8 KiB; content omitted]");
+      this.stderrBuffer = "";
+      this.stderrDiscarding = true;
+    }
+    if (end) {
+      if (this.stderrBuffer && !this.stderrDiscarding)
+        publish(this.stderrBuffer);
+      this.stderrBuffer = "";
+      this.stderrDiscarding = false;
+    }
   }
   private consume(text: string): void {
     if (this.ended) return;
@@ -440,6 +548,7 @@ export class AcpConnection {
   private fail(error: Error): void {
     if (this.ended) return;
     this.ended = true;
+    if (this.exitDrainTimer) clearTimeout(this.exitDrainTimer);
     for (const item of this.pending.values()) {
       if (item.timer) clearTimeout(item.timer);
       item.reject(error);
@@ -450,9 +559,9 @@ export class AcpConnection {
   }
   private async terminateOwnedTree(): Promise<void> {
     const child = this.child;
-    if (!child?.pid || child.exitCode !== null || child.signalCode !== null)
-      return;
+    if (!child?.pid) return;
     if (process.platform === "win32") {
+      if (child.exitCode !== null || child.signalCode !== null) return;
       const command = windowsTreeTermination(child.pid);
       const killed = await new Promise<boolean>((resolve) => {
         execFile(
@@ -466,9 +575,40 @@ export class AcpConnection {
       this.options.onDiagnostic?.(
         "Could not confirm Windows process-tree termination; remaining external effects require reconciliation.",
       );
+      child.kill();
+      return;
     }
-    // POSIX receives a graceful signal. External/daemon operations are not claimed to be rolled back.
-    child.kill();
+    const pid = child.pid;
+    const signalGroup = (signal: NodeJS.Signals): boolean => {
+      try {
+        process.kill(-pid, signal);
+        return true;
+      } catch (error: any) {
+        if (error.code === "ESRCH") return false;
+        // Preserve a direct-child fallback if group signalling is unavailable.
+        child.kill(signal);
+        return false;
+      }
+    };
+    if (!signalGroup("SIGTERM")) return;
+    await new Promise<void>((resolve) => {
+      const finish = () => {
+        clearTimeout(deadline);
+        clearInterval(probe);
+        resolve();
+      };
+      const probe = setInterval(() => {
+        try {
+          process.kill(-pid, 0);
+        } catch (error: any) {
+          if (error.code === "ESRCH") finish();
+        }
+      }, 25);
+      const deadline = setTimeout(() => {
+        signalGroup("SIGKILL");
+        finish();
+      }, 1500);
+    });
   }
   async dispose(): Promise<void> {
     this.fail(new AcpError("CLI connection was closed.", this.promptActive));

@@ -492,10 +492,13 @@ export function SettingsView({
                     .filter((s) => s.instructionBinding)
                     .slice(-12)
                     .map((s) => (
-                      <p key={s.id}>
+                      <div className="instruction-receipt" key={s.id}>
                         <strong>{s.title}</strong> ·{" "}
                         {profileName(
-                          state.profiles.find((p) => p.id === s.profileId),
+                          state.profiles.find(
+                            (p) => p.id === s.instructionBinding!.profileId,
+                          ),
+                          s.instructionBinding!.profileId,
                         )}
                         {" · "}
                         {s.instructionBinding!.delivery === "append_system"
@@ -523,7 +526,62 @@ export function SettingsView({
                             {s.roleRouting.reason}
                           </>
                         )}
-                      </p>
+                        {(s.roleTransitionHistory?.length ||
+                          s.roleTransition) && (
+                          <details className="role-transition-history">
+                            <summary>Этапы в разговоре</summary>
+                            <ol>
+                              {[
+                                ...(s.roleTransitionHistory || []).filter(
+                                  (entry) => entry.id !== s.roleTransition?.id,
+                                ),
+                                ...(s.roleTransition ? [s.roleTransition] : []),
+                              ]
+                                .slice(-6)
+                                .map((entry) => (
+                                  <li
+                                    key={entry.id}
+                                    data-role-transition-status={entry.status}
+                                  >
+                                    <span>
+                                      {profileName(
+                                        state.profiles.find(
+                                          (p) => p.id === entry.fromProfileId,
+                                        ),
+                                        entry.fromProfileId,
+                                      )}
+                                      {" → "}
+                                      {entry.toProfileId
+                                        ? profileName(
+                                            state.profiles.find(
+                                              (p) => p.id === entry.toProfileId,
+                                            ),
+                                            entry.toProfileId,
+                                          )
+                                        : "роль уточняется"}
+                                    </span>
+                                    <span className="role-transition-outcome">
+                                      {
+                                        {
+                                          pending: "Готовится передача",
+                                          held: "Приостановлен",
+                                          ready: "Подготовлен",
+                                          running: "Выполняется",
+                                          completed: "Завершён",
+                                          rejected: "Отклонён",
+                                          unknown: "Исход неизвестен",
+                                        }[entry.status]
+                                      }
+                                    </span>
+                                    <div>
+                                      {entry.holdReason || entry.reason}
+                                    </div>
+                                  </li>
+                                ))}
+                            </ol>
+                          </details>
+                        )}
+                      </div>
                     ))}
                 </details>
               )}

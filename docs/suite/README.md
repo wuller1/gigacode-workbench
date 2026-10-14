@@ -1,6 +1,6 @@
 # Полное рабочее пространство: карта реализации
 
-Для текущего обновления ролей и восстановления начни с [AGENT-HARNESS-AUDIT](AGENT-HARNESS-AUDIT.md): реализованный код, доказательства, отклонённые эксперименты и перенос на GigaCode 26.10.6.
+Для текущего обновления 0.6 начни с [этапов задач и отказоустойчивости](RUNTIME-TRANSITIONS-RESILIENCE.md): реализованный код, критика, доказательства и перенос на GigaCode 26.10.6. [AGENT-HARNESS-AUDIT](AGENT-HARNESS-AUDIT.md) сохраняет исторический срез 0.5 и model experiments.
 
 Рабочий Jenkins/cluster срез: [перенос и настройка](OPERATIONS-RUNTIME-HANDOFF.md), [итеративный runtime-аудит](OPERATIONS-RUNTIME-AUDIT.md). Полные целевые console workflows остаются отдельными карточками.
 

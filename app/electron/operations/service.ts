@@ -218,6 +218,7 @@ export class OpsService {
   private monitorDelay = new Map<string, { until: number; failures: number }>();
   private reconciling = new Map<string, Promise<OpsReceipt>>();
   private closing = false;
+  private disposal?: Promise<void>;
   constructor(private options: Options) {
     this.store = new AtomicStore(
       path.join(options.dataDir, "operations"),
@@ -1004,6 +1005,14 @@ export class OpsService {
       });
       this.options.changed(projectId);
       try {
+        // Receipt persistence yields. A shutdown during that write must not
+        // turn a previously prepared action into a new remote mutation.
+        if (this.closing)
+          throw failure(
+            "conflict",
+            "Operations закрывается; mutation не отправлена после сохранения receipt.",
+            "notApplied",
+          );
         const result = await client.call(
           "execute",
           { operation: action.operation, input: action.input },
@@ -1240,42 +1249,47 @@ export class OpsService {
     this.options.changed();
     return clean;
   }
-  async dispose() {
+  dispose(): Promise<void> {
+    if (this.disposal) return this.disposal;
     this.closing = true;
     clearTimeout(this.monitor);
     this.monitor = undefined;
-    await this.update((s) => {
-      for (const r of s.receipts)
-        if (r.status === "dispatching") {
-          r.status = "unknown";
-          r.updatedAt = new Date().toISOString();
-          r.error = {
-            kind: "unknown",
-            message:
-              "Workbench закрыт во время dispatch. Только read-only reconciliation; запрос не повторён.",
-            outcome: "unknown",
-          };
-        }
-    });
-    const deadline = async (p: Promise<unknown>) => {
-      let timer: ReturnType<typeof setTimeout> | undefined;
-      try {
-        await Promise.race([
-          p,
-          new Promise<void>((resolve) => {
-            timer = setTimeout(resolve, 5000);
-          }),
-        ]);
-      } finally {
-        clearTimeout(timer);
-      }
-    };
-    await deadline(
-      Promise.allSettled(
-        [...this.clients.values()].map((p) => p.then((c) => c.close())),
-      ),
+    // Start retirement independently of disk: a stalled ledger write cannot
+    // keep already resolved clients or owned provider processes active.
+    const retiring = Promise.allSettled(
+      [...this.clients.values()].map((p) => p.then((c) => c.close())),
     );
-    await deadline(Promise.allSettled([...this.dispatches.values()]));
-    await this.store.close();
+    this.disposal = (async () => {
+      await this.update((s) => {
+        for (const r of s.receipts)
+          if (r.status === "dispatching") {
+            r.status = "unknown";
+            r.updatedAt = new Date().toISOString();
+            r.error = {
+              kind: "unknown",
+              message:
+                "Workbench закрыт во время dispatch. Только read-only reconciliation; запрос не повторён.",
+              outcome: "unknown",
+            };
+          }
+      });
+      const deadline = async (p: Promise<unknown>) => {
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        try {
+          await Promise.race([
+            p,
+            new Promise<void>((resolve) => {
+              timer = setTimeout(resolve, 5000);
+            }),
+          ]);
+        } finally {
+          clearTimeout(timer);
+        }
+      };
+      await deadline(retiring);
+      await deadline(Promise.allSettled([...this.dispatches.values()]));
+      await this.store.close();
+    })();
+    return this.disposal;
   }
 }

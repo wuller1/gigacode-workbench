@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { execFile } from "node:child_process";
 import { createReadStream, promises as fs } from "node:fs";
 import path from "node:path";
+import { javascriptEntrypointArgs } from "./acp.js";
 
 /** Instructions and runtime capability evidence are host DTOs, never invented ACP fields. */
 export interface InstructionManifest {
@@ -245,6 +246,11 @@ const QWEN_SOURCE_ANCHORS: Readonly<Record<string, string>> = Object.freeze({
   // Headless dispatch checks the cumulative budget before launching each tool.
   "chunks/chunk-BFTRLQJP.js":
     "b755890e83986aabf99905088c2c45c7b3e7add7d37863102fec0bf11337198c",
+  // ACP model selectors/opaque routes and the exact native AuthType enum.
+  "chunks/chunk-GT4TCQ3R.js":
+    "5791a3c9e56450b60e94cdcd39abde9472907fe0458d1f690160ac70a38f4691",
+  "chunks/chunk-ZZZAYAJW.js":
+    "985f26fc14ef5b0a45bef3ec6b375418fe5dfdd62c76852cc02989c42f4618c8",
 });
 const capabilityCache = new Map<string, Promise<PromptCapabilityEvidence>>();
 
@@ -261,10 +267,11 @@ async function fileIdentity(file: string): Promise<string> {
   return `${file}:${stat.dev}:${stat.ino}:${stat.size}:${stat.mtimeMs}:${stat.ctimeMs}`;
 }
 async function verifiedHelp(executable: string): Promise<boolean> {
-  const file = /\.(?:c?js|mjs)$/i.test(executable)
-    ? process.execPath
-    : executable;
-  const args = file === executable ? ["--help"] : [executable, "--help"];
+  const javascript = /\.(?:c?js|mjs)$/i.test(executable);
+  const file = javascript ? process.execPath : executable;
+  const args = javascript
+    ? [...javascriptEntrypointArgs(executable), "--help"]
+    : ["--help"];
   const env = { ...process.env };
   if (process.versions.electron && file === process.execPath)
     env.ELECTRON_RUN_AS_NODE = "1";
@@ -461,7 +468,7 @@ export function planPromptBinding(input: {
       "Inconsistent runtime evidence cannot enable a system append; Workbench uses context.";
   const args = [...input.args, "--append-system-prompt", compiled.text];
   const nativePrefix = /\.(?:c?js|mjs)$/i.test(input.executable)
-    ? ["--expose-gc", input.executable]
+    ? javascriptEntrypointArgs(input.executable)
     : [];
   if (
     (input.platform ?? process.platform) === "win32" &&
