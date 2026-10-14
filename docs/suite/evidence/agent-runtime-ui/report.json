@@ -5,35 +5,35 @@
   "passed": [
     {
       "name": "Actual session.prepare produces context-only prepared receipt without sending a task",
-      "elapsedMs": 301
+      "elapsedMs": 289
     },
     {
       "name": "Retained router shows actual Analyst rather than a false Auto after a completed real fixture turn",
-      "elapsedMs": 297
+      "elapsedMs": 288
     },
     {
       "name": "Desktop composer fits 1000 and 1440 pixels",
-      "elapsedMs": 265
+      "elapsedMs": 264
     },
     {
       "name": "Settings exposes active context delivery and current fingerprint on the real completed executor",
-      "elapsedMs": 85
+      "elapsedMs": 77
     },
     {
       "name": "Builtin clone saves through actual profile editor and host without changing builtin or active binding",
-      "elapsedMs": 184
+      "elapsedMs": 170
     },
     {
       "name": "UTF-8 byte overflow is rejected in real profile UI and retains the saved version",
-      "elapsedMs": 184
+      "elapsedMs": 183
     },
     {
       "name": "Malformed Unicode is rejected from controlled profile UI without corrupting saved instructions",
-      "elapsedMs": 167
+      "elapsedMs": 166
     },
     {
       "name": "Desktop Roles settings fit 1000 and 1440 pixels in light theme",
-      "elapsedMs": 435
+      "elapsedMs": 451
     }
   ],
   "expectedRejections": [
@@ -91,33 +91,22 @@
     {
       "requestedWidth": 1000,
       "settled": true,
-      "frames": 5,
-      "elapsedMs": 78,
+      "frames": 4,
+      "elapsedMs": 55,
       "samples": [
         {
           "elapsedMs": 0,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
-          "canvasWidth": 1174,
-          "canvasHeight": 815,
-          "chatWidth": 1174,
-          "composerLeft": 423.5,
-          "composerRight": 1235.5
+          "canvasWidth": 758,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 262,
+          "composerRight": 981
         },
         {
-          "elapsedMs": 11,
-          "viewport": 1000,
-          "dockViewportWidth": 758,
-          "dockViewportLeft": 242,
-          "canvasWidth": 1174,
-          "canvasHeight": 815,
-          "chatWidth": 1174,
-          "composerLeft": 423.5,
-          "composerRight": 1235.5
-        },
-        {
-          "elapsedMs": 28,
+          "elapsedMs": 5,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -128,7 +117,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 45,
+          "elapsedMs": 22,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -139,7 +128,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 61,
+          "elapsedMs": 39,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -150,7 +139,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 77,
+          "elapsedMs": 55,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -202,7 +191,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 43,
+          "elapsedMs": 44,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -240,7 +229,7 @@
       "requestedWidth": 1440,
       "settled": true,
       "frames": 10,
-      "elapsedMs": 162,
+      "elapsedMs": 161,
       "samples": [
         {
           "elapsedMs": 0,
@@ -265,7 +254,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 28,
+          "elapsedMs": 27,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -276,7 +265,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 45,
+          "elapsedMs": 44,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -287,7 +276,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 62,
+          "elapsedMs": 61,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -309,7 +298,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 95,
+          "elapsedMs": 94,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -320,7 +309,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 112,
+          "elapsedMs": 111,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -342,7 +331,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 145,
+          "elapsedMs": 144,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -369,7 +358,7 @@
       "requestedWidth": 1000,
       "settled": true,
       "frames": 4,
-      "elapsedMs": 54,
+      "elapsedMs": 60,
       "samples": [
         {
           "elapsedMs": 0,
@@ -383,7 +372,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 4,
+          "elapsedMs": 10,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -394,7 +383,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 21,
+          "elapsedMs": 27,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -405,7 +394,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 38,
+          "elapsedMs": 44,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -416,7 +405,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 54,
+          "elapsedMs": 60,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -434,7 +423,7 @@
       "backendState": "active",
       "beforeTitle": "Аналитик · Текущая роль сохранена: для этой версии CLI ещё не подключён проверенный LLM-маршрутизатор.\nКонтекст · prepared · f241257a86f3 · This exact CLI has no reviewed system-append mechanism. Workbench instructions will be supplied as context; no Qwen flags are guessed for a fork.",
       "afterTitle": "Аналитик · Текущая роль сохранена: для этой версии CLI ещё не подключён проверенный LLM-маршрутизатор.\nКонтекст · active · f241257a86f3 · This exact CLI has no reviewed system-append mechanism. Workbench instructions will be supplied as context; no Qwen flags are guessed for a fork.",
-      "elapsedMs": 42
+      "elapsedMs": 74
     }
   ],
   "provenance": {
@@ -442,12 +431,12 @@
       "src/App.tsx": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
       "src/SettingsView.tsx": "22df05f952769ff01f0e020924703d7fa500f71528613527b9e2cb9921a07c66",
       "src/styles.css": "83d00d8fdb1cb4c9044547efcf52e7d049e462b81d3e0a590ad3fb4efda84605",
-      "electron/service.ts": "03d5fc8d1ddbe45b8217df48956026ef682aefbbd9463083308b4b5d2815adcd",
-      "electron/prompt-binding.ts": "b507d171f0a8b0dfa76e906d83b806dab8c1143889496e52768920e889d8738a",
+      "electron/service.ts": "571e6e6cb85c03d1cee80b73d6d2377c60a6e6d3cc2cbd47fabf693f81efcc70",
+      "electron/prompt-binding.ts": "adb633393b38ca2bf82f8e36d24dea8089f878d129feaa36b3f846dc631a2dfc",
       "electron/role-router.ts": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
       "electron/preload.ts": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
       "shared/types.ts": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
-      "dist-electron/main.cjs": "f392cc5274dffa875df9d98a420b940613ca0f8bb8d19513c66270d5301f411c",
+      "dist-electron/main.cjs": "485f988a1a0d2d1bade5ec8fc7ddd8eebe870bb539394e2ad432c91db4b50de5",
       "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
       "../workbench/CORE.md": "1cea28b6fcf01f409ca2af06c92fdbc929fdc4e489c65d6e2de836e0a1beda27",
       "tools/test-roles-ui.mjs": "4c8a7ae10a43a2b8337d22a675c5dd7a3fa564d7f3f14bc2cd2c0240be1c5977",

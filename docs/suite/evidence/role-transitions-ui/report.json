@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "passed",
-  "recordedAt": "2026-10-14T15:47:09.467Z",
+  "recordedAt": "2026-10-14T16:19:47.785Z",
   "platform": "darwin",
   "node": "v26.8.1",
   "cliPackageVersion": "0.25.1",
@@ -10,27 +10,27 @@
   "passed": [
     {
       "name": "Renderer cannot impersonate the bound task executor to request a role transition",
-      "elapsedMs": 23
+      "elapsedMs": 29
     },
     {
       "name": "One human request routes Backend, then agent requests Diagnostics while preserving draft",
-      "elapsedMs": 2388
+      "elapsedMs": 2510
     },
     {
       "name": "Held clean phase can resume from compact UI after classifier format failure without another human message",
-      "elapsedMs": 1383
+      "elapsedMs": 1358
     },
     {
       "name": "Host LLM reroutes the same task to Diagnostics without human queue fabrication",
-      "elapsedMs": 1838
+      "elapsedMs": 1887
     },
     {
       "name": "Frontend continues automatically with its own actual process and system fingerprint",
-      "elapsedMs": 1960
+      "elapsedMs": 1985
     },
     {
       "name": "Compact actual role and on-demand completed phase history fit desktop dark and light",
-      "elapsedMs": 1099
+      "elapsedMs": 1143
     }
   ],
   "total": 6,
@@ -75,6 +75,7 @@
         "write_file"
       ],
       "calledTool": "tool_search",
+      "toolReplies": [],
       "bytes": 82887
     },
     {
@@ -97,6 +98,12 @@
         "write_file"
       ],
       "calledTool": "tool_call",
+      "toolReplies": [
+        {
+          "id": "search-backend",
+          "text": "<functions>\n<function>{\"name\":\"mcp__workbench-ui__role_transition_request\",\"description\":\"Request a host-managed handoff of the remaining authorized task to a different role. The hint is advisory: the host LLM router confirms the role. Current instructions remain active until this phase ends normally and the host validates the boundary. After acknowledgement, finish the phase normally; do not continue the handed-off work or invent another user message. Preserve the original goal, concrete progress and evidence references. Ordinary fixes and self-tests do not require another role. Pending questions, cancellation and unknown effects hold the handoff.\",\"parametersJsonSchema\":{\"type\":\"object\",\"properties\":{\"operationId\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":128},\"roleHint\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":80},\"reason\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":2000},\"continuation\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":12000},\"evidenceRefs\":{\"type\":\"array\",\"maxItems\":16,\"items\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":1000}}},\"required\":[\"operationId\",\"reason\",\"continuation\"],\"additionalProperties\":false},\"serverName\":\"workbench-ui\"}</function>\n</functions>"
+        }
+      ],
       "bytes": 84454
     },
     {
@@ -221,6 +228,7 @@
         "write_file"
       ],
       "calledTool": "tool_search",
+      "toolReplies": [],
       "bytes": 83680
     },
     {
@@ -243,6 +251,12 @@
         "write_file"
       ],
       "calledTool": "tool_call",
+      "toolReplies": [
+        {
+          "id": "search-diagnostics",
+          "text": "<functions>\n<function>{\"name\":\"mcp__workbench-ui__role_transition_request\",\"description\":\"Request a host-managed handoff of the remaining authorized task to a different role. The hint is advisory: the host LLM router confirms the role. Current instructions remain active until this phase ends normally and the host validates the boundary. After acknowledgement, finish the phase normally; do not continue the handed-off work or invent another user message. Preserve the original goal, concrete progress and evidence references. Ordinary fixes and self-tests do not require another role. Pending questions, cancellation and unknown effects hold the handoff.\",\"parametersJsonSchema\":{\"type\":\"object\",\"properties\":{\"operationId\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":128},\"roleHint\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":80},\"reason\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":2000},\"continuation\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":12000},\"evidenceRefs\":{\"type\":\"array\",\"maxItems\":16,\"items\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":1000}}},\"required\":[\"operationId\",\"reason\",\"continuation\"],\"additionalProperties\":false},\"serverName\":\"workbench-ui\"}</function>\n</functions>"
+        }
+      ],
       "bytes": 85255
     },
     {
@@ -332,34 +346,34 @@
   "receipts": [
     {
       "role": "backend",
-      "sessionId": "f0a296b3-2a1a-416e-aff6-67ac0130d5a8",
-      "taskId": "d1364224-3631-4756-91e0-6e43f1828e7f",
-      "pid": 1831,
+      "sessionId": "c827316e-91f0-4aa6-ac93-bb7e2b759f69",
+      "taskId": "27702371-434c-4704-8e5d-b3be61aa38b6",
+      "pid": 19093,
       "fingerprint": "16db6030c5fa72f652e9ddd8fe5284cdec075714b32c7acf829248c9207ef32d",
       "transitionStatus": "pending",
       "retiredPriorPids": []
     },
     {
       "role": "diagnostics",
-      "sessionId": "f0a296b3-2a1a-416e-aff6-67ac0130d5a8",
-      "taskId": "d1364224-3631-4756-91e0-6e43f1828e7f",
-      "pid": 1891,
+      "sessionId": "c827316e-91f0-4aa6-ac93-bb7e2b759f69",
+      "taskId": "27702371-434c-4704-8e5d-b3be61aa38b6",
+      "pid": 19239,
       "fingerprint": "4a432c319b473ad3b377c6b41bbb23ef40120bc03f1b2233f8daccb0a9aade13",
       "transitionStatus": "pending",
       "retiredPriorPids": [
-        1831
+        19093
       ]
     },
     {
       "role": "frontend",
-      "sessionId": "f0a296b3-2a1a-416e-aff6-67ac0130d5a8",
-      "taskId": "d1364224-3631-4756-91e0-6e43f1828e7f",
-      "pid": 1951,
+      "sessionId": "c827316e-91f0-4aa6-ac93-bb7e2b759f69",
+      "taskId": "27702371-434c-4704-8e5d-b3be61aa38b6",
+      "pid": 19301,
       "fingerprint": "1ca495bbd2645420a97a317428a966982055903a037f9bf5d3b76a57f296ad1d",
       "transitionStatus": "running",
       "retiredPriorPids": [
-        1831,
-        1891
+        19093,
+        19239
       ]
     }
   ],
@@ -468,17 +482,17 @@
     "src/App.tsx": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
     "src/SettingsView.tsx": "22df05f952769ff01f0e020924703d7fa500f71528613527b9e2cb9921a07c66",
     "src/styles.css": "83d00d8fdb1cb4c9044547efcf52e7d049e462b81d3e0a590ad3fb4efda84605",
-    "electron/service.ts": "03d5fc8d1ddbe45b8217df48956026ef682aefbbd9463083308b4b5d2815adcd",
+    "electron/service.ts": "571e6e6cb85c03d1cee80b73d6d2377c60a6e6d3cc2cbd47fabf693f81efcc70",
     "electron/main.ts": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
     "electron/mcp.ts": "7e1235fa6a3764e4616694c0d123bb6ff62cde01556536674e3c926b8491b5c0",
-    "electron/prompt-binding.ts": "b507d171f0a8b0dfa76e906d83b806dab8c1143889496e52768920e889d8738a",
+    "electron/prompt-binding.ts": "adb633393b38ca2bf82f8e36d24dea8089f878d129feaa36b3f846dc631a2dfc",
     "electron/role-router.ts": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
     "electron/preload.ts": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
-    "electron/acp.ts": "3ffba600ff11ce50ad373b2bf54c3565bce65d3607d03ca6f50078ba70b579ab",
+    "electron/acp.ts": "01e8454f5fc63c15331b8e0f6f35570cd43c46532f251f618bce6f2afcc30156",
     "shared/types.ts": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
-    "dist-electron/main.cjs": "f392cc5274dffa875df9d98a420b940613ca0f8bb8d19513c66270d5301f411c",
+    "dist-electron/main.cjs": "485f988a1a0d2d1bade5ec8fc7ddd8eebe870bb539394e2ad432c91db4b50de5",
     "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
-    "tools/test-role-transitions-ui.mjs": "6c1805fa56447854674882a45d0810662bd7b5d67e4cc8fe7b430474ac516a5b",
+    "tools/test-role-transitions-ui.mjs": "ac0425a46c3c4c4137bf7edfc5dc6aa8fd795b7d1eb62892941e707dd67c8ac7",
     "../workbench/CORE.md": "1cea28b6fcf01f409ca2af06c92fdbc929fdc4e489c65d6e2de836e0a1beda27",
     "../workbench/profiles/analyst.md": "81437e3f1258b7fe5de3ff37d531a5b8b8c3d27c95f741b0c6d30d6cccbf11c2",
     "../workbench/profiles/architect.md": "e1c687701e8f3705888f45b05e7352fdf28a11e8a647b29e62ebefea22eb33ad",

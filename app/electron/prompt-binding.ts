@@ -263,6 +263,9 @@ const QWEN_SOURCE_ANCHORS: Readonly<Record<string, string>> = Object.freeze({
     "c52a691e794f5908891f4c732d7dd739a3bbb17cca524cc23af8f1dcc677e77c",
   "chunks/acpAgent-FSCEU2SB.js":
     "9509f54054b2c5d65f72200407597afe4c4418e6fb8711519994f7a92eb4bbb1",
+  // Session-bound read-only MCP readiness status extension names.
+  "chunks/chunk-KGXOCC6J.js":
+    "f73458237b48f05fe8f1ce628bb3c7ecec5f464116e4d626a56949eab7c7531c",
   "chunks/chunk-WCM7H5HK.js":
     "19734fcf4de3a4a9177da1a56b1b5925576147fb0c5c44e56af63e7da3763343",
   "chunks/chunk-DMQ2VTH6.js":
@@ -278,7 +281,7 @@ const QWEN_SOURCE_ANCHORS: Readonly<Record<string, string>> = Object.freeze({
 });
 const capabilityCache = new Map<string, Promise<PromptCapabilityEvidence>>();
 const MAX_EVIDENCE_FILE_BYTES = 256 * 1024 * 1024;
-// The 11 reviewed anchors total 5,811,298 bytes. Leave room for inspection while
+// The 12 reviewed anchors total 5,823,538 bytes. Leave room for inspection while
 // bounding aggregate reads of a modified package; unknown native CLIs retain 256 MiB.
 const MAX_REVIEWED_EVIDENCE_BYTES = 32 * 1024 * 1024;
 

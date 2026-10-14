@@ -1,8 +1,8 @@
 {
   "suite": "operations-upstream-live",
   "status": "passed",
-  "started": "2026-10-14T15:19:18.455Z",
-  "ended": "2026-10-14T15:20:49.129Z",
+  "started": "2026-10-14T15:49:26.529Z",
+  "ended": "2026-10-14T15:50:55.966Z",
   "environment": {
     "platform": "darwin",
     "arch": "arm64",
@@ -15,95 +15,95 @@
   "cases": [
     {
       "name": "Actual stdio MCP discovers the pinned secured Jenkins server",
-      "elapsedMs": 272
+      "elapsedMs": 368
     },
     {
       "name": "Real root pagination and nested folder identity",
-      "elapsedMs": 40
+      "elapsedMs": 45
     },
     {
       "name": "Real Jenkins parameter discovery validates booleans and choices",
-      "elapsedMs": 96
+      "elapsedMs": 116
     },
     {
       "name": "Prepared trigger has no side effect and duplicate execute creates one actual build",
-      "elapsedMs": 8038
+      "elapsedMs": 8031
     },
     {
       "name": "Actual progressive log preserves Unicode and its upstream byte cursor",
-      "elapsedMs": 33
-    },
-    {
-      "name": "Absent Pipeline and JUnit plugins remain explicitly unsupported",
-      "elapsedMs": 29
-    },
-    {
-      "name": "Actual running freestyle build is stopped and reconciles to ABORTED",
-      "elapsedMs": 9155
-    },
-    {
-      "name": "Actual non-runnable-node queue entry can be cancelled without creating a build",
-      "elapsedMs": 308
-    },
-    {
-      "name": "Shared connection favorites and project fences are enforced by actual service",
-      "elapsedMs": 22
-    },
-    {
-      "name": "A second real Jenkins instance has isolated jobs and routing",
-      "elapsedMs": 12389
-    },
-    {
-      "name": "Real TLS Kubernetes discovery identifies supported resources and absent OpenShift groups",
-      "elapsedMs": 666
-    },
-    {
-      "name": "Unsafe Kubernetes path components cannot retarget a ConfigMap read or delete preflight to its namespace",
-      "elapsedMs": 16
-    },
-    {
-      "name": "Actual Kubernetes list pagination preserves complete stable identities",
-      "elapsedMs": 20
-    },
-    {
-      "name": "Prepared Kubernetes dry run is read-only and exact apply is visible at the real API",
-      "elapsedMs": 118
-    },
-    {
-      "name": "Real stale resourceVersion is rejected without overwriting a concurrent change",
-      "elapsedMs": 114
-    },
-    {
-      "name": "Actual RBAC permits reader lists and denies reader mutation preflight",
-      "elapsedMs": 534
-    },
-    {
-      "name": "Real Secret responses expose metadata without secret payloads",
       "elapsedMs": 32
     },
     {
+      "name": "Absent Pipeline and JUnit plugins remain explicitly unsupported",
+      "elapsedMs": 31
+    },
+    {
+      "name": "Actual running freestyle build is stopped and reconciles to ABORTED",
+      "elapsedMs": 9519
+    },
+    {
+      "name": "Actual non-runnable-node queue entry can be cancelled without creating a build",
+      "elapsedMs": 271
+    },
+    {
+      "name": "Shared connection favorites and project fences are enforced by actual service",
+      "elapsedMs": 18
+    },
+    {
+      "name": "A second real Jenkins instance has isolated jobs and routing",
+      "elapsedMs": 12211
+    },
+    {
+      "name": "Real TLS Kubernetes discovery identifies supported resources and absent OpenShift groups",
+      "elapsedMs": 757
+    },
+    {
+      "name": "Unsafe Kubernetes path components cannot retarget a ConfigMap read or delete preflight to its namespace",
+      "elapsedMs": 13
+    },
+    {
+      "name": "Actual Kubernetes list pagination preserves complete stable identities",
+      "elapsedMs": 16
+    },
+    {
+      "name": "Prepared Kubernetes dry run is read-only and exact apply is visible at the real API",
+      "elapsedMs": 101
+    },
+    {
+      "name": "Real stale resourceVersion is rejected without overwriting a concurrent change",
+      "elapsedMs": 80
+    },
+    {
+      "name": "Actual RBAC permits reader lists and denies reader mutation preflight",
+      "elapsedMs": 247
+    },
+    {
+      "name": "Real Secret responses expose metadata without secret payloads",
+      "elapsedMs": 12
+    },
+    {
       "name": "Real Kubernetes watch observes a versioned external change without repeated mutation",
-      "elapsedMs": 1042
+      "elapsedMs": 1084
     },
     {
       "name": "Real Deployment scale and restart modify desired state without claiming a rollout",
-      "elapsedMs": 221
+      "elapsedMs": 273
     },
     {
       "name": "Test-registered mesh CRDs are discovered by the native API and their persisted resources can be read",
-      "elapsedMs": 4278
+      "elapsedMs": 4300
     },
     {
       "name": "Recreated Kubernetes name does not inherit an old UID action",
-      "elapsedMs": 188
+      "elapsedMs": 207
     },
     {
       "name": "Environment labels can be renamed without changing the actual target",
-      "elapsedMs": 33
+      "elapsedMs": 20
     },
     {
       "name": "Durable Operations restart preserves receipts, bindings and encrypted credentials",
-      "elapsedMs": 307
+      "elapsedMs": 354
     }
   ],
   "failedCases": [],
@@ -170,7 +170,7 @@
       }
     ],
     "jenkinsBuild": {
-      "receiptId": "b90d3ca0-7788-4eb8-950c-9a4bd5f98a49",
+      "receiptId": "396a08b6-054d-40f0-94df-516d34a36561",
       "queueId": "1",
       "number": 1,
       "result": "SUCCESS"
@@ -212,7 +212,7 @@
         "/Users/wuller/Documents/Codex/2026-10-09/new-chat/outputs/gigacode-workbench-github/app/test-results/operations/operations-cluster-light-darwin.png"
       ]
     },
-    "changeEvents": 168
+    "changeEvents": 175
   },
   "sourceHashes": {
     "electron/operations/catalog.ts": "f508f4c44be21716a224189365ad9f8448453f130c6054e7378dd50baa632cb8",
@@ -249,7 +249,7 @@
     {
       "status": "fulfilled",
       "value": {
-        "pid": 86957,
+        "pid": 3515,
         "exited": true,
         "exitCode": 143,
         "signal": null
@@ -259,20 +259,20 @@
       "status": "fulfilled",
       "value": [
         {
-          "pid": 86724,
+          "pid": 3293,
           "exited": true,
           "exitCode": 143,
           "signal": null
         },
         [
           {
-            "pid": 86741,
+            "pid": 3307,
             "exited": true,
             "exitCode": null,
             "signal": "SIGKILL"
           },
           {
-            "pid": 86730,
+            "pid": 3299,
             "exited": true,
             "exitCode": null,
             "signal": "SIGKILL"

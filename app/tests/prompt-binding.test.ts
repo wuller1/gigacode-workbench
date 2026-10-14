@@ -334,6 +334,7 @@ describe("runtime capability evidence", () => {
       "chunks/chunk-A5MAHML6.js",
       "chunks/chunk-HO724RA7.js",
       "chunks/acpAgent-FSCEU2SB.js",
+      "chunks/chunk-KGXOCC6J.js",
       "chunks/chunk-WCM7H5HK.js",
       "chunks/chunk-DMQ2VTH6.js",
       "chunks/chunk-BFTRLQJP.js",

@@ -1,8 +1,8 @@
 {
   "suite": "operations-upstream-live",
   "status": "passed",
-  "started": "2026-10-14T11:53:19.596Z",
-  "ended": "2026-10-14T11:54:48.956Z",
+  "started": "2026-10-14T15:49:26.529Z",
+  "ended": "2026-10-14T15:50:55.966Z",
   "environment": {
     "platform": "darwin",
     "arch": "arm64",
@@ -15,31 +15,31 @@
   "cases": [
     {
       "name": "Actual stdio MCP discovers the pinned secured Jenkins server",
-      "elapsedMs": 307
+      "elapsedMs": 368
     },
     {
       "name": "Real root pagination and nested folder identity",
-      "elapsedMs": 48
+      "elapsedMs": 45
     },
     {
       "name": "Real Jenkins parameter discovery validates booleans and choices",
-      "elapsedMs": 108
+      "elapsedMs": 116
     },
     {
       "name": "Prepared trigger has no side effect and duplicate execute creates one actual build",
-      "elapsedMs": 8126
+      "elapsedMs": 8031
     },
     {
       "name": "Actual progressive log preserves Unicode and its upstream byte cursor",
-      "elapsedMs": 31
+      "elapsedMs": 32
     },
     {
       "name": "Absent Pipeline and JUnit plugins remain explicitly unsupported",
-      "elapsedMs": 30
+      "elapsedMs": 31
     },
     {
       "name": "Actual running freestyle build is stopped and reconciles to ABORTED",
-      "elapsedMs": 9856
+      "elapsedMs": 9519
     },
     {
       "name": "Actual non-runnable-node queue entry can be cancelled without creating a build",
@@ -47,63 +47,63 @@
     },
     {
       "name": "Shared connection favorites and project fences are enforced by actual service",
-      "elapsedMs": 22
-    },
-    {
-      "name": "A second real Jenkins instance has isolated jobs and routing",
-      "elapsedMs": 12204
-    },
-    {
-      "name": "Real TLS Kubernetes discovery identifies supported resources and absent OpenShift groups",
-      "elapsedMs": 533
-    },
-    {
-      "name": "Unsafe Kubernetes path components cannot retarget a ConfigMap read or delete preflight to its namespace",
-      "elapsedMs": 14
-    },
-    {
-      "name": "Actual Kubernetes list pagination preserves complete stable identities",
       "elapsedMs": 18
     },
     {
+      "name": "A second real Jenkins instance has isolated jobs and routing",
+      "elapsedMs": 12211
+    },
+    {
+      "name": "Real TLS Kubernetes discovery identifies supported resources and absent OpenShift groups",
+      "elapsedMs": 757
+    },
+    {
+      "name": "Unsafe Kubernetes path components cannot retarget a ConfigMap read or delete preflight to its namespace",
+      "elapsedMs": 13
+    },
+    {
+      "name": "Actual Kubernetes list pagination preserves complete stable identities",
+      "elapsedMs": 16
+    },
+    {
       "name": "Prepared Kubernetes dry run is read-only and exact apply is visible at the real API",
-      "elapsedMs": 108
+      "elapsedMs": 101
     },
     {
       "name": "Real stale resourceVersion is rejected without overwriting a concurrent change",
-      "elapsedMs": 85
+      "elapsedMs": 80
     },
     {
       "name": "Actual RBAC permits reader lists and denies reader mutation preflight",
-      "elapsedMs": 245
+      "elapsedMs": 247
     },
     {
       "name": "Real Secret responses expose metadata without secret payloads",
-      "elapsedMs": 14
+      "elapsedMs": 12
     },
     {
       "name": "Real Kubernetes watch observes a versioned external change without repeated mutation",
-      "elapsedMs": 1082
+      "elapsedMs": 1084
     },
     {
       "name": "Real Deployment scale and restart modify desired state without claiming a rollout",
-      "elapsedMs": 220
+      "elapsedMs": 273
     },
     {
       "name": "Test-registered mesh CRDs are discovered by the native API and their persisted resources can be read",
-      "elapsedMs": 4283
+      "elapsedMs": 4300
     },
     {
       "name": "Recreated Kubernetes name does not inherit an old UID action",
-      "elapsedMs": 199
+      "elapsedMs": 207
     },
     {
       "name": "Environment labels can be renamed without changing the actual target",
-      "elapsedMs": 32
+      "elapsedMs": 20
     },
     {
       "name": "Durable Operations restart preserves receipts, bindings and encrypted credentials",
-      "elapsedMs": 399
+      "elapsedMs": 354
     }
   ],
   "failedCases": [],
@@ -170,7 +170,7 @@
       }
     ],
     "jenkinsBuild": {
-      "receiptId": "97fecf12-0efe-4429-b7b8-d7ef99bd7716",
+      "receiptId": "396a08b6-054d-40f0-94df-516d34a36561",
       "queueId": "1",
       "number": 1,
       "result": "SUCCESS"
@@ -205,14 +205,14 @@
       "status": "passed",
       "passed": 23,
       "screenshots": [
-        "operations-jenkins-dark-darwin.png",
-        "operations-jenkins-light-darwin.png",
-        "operations-split-1024-dark-darwin.png",
-        "operations-cluster-dark-darwin.png",
-        "operations-cluster-light-darwin.png"
+        "/Users/wuller/Documents/Codex/2026-10-09/new-chat/outputs/gigacode-workbench-github/app/test-results/operations/operations-jenkins-dark-darwin.png",
+        "/Users/wuller/Documents/Codex/2026-10-09/new-chat/outputs/gigacode-workbench-github/app/test-results/operations/operations-jenkins-light-darwin.png",
+        "/Users/wuller/Documents/Codex/2026-10-09/new-chat/outputs/gigacode-workbench-github/app/test-results/operations/operations-split-1024-dark-darwin.png",
+        "/Users/wuller/Documents/Codex/2026-10-09/new-chat/outputs/gigacode-workbench-github/app/test-results/operations/operations-cluster-dark-darwin.png",
+        "/Users/wuller/Documents/Codex/2026-10-09/new-chat/outputs/gigacode-workbench-github/app/test-results/operations/operations-cluster-light-darwin.png"
       ]
     },
-    "changeEvents": 172
+    "changeEvents": 175
   },
   "sourceHashes": {
     "electron/operations/catalog.ts": "f508f4c44be21716a224189365ad9f8448453f130c6054e7378dd50baa632cb8",
@@ -224,21 +224,21 @@
     "electron/operations/kubernetes.ts": "0b370c3059e6167dd006125fe07c6bba3b0f527a03ce2c33f3a54b9cca3dec11",
     "electron/operations/protocol.ts": "28a35878a8b9583b5256d4d7986f6963fa1115ebdd36a002d1bee264160440f7",
     "electron/operations/provider.ts": "dda93ba26f10fb3e999d21600dee71a77517fe2c6ce33cbd04a707d10e80a1d1",
-    "electron/operations/service.ts": "b8f839c534384e3cc56f05eb1b2e308d326d62d7eacc79cc96b859382f66fbc0",
+    "electron/operations/service.ts": "9ae07292eb02c019b11c62f417af1c40da3b799d26fff85732d6adabcbe738d4",
     "shared/operations.ts": "eff22761fde3e312835f63d8ad6dd907f1f2bf38714e72244f4a1ea1896a3d8f",
     "tools/ops-test-assets.mjs": "dd46a48ee463005aad8a9835a52c246f4882e1a53895ec74796568797925e68f",
     "tools/ops-test-servers.mjs": "9c73158d557b08f27c24af4c09187e8a96a0b09ebb764d3599dcfbaaa756706d",
     "tools/test-operations-live.mjs": "fc91ca991985bf082c4c70b1a40c71a52aff4e3daf59690924e810c6de1b0820",
     "tests/fixtures/ops-ui-checks.mjs": "4cc3795b8a06671fbb3e89f1d5f8d84b84abd798bd07dcf42aba8c95d6a96dfe",
-    "electron/main.ts": "575495a0ab215c302d267b48a6f6745ebf9bbf8b90e55d0eee17da25733a88f1",
-    "electron/mcp.ts": "b1c031551913cc87ddd866331639d7a4b04b3eebdf69404013a7b8bccf7ac1bd",
-    "src/App.tsx": "24a0718367c98b052dcdc368e7f1800f9190bead0f55e92eb7814961a18519ef",
-    "src/Workspace.tsx": "445825b5d0e81fb798c136e068690339a21a1e2370c11abe52ffeb5fb96457e6",
-    "src/SettingsView.tsx": "e274d09530ecc7877db16f89aae2b114f7e43aa8e4763330b9d2c0582156cea2",
+    "electron/main.ts": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
+    "electron/mcp.ts": "7e1235fa6a3764e4616694c0d123bb6ff62cde01556536674e3c926b8491b5c0",
+    "src/App.tsx": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
+    "src/Workspace.tsx": "d11e4f10208998c6afe9bb51b7612e0db6d5d6977b515f17fa373418a3271762",
+    "src/SettingsView.tsx": "22df05f952769ff01f0e020924703d7fa500f71528613527b9e2cb9921a07c66",
     "src/JenkinsPanel.tsx": "94e0f864053be37ec2a85bb639376b4d2c7ceb03859c6debc152bd5b52874eb0",
     "src/ClusterPanel.tsx": "ce2aa4b9cc808c94c86874e92b592640386989b26a80bbbfbb86522cbf60be1b",
     "src/OperationsSettings.tsx": "d43aa156d1d68f95d4b8d7b797e38d024539eaee8615571625937bd322932566",
-    "src/ToolBoundary.tsx": "f17ecccba2101bc1f9d0f22c05ca749e16ad9eaccbdc29f2e554e81e38ed102b",
+    "src/ToolBoundary.tsx": "c5201b14523d6d8fb08ba944c49402a8bf766d87193ac3ccf7ae137b97f2b5c8",
     "src/ops-ui.tsx": "3dad227d49fa638842878f8c7349121e509c480b8d05ce99a3608f1d13d31131",
     "src/operations.css": "b9038c0975357f06516a9486a00a960e5095beb0ede08ae6e24a40fb9309c03e"
   },
@@ -249,7 +249,7 @@
     {
       "status": "fulfilled",
       "value": {
-        "pid": 87410,
+        "pid": 3515,
         "exited": true,
         "exitCode": 143,
         "signal": null
@@ -259,20 +259,20 @@
       "status": "fulfilled",
       "value": [
         {
-          "pid": 87211,
+          "pid": 3293,
           "exited": true,
           "exitCode": 143,
           "signal": null
         },
         [
           {
-            "pid": 87216,
+            "pid": 3307,
             "exited": true,
             "exitCode": null,
             "signal": "SIGKILL"
           },
           {
-            "pid": 87215,
+            "pid": 3299,
             "exited": true,
             "exitCode": null,
             "signal": "SIGKILL"
@@ -280,6 +280,5 @@
         ]
       ]
     }
-  ],
-  "publishedCopyNote": "Copied from final source acceptance; screenshot paths localized to this evidence directory. Original actual-run provenance and source hashes retained."
+  ]
 }

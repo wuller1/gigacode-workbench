@@ -426,11 +426,21 @@ async function executorPID() {
       value.ProcessId,
       value.ParentProcessId,
     ]);
+    const psString = (value) => `'${value.replaceAll("'", "''")}'`;
+    // Match inside the owned descendant query. Do not round-trip multiline
+    // system instructions (or any other command-line content) through JSON.
     const command = `Get-CimInstance Win32_Process -Filter '${descendants()
       .map((pid) => `ProcessId=${pid}`)
-      .join(
-        " OR ",
-      )}' | Select-Object ProcessId,CommandLine | ConvertTo-Json -Compress`;
+      .join(" OR ")}' | ForEach-Object {
+        $line = [string]$_.CommandLine
+        [pscustomobject]@{
+          ProcessId = $_.ProcessId
+          Executor = (($_.ProcessId -ne $PID) -and
+            (($line.IndexOf(${psString(executable)}, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) -or
+             ($line.IndexOf(${psString(path.join(path.dirname(executable), "cli-entry.js"))}, [System.StringComparison]::OrdinalIgnoreCase) -ge 0)) -and
+            ($line -match '(^|\\s)--acp(\\s|$)'))
+        }
+      } | ConvertTo-Json -Compress`;
     const { stdout } = await execFile(
       "powershell.exe",
       ["-NoProfile", "-NonInteractive", "-Command", command],
@@ -439,7 +449,7 @@ async function executorPID() {
     const parsed = stdout.trim() ? JSON.parse(stdout) : [];
     candidates = (Array.isArray(parsed) ? parsed : [parsed]).map((value) => ({
       pid: value.ProcessId,
-      args: value.CommandLine || "",
+      isExecutor: value.Executor === true,
     }));
   } else {
     const inventory = await execFile("ps", ["-ax", "-o", "pid=,ppid="], {
@@ -466,11 +476,13 @@ async function executorPID() {
   }
   const executors = candidates.filter(
     (value) =>
-      (value.args.includes(executable) ||
-        value.args.includes(
-          path.join(path.dirname(executable), "cli-entry.js"),
-        )) &&
-      /(?:^|\s)--acp(?:\s|$)/.test(value.args),
+      value.isExecutor === true ||
+      (typeof value.args === "string" &&
+        (value.args.includes(executable) ||
+          value.args.includes(
+            path.join(path.dirname(executable), "cli-entry.js"),
+          )) &&
+        /(?:^|\s)--acp(?:\s|$)/.test(value.args)),
   );
   // Qwen can re-exec its JS entrypoint to set heap/GC options. Its wrapper is
   // owned too; the terminal descendant is the actual ACP protocol executor.

@@ -1855,6 +1855,17 @@ export class WorkbenchService {
       )
       .digest("hex");
   }
+  private async awaitHostMcpReady(
+    live: Live,
+    servers: unknown[],
+  ): Promise<void> {
+    if (
+      live.instructionPlan.receipt.evidenceScope ===
+        "reviewed_qwen_0.25.1_source" &&
+      servers.some((server: any) => server?.name === "workbench-ui")
+    )
+      await live.client.waitForMcpReady(live.remoteId!, "workbench-ui");
+  }
   private async routeSession(sessionId: string): Promise<void> {
     const state = this.store.read();
     const session = present(state.sessions, sessionId, "Session");
@@ -2250,6 +2261,16 @@ export class WorkbenchService {
               mcpServers: servers,
             });
             live.remoteId = created.sessionId;
+            await this.awaitHostMcpReady(live, servers);
+            if (
+              this.disposed ||
+              live.cancelled ||
+              live.toolsRevoked ||
+              this.live.get(sessionId) !== live
+            )
+              throw new Error(
+                "Startup was stopped during MCP discovery; queued input was not dispatched.",
+              );
             await this.change((state) => {
               const s = present(state.sessions, sessionId, "Session");
               s.context = {};
@@ -2930,6 +2951,14 @@ export class WorkbenchService {
       const created = await connection.newSession({ cwd, mcpServers: servers });
       if (this.disposed) throw new Error("Application is closing.");
       live.remoteId = created.sessionId;
+      await this.awaitHostMcpReady(live, servers);
+      if (
+        this.disposed ||
+        live.cancelled ||
+        live.toolsRevoked ||
+        this.live.get(sessionId) !== live
+      )
+        throw new Error("Session preparation stopped during MCP discovery.");
       await this.change((s) => {
         const current = present(s.sessions, sessionId, "Session");
         current.configOptions = configOptions(created.configOptions);
@@ -3599,6 +3628,10 @@ export class WorkbenchService {
     this.routing.get(sessionId)?.abort();
     const beforeLive = this.live.get(sessionId);
     if (beforeLive) beforeLive.toolsRevoked = true;
+    // Model-picker preparation keeps an idle session status, but its owned
+    // readiness request must still stop immediately when the user cancels.
+    if (beforeLive && this.configuring.has(sessionId))
+      beforeLive.client.cancelMcpReadiness();
     this.cancelPermissionWaiters(sessionId);
     if (
       beforeLive &&

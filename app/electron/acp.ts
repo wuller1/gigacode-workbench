@@ -17,6 +17,15 @@ export class AcpError extends Error {
     this.name = "AcpError";
   }
 }
+export class McpReadinessError extends AcpError {
+  constructor(
+    readonly kind: "cancelled" | "timeout" | "invalid_status" | "unavailable",
+    message: string,
+  ) {
+    super(message);
+    this.name = "McpReadinessError";
+  }
+}
 export function redact(value: unknown): string {
   return String(value)
     .replace(/(Bearer\s+)[^\s"']+/gi, "$1[redacted]")
@@ -168,6 +177,7 @@ export class AcpConnection {
       resolve: (value: any) => void;
       reject: (error: Error) => void;
       timer?: ReturnType<typeof setTimeout>;
+      cleanupAbort?: () => void;
       method: string;
     }
   >();
@@ -182,6 +192,7 @@ export class AcpConnection {
   private stderrDiscarding = false;
   private stderrDecoder = new TextDecoder("utf-8");
   private termination?: Promise<void>;
+  private mcpReadinessAbort?: AbortController;
   capabilities: any;
   constructor(readonly options: AcpOptions) {}
   get alive(): boolean {
@@ -431,6 +442,7 @@ export class AcpConnection {
     if (!waiting) return; // late response to a timed-out request cannot settle a new one
     this.pending.delete(message.id);
     if (waiting.timer) clearTimeout(waiting.timer);
+    waiting.cleanupAbort?.();
     if (message.error) {
       const body =
         message.error.data?.body ??
@@ -474,13 +486,29 @@ export class AcpConnection {
       /* connection outcome is handled by its owner */
     }
   }
-  request(method: string, params: object, timeoutMs = 30000): Promise<any> {
+  request(
+    method: string,
+    params: object,
+    timeoutMs = 30000,
+    signal?: AbortSignal,
+  ): Promise<any> {
     const id = ++this.nextId;
     return new Promise((resolve, reject) => {
+      if (signal?.aborted) {
+        reject(signal.reason ?? new AcpError("ACP request was aborted."));
+        return;
+      }
+      const abort = () => {
+        this.pending.delete(id);
+        if (timer) clearTimeout(timer);
+        signal?.removeEventListener("abort", abort);
+        reject(signal?.reason ?? new AcpError("ACP request was aborted."));
+      };
       const timer =
         timeoutMs > 0
           ? setTimeout(() => {
               this.pending.delete(id);
+              signal?.removeEventListener("abort", abort);
               reject(
                 new AcpError(
                   `ACP ${method} timed out.`,
@@ -489,12 +517,20 @@ export class AcpConnection {
               );
             }, timeoutMs)
           : undefined;
-      this.pending.set(id, { resolve, reject, timer, method });
+      this.pending.set(id, {
+        resolve,
+        reject,
+        timer,
+        method,
+        cleanupAbort: () => signal?.removeEventListener("abort", abort),
+      });
+      signal?.addEventListener("abort", abort, { once: true });
       try {
         this.send({ jsonrpc: "2.0", id, method, params });
       } catch (e) {
         if (timer) clearTimeout(timer);
         this.pending.delete(id);
+        signal?.removeEventListener("abort", abort);
         reject(e);
       }
     });
@@ -508,6 +544,136 @@ export class AcpConnection {
       throw new AcpError("CLI did not return a session identity.");
     this.ownedSession = result.sessionId;
     return result;
+  }
+  /** Exact reviewed Qwen extension only; the host decides whether it may be used. */
+  async waitForMcpReady(
+    sessionId: string,
+    serverName: string,
+    timeoutMs = 30000,
+  ): Promise<void> {
+    if (sessionId !== this.ownedSession)
+      throw new McpReadinessError(
+        "invalid_status",
+        "Wrong ACP session for MCP readiness.",
+      );
+    if (this.mcpReadinessAbort)
+      throw new McpReadinessError(
+        "invalid_status",
+        "MCP readiness is already being checked.",
+      );
+    if (!Number.isFinite(timeoutMs) || timeoutMs <= 0 || timeoutMs > 60000)
+      throw new McpReadinessError(
+        "invalid_status",
+        "Invalid MCP readiness deadline.",
+      );
+    const controller = new AbortController();
+    this.mcpReadinessAbort = controller;
+    const timeout = new McpReadinessError(
+      "timeout",
+      "MCP discovery did not become ready before its deadline; input was not dispatched.",
+    );
+    const timer = setTimeout(() => controller.abort(timeout), timeoutMs);
+    try {
+      while (true) {
+        controller.signal.throwIfAborted();
+        let result: any;
+        try {
+          result = await this.request(
+            "qwen/status/session/resources",
+            { sessionId },
+            0,
+            controller.signal,
+          );
+          controller.signal.throwIfAborted();
+        } catch (error) {
+          if (error instanceof McpReadinessError) throw error;
+          throw new McpReadinessError(
+            "unavailable",
+            "Reviewed Qwen MCP status could not be read: " +
+              redact(error instanceof Error ? error.message : error).slice(
+                0,
+                600,
+              ),
+          );
+        }
+        if (
+          !result ||
+          result.sessionId !== sessionId ||
+          result.mcp?.initialized !== true ||
+          !["not_started", "in_progress", "completed"].includes(
+            result.mcp?.discoveryState,
+          ) ||
+          !Array.isArray(result.mcp?.servers) ||
+          (result.mcp.errors !== undefined && !Array.isArray(result.mcp.errors))
+        )
+          throw new McpReadinessError(
+            "invalid_status",
+            "Qwen returned an invalid session-bound MCP status; input was not dispatched.",
+          );
+        const matches = result.mcp.servers.filter(
+          (server: any) => server?.name === serverName,
+        );
+        if (matches.length === 0 && result.mcp.discoveryState !== "completed") {
+          // Configuration/discovery may still be arriving progressively.
+        } else if (
+          matches.length !== 1 ||
+          typeof matches[0].disabled !== "boolean" ||
+          ![
+            "ok",
+            "warning",
+            "error",
+            "disabled",
+            "not_started",
+            "unknown",
+          ].includes(matches[0].status) ||
+          !["connected", "connecting", "disconnected"].includes(
+            matches[0].mcpStatus,
+          )
+        )
+          throw new McpReadinessError(
+            "invalid_status",
+            "Qwen did not report the configured host MCP server unambiguously; input was not dispatched.",
+          );
+        const server = matches[0];
+        if (
+          server &&
+          (server.disabled ||
+            ["pending", "rejected"].includes(server.approvalState) ||
+            server.authenticationState === "failed")
+        )
+          throw new McpReadinessError(
+            "unavailable",
+            "The host MCP server is disabled, unapproved or unavailable; input was not dispatched.",
+          );
+        if (result.mcp.discoveryState === "completed") {
+          if (server?.mcpStatus === "connected" && server.status === "ok")
+            return;
+          throw new McpReadinessError(
+            "unavailable",
+            "Host MCP discovery finished without a connected server; input was not dispatched.",
+          );
+        }
+        await new Promise<void>((resolve, reject) => {
+          if (controller.signal.aborted) {
+            reject(controller.signal.reason);
+            return;
+          }
+          const abort = () => {
+            clearTimeout(poll);
+            reject(controller.signal.reason);
+          };
+          const poll = setTimeout(() => {
+            controller.signal.removeEventListener("abort", abort);
+            resolve();
+          }, 100);
+          controller.signal.addEventListener("abort", abort, { once: true });
+        });
+      }
+    } finally {
+      clearTimeout(timer);
+      if (this.mcpReadinessAbort === controller)
+        this.mcpReadinessAbort = undefined;
+    }
   }
   async prompt(sessionId: string, text: string): Promise<any> {
     if (this.promptActive)
@@ -528,11 +694,20 @@ export class AcpConnection {
   cancel(sessionId: string): void {
     if (sessionId !== this.ownedSession)
       throw new Error("Wrong ACP session binding.");
+    this.cancelMcpReadiness();
     this.send({
       jsonrpc: "2.0",
       method: "session/cancel",
       params: { sessionId },
     });
+  }
+  cancelMcpReadiness(): void {
+    this.mcpReadinessAbort?.abort(
+      new McpReadinessError(
+        "cancelled",
+        "MCP readiness was cancelled before input dispatch.",
+      ),
+    );
   }
   setConfigOption(
     sessionId: string,
@@ -548,9 +723,16 @@ export class AcpConnection {
   private fail(error: Error): void {
     if (this.ended) return;
     this.ended = true;
+    this.mcpReadinessAbort?.abort(
+      new McpReadinessError(
+        "cancelled",
+        "CLI closed during MCP readiness; input was not dispatched.",
+      ),
+    );
     if (this.exitDrainTimer) clearTimeout(this.exitDrainTimer);
     for (const item of this.pending.values()) {
       if (item.timer) clearTimeout(item.timer);
+      item.cleanupAbort?.();
       item.reject(error);
     }
     this.pending.clear();
