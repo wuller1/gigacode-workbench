@@ -180,6 +180,24 @@ function discoveredTransition(body) {
     }
   }
 }
+function toolReplyDiagnostics(body) {
+  // Owned loopback fixture only. Never retain full prompts, settings or headers.
+  return (body.messages || [])
+    .filter((message) => message.role === "tool")
+    .slice(-4)
+    .map((message) => ({
+      id: String(message.tool_call_id || "").slice(0, 160),
+      text: textContent(message.content)
+        .slice(0, 12288)
+        .split(temp)
+        .join("<owned-temp>")
+        .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, "Bearer <redacted>")
+        .replace(
+          /owned-loopback-fixture-no-real-credential/g,
+          "<fixture-credential>",
+        ),
+    }));
+}
 async function startProvider() {
   provider = createServer(async (request, response) => {
     try {
@@ -366,6 +384,7 @@ async function startProvider() {
         stage,
         toolNames: tools,
         calledTool: tool.name,
+        toolReplies: toolReplyDiagnostics(body),
         bytes,
       });
       respond(response, body, { tool });
@@ -988,6 +1007,10 @@ try {
       status: s.status,
       roleRouting: s.roleRouting,
       delivery: s.instructionBinding?.delivery,
+      error: String(s.error || "")
+        .slice(0, 2000)
+        .split(temp)
+        .join("<owned-temp>"),
     }));
   } catch {}
   try {
