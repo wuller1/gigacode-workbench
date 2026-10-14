@@ -5,35 +5,35 @@
   "passed": [
     {
       "name": "Actual session.prepare produces context-only prepared receipt without sending a task",
-      "elapsedMs": 310
+      "elapsedMs": 531
     },
     {
       "name": "Retained router shows actual Analyst rather than a false Auto after a completed real fixture turn",
-      "elapsedMs": 232
+      "elapsedMs": 308
     },
     {
       "name": "Desktop composer fits 1000 and 1440 pixels",
-      "elapsedMs": 281
+      "elapsedMs": 323
     },
     {
       "name": "Settings exposes active context delivery and current fingerprint on the real completed executor",
-      "elapsedMs": 81
+      "elapsedMs": 164
     },
     {
       "name": "Builtin clone saves through actual profile editor and host without changing builtin or active binding",
-      "elapsedMs": 187
+      "elapsedMs": 906
     },
     {
       "name": "UTF-8 byte overflow is rejected in real profile UI and retains the saved version",
-      "elapsedMs": 186
+      "elapsedMs": 659
     },
     {
       "name": "Malformed Unicode is rejected from controlled profile UI without corrupting saved instructions",
-      "elapsedMs": 199
+      "elapsedMs": 255
     },
     {
       "name": "Desktop Roles settings fit 1000 and 1440 pixels in light theme",
-      "elapsedMs": 432
+      "elapsedMs": 585
     }
   ],
   "expectedRejections": [
@@ -92,7 +92,7 @@
       "requestedWidth": 1000,
       "settled": true,
       "frames": 4,
-      "elapsedMs": 53,
+      "elapsedMs": 65,
       "samples": [
         {
           "elapsedMs": 0,
@@ -106,7 +106,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 4,
+          "elapsedMs": 14,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -117,7 +117,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 20,
+          "elapsedMs": 32,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -128,7 +128,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 36,
+          "elapsedMs": 49,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -139,7 +139,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 53,
+          "elapsedMs": 65,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -155,7 +155,7 @@
       "requestedWidth": 1440,
       "settled": true,
       "frames": 5,
-      "elapsedMs": 78,
+      "elapsedMs": 67,
       "samples": [
         {
           "elapsedMs": 0,
@@ -169,7 +169,7 @@
           "composerRight": 995
         },
         {
-          "elapsedMs": 12,
+          "elapsedMs": 5,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -180,7 +180,7 @@
           "composerRight": 995
         },
         {
-          "elapsedMs": 29,
+          "elapsedMs": 20,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -191,7 +191,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 45,
+          "elapsedMs": 36,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -202,7 +202,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 61,
+          "elapsedMs": 54,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -213,7 +213,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 78,
+          "elapsedMs": 67,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -228,11 +228,11 @@
     {
       "requestedWidth": 1440,
       "settled": true,
-      "frames": 9,
-      "elapsedMs": 148,
+      "frames": 11,
+      "elapsedMs": 169,
       "samples": [
         {
-          "elapsedMs": 0,
+          "elapsedMs": 2,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -243,7 +243,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 15,
+          "elapsedMs": 3,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -254,7 +254,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 32,
+          "elapsedMs": 18,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -265,7 +265,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 48,
+          "elapsedMs": 35,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -276,7 +276,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 65,
+          "elapsedMs": 53,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -287,7 +287,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 82,
+          "elapsedMs": 67,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -298,7 +298,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 98,
+          "elapsedMs": 86,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -309,7 +309,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 115,
+          "elapsedMs": 103,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -320,7 +320,7 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 131,
+          "elapsedMs": 119,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -331,7 +331,29 @@
           "composerRight": 1249.5
         },
         {
-          "elapsedMs": 148,
+          "elapsedMs": 136,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 153,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 169,
           "viewport": 1440,
           "dockViewportWidth": 1174,
           "dockViewportLeft": 266,
@@ -347,7 +369,7 @@
       "requestedWidth": 1000,
       "settled": true,
       "frames": 4,
-      "elapsedMs": 51,
+      "elapsedMs": 62,
       "samples": [
         {
           "elapsedMs": 0,
@@ -361,7 +383,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 1,
+          "elapsedMs": 13,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -372,7 +394,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 18,
+          "elapsedMs": 27,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -383,7 +405,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 34,
+          "elapsedMs": 45,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -394,7 +416,7 @@
           "composerRight": 981
         },
         {
-          "elapsedMs": 51,
+          "elapsedMs": 62,
           "viewport": 1000,
           "dockViewportWidth": 758,
           "dockViewportLeft": 242,
@@ -412,7 +434,7 @@
       "backendState": "active",
       "beforeTitle": "Аналитик · Текущая роль сохранена: для этой версии CLI ещё не подключён проверенный LLM-маршрутизатор.\nКонтекст · active · f241257a86f3 · This exact CLI has no reviewed system-append mechanism. Workbench instructions will be supplied as context; no Qwen flags are guessed for a fork.",
       "afterTitle": "Аналитик · Текущая роль сохранена: для этой версии CLI ещё не подключён проверенный LLM-маршрутизатор.\nКонтекст · active · f241257a86f3 · This exact CLI has no reviewed system-append mechanism. Workbench instructions will be supplied as context; no Qwen flags are guessed for a fork.",
-      "elapsedMs": 7
+      "elapsedMs": 15
     }
   ],
   "provenance": {
@@ -421,11 +443,11 @@
       "src/SettingsView.tsx": "22df05f952769ff01f0e020924703d7fa500f71528613527b9e2cb9921a07c66",
       "src/styles.css": "83d00d8fdb1cb4c9044547efcf52e7d049e462b81d3e0a590ad3fb4efda84605",
       "electron/service.ts": "03d5fc8d1ddbe45b8217df48956026ef682aefbbd9463083308b4b5d2815adcd",
-      "electron/prompt-binding.ts": "585a0b98a2963675b8e68db71f75d7d9369ab3d92a40cb7a5c511b7f01694277",
+      "electron/prompt-binding.ts": "ae3a98495f88893a8681ca8757fc45b5c557e45840375048afea21c0dbfc7e34",
       "electron/role-router.ts": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
       "electron/preload.ts": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
       "shared/types.ts": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
-      "dist-electron/main.cjs": "da1998aadd32e4f2959fcf01cf94fb53451e15b0bc37595cd33341984ccb4b4f",
+      "dist-electron/main.cjs": "84dd5d9ecc9fb3be04f8312d40e0a137edd58e7918657cc30b89cfdb1eeb2de7",
       "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
       "../workbench/CORE.md": "1cea28b6fcf01f409ca2af06c92fdbc929fdc4e489c65d6e2de836e0a1beda27",
       "tools/test-roles-ui.mjs": "4c8a7ae10a43a2b8337d22a675c5dd7a3fa564d7f3f14bc2cd2c0240be1c5977",

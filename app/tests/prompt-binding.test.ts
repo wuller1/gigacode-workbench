@@ -1,4 +1,5 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { execFile } from "node:child_process";
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -11,8 +12,15 @@ import {
   type PromptCapabilityEvidence,
 } from "../electron/prompt-binding";
 
+vi.mock("node:child_process", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:child_process")>();
+  return { ...actual, execFile: vi.fn(actual.execFile) };
+});
+
 const temporary: string[] = [];
 afterEach(async () => {
+  vi.restoreAllMocks();
+  vi.mocked(execFile).mockReset();
   await Promise.all(
     temporary
       .splice(0)
@@ -25,6 +33,26 @@ async function temp() {
   );
   temporary.push(directory);
   return directory;
+}
+async function freezeStatMetadata(files: string[]) {
+  const stat = fs.stat.bind(fs);
+  const open = fs.open.bind(fs);
+  const snapshots = new Map(
+    await Promise.all(
+      files.map(async (file) => [file, await stat(file)] as const),
+    ),
+  );
+  vi.spyOn(fs, "stat").mockImplementation(
+    (async (file: Parameters<typeof fs.stat>[0]) =>
+      snapshots.get(String(file)) ?? stat(file)) as typeof fs.stat,
+  );
+  vi.spyOn(fs, "open").mockImplementation(async (...args) => {
+    const handle = await open(...args);
+    const snapshot = snapshots.get(String(args[0]));
+    if (snapshot) vi.spyOn(handle, "stat").mockResolvedValue(snapshot);
+    return handle;
+  });
+  return snapshots;
 }
 const core =
   "Check current sources. Preserve user changes. Report actual evidence.";
@@ -280,6 +308,83 @@ describe("process-scoped prompt launch", () => {
 });
 
 describe("runtime capability evidence", () => {
+  it("invalidates unknown CLI evidence when content changes with identical stat metadata", async () => {
+    const directory = await temp(),
+      executable = path.join(directory, "gigacode.exe");
+    await fs.writeFile(executable, "GigaCode26.10.6:first");
+    const metadata = await freezeStatMetadata([executable]);
+    const a = await discoverPromptCapability({ executable });
+    expect(await discoverPromptCapability({ executable })).toBe(a);
+    await fs.writeFile(executable, "GigaCode26.10.6:other");
+    expect(await fs.stat(executable)).toBe(metadata.get(executable));
+    const b = await discoverPromptCapability({ executable });
+    expect(b.runtimeFingerprint).not.toBe(a.runtimeFingerprint);
+    expect(b.support).toBe("unknown");
+    expect(execFile).not.toHaveBeenCalled();
+  });
+  it("revokes reviewed Qwen evidence after an anchor rewrite despite identical metadata, caching help only for unchanged content", async () => {
+    const directory = await temp();
+    const installed = fileURLToPath(
+      new URL("../node_modules/@qwen-code/qwen-code/", import.meta.url),
+    );
+    const names = [
+      "package.json",
+      "cli-entry.js",
+      "cli.js",
+      "chunks/chunk-A5MAHML6.js",
+      "chunks/chunk-HO724RA7.js",
+      "chunks/acpAgent-FSCEU2SB.js",
+      "chunks/chunk-WCM7H5HK.js",
+      "chunks/chunk-DMQ2VTH6.js",
+      "chunks/chunk-BFTRLQJP.js",
+      "chunks/chunk-GT4TCQ3R.js",
+      "chunks/chunk-ZZZAYAJW.js",
+    ];
+    await fs.mkdir(path.join(directory, "chunks"));
+    await Promise.all(
+      names.map((name) =>
+        fs.copyFile(path.join(installed, name), path.join(directory, name)),
+      ),
+    );
+    const executable = path.join(directory, "cli.js"),
+      anchor = path.join(directory, "chunks/chunk-A5MAHML6.js");
+    const metadata = await freezeStatMetadata(
+      names.map((name) => path.join(directory, name)),
+    );
+    vi.mocked(execFile).mockImplementationOnce(((...args: unknown[]) => {
+      const callback = args.at(-1) as (
+        error: null,
+        stdout: string,
+        stderr: string,
+      ) => void;
+      queueMicrotask(() =>
+        callback(
+          null,
+          "--append-system-prompt --safe-mode --max-tool-calls --max-session-turns --max-wall-time --output-format",
+          "",
+        ),
+      );
+      return {};
+    }) as typeof execFile);
+    const a = await discoverPromptCapability({ executable });
+    expect(a.support).toBe("source_verified");
+    expect(a.helpVerified).toBe(true);
+    expect(await discoverPromptCapability({ executable })).toBe(a);
+    expect(execFile).toHaveBeenCalledTimes(1);
+    const changed = await fs.readFile(anchor);
+    changed[0] ^= 1;
+    await fs.writeFile(anchor, changed);
+    expect(await fs.stat(anchor)).toBe(metadata.get(anchor));
+    const b = await discoverPromptCapability({ executable });
+    expect(b.runtimeFingerprint).not.toBe(a.runtimeFingerprint);
+    expect(b).toMatchObject({
+      family: "qwen",
+      support: "unknown",
+      supportsToollessRouter: false,
+      helpVerified: false,
+    });
+    expect(execFile).toHaveBeenCalledTimes(1);
+  });
   it("does not trust a fork name, a package claim or --append text in a fake executable", async () => {
     const directory = await temp();
     const executable = path.join(directory, "cli.js");

@@ -22,7 +22,8 @@ env.WORKBENCH_DATA_DIR = path.join(temp, "userdata");
 env.WORKBENCH_CLI_PATH = path.join(root, "tests/fixtures/acp-fixture.mjs");
 let app;
 const results = [],
-  errors = [];
+  errors = [],
+  outcomeTransitions = [];
 try {
   app = await _electron.launch({
     executablePath: require("electron"),
@@ -160,6 +161,24 @@ try {
   await check(
     "Completed/cancelled outcomes render truthfully without speaker labels",
     async () => {
+      const started = Date.now();
+      const before = await p.locator(".turn-outcome").allTextContents();
+      // A completed backend response does not commit React's coalesced snapshot.
+      // Wait for the exact user-visible terminal outcomes, keeping both oracles.
+      await p.waitForFunction(() => {
+        const labels = [...document.querySelectorAll(".turn-outcome")].map(
+          (node) => node.textContent || "",
+        );
+        return (
+          labels.filter((text) => text.includes("Выполнено за")).length === 2 &&
+          labels.filter((text) => text.includes("Остановлено")).length === 1
+        );
+      });
+      outcomeTransitions.push({
+        before,
+        after: await p.locator(".turn-outcome").allTextContents(),
+        elapsedMs: Date.now() - started,
+      });
       await assert(
         p
           .locator(".turn-outcome")
@@ -232,6 +251,7 @@ try {
       {
         status: "passed",
         results,
+        outcomeTransitions,
         errors,
         scope:
           "Shipped Electron app with offline ACP model peer; no paid model or corporate MCP",

@@ -82,7 +82,7 @@ $env:OPENAI_API_KEY = ([System.Net.NetworkCredential]::new('', $workbenchSecret)
 $env:OPENAI_BASE_URL = 'https://openrouter.ai/api/v1'
 $env:OPENAI_MODEL = 'qwen/qwen3.7-flash'
 try {
-    npm start
+    npm.cmd start
 } finally {
     Remove-Item Env:OPENAI_API_KEY -ErrorAction SilentlyContinue
     Remove-Item Env:OPENAI_BASE_URL -ErrorAction SilentlyContinue

@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { execFile } from "node:child_process";
-import { createReadStream, promises as fs } from "node:fs";
+import { promises as fs } from "node:fs";
 import path from "node:path";
 import { javascriptEntrypointArgs } from "./acp.js";
 
@@ -253,18 +253,39 @@ const QWEN_SOURCE_ANCHORS: Readonly<Record<string, string>> = Object.freeze({
     "985f26fc14ef5b0a45bef3ec6b375418fe5dfdd62c76852cc02989c42f4618c8",
 });
 const capabilityCache = new Map<string, Promise<PromptCapabilityEvidence>>();
+const MAX_EVIDENCE_FILE_BYTES = 256 * 1024 * 1024;
+// The 11 reviewed anchors total 5,811,298 bytes. Leave room for inspection while
+// bounding aggregate reads of a modified package; unknown native CLIs retain 256 MiB.
+const MAX_REVIEWED_EVIDENCE_BYTES = 32 * 1024 * 1024;
 
-async function hashFile(file: string): Promise<string> {
-  const stat = await fs.stat(file);
-  if (!stat.isFile() || stat.size > 256 * 1024 * 1024)
-    throw new Error("CLI evidence file is invalid or too large.");
-  const hash = createHash("sha256");
-  for await (const chunk of createReadStream(file)) hash.update(chunk);
-  return hash.digest("hex");
-}
-async function fileIdentity(file: string): Promise<string> {
-  const stat = await fs.stat(file);
-  return `${file}:${stat.dev}:${stat.ino}:${stat.size}:${stat.mtimeMs}:${stat.ctimeMs}`;
+async function hashFile(
+  file: string,
+  budget: { remaining: number },
+): Promise<string> {
+  const handle = await fs.open(file, "r");
+  try {
+    const limit = Math.min(MAX_EVIDENCE_FILE_BYTES, budget.remaining);
+    const stat = await handle.stat();
+    if (!stat.isFile() || limit <= 0 || stat.size > limit)
+      throw new Error("CLI evidence file is invalid or too large.");
+    const hash = createHash("sha256");
+    // Read the same open file, including at most one byte beyond the budget to
+    // detect growth after stat without allowing an unbounded stream.
+    const stream = handle.createReadStream({
+      autoClose: false,
+      start: 0,
+      end: limit,
+    });
+    for await (const chunk of stream) {
+      budget.remaining -= chunk.length;
+      if (budget.remaining < 0)
+        throw new Error("CLI evidence read budget exceeded.");
+      hash.update(chunk);
+    }
+    return hash.digest("hex");
+  } finally {
+    await handle.close();
+  }
 }
 async function verifiedHelp(executable: string): Promise<boolean> {
   const javascript = /\.(?:c?js|mjs)$/i.test(executable);
@@ -299,7 +320,8 @@ async function verifiedHelp(executable: string): Promise<boolean> {
 /**
  * A bounded --help subprocess only for exact reviewed Qwen bytes; no model request,
  * settings write or global environment mutation. Unknown forks are not executed.
- * Changed evidence files invalidate the cache. Giga and new Qwen versions remain
+ * Fresh content hashes invalidate the cache even if file metadata is unchanged.
+ * Giga and new Qwen versions remain
  * context-only until their own mechanism is reviewed and separately tested in ACP.
  */
 export async function discoverPromptCapability(input: {
@@ -332,18 +354,22 @@ export async function discoverPromptCapability(input: {
         path.join(packageRoot, name),
       )
     : [executable];
-  const identities = await Promise.all(
-    files.map((file) => fileIdentity(file).catch(() => `${file}:missing`)),
-  );
+  const budget = {
+    remaining: candidate
+      ? MAX_REVIEWED_EVIDENCE_BYTES
+      : MAX_EVIDENCE_FILE_BYTES,
+  };
+  const hashes: string[] = [];
+  // Hash before cache lookup. Windows metadata can remain identical after an
+  // in-place same-size rewrite; metadata is never evidence of reviewed bytes.
+  for (const file of files)
+    hashes.push(await hashFile(file, budget).catch(() => "unavailable"));
   const cacheKey = digest(
-    JSON.stringify([input.executable, identities, packageText ?? null]),
+    JSON.stringify([input.executable, executable, hashes, packageText ?? null]),
   );
   const cached = capabilityCache.get(cacheKey);
   if (cached) return cached;
   const pending = (async (): Promise<PromptCapabilityEvidence> => {
-    const hashes = await Promise.all(
-      files.map((file) => hashFile(file).catch(() => "unavailable")),
-    );
     const verified =
       candidate &&
       hashes.every(

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "passed",
-  "recordedAt": "2026-10-14T14:48:53.703Z",
+  "recordedAt": "2026-10-14T15:15:18.456Z",
   "platform": "darwin",
   "node": "v26.8.1",
   "cliPackageVersion": "0.25.1",
@@ -10,27 +10,27 @@
   "passed": [
     {
       "name": "Renderer cannot impersonate the bound task executor to request a role transition",
-      "elapsedMs": 32
+      "elapsedMs": 37
     },
     {
       "name": "One human request routes Backend, then agent requests Diagnostics while preserving draft",
-      "elapsedMs": 4754
+      "elapsedMs": 4560
     },
     {
       "name": "Held clean phase can resume from compact UI after classifier format failure without another human message",
-      "elapsedMs": 2042
+      "elapsedMs": 1775
     },
     {
       "name": "Host LLM reroutes the same task to Diagnostics without human queue fabrication",
-      "elapsedMs": 2109
+      "elapsedMs": 1888
     },
     {
       "name": "Frontend continues automatically with its own actual process and system fingerprint",
-      "elapsedMs": 2041
+      "elapsedMs": 2251
     },
     {
       "name": "Compact actual role and on-demand completed phase history fit desktop dark and light",
-      "elapsedMs": 1047
+      "elapsedMs": 1092
     }
   ],
   "total": 6,
@@ -332,34 +332,34 @@
   "receipts": [
     {
       "role": "backend",
-      "sessionId": "323bdadb-2576-4ffa-a1e3-2d8f1faf774b",
-      "taskId": "f0c14598-ece3-4e01-8621-cf86ab5a8951",
-      "pid": 72308,
+      "sessionId": "8c204919-d35b-44d7-8248-05cb19fb7bc7",
+      "taskId": "c56ae705-748d-49df-ad2b-6e805e5b3398",
+      "pid": 84697,
       "fingerprint": "16db6030c5fa72f652e9ddd8fe5284cdec075714b32c7acf829248c9207ef32d",
       "transitionStatus": "pending",
       "retiredPriorPids": []
     },
     {
       "role": "diagnostics",
-      "sessionId": "323bdadb-2576-4ffa-a1e3-2d8f1faf774b",
-      "taskId": "f0c14598-ece3-4e01-8621-cf86ab5a8951",
-      "pid": 72445,
+      "sessionId": "8c204919-d35b-44d7-8248-05cb19fb7bc7",
+      "taskId": "c56ae705-748d-49df-ad2b-6e805e5b3398",
+      "pid": 84836,
       "fingerprint": "4a432c319b473ad3b377c6b41bbb23ef40120bc03f1b2233f8daccb0a9aade13",
       "transitionStatus": "pending",
       "retiredPriorPids": [
-        72308
+        84697
       ]
     },
     {
       "role": "frontend",
-      "sessionId": "323bdadb-2576-4ffa-a1e3-2d8f1faf774b",
-      "taskId": "f0c14598-ece3-4e01-8621-cf86ab5a8951",
-      "pid": 72503,
+      "sessionId": "8c204919-d35b-44d7-8248-05cb19fb7bc7",
+      "taskId": "c56ae705-748d-49df-ad2b-6e805e5b3398",
+      "pid": 84896,
       "fingerprint": "1ca495bbd2645420a97a317428a966982055903a037f9bf5d3b76a57f296ad1d",
       "transitionStatus": "running",
       "retiredPriorPids": [
-        72308,
-        72445
+        84697,
+        84836
       ]
     }
   ],
@@ -471,12 +471,12 @@
     "electron/service.ts": "03d5fc8d1ddbe45b8217df48956026ef682aefbbd9463083308b4b5d2815adcd",
     "electron/main.ts": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
     "electron/mcp.ts": "7e1235fa6a3764e4616694c0d123bb6ff62cde01556536674e3c926b8491b5c0",
-    "electron/prompt-binding.ts": "585a0b98a2963675b8e68db71f75d7d9369ab3d92a40cb7a5c511b7f01694277",
+    "electron/prompt-binding.ts": "ae3a98495f88893a8681ca8757fc45b5c557e45840375048afea21c0dbfc7e34",
     "electron/role-router.ts": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
     "electron/preload.ts": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
     "electron/acp.ts": "3ffba600ff11ce50ad373b2bf54c3565bce65d3607d03ca6f50078ba70b579ab",
     "shared/types.ts": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
-    "dist-electron/main.cjs": "da1998aadd32e4f2959fcf01cf94fb53451e15b0bc37595cd33341984ccb4b4f",
+    "dist-electron/main.cjs": "84dd5d9ecc9fb3be04f8312d40e0a137edd58e7918657cc30b89cfdb1eeb2de7",
     "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
     "tools/test-role-transitions-ui.mjs": "a02cec29c3b9b9e70b67740a1c4d7c404fc133f11c2c2e33fde680eb4c12c5cb",
     "../workbench/CORE.md": "1cea28b6fcf01f409ca2af06c92fdbc929fdc4e489c65d6e2de836e0a1beda27",

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-14T15:07:06.459986+00:00",
+  "repository": "wuller1/gigacode-workbench",
+  "runId": 38585015825,
+  "runUrl": "https://github.com/wuller1/gigacode-workbench/actions/runs/38585015825",
+  "jobId": 115924549795,
+  "commitSha": "5b0b0e9fd4bb83235e7602c1289354d70bc44803",
+  "conclusion": "failure",
+  "failedStep": "npm test -- --reporter=json --outputFile=../docs/suite/evidence/agent-runtime-qwen/unit-final-win32.json",
+  "platform": "win32 (windows-latest GitHub hosted runner)",
+  "artifact": {
+    "id": 11904592629,
+    "name": "agent-harness-windows-5b0b0e9fd4bb83235e7602c1289354d70bc44803",
+    "bytes": 3951876,
+    "sha256": "ce85b7ce91081a8de45b1420a3cdd081bfdf5bb052c546d4a752f1fa26bdecdf",
+    "githubDigest": "sha256:ce85b7ce91081a8de45b1420a3cdd081bfdf5bb052c546d4a752f1fa26bdecdf",
+    "digestMatches": true
+  },
+  "unit": {
+    "freshWindowsEvidence": true,
+    "numTotalTestSuites": 91,
+    "numPassedTestSuites": 89,
+    "numFailedTestSuites": 2,
+    "numTotalTests": 416,
+    "numPassedTests": 364,
+    "numFailedTests": 1,
+    "numPendingTests": 51,
+    "success": false,
+    "files": 44,
+    "failures": [
+      {
+        "file": "tests/prompt-binding.test.ts",
+        "name": "runtime capability evidence rejects unscoped PATH lookup and observes a changed unknown executable",
+        "messages": [
+          "AssertionError: expected '204659201090a33427b7167cf970b85ad7a39…' not to be '204659201090a33427b7167cf970b85ad7a39…' // Object.is equality\n    at D:/a/gigacode-workbench/gigacode-workbench/app/tests/prompt-binding.test.ts:332:38\n    at async file:///D:/a/gigacode-workbench/gigacode-workbench/app/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:2783:20"
+        ]
+      }
+    ],
+    "skippedTestsByFile": {
+      "tests/database-live.test.ts": 36,
+      "tests/database-routine-live.test.ts": 8,
+      "tests/instruction-retention.test.ts": 4,
+      "tests/terminal-lifecycle.test.ts": 1,
+      "tests/transport-resilience.test.ts": 1,
+      "tests/workspace-native.test.ts": 1
+    },
+    "skipClassification": {
+      "44": "PostgreSQL live tests require WORKBENCH_DATABASE_TEST_URL; separate database CI owns them",
+      "7": "Windows-specific exclusions:4 POSIX directory fsync,1 POSIX terminal process behavior,1 POSIX transport group,1 POSIX workspace native test"
+    }
+  },
+  "liveSteps": {
+    "systemPlacement": "skipped",
+    "qwenOffline": "skipped",
+    "rolesUi": "skipped",
+    "chatUi": "skipped (not included in artifact)",
+    "roleTransitionsUi": "skipped",
+    "rendererResilienceUi": "skipped"
+  },
+  "sourceProvenance": {
+    "candidate": "Exact GitHub Actions headSha and checkout for this failed job; artifact ZIP digest verified against GitHub metadata",
+    "unitReport": "This failed run produced unit-final-win32.json",
+    "liveReports": "All live steps were skipped. Previously committed darwin reports included in the artifact are excluded here and are not Windows evidence.",
+    "buildHashes": "No OS-generated bundle hash is claimed as a tracked-source hash."
+  },
+  "gigaCode26106Tested": false,
+  "cleanup": {
+    "downloadAndExtraction": "Completed in ignored outputs; no product source edits or local native runtime execution by watcher",
+    "unitRuntimeCleanup": "No independent process inventory in this JSON; completion of the job is not a no-leak proof"
+  }
+}

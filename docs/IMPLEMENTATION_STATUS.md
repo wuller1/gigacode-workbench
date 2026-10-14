@@ -55,7 +55,8 @@ Desktop UX: единый popup модели/reasoning по CLI configOptions, а
 
 | Проверка | Результат и предел |
 | --- | --- |
-| Agent harness 0.5 | [macOS](suite/evidence/agent-runtime-qwen/local-final.json), [Windows](suite/evidence/agent-runtime-windows-4ad3176/provenance.json) и [полная desktop-поставка](suite/evidence/windows-4ad3176/provenance.json) относятся к текущему коду. Ниже отдельно сохранены прежние приёмки; они не заменяют новые результаты |
+| Agent harness 0.6 | [Аудит и локальная приёмка](suite/RUNTIME-TRANSITIONS-RESILIENCE.md); Windows нового candidate фиксируется отдельно после завершения CI. Нижние 0.5 и более ранние результаты исторические, не заменяют проверки 0.6 |
+| Agent harness 0.5, исторический baseline | [macOS](suite/evidence/agent-runtime-qwen/local-final.json), [Windows](suite/evidence/agent-runtime-windows-4ad3176/provenance.json) и [полная desktop-поставка](suite/evidence/windows-4ad3176/provenance.json) относятся к проверенному коду 0.5 |
 | 12 текстовых источников и 12 готовых `.ps1` | SHA-256 обеих копий совпадают с `workbench/scripts.json`; UTF-8 BOM сохранён. `.ps1` в GitHub-поставке уже материализованы |
 | Повторный запуск готовых PowerShell suites | **85/85**: controller/journal 35, docs-impact 15, install-user 16, memory 19; **8/8 Node** checks метрик плюс целостность экспортируемого payload. 5 suites без failures; actual runtime **PowerShell 7.4.20, macOS arm64** |
 | Полный installer preflight | Из `workbench/install-user.ps1`: **240 файлов**, 9 агентов при явном `-IncludeAgents`; все sources внутри `workbench`, `app/` и `node_modules/` не включены. `PlanOnly`, установка и глобальная среда не менялись |

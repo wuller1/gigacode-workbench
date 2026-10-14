@@ -133,7 +133,7 @@ npm.cmd exec --offline -- vitest run tests/prompt-binding.test.ts tests/role-rou
 if ($LASTEXITCODE -ne 0) { throw 'Role/prompt regression failed' }
 ```
 
-Эти tests подтверждают host/compiler/fixture, а не GigaCode совместимость. Бесплатный `node tools/test-prompt-binding-live.mjs` относится к вложенному allowlisted Qwen и выполняет только ACP initialize/new; это не Giga probe. Целевой GigaCode проверяй отдельно по `docs/MANUAL_ACP_PROBE.md`. Аудит текущего среза — `docs/suite/AGENT-HARNESS-AUDIT.md`; если его нет во взятой ревизии, используй код/тесты и зафиксируй отсутствие, не выдумывай результаты.
+Эти tests подтверждают host/compiler/fixture, а не GigaCode совместимость. Бесплатный `node tools/test-prompt-binding-live.mjs` относится к вложенному allowlisted Qwen и выполняет только ACP initialize/new; это не Giga probe. Целевой GigaCode проверяй отдельно по `docs/MANUAL_ACP_PROBE.md`. Аудит текущего среза — `docs/suite/RUNTIME-TRANSITIONS-RESILIENCE.md`, исторический 0.5 — `docs/suite/AGENT-HARNESS-AUDIT.md`; если документа нет во взятой ревизии, используй код/тесты и зафиксируй отсутствие, не выдумывай результаты.
 
 ## 5. Подключи установленный GigaCode к приложению
 

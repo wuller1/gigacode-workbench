@@ -1,54 +1,54 @@
 {
   "schemaVersion": 1,
   "status": "passed",
-  "recordedAt": "2026-10-14T14:48:58.601Z",
+  "recordedAt": "2026-10-14T15:15:24.843Z",
   "platform": "darwin",
   "scope": "Actual App + deterministic owned ACP process; response-fault injection only in automation, actual native renderer crash and actual main fatal handler. No model intelligence, GigaCode or Windows claim.",
   "passed": [
     {
       "name": "Wrong-typed local preferences and draft data cannot blank the actual App or overwrite their original bytes",
-      "elapsedMs": 106
+      "elapsedMs": 111
     },
     {
       "name": "Actual owned ACP request runs once; queued message and per-window drafts stay independent",
-      "elapsedMs": 1513
+      "elapsedMs": 1926
     },
     {
       "name": "Missed host notifications and transient snapshot failures recover without user interaction",
-      "elapsedMs": 4005
+      "elapsedMs": 3806
     },
     {
       "name": "Timed-out out-of-order IPC response cannot replace the newer screen",
-      "elapsedMs": 5845
+      "elapsedMs": 5860
     },
     {
       "name": "Native renderer crash reloads the same window while host PID generation queue and draft survive",
-      "elapsedMs": 638
+      "elapsedMs": 709
     },
     {
       "name": "Actual ErrorBoundary sanitizes a render failure and performs one bounded remount",
-      "elapsedMs": 433
+      "elapsedMs": 461
     },
     {
       "name": "Cancelling real application shutdown recovers a renderer that crashed during native preflight",
-      "elapsedMs": 300
+      "elapsedMs": 270
     },
     {
       "name": "Real main fatal path quiesces host and exposes persistent restart status without replay",
-      "elapsedMs": 462
+      "elapsedMs": 819
     }
   ],
   "total": 8,
   "proofs": [
     {
       "stage": "before faults",
-      "pid": 72334,
+      "pid": 84736,
       "generation": 1,
-      "sessionId": "f3f78449-cff2-4770-9031-728580aee01b",
-      "taskId": "826c759f-7826-4017-b601-60897c2009bc",
+      "sessionId": "f0fbe49b-478b-4331-99c2-3359ea40cbb8",
+      "taskId": "75883288-2a5a-46f5-b6c2-ab3b906b7af4",
       "queue": [
         {
-          "id": "679ad9b4-636a-4e6d-bbc3-b33cd81a32be",
+          "id": "6503daa0-ab79-45e9-b6c4-21fc06f6b042",
           "text": "Queued request must remain unsent during renderer recovery."
         }
       ],
@@ -80,13 +80,13 @@
     },
     {
       "stage": "after actual renderer crash",
-      "pid": 72334,
+      "pid": 84736,
       "generation": 1,
-      "sessionId": "f3f78449-cff2-4770-9031-728580aee01b",
-      "taskId": "826c759f-7826-4017-b601-60897c2009bc",
+      "sessionId": "f0fbe49b-478b-4331-99c2-3359ea40cbb8",
+      "taskId": "75883288-2a5a-46f5-b6c2-ab3b906b7af4",
       "queue": [
         {
-          "id": "679ad9b4-636a-4e6d-bbc3-b33cd81a32be",
+          "id": "6503daa0-ab79-45e9-b6c4-21fc06f6b042",
           "text": "Queued request must remain unsent during renderer recovery."
         }
       ],
@@ -125,13 +125,13 @@
     },
     {
       "stage": "after cancelled shutdown and actual renderer crash",
-      "pid": 72334,
+      "pid": 84736,
       "generation": 1,
-      "sessionId": "f3f78449-cff2-4770-9031-728580aee01b",
-      "taskId": "826c759f-7826-4017-b601-60897c2009bc",
+      "sessionId": "f0fbe49b-478b-4331-99c2-3359ea40cbb8",
+      "taskId": "75883288-2a5a-46f5-b6c2-ab3b906b7af4",
       "queue": [
         {
-          "id": "679ad9b4-636a-4e6d-bbc3-b33cd81a32be",
+          "id": "6503daa0-ab79-45e9-b6c4-21fc06f6b042",
           "text": "Queued request must remain unsent during renderer recovery."
         }
       ],
@@ -186,7 +186,7 @@
     "shared/types.ts": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
     "tests/fixtures/acp-fixture.mjs": "c6e8b243ac46a69329fddb33265c0eb86dc8052f7e801e4f78bc86dfb4b5e5d7",
     "tools/test-renderer-resilience-ui.mjs": "c78a22470cbd2af0f76f1477a06798ade3b480e47aa522ed028cb13d14a14614",
-    "dist-electron/main.cjs": "da1998aadd32e4f2959fcf01cf94fb53451e15b0bc37595cd33341984ccb4b4f",
+    "dist-electron/main.cjs": "84dd5d9ecc9fb3be04f8312d40e0a137edd58e7918657cc30b89cfdb1eeb2de7",
     "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
     "dist/assets/ClusterPanel-CbEPgavK.js": "1ac4e4825cc05a13fb579e4feef218ac7131b8d7343c3351fdeb08772bf13f90",
     "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",

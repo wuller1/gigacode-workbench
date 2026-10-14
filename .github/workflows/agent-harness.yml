@@ -31,14 +31,14 @@ jobs:
           cache-dependency-path: app/package-lock.json
       - run: npm ci --include=optional
       - run: node ../tools/check-bundle.mjs
-      - run: npm test -- --reporter=json --outputFile=../docs/suite/evidence/agent-runtime-qwen/unit-final-win32.json
-      - run: npm run build
       - name: Clear committed reports before recording this Windows run
         run: |
           $evidenceRoot = Join-Path (Split-Path $PWD.Path -Parent) 'docs/suite/evidence'
-          @('agent-runtime-qwen/system-placement.json', 'agent-runtime-qwen/offline-router.json', 'agent-runtime-ui/report.json', 'agent-runtime-ui/roles-composer-dark-1440.png', 'agent-runtime-ui/roles-settings-light-1000.png', 'role-transitions-ui/report.json', 'renderer-resilience-ui/report.json') | ForEach-Object {
+          @('agent-runtime-qwen/unit-final-win32.json', 'agent-runtime-qwen/system-placement.json', 'agent-runtime-qwen/offline-router.json', 'agent-runtime-ui/report.json', 'agent-runtime-ui/roles-composer-dark-1440.png', 'agent-runtime-ui/roles-settings-light-1000.png', 'role-transitions-ui/report.json', 'renderer-resilience-ui/report.json') | ForEach-Object {
             Remove-Item (Join-Path $evidenceRoot $_) -Force -ErrorAction SilentlyContinue
           }
+      - run: npm test -- --reporter=json --outputFile=../docs/suite/evidence/agent-runtime-qwen/unit-final-win32.json
+      - run: npm run build
       - name: Real Qwen system placement (local protocol provider, no external model)
         timeout-minutes: 3
         run: |
