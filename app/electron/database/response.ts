@@ -2,6 +2,16 @@ import type { DatabaseOperation } from "./protocol";
 const object = (v: any) => !!v && typeof v === "object" && !Array.isArray(v);
 const text = (v: any) => typeof v === "string";
 const integer = (v: any) => Number.isSafeInteger(v) && v >= 0;
+const routine = (v: any) =>
+  object(v) &&
+  text(v.oid) &&
+  /^\d{1,10}$/.test(v.oid) &&
+  Number(v.oid) > 0 &&
+  Number(v.oid) <= 4294967295 &&
+  [v.previousHash, v.appliedHash].every(
+    (hash) => text(hash) && /^[0-9a-f]{64}$/.test(hash),
+  ) &&
+  typeof v.committed === "boolean";
 const field = (v: any) => object(v) && text(v.name) && integer(v.typeId);
 const result = (v: any) =>
   object(v) &&
@@ -34,7 +44,8 @@ const job = (v: any) =>
   integer(v.bytes) &&
   Array.isArray(v.results) &&
   v.results.length <= 1000 &&
-  v.results.every(result);
+  v.results.every(result) &&
+  (v.routine === undefined || routine(v.routine));
 /** External MCP adapters must prove their Data v1 output before it reaches canonical state/UI. */
 export function validateDatabaseResponse(
   op: DatabaseOperation,
@@ -85,7 +96,84 @@ export function validateDatabaseResponse(
           object(o) &&
           ["oid", "schema", "name", "kind"].every((k) => text(o[k])),
       );
-  else if (op === "describe")
+  else if (op === "relations") {
+    const oid = (v: any) => text(v) && /^\d{1,10}$/.test(v);
+    const action = (v: any) =>
+      ["NO ACTION", "RESTRICT", "CASCADE", "SET NULL", "SET DEFAULT"].includes(
+        v,
+      );
+    valid =
+      object(value) &&
+      value.rootOid === args.oid &&
+      text(value.capturedAt) &&
+      value.scope === "direct-foreign-keys" &&
+      object(value.limits) &&
+      value.limits.nodes === 30 &&
+      value.limits.edges === 50 &&
+      value.limits.columnsPerNode === 8 &&
+      object(value.totals) &&
+      integer(value.totals.nodes) &&
+      integer(value.totals.edges) &&
+      typeof value.truncated === "boolean" &&
+      Array.isArray(value.nodes) &&
+      value.nodes.length > 0 &&
+      value.nodes.length <= 30 &&
+      value.nodes.every(
+        (n: any) =>
+          object(n) &&
+          oid(n.oid) &&
+          text(n.schema) &&
+          text(n.name) &&
+          ["r", "p", "f"].includes(n.kind) &&
+          integer(n.columnCount) &&
+          typeof n.columnsTruncated === "boolean" &&
+          Array.isArray(n.columns) &&
+          n.columns.length <= 8 &&
+          n.columnCount >= n.columns.length &&
+          n.columns.every(
+            (c: any) =>
+              object(c) &&
+              integer(c.ordinal) &&
+              c.ordinal > 0 &&
+              text(c.name) &&
+              text(c.type) &&
+              typeof c.primaryKey === "boolean",
+          ),
+      ) &&
+      value.nodes.some((n: any) => n.oid === args.oid) &&
+      new Set(value.nodes.map((n: any) => n.oid)).size === value.nodes.length &&
+      Array.isArray(value.edges) &&
+      value.edges.length <= 50 &&
+      value.edges.every(
+        (e: any) =>
+          object(e) &&
+          oid(e.oid) &&
+          text(e.name) &&
+          [e.sourceOid, e.targetOid].every((id) =>
+            value.nodes.some((n: any) => n.oid === id),
+          ) &&
+          [e.sourceOid, e.targetOid].includes(value.rootOid) &&
+          Array.isArray(e.columns) &&
+          e.columns.length > 0 &&
+          e.columns.length <= 1600 &&
+          e.columns.every(
+            (c: any, i: number) =>
+              object(c) &&
+              c.ordinal === i + 1 &&
+              text(c.source) &&
+              text(c.target),
+          ) &&
+          action(e.onUpdate) &&
+          action(e.onDelete) &&
+          ["SIMPLE", "FULL", "PARTIAL"].includes(e.match) &&
+          [e.validated, e.deferrable, e.initiallyDeferred].every(
+            (v) => typeof v === "boolean",
+          ),
+      ) &&
+      new Set(value.edges.map((e: any) => e.oid)).size === value.edges.length &&
+      value.totals.nodes >= value.nodes.length &&
+      value.totals.edges >= value.edges.length;
+  } else if (op === "describe")
     valid =
       object(value) &&
       text(value.oid) &&

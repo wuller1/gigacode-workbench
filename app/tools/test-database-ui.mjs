@@ -19,13 +19,27 @@ const check = async (name, fn) => {
   results.push(name);
   console.log("PASS", name);
 };
+// Playwright's waitForFunction polls the immediate truthiness of a return value.
+// An async predicate returns a truthy Promise even when it later resolves false.
+// Await the evaluated value on the Node side before deciding to finish the wait.
+const waitForHost = async (page, predicate, argument, timeout = 10000) => {
+  const deadline = Date.now() + timeout;
+  while (Date.now() < deadline) {
+    if (await page.evaluate(predicate, argument)) return;
+    await new Promise((resolve) => setTimeout(resolve, 40));
+  }
+  throw new Error(
+    "Timed out awaiting observed host state: " +
+      predicate.toString().slice(0, 180),
+  );
+};
 const assert = (condition, message) => {
   if (!condition) throw new Error(message);
 };
 try {
   await admin.connect();
   await admin.query(
-    "CREATE TABLE public.desktop_data(id bigint PRIMARY KEY, note text, amount numeric(40,20)); INSERT INTO desktop_data VALUES(1,'original',12345678901234567890.12345678901234567890),(2,NULL,NULL); CREATE SCHEMA additional;CREATE TABLE additional.other_data(id int);",
+    "CREATE TABLE public.desktop_data(id bigint PRIMARY KEY, note text, amount numeric(40,20)); INSERT INTO desktop_data VALUES(1,'original',12345678901234567890.12345678901234567890),(2,NULL,NULL); CREATE SCHEMA additional;CREATE TABLE additional.other_data(id int);CREATE TABLE public.desktop_relation(id int PRIMARY KEY,desktop_id bigint CONSTRAINT desktop_relation_target REFERENCES public.desktop_data(id) ON DELETE CASCADE);",
   );
   const env = {
     ...process.env,
@@ -44,10 +58,30 @@ try {
     env,
     timeout: 30000,
   });
+  const runtime = await app.evaluate(() => ({
+    node: process.versions.node,
+    electron: process.versions.electron,
+    chrome: process.versions.chrome,
+  }));
   const p = await app.firstWindow();
   p.setDefaultTimeout(10000);
-  p.on("pageerror", (e) => errors.push(String(e)));
+  p.on("pageerror", (e) => errors.push(e.stack || String(e)));
+  p.on("console", (e) => {
+    if (e.type() === "error") errors.push(e.text());
+  });
   await p.waitForFunction(() => Boolean(window.workbench));
+  await check(
+    "Asynchronous host waits reject false results instead of accepting a Promise as success",
+    async () => {
+      let timedOut = false;
+      try {
+        await waitForHost(p, async () => false, undefined, 120);
+      } catch (error) {
+        timedOut = error.message.includes("Timed out");
+      }
+      assert(timedOut, "Async false was accepted as a passing condition");
+    },
+  );
   const invoke = (method, params = {}) =>
     p.evaluate(
       ({ method, params }) => window.workbench.invoke(method, params),
@@ -212,6 +246,143 @@ try {
           1,
         "Original console disappeared",
       );
+      assert(
+        (await p.getByRole("textbox", { name: "SQL редактор" }).count()) === 0,
+        "Table document reserved its workspace for an empty SQL editor",
+      );
+      await p
+        .getByRole("button", {
+          name: "Показать SQL редактор таблицы",
+          exact: true,
+        })
+        .waitFor();
+    },
+  );
+  await check(
+    "Grid keyboard editing preserves row identity, blocks result transitions and leaves PostgreSQL unchanged until submit",
+    async () => {
+      // A second captured result makes the result selector part of the guard check.
+      const before = await invoke("database.snapshot", {
+        projectId: project.id,
+      });
+      const tableConsole = before.consoles.find(
+        (c) => c.object?.kind === "table" && !c.closed,
+      );
+      const priorJob = before.jobs
+        .filter((j) => j.consoleId === tableConsole.id)
+        .at(-1)?.id;
+      await p
+        .getByRole("button", { name: "Обновить данные таблицы", exact: true })
+        .click();
+      await waitForHost(
+        p,
+        async ({ projectId, consoleId, priorJob }) => {
+          const state = await window.workbench.invoke("database.snapshot", {
+            projectId,
+          });
+          const latest = state.jobs
+            .filter((j) => j.consoleId === consoleId)
+            .at(-1);
+          return (
+            latest && latest.id !== priorJob && latest.status === "completed"
+          );
+        },
+        { projectId: project.id, consoleId: tableConsole.id, priorJob },
+      );
+      await p
+        .locator('.db-grid [data-row="0"][data-column="1"]')
+        .filter({ hasText: "original" })
+        .waitFor();
+      await p.getByRole("button", { name: "Фильтр", exact: true }).click();
+      const cell = (row, column) =>
+        p.locator(`.db-grid [data-row="${row}"][data-column="${column}"]`);
+      const assertFocus = async (row, column) => {
+        await p.waitForFunction(
+          ({ row, column }) => {
+            const active = document.activeElement;
+            return (
+              active?.getAttribute("data-row") === String(row) &&
+              active?.getAttribute("data-column") === String(column)
+            );
+          },
+          { row, column },
+        );
+      };
+      const assertTransitionsBlocked = async () => {
+        for (const [role, name] of [
+          ["combobox", "Результат запроса"],
+          ["combobox", "Строк на странице"],
+          ["button", "Предыдущая страница"],
+          ["button", "Следующая страница"],
+          ["button", "Обновить данные таблицы"],
+          ["button", "Применить фильтр"],
+        ])
+          assert(
+            await p.getByRole(role, { name, exact: true }).isDisabled(),
+            "Uncommitted cell allowed transition: " + name,
+          );
+      };
+      const current = await invoke("database.snapshot", {
+        projectId: project.id,
+      });
+      const captured = current.jobs
+        .filter((j) => j.consoleId === tableConsole.id)
+        .at(-1)
+        .results.at(-1).id;
+      await p
+        .locator(`.db-grid[data-editable="true"][data-result-id="${captured}"]`)
+        .waitFor();
+      await cell(0, 1).focus();
+      await assertFocus(0, 1);
+      await p.keyboard.press("F2");
+      let editor = p.getByRole("textbox", {
+        name: "Значение note",
+        exact: true,
+      });
+      await editor.fill("keyboard-only staged");
+      await assertTransitionsBlocked();
+      await editor.press("Tab");
+      await assertFocus(0, 2);
+      await assertTransitionsBlocked();
+      await p.keyboard.press("F2");
+      editor = p.getByRole("textbox", { name: "Значение amount", exact: true });
+      await editor.press("Shift+Tab");
+      await assertFocus(0, 1);
+      await p.keyboard.press("F2");
+      editor = p.getByRole("textbox", { name: "Значение note", exact: true });
+      await editor.fill("keyboard-only staged twice");
+      await editor.press("Enter");
+      await assertFocus(1, 1);
+      await p.keyboard.press("ArrowLeft");
+      await assertFocus(1, 0);
+      await p.keyboard.press("F2");
+      await p
+        .getByRole("textbox", { name: "Значение id", exact: true })
+        .fill("77");
+      await p.keyboard.press("Escape");
+      await assertFocus(1, 0);
+      assert(
+        (await admin.query("SELECT id,note FROM desktop_data ORDER BY id")).rows
+          .map((r) => r.id + ":" + r.note)
+          .join("|") === "1:original|2:null",
+        "Staged keyboard edit wrote to PostgreSQL or changed another row",
+      );
+      await p
+        .getByRole("button", {
+          name: "Отменить локальные изменения",
+          exact: true,
+        })
+        .click();
+      await p
+        .getByRole("button", { name: "Применить · 1", exact: true })
+        .waitFor({ state: "hidden" });
+      await p
+        .getByRole("button", { name: "Скрыть настройки фильтра", exact: true })
+        .click();
+      assert(
+        (await p.locator(".db-error").count()) === 0,
+        "Keyboard navigation produced a database error",
+      );
     },
   );
   await check(
@@ -314,6 +485,13 @@ try {
     "Manual transaction reports active, keeps writes private, and rollback restores actual data",
     async () => {
       await p
+        .getByRole("button", {
+          name: "Показать SQL редактор таблицы",
+          exact: true,
+        })
+        .click();
+      await p.getByRole("textbox", { name: "SQL редактор" }).waitFor();
+      await p
         .getByRole("combobox", { name: "Режим транзакции" })
         .selectOption("manual");
       await p
@@ -343,6 +521,9 @@ try {
         .getByRole("button", { name: "Rollback", exact: true })
         .waitFor({ state: "hidden" });
       await p
+        .getByRole("combobox", { name: "Режим транзакции" })
+        .selectOption("auto");
+      await p
         .getByRole("button", { name: "Обновить данные таблицы", exact: true })
         .click();
       await p
@@ -352,11 +533,221 @@ try {
     },
   );
   await check(
+    "Table metadata uses compact real columns/keys/indexes with inline highlighted definitions",
+    async () => {
+      await p.getByRole("button", { name: "Структура", exact: true }).click();
+      const metadata = p.getByRole("region", { name: "Структура объекта БД" });
+      await p.getByRole("table", { name: "Столбцы таблицы" }).waitFor();
+      assert(
+        (await p.locator(".db-console-editor").count()) === 1,
+        "Metadata view duplicated the SQL editor",
+      );
+      assert(
+        (
+          await p.getByRole("table", { name: "Столбцы таблицы" }).innerText()
+        ).includes("numeric(40,20)"),
+        "Actual numeric precision missing from catalog inspector",
+      );
+      await p.getByRole("tab", { name: /Ключи/ }).click();
+      await p
+        .getByRole("table", { name: "Ключи и ограничения PostgreSQL" })
+        .waitFor();
+      assert(
+        (
+          await p
+            .getByRole("table", { name: "Ключи и ограничения PostgreSQL" })
+            .innerText()
+        ).includes("desktop_data_pkey"),
+        "Real PostgreSQL primary key missing",
+      );
+      await p.getByRole("tab", { name: /Индексы/ }).click();
+      assert(
+        (
+          await p.getByRole("table", { name: "Индексы PostgreSQL" }).innerText()
+        ).includes("desktop_data_pkey"),
+        "Real PostgreSQL index missing",
+      );
+      const expand = p.locator(".db-structure-expand").first();
+      await expand.click();
+      await p.locator(".db-structure .cm-editor").waitFor();
+      await invoke("database.snapshot", { projectId: project.id });
+      assert(
+        (await p.locator(".db-console-editor").count()) === 1,
+        "Metadata refresh duplicated a keyed editor",
+      );
+      assert(
+        (await p.locator(".db-structure .cm-editor").innerText()).includes(
+          "CREATE UNIQUE INDEX",
+        ),
+        "Inline highlighted SQL is not actual index definition",
+      );
+      await p.getByRole("button", { name: "Данные", exact: true }).click();
+    },
+  );
+  await check(
+    "Relations graph reads actual foreign keys, supports keyboard/drag/zoom and opens related table",
+    async () => {
+      await p.getByRole("button", { name: "Связи", exact: true }).click();
+      const graph = p.getByRole("region", {
+        name: "Диаграмма внешних ключей",
+        exact: true,
+      });
+      await p.locator(".db-relations-node").first().waitFor();
+      assert(
+        (await p.locator(".db-relations-node").count()) === 2,
+        "Graph did not read actual PostgreSQL neighborhood",
+      );
+      const choices = p.getByRole("combobox", { name: "Выбрать внешний ключ" });
+      const oid = await choices
+        .locator("option")
+        .filter({ hasText: "desktop_relation_target" })
+        .getAttribute("value");
+      await choices.selectOption(oid);
+      const inspector = p.getByRole("region", {
+        name: "Свойства внешнего ключа desktop_relation_target",
+      });
+      await inspector.waitFor();
+      assert(
+        (await inspector.innerText()).includes("desktop_id") &&
+          (await inspector.innerText()).includes("CASCADE"),
+        "FK columns/actions missing",
+      );
+      const header = p.getByRole("button", {
+        name: "Таблица public.desktop_data, выбранная",
+        exact: true,
+      });
+      const card = p.locator(
+        '.db-relations-node[aria-label="public.desktop_data"]',
+      );
+      // Inspector appearance changes the canvas height. Wait for the actual
+      // header to stabilize before measuring or placing the mouse on it.
+      await header.hover({ position: { x: 30, y: 15 } });
+      const position = await card.evaluate((element) => ({
+        left: Number.parseFloat(element.style.left),
+        top: Number.parseFloat(element.style.top),
+      }));
+      const before = await card.boundingBox();
+      await header.focus();
+      await header.press("ArrowRight");
+      await p.waitForFunction(
+        ({ left }) =>
+          Number.parseFloat(
+            document.querySelector(
+              '.db-relations-node[aria-label="public.desktop_data"]',
+            ).style.left,
+          ) ===
+          left + 10,
+        position,
+      );
+      const after = await card.boundingBox();
+      assert(
+        after.x > before.x,
+        "Keyboard move did not move actual graph card",
+      );
+      await header.press("Home");
+      await p.waitForFunction(({ left, top }) => {
+        const element = document.querySelector(
+          '.db-relations-node[aria-label="public.desktop_data"]',
+        );
+        return (
+          Number.parseFloat(element.style.left) === left &&
+          Number.parseFloat(element.style.top) === top
+        );
+      }, position);
+      await header.hover({ position: { x: 30, y: 15 } });
+      const box = await header.boundingBox();
+      const dragBefore = await card.boundingBox();
+      const nodeOid = await card.getAttribute("data-oid");
+      await p.mouse.move(box.x + 30, box.y + 15);
+      await p.mouse.down();
+      await p.waitForFunction(
+        (oid) =>
+          document.querySelector(".db-relations")?.dataset.dragging === oid,
+        nodeOid,
+      );
+      await p.mouse.move(box.x + 85, box.y + 40, { steps: 5 });
+      await p.mouse.up();
+      await p.waitForFunction(() => {
+        const graph = document.querySelector(".db-relations");
+        return graph && !graph.dataset.dragging;
+      });
+      await p.waitForFunction(({ x, y }) => {
+        const moved = document
+          .querySelector('.db-relations-node[aria-label="public.desktop_data"]')
+          .getBoundingClientRect();
+        return moved.x > x + 50 && moved.y > y + 20;
+      }, dragBefore);
+      assert(
+        (await card.boundingBox()).x > dragBefore.x + 50,
+        "Dragging graph table did not follow pointer",
+      );
+      assert(
+        (await p.evaluate(() => window.getSelection()?.toString() || "")) ===
+          "",
+        "Dragging selected table text instead of moving its header",
+      );
+      await p
+        .getByRole("button", {
+          name: "Уменьшить масштаб диаграммы",
+          exact: true,
+        })
+        .click();
+      await p
+        .getByRole("button", {
+          name: "Восстановить расположение таблиц",
+          exact: true,
+        })
+        .click();
+      await p.screenshot({
+        path: path.join(
+          evidence,
+          "database-runtime-relations" +
+            (process.platform === "darwin" ? "" : "-" + process.platform) +
+            (packaged ? "-packaged" : "") +
+            ".png",
+        ),
+      });
+      await p
+        .getByRole("button", {
+          name: "Открыть таблицу public.desktop_relation",
+          exact: true,
+        })
+        .click();
+      await p
+        .getByRole("tab", { name: "desktop_relation", exact: true })
+        .waitFor();
+      await p
+        .getByRole("button", { name: "Закрыть desktop_relation", exact: true })
+        .click();
+      await p.getByRole("tab", { name: "desktop_data", exact: true }).click();
+      await p.getByRole("button", { name: "Данные", exact: true }).click();
+    },
+  );
+  await check(
     "Document close, reopen and switching preserve the independent SQL document",
     async () => {
+      // Create this scenario's transaction explicitly, rather than relying on
+      // a previous test leaving a manual session open.
+      await p
+        .getByRole("combobox", { name: "Режим транзакции" })
+        .selectOption("manual");
+      await p
+        .getByRole("button", { name: "Обновить данные таблицы", exact: true })
+        .click();
+      await p.getByRole("button", { name: "Rollback", exact: true }).waitFor();
       await p
         .getByRole("button", { name: "Закрыть desktop_data", exact: true })
         .click();
+      const closeTransaction = p.getByRole("dialog", {
+        name: "Откатить транзакцию и закрыть вкладку?",
+      });
+      await closeTransaction.waitFor();
+      await closeTransaction
+        .getByRole("button", { name: "Подтвердить", exact: true })
+        .click();
+      await p
+        .getByRole("tab", { name: "desktop_data", exact: true })
+        .waitFor({ state: "hidden" });
       await p.getByRole("tab", { name: "SQL A", exact: true }).click();
       assert(
         (
@@ -386,6 +777,67 @@ try {
     await p.keyboard.insertText(sql);
     await p.keyboard.press("ControlOrMeta+Enter");
   };
+  await check(
+    "Closing immediately after typing flushes the SQL draft before hiding and reopening the document",
+    async () => {
+      const recoveries = await invoke("database.recovery.list", {
+        projectId: project.id,
+      });
+      const doc = await invoke("database.console.create", {
+        projectId: project.id,
+        connectionId: connection.id,
+        title: "Flush on close",
+        sql: "SELECT 1;",
+      });
+      await p.getByRole("tab", { name: "Flush on close", exact: true }).click();
+      const editor = p.getByRole("textbox", { name: "SQL редактор" });
+      await editor.click();
+      await p.keyboard.press("ControlOrMeta+A");
+      await p.keyboard.insertText("SELECT 314 AS closed_immediately;");
+      // Do not wait for debounce: the close path itself must finish the durable save.
+      await p
+        .getByRole("button", { name: "Закрыть Flush on close", exact: true })
+        .click();
+      await p
+        .getByRole("tab", { name: "Flush on close", exact: true })
+        .waitFor({ state: "hidden" });
+      const closed = await invoke("database.console.read", {
+        projectId: project.id,
+        consoleId: doc.id,
+      });
+      assert(
+        closed.closed && closed.sql === "SELECT 314 AS closed_immediately;",
+        "Close hid the document before saving its current draft",
+      );
+      assert(
+        (await invoke("database.recovery.list", { projectId: project.id }))
+          .length === recoveries.length,
+        "Ordinary close generated a false recovery conflict",
+      );
+      await p
+        .getByRole("button", { name: "Инструменты базы данных", exact: true })
+        .click();
+      await p
+        .getByRole("menuitem", { name: "Закрытые вкладки", exact: true })
+        .click();
+      await p
+        .getByRole("tab", { name: "Flush on close", exact: true })
+        .waitFor();
+      await p.waitForFunction(() =>
+        document
+          .querySelector('[aria-label="SQL редактор"]')
+          ?.textContent?.includes("SELECT 314 AS closed_immediately;"),
+      );
+      assert(
+        (await p.locator(".db-conflict").count()) === 0,
+        "Reopened draft contains a false revision conflict",
+      );
+      await p
+        .getByRole("button", { name: "Закрыть Flush on close", exact: true })
+        .click();
+      await p.getByRole("tab", { name: "SQL A", exact: true }).click();
+    },
+  );
   await check(
     "Duplicate column labels display distinct positional values",
     async () => {
@@ -547,6 +999,105 @@ try {
     },
   );
   await check(
+    "Routine documents reject generic SQL execution and apply the verified server definition through the protected editor",
+    async () => {
+      await admin.query(
+        "CREATE FUNCTION public.desktop_probe() RETURNS integer LANGUAGE sql AS $$SELECT 1$$;",
+      );
+      const source = (
+        await admin.query(
+          "SELECT oid::text,pg_get_functiondef(oid) ddl FROM pg_proc WHERE oid='public.desktop_probe()'::regprocedure",
+        )
+      ).rows[0];
+      const doc = await invoke("database.console.create", {
+        projectId: project.id,
+        connectionId: connection.id,
+        title: "desktop_probe()",
+        sql: source.ddl,
+        object: { oid: source.oid, kind: "function" },
+      });
+      await invoke("database.console.open", {
+        projectId: project.id,
+        consoleId: doc.id,
+      });
+      let rejected = "";
+      try {
+        await invoke("database.execute", {
+          projectId: project.id,
+          consoleId: doc.id,
+          sql: source.ddl.replace(/SELECT\s+1\b/, "SELECT 99"),
+          operationId: crypto.randomUUID(),
+        });
+      } catch (error) {
+        rejected = error.message;
+      }
+      assert(
+        rejected.includes("routineApply"),
+        "Routine document accepted generic execute before its verified definition was loaded: " +
+          rejected,
+      );
+      assert(
+        (await admin.query("SELECT public.desktop_probe() value")).rows[0]
+          .value === 1,
+        "Rejected generic execution still changed the routine",
+      );
+      await p
+        .getByRole("tab", { name: "desktop_probe()", exact: true })
+        .click();
+      await p.waitForFunction(() =>
+        [...document.querySelectorAll(".db-sql-toolbar button")].some(
+          (b) => b.textContent.includes("Применить DDL") && !b.disabled,
+        ),
+      );
+      const replacement = source.ddl.replace(/SELECT\s+1\b/, "SELECT 2");
+      assert(
+        replacement !== source.ddl,
+        "Fixture routine body did not match the intended change",
+      );
+      const editor = p.getByRole("textbox", { name: "SQL редактор" }).first();
+      await editor.click();
+      await p.keyboard.press("ControlOrMeta+A");
+      await p.keyboard.insertText(replacement);
+      await p.keyboard.press("ControlOrMeta+Enter");
+      await waitForHost(
+        p,
+        async ({ projectId, consoleId }) => {
+          const state = await window.workbench.invoke("database.snapshot", {
+            projectId,
+          });
+          return state.jobs.some(
+            (j) =>
+              j.consoleId === consoleId &&
+              j.status === "completed" &&
+              j.routine?.committed,
+          );
+        },
+        { projectId: project.id, consoleId: doc.id },
+      );
+      const observedRoutine = (
+        await admin.query(
+          "SELECT public.desktop_probe() value, pg_get_functiondef('public.desktop_probe()'::regprocedure) ddl, pg_backend_pid() pid",
+        )
+      ).rows[0];
+      assert(
+        observedRoutine.value === 2,
+        "Protected editor did not apply actual routine change: " +
+          JSON.stringify({
+            observedRoutine,
+            state: await invoke("database.snapshot", { projectId: project.id }),
+          }),
+      );
+      assert(
+        (await p.locator(".db-error").count()) === 0,
+        "Protected routine editing left a database error",
+      );
+      await p
+        .getByRole("button", { name: "Закрыть desktop_probe()", exact: true })
+        .click();
+      await p.getByRole("tab", { name: "SQL A", exact: true }).click();
+    },
+  );
+  await check(
     "Two real windows preserve a conflicting SQL draft and can save it as a separate durable console",
     async () => {
       const opened = app.waitForEvent("window");
@@ -578,7 +1129,8 @@ try {
         (await editor.innerText()).includes("first_window_draft"),
         "The foreign update replaced an unsaved buffer",
       );
-      await p.waitForFunction(
+      await waitForHost(
+        p,
         async (projectId) =>
           (
             await window.workbench.invoke("database.recovery.list", {
@@ -612,10 +1164,253 @@ try {
       await second.close();
     },
   );
+  await check(
+    "Retargeting a disconnected connection labels old documents as previous-server snapshots and prevents execution",
+    async () => {
+      const state = await invoke("database.snapshot", {
+        projectId: project.id,
+      });
+      for (const doc of state.consoles.filter((c) => c.leaseId)) {
+        await invoke("database.console.disconnect", {
+          projectId: project.id,
+          consoleId: doc.id,
+        });
+      }
+      await p.getByRole("tab", { name: "SQL A", exact: true }).click();
+      await invoke("database.connection.save", {
+        connection: { ...connection, database: "template1" },
+      });
+      await p
+        .locator(".db-link-state")
+        .filter({ hasText: "Прежний сервер" })
+        .waitFor();
+      assert(
+        (await p.locator(".db-effect").innerText()).includes(
+          "относятся к прежнему серверу",
+        ),
+        "Cached rows were presented without their previous-server identity",
+      );
+      assert(
+        await p
+          .getByRole("button", { name: "Выполнить", exact: true })
+          .isDisabled(),
+        "Previous-server SQL document allowed execution against the new target",
+      );
+      assert(
+        !(await p.locator(".db-link-state").getAttribute("class"))
+          .split(/\s+/)
+          .includes("connected"),
+        "Previous-server document kept the green connected indicator",
+      );
+      let rejection = "";
+      try {
+        await invoke("database.console.open", {
+          projectId: project.id,
+          consoleId: console.id,
+        });
+      } catch (error) {
+        rejection = error.message;
+      }
+      assert(
+        rejection.includes("прежнему серверу"),
+        "Backend silently rebound the old console to a different database",
+      );
+      // Restore the fixture's target without opening a new session. Old SQL/results remain readable.
+      await invoke("database.connection.save", { connection });
+      await p.waitForFunction(
+        () =>
+          document.querySelector(".db-link-state")?.textContent?.trim() !==
+          "Прежний сервер",
+      );
+      assert(
+        (await p.locator(".db-error").count()) === 0,
+        "Retargeting produced an unexpected renderer error",
+      );
+    },
+  );
+  await check(
+    "Native window close awaits the last SQL keystrokes before destroying renderer",
+    async () => {
+      const opened = app.waitForEvent("window");
+      await invoke("window.new");
+      const second = await opened;
+      await second.waitForFunction(() => Boolean(window.workbench));
+      await second
+        .locator(".task-select")
+        .filter({ hasText: "Live database workflow" })
+        .click();
+      if (!(await second.locator(".database-workspace").count()))
+        await second
+          .getByRole("button", { name: "Базы данных", exact: true })
+          .click();
+      const doc = await second.evaluate(
+        ({ projectId, connectionId }) =>
+          window.workbench.invoke("database.console.create", {
+            projectId,
+            connectionId,
+            title: "Native close draft",
+            sql: "SELECT 1;",
+          }),
+        { projectId: project.id, connectionId: connection.id },
+      );
+      await second
+        .getByRole("tab", { name: "Native close draft", exact: true })
+        .click();
+      await second.getByRole("textbox", { name: "SQL редактор" }).click();
+      await second.keyboard.press("ControlOrMeta+A");
+      await second.keyboard.insertText("SELECT 789 AS native_close_saved;");
+      const closed = second.waitForEvent("close");
+      await second.evaluate(() => window.workbench.invoke("window.close"));
+      await closed;
+      const persisted = await invoke("database.console.read", {
+        projectId: project.id,
+        consoleId: doc.id,
+      });
+      assert(
+        persisted.sql === "SELECT 789 AS native_close_saved;",
+        "Native close destroyed unsaved SQL draft",
+      );
+    },
+  );
+  await check(
+    "Native Close and application Quit preserve an active manual transaction until explicit Rollback",
+    async () => {
+      const original = (
+        await admin.query("SELECT note FROM desktop_data WHERE id=1")
+      ).rows[0].note;
+      const doc = await invoke("database.console.create", {
+        projectId: project.id,
+        connectionId: connection.id,
+        title: "Manual quit guard",
+        sql: "SELECT 1;",
+      });
+      const scope = { projectId: project.id, consoleId: doc.id };
+      await invoke("database.console.open", scope);
+      await invoke("database.transaction", {
+        ...scope,
+        action: "mode",
+        mode: "manual",
+      });
+      const write = await invoke("database.execute", {
+        ...scope,
+        sql: "UPDATE desktop_data SET note='private before quit' WHERE id=1",
+        operationId: crypto.randomUUID(),
+      });
+      await waitForHost(
+        p,
+        async ({ projectId, jobId }) =>
+          (
+            await window.workbench.invoke("database.snapshot", { projectId })
+          ).jobs.some((j) => j.id === jobId && j.status === "completed"),
+        { projectId: project.id, jobId: write.id },
+      );
+      await p
+        .getByRole("tab", { name: "Manual quit guard", exact: true })
+        .click();
+      await invoke("window.close");
+      await p.locator(".error-toast").filter({ hasText: "Commit" }).waitFor();
+      assert(
+        !p.isClosed(),
+        "Native Close destroyed the last window before checking transaction",
+      );
+      await p
+        .getByRole("button", { name: "Закрыть сообщение", exact: true })
+        .click();
+      const newWindowBlocked = await app.evaluate(
+        async ({ app, BrowserWindow }) => {
+          const window = BrowserWindow.getAllWindows()[0];
+          app.quit();
+          return window.webContents.executeJavaScript(
+            'window.workbench.invoke("window.new").then(() => false, () => true)',
+          );
+        },
+      );
+      assert(
+        newWindowBlocked,
+        "A new window bypassed the global shutdown save barrier",
+      );
+      await p.locator(".error-toast").filter({ hasText: "Commit" }).waitFor();
+      assert(
+        !p.isClosed(),
+        "Application quit rolled back a manual transaction without warning",
+      );
+      assert(
+        (await admin.query("SELECT note FROM desktop_data WHERE id=1")).rows[0]
+          .note === original,
+        "Manual write unexpectedly committed",
+      );
+      const read = await invoke("database.execute", {
+        ...scope,
+        sql: "SELECT note FROM desktop_data WHERE id=1",
+        operationId: crypto.randomUUID(),
+      });
+      await waitForHost(
+        p,
+        async ({ projectId, jobId }) =>
+          (
+            await window.workbench.invoke("database.snapshot", { projectId })
+          ).jobs.some((j) => j.id === jobId && j.status === "completed"),
+        { projectId: project.id, jobId: read.id },
+      );
+      const state = await invoke("database.snapshot", {
+        projectId: project.id,
+      });
+      const result = state.jobs.find((j) => j.id === read.id).results[0];
+      assert(
+        (await invoke("database.page", { ...scope, resultId: result.id }))
+          .values[0][0] === "private before quit",
+        "Rejected shutdown still rolled back the actual PostgreSQL session",
+      );
+      await invoke("database.transaction", { ...scope, action: "rollback" });
+      await p
+        .getByRole("button", { name: "Закрыть сообщение", exact: true })
+        .click();
+      await p
+        .getByRole("button", { name: "Закрыть Manual quit guard", exact: true })
+        .click();
+    },
+  );
   assert(errors.length === 0, "Renderer errors: " + errors.join("; "));
   assert(
     (await p.locator(".db-error").count()) === 0,
     "The final workspace contains an unexpected error",
+  );
+  await check(
+    "Repeated application Quit cannot bypass the final durable SQL save",
+    async () => {
+      const doc = await invoke("database.console.create", {
+        projectId: project.id,
+        connectionId: connection.id,
+        title: "Repeated quit draft",
+        sql: "SELECT 1;",
+      });
+      await p
+        .getByRole("tab", { name: "Repeated quit draft", exact: true })
+        .click();
+      await p.getByRole("textbox", { name: "SQL редактор" }).click();
+      await p.keyboard.press("ControlOrMeta+A");
+      await p.keyboard.insertText("SELECT 909 AS repeated_quit_saved;");
+      const closed = app.waitForEvent("close");
+      await app.evaluate(({ app }) => {
+        setTimeout(() => {
+          app.quit();
+          app.quit();
+        }, 0);
+      });
+      await closed;
+      app = undefined;
+      const persisted = JSON.parse(
+        await fs.readFile(
+          path.join(temp, "desktop/database/state.json"),
+          "utf8",
+        ),
+      );
+      assert(
+        persisted.consoles.find((c) => c.id === doc.id)?.sql ===
+          "SELECT 909 AS repeated_quit_saved;",
+        "Second Quit bypassed the pending renderer persistence barrier",
+      );
+    },
   );
   await databaseEvidence(
     "database-runtime-ui" +
@@ -629,20 +1424,27 @@ try {
       cases: results.length,
       passed: results,
       rendererErrors: errors,
-      runtime: await app.evaluate(() => ({
-        node: process.versions.node,
-        electron: process.versions.electron,
-        chrome: process.versions.chrome,
-      })),
+      runtime,
       scope:
         "Real Electron renderer/IPC/stdio MCP/PostgreSQL, isolated cluster. No workplace MCP, GigaCode fork, VARM or unsupported platform claim.",
     },
   );
 } catch (error) {
+  console.error("DB UI FAILURE", error);
   if (app) {
     const page = await app.firstWindow();
     console.error(
       "DB UI DIAGNOSTIC",
+      {
+        errors,
+        html: await page.locator(".db-main").evaluate((e) =>
+          Array.from(e.children).map((c) => ({
+            tag: c.tagName,
+            cls: c.className,
+            text: c.textContent.slice(0, 180),
+          })),
+        ),
+      },
       await page.locator(".database-workspace").innerText(),
     );
     const diagnostic = path.join(root, "test-results/database");
@@ -650,6 +1452,11 @@ try {
     await page.screenshot({
       path: path.join(diagnostic, "database-ui-failure.png"),
     });
+    // This process and database belong solely to this disposable test. A failed
+    // assertion can leave a manual transaction open, so normal Quit must refuse
+    // shutdown. Force only this test-owned process after collecting diagnostics.
+    await app.evaluate(({ app }) => app.exit(1)).catch(() => {});
+    app = undefined;
   }
   throw error;
 } finally {

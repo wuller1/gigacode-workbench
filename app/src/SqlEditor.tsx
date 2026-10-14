@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import {
   EditorView,
   Decoration,
@@ -41,7 +41,8 @@ export function SqlEditor({
   const host = useRef<HTMLDivElement>(null),
     view = useRef<EditorView | undefined>(undefined),
     callbacks = useRef({ onChange, onRun }),
-    language = useRef(new Compartment());
+    language = useRef(new Compartment()),
+    access = useRef(new Compartment());
   callbacks.current = { onChange, onRun };
   const diagnostic = useRef(new Compartment());
   useEffect(() => {
@@ -57,8 +58,10 @@ export function SqlEditor({
           history(),
           bracketMatching(),
           highlightSelectionMatches(),
-          EditorState.readOnly.of(readOnly),
-          EditorView.editable.of(!readOnly),
+          access.current.of([
+            EditorState.readOnly.of(readOnly),
+            EditorView.editable.of(!readOnly),
+          ]),
           language.current.of(sql({ dialect: PostgreSQL, schema: names })),
           diagnostic.current.of([]),
           autocompletion(),
@@ -137,6 +140,14 @@ export function SqlEditor({
       view.current = undefined;
     };
   }, []);
+  useLayoutEffect(() => {
+    view.current?.dispatch({
+      effects: access.current.reconfigure([
+        EditorState.readOnly.of(readOnly),
+        EditorView.editable.of(!readOnly),
+      ]),
+    });
+  }, [readOnly]);
   useEffect(() => {
     const v = view.current;
     if (v && v.state.doc.toString() !== value)

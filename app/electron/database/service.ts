@@ -10,6 +10,7 @@ import type {
   DatabaseLease,
 } from "../../shared/database";
 import type { DatabaseOperation } from "./protocol";
+import { statements } from "../../shared/sql";
 type Recovery = {
   id: string;
   consoleId: string;
@@ -56,6 +57,12 @@ function targetHash(c: DatabaseConnection) {
     )
     .digest("hex");
 }
+function isRoutine(c: DatabaseConsole) {
+  return ["function", "procedure"].includes(c.object?.kind || "");
+}
+function sqlHash(sql: string) {
+  return createHash("sha256").update(sql).digest("hex");
+}
 export class DatabaseService {
   private store: AtomicStore<DataState>;
   private clients = new Map<string, Promise<DatabaseMcpClient>>();
@@ -63,6 +70,7 @@ export class DatabaseService {
   private jobs = new Map<string, DatabaseJob>();
   private pending = new Map<string, Promise<any>>();
   private operations = new Map<string, Promise<any>>();
+  private disposing = false;
   constructor(
     private options: {
       dataDir: string;
@@ -94,6 +102,9 @@ export class DatabaseService {
           (x) => x.id === c.connectionId,
         )?.targetHash;
         c.leaseId = undefined;
+        // A restarted provider cannot retain an uncommitted physical session.
+        // Never promote its working definition to the committed baseline.
+        if (c.routineBaseline) c.routineBaseline.session = undefined;
         if (c.pendingEffect) {
           c.pendingEffect.phase = "unknown";
           c.pendingEffect.reason =
@@ -204,10 +215,11 @@ export class DatabaseService {
   }
   private async withEffect(
     c: DatabaseConsole,
-    kind: "changes" | "transaction",
+    kind: "changes" | "transaction" | "routine",
     operationId: string,
     intent: Record<string, unknown>,
     submit: () => Promise<any>,
+    accept?: (draft: DatabaseConsole, result: any) => void,
   ) {
     const pending: NonNullable<DatabaseConsole["pendingEffect"]> = {
       operationId,
@@ -227,8 +239,10 @@ export class DatabaseService {
       const result = await submit();
       await this.store.update((s) => {
         const d = s.consoles.find((d) => d.id === c.id)!;
-        if (d.pendingEffect?.operationId === operationId)
+        if (d.pendingEffect?.operationId === operationId) {
+          accept?.(d, result);
           d.pendingEffect = undefined;
+        }
       });
       return result;
     } catch (error: any) {
@@ -243,6 +257,109 @@ export class DatabaseService {
       this.options.changed(c.projectId);
       throw error;
     }
+  }
+  private routineHash(c: DatabaseConsole) {
+    const baseline = c.routineBaseline;
+    if (!baseline?.verified || baseline.blocked)
+      throw new Error(
+        baseline?.blocked ||
+          "Исходная версия DDL неизвестна или не проверена. Загрузите DDL из БД; текущий текст будет сохранён в восстановлении.",
+      );
+    const lease = c.leaseId ? this.leases.get(c.leaseId) : undefined;
+    const session = baseline.session;
+    return session &&
+      session.leaseId === c.leaseId &&
+      session.generation === lease?.generation
+      ? session.hash
+      : baseline.committedHash;
+  }
+  private async waitRoutine(
+    c: DatabaseConsole,
+    client: DatabaseMcpClient,
+    accepted: DatabaseJob,
+    expectedHash: string,
+    ownTransaction: boolean,
+  ) {
+    this.jobs.set(accepted.id, accepted);
+    await this.store.update((s) => {
+      const d = s.consoles.find((d) => d.id === c.id)!;
+      if (d.pendingEffect?.operationId === accepted.operationId)
+        d.pendingEffect.jobId = accepted.id;
+    });
+    this.options.changed(c.projectId);
+    const deadline = Date.now() + 10 * 60_000;
+    while (!this.disposing && Date.now() < deadline) {
+      const state = await client.call("status", {});
+      const lease = state.leases.find((l: DatabaseLease) => l.id === c.leaseId);
+      if (lease) this.leases.set(lease.id, lease);
+      const job = state.jobs.find((j: DatabaseJob) => j.id === accepted.id);
+      if (
+        !job ||
+        job.consoleId !== c.id ||
+        job.operationId !== accepted.operationId
+      )
+        throw Object.assign(
+          new Error(
+            "Подтверждение DDL потеряно. Сверьте исход операции перед повтором.",
+          ),
+          { outcome: "unknown" },
+        );
+      this.jobs.set(job.id, job);
+      if (job.status === "completed") {
+        if (
+          !job.routine ||
+          job.routine.oid !== c.object!.oid ||
+          job.routine.previousHash !== expectedHash ||
+          !/^[a-f0-9]{64}$/.test(job.routine.appliedHash) ||
+          typeof job.routine.committed !== "boolean" ||
+          !lease ||
+          lease.transaction === "unknown" ||
+          (ownTransaction && !job.routine.committed)
+        )
+          throw Object.assign(
+            new Error(
+              "Нет полного подтверждения целевого DDL. Требуется сверка.",
+            ),
+            { outcome: "unknown" },
+          );
+        return job as DatabaseJob;
+      }
+      if (job.status !== "running") {
+        let rolledBack = false;
+        if (
+          job.status !== "unknown" &&
+          lease &&
+          lease.transaction === (ownTransaction ? "idle" : "active")
+        ) {
+          // Engine routine failures roll back the owning transaction/savepoint.
+          // Require the actual ReadyForQuery state and an unchanged target too;
+          // a failed rollback/socket loss cannot be called "not applied".
+          const observed = await client
+            .call("describe", {
+              leaseId: c.leaseId,
+              oid: c.object!.oid,
+              kind: c.object!.kind,
+            })
+            .catch(() => undefined);
+          rolledBack = observed?.hash === expectedHash;
+        }
+        throw Object.assign(
+          new Error(job.error?.message || "DDL не завершён"),
+          {
+            outcome: rolledBack ? "notApplied" : "unknown",
+            code: job.error?.code,
+          },
+        );
+      }
+      this.options.changed(c.projectId);
+      await new Promise((resolve) => setTimeout(resolve, 120));
+    }
+    throw Object.assign(
+      new Error(
+        "Подтверждение DDL не получено. Повтор заблокирован до сверки.",
+      ),
+      { outcome: "unknown" },
+    );
   }
   async snapshot(projectId: string): Promise<DatabaseSnapshot> {
     this.options.project(projectId);
@@ -266,6 +383,7 @@ export class DatabaseService {
     };
   }
   async invoke(method: string, p: any, agent = false): Promise<any> {
+    if (this.disposing) throw new Error("Data workspace закрывается");
     if (
       !p.consoleId ||
       ["database.cancel", "database.snapshot", "database.page"].includes(method)
@@ -275,7 +393,10 @@ export class DatabaseService {
       previous = this.operations.get(key) || Promise.resolve();
     const operation = previous
       .catch(() => {})
-      .then(() => this.invokeActual(method, p, agent));
+      .then(() => {
+        if (this.disposing) throw new Error("Data workspace закрывается");
+        return this.invokeActual(method, p, agent);
+      });
     this.operations.set(key, operation);
     try {
       return await operation;
@@ -509,6 +630,11 @@ export class DatabaseService {
     }
     if (op === "console.create") {
       const target = this.connection(p.connectionId, p.projectId);
+      if (
+        p.sql !== undefined &&
+        (typeof p.sql !== "string" || Buffer.byteLength(p.sql) > 2 * 1024 ** 2)
+      )
+        throw new Error("SQL слишком большой");
       const c: DatabaseConsole = {
         id: randomUUID(),
         projectId: p.projectId,
@@ -536,6 +662,11 @@ export class DatabaseService {
         )
           throw new Error("Неверный объект БД");
         c.object = { oid: p.object.oid, kind: p.object.kind };
+        if (isRoutine(c) && c.sql)
+          c.routineBaseline = {
+            committedHash: sqlHash(c.sql),
+            verified: false,
+          };
       }
       await this.store.update((s) => s.consoles.push(c));
       this.options.changed(p.projectId);
@@ -642,8 +773,18 @@ export class DatabaseService {
       };
       await this.store.update((s) => {
         const d = s.consoles.find((d) => d.id === c.id)!;
-        if (d.pendingEffect?.operationId !== p.operationId)
+        if (!d.pendingEffect || d.pendingEffect.operationId !== p.operationId)
           throw new Error("Операция изменилась во время сверки");
+        if (
+          d.routineBaseline &&
+          (d.pendingEffect.kind === "routine" ||
+            d.pendingEffect.intent?.routineHash)
+        ) {
+          d.routineBaseline.verified = false;
+          d.routineBaseline.session = undefined;
+          d.routineBaseline.blocked =
+            "Исход DDL был неизвестен. После сверки явно загрузите DDL из БД перед следующим применением.";
+        }
         d.lastResolution = resolution;
         d.pendingEffect = undefined;
       });
@@ -757,10 +898,25 @@ export class DatabaseService {
               action: "mode",
               mode: "manual",
             });
+          const original =
+            isRoutine(c) && c.routineBaseline && !c.routineBaseline.verified
+              ? await client.call("describe", {
+                  leaseId: l.id,
+                  oid: c.object!.oid,
+                  kind: c.object!.kind,
+                })
+              : undefined;
           await this.store.update((s) => {
             const d = s.consoles.find((x) => x.id === c.id);
             if (!d) throw new Error("Консоль удалена");
             d.leaseId = l.id;
+            if (
+              d.routineBaseline &&
+              original &&
+              d.routineBaseline.committedHash === original.hash &&
+              !d.routineBaseline.blocked
+            )
+              d.routineBaseline.verified = true;
           });
           this.leases.set(l.id, { ...l, mode: c.mode });
           this.options.changed(p.projectId);
@@ -789,7 +945,9 @@ export class DatabaseService {
         this.leases.delete(c.leaseId);
       }
       await this.store.update((s) => {
-        s.consoles.find((x) => x.id === c.id)!.leaseId = undefined;
+        const d = s.consoles.find((x) => x.id === c.id)!;
+        d.leaseId = undefined;
+        if (d.routineBaseline) d.routineBaseline.session = undefined;
       });
       this.options.changed(p.projectId);
       return { closed: true };
@@ -806,6 +964,74 @@ export class DatabaseService {
     }
     if (!c.leaseId && !["page", "dropResult", "metrics"].includes(op))
       throw new Error("Сначала подключите консоль");
+    if (op === "routine.reload") {
+      if (agent && p.adoptServerVersion !== true)
+        throw new Error(
+          "Принятие новой исходной версии DDL требует явного adoptServerVersion=true по запросу пользователя; автоматическое устранение конфликта запрещено",
+        );
+      if (!isRoutine(c))
+        throw new Error("Это не документ процедуры или функции");
+      if (c.pendingEffect)
+        throw new Error("Сначала сверка неизвестного исхода записи");
+      if (c.targetHash !== this.connection(c.connectionId).targetHash)
+        throw new Error("Этот документ относится к прежнему серверу");
+      await this.refresh(p.projectId);
+      const lease = this.leases.get(c.leaseId!);
+      if (!lease || lease.busy || lease.transaction !== "idle")
+        throw new Error(
+          "Перед загрузкой DDL завершите транзакцию: Commit или полный Rollback",
+        );
+      if (p.revision !== c.revision)
+        throw new Error(
+          "Консоль изменена. Обновите состояние перед загрузкой DDL",
+        );
+      const definition = await client.call("describe", {
+        leaseId: c.leaseId,
+        oid: c.object!.oid,
+        kind: c.object!.kind,
+      });
+      if (
+        definition.oid !== c.object!.oid ||
+        typeof definition.ddl !== "string" ||
+        Buffer.byteLength(definition.ddl) > 2 * 1024 ** 2 ||
+        definition.hash !== sqlHash(definition.ddl)
+      )
+        throw new Error("Сервер не подтвердил полное исходное определение DDL");
+      await this.store.update((s) => {
+        const d = s.consoles.find((d) => d.id === c.id)!;
+        if (d.revision !== p.revision || d.pendingEffect)
+          throw new Error(
+            "Консоль изменилась во время загрузки. Ваш текст не перезаписан",
+          );
+        s.recoveries ??= [];
+        if (
+          d.sql !== definition.ddl &&
+          !s.recoveries.some((r) => r.consoleId === d.id && r.sql === d.sql)
+        ) {
+          if (s.recoveries.length >= 40)
+            throw new Error(
+              "Хранилище черновиков заполнено. Сохраните копию SQL перед загрузкой DDL",
+            );
+          s.recoveries.push({
+            id: randomUUID(),
+            consoleId: d.id,
+            projectId: d.projectId,
+            connectionId: d.connectionId,
+            targetHash: d.targetHash,
+            title: d.title + " · до загрузки DDL",
+            sql: d.sql,
+            revision: d.revision,
+            at: new Date().toISOString(),
+          });
+        }
+        d.sql = definition.ddl;
+        d.routineBaseline = { committedHash: definition.hash, verified: true };
+        d.revision++;
+        d.updatedAt = new Date().toISOString();
+      });
+      this.options.changed(p.projectId);
+      return this.console(c.id, p.projectId);
+    }
     if (
       ![
         "execute",
@@ -814,6 +1040,7 @@ export class DatabaseService {
         "dropResult",
         "catalog",
         "describe",
+        "relations",
         "transaction",
         "table",
         "changes",
@@ -825,6 +1052,19 @@ export class DatabaseService {
       ].includes(op)
     )
       throw new Error("Операция БД недоступна");
+    if (
+      ["execute", "import"].includes(op) &&
+      ["function", "procedure"].includes(c.object?.kind || "")
+    )
+      throw new Error(
+        "Routine-документ применяется только через routineApply с проверкой исходной версии. Для произвольного SQL создайте отдельную консоль.",
+      );
+    if (op === "routineApply" && c.object && String(p.oid) !== c.object.oid)
+      throw new Error("OID процедуры не соответствует документу");
+    if (op === "routineApply" && !isRoutine(c))
+      throw new Error(
+        "Для изменения DDL откройте отдельный документ процедуры или функции",
+      );
     const args = { ...p, leaseId: c.leaseId, consoleId: c.id };
     delete args.projectId;
     if (
@@ -865,6 +1105,69 @@ export class DatabaseService {
       result = await this.withEffect(c, "changes", p.operationId, intent, () =>
         client.call("changes", intent),
       );
+    } else if (op === "routineApply") {
+      const expected = this.routineHash(c);
+      if (
+        typeof p.operationId !== "string" ||
+        !p.operationId ||
+        p.operationId.length > 128
+      )
+        throw new Error("Нужен уникальный operationId");
+      if (
+        typeof p.sql !== "string" ||
+        Buffer.byteLength(p.sql) > 2 * 1024 ** 2 ||
+        statements(p.sql).length !== 1 ||
+        !/^\s*CREATE\s+OR\s+REPLACE\s+(FUNCTION|PROCEDURE)\b/i.test(p.sql)
+      )
+        throw new Error(
+          "Редактор DDL принимает один CREATE OR REPLACE FUNCTION/PROCEDURE до 2 MiB",
+        );
+      // Caller-supplied metadata cannot advance the document baseline. The
+      // persistent host version is compared with the database before dispatch.
+      const observed = await client.call("describe", {
+        leaseId: c.leaseId,
+        oid: c.object!.oid,
+        kind: c.object!.kind,
+      });
+      if (observed.hash !== expected)
+        throw new Error(
+          "Определение изменено на сервере. Сравните версии или явно загрузите DDL из БД; исходный текст сохранён",
+        );
+      const lease = this.leases.get(c.leaseId!)!;
+      const ownTransaction =
+        lease.mode === "auto" && lease.transaction === "idle";
+      const intent = { ...args, oid: c.object!.oid, originalHash: expected };
+      result = await this.withEffect(
+        c,
+        "routine",
+        p.operationId,
+        intent,
+        async () => {
+          const accepted = await client.call("routineApply", intent);
+          return this.waitRoutine(
+            c,
+            client,
+            accepted,
+            expected,
+            ownTransaction,
+          );
+        },
+        (d, job: DatabaseJob) => {
+          const baseline = d.routineBaseline!;
+          if (job.routine!.committed) {
+            baseline.committedHash = job.routine!.appliedHash;
+            baseline.session = undefined;
+          } else {
+            baseline.session = {
+              leaseId: c.leaseId!,
+              generation: lease.generation,
+              hash: job.routine!.appliedHash,
+            };
+          }
+          baseline.verified = true;
+          baseline.blocked = undefined;
+        },
+      );
     } else if (op === "transaction" && p.action === "commit") {
       const operationId =
         typeof p.operationId === "string" && p.operationId
@@ -872,13 +1175,26 @@ export class DatabaseService {
           : randomUUID();
       if (operationId.length > 128)
         throw new Error("operationId exceeds 128 characters");
-      const intent = { ...args, operationId };
+      const intent = {
+        ...args,
+        operationId,
+        ...(c.routineBaseline?.session
+          ? { routineHash: c.routineBaseline.session.hash }
+          : {}),
+      };
       result = await this.withEffect(
         c,
         "transaction",
         operationId,
         intent,
         () => client.call("transaction", intent),
+        (d) => {
+          const baseline = d.routineBaseline;
+          if (!baseline?.session) return;
+          if (baseline.blocked) baseline.verified = false;
+          else baseline.committedHash = baseline.session.hash;
+          baseline.session = undefined;
+        },
       );
     } else result = await client.call(op as DatabaseOperation, args);
     if (agent && op === "page") {
@@ -931,18 +1247,113 @@ export class DatabaseService {
     }
     if (op === "transaction") {
       this.leases.set(result.id, result);
-      if (p.action === "mode")
+      if (["mode", "rollback", "rollbackTo"].includes(p.action))
         await this.store.update((s) => {
-          s.consoles.find((x) => x.id === c.id)!.mode = p.mode;
+          const d = s.consoles.find((x) => x.id === c.id)!;
+          if (p.action === "mode") d.mode = p.mode;
+          if (d.routineBaseline && p.action === "rollback") {
+            d.routineBaseline.session = undefined;
+            if (d.routineBaseline.verified)
+              d.routineBaseline.blocked = undefined;
+          }
+          if (d.routineBaseline && p.action === "rollbackTo")
+            d.routineBaseline.blocked =
+              "После Rollback to savepoint выполните полный Rollback и повторите DDL либо завершите транзакцию и явно загрузите DDL из БД";
         });
     }
     this.options.changed(p.projectId);
     return result;
   }
+  /** Read-only shutdown gate: never commit/rollback on the user's behalf. */
+  async assertShutdownReady() {
+    const consoles = this.store.read().consoles;
+    const title = (c: DatabaseConsole) =>
+      String(c.title || c.id.slice(0, 8))
+        .replace(/[\u0000-\u001f\u007f]/g, " ")
+        .replace(/\s+/g, " ")
+        .slice(0, 64);
+    const labels = (items: DatabaseConsole[]) =>
+      items.slice(0, 4).map(title).join(", ") +
+      (items.length > 4 ? ` и ещё ${items.length - 4}` : "");
+    const connections = new Set(
+      consoles.filter((c) => c.leaseId).map((c) => c.connectionId),
+    );
+    // This is deliberately stricter than the forgiving background refresh.
+    // A failed status request is not evidence that an active transaction ended.
+    // Probe existing connections in parallel; the SDK cancels each timed-out
+    // request after five seconds without closing its database session.
+    const observed = await Promise.all(
+      [...connections].map(async (connectionId) => {
+        const own = consoles.filter((c) => c.connectionId === connectionId);
+        const live = own.filter((c) => c.leaseId);
+        try {
+          const existing = this.clients.get(connectionId);
+          if (!existing) throw new Error("Нет действующего MCP-подключения");
+          const state = await (
+            await existing
+          ).call("status", {}, { timeoutMs: 5000 });
+          if (
+            live.some(
+              (c) =>
+                !state.leases.some(
+                  (lease: DatabaseLease) => lease.id === c.leaseId,
+                ),
+            )
+          )
+            throw new Error("Сервер не подтвердил состояние физической сессии");
+          return { state, own, live };
+        } catch {
+          throw new Error(
+            `Не удалось подтвердить состояние БД перед закрытием: ${labels(live)}. Восстановите связь и проверьте транзакции либо явно выполните Disconnect после сверки. Workbench не выполнял Commit или Rollback.`,
+          );
+        }
+      }),
+    );
+    // Apply the fresh evidence only after all probes succeeded. In particular,
+    // do not replace cached active/failed with unknown merely to allow disposal.
+    for (const { state, own, live } of observed) {
+      const ids = new Set(own.map((c) => c.id));
+      const leaseIds = new Set(live.map((c) => c.leaseId));
+      for (const lease of state.leases)
+        if (leaseIds.has(lease.id)) this.leases.set(lease.id, lease);
+      for (const job of state.jobs)
+        if (ids.has(job.consoleId)) this.jobs.set(job.id, job);
+    }
+    const transactions = consoles.filter((c) => {
+      const lease = c.leaseId ? this.leases.get(c.leaseId) : undefined;
+      return lease && ["active", "failed"].includes(lease.transaction);
+    });
+    const runningJobs = new Set(
+      [...this.jobs.values()]
+        .filter((j) => j.status === "running")
+        .map((j) => j.consoleId),
+    );
+    const running = consoles.filter(
+      (c) =>
+        c.pendingEffect?.phase === "submitting" ||
+        runningJobs.has(c.id) ||
+        (c.leaseId && this.leases.get(c.leaseId)?.busy) ||
+        this.pending.has(c.id),
+    );
+    const reasons: string[] = [];
+    if (transactions.length)
+      reasons.push(
+        `Перед закрытием завершите транзакции БД: ${labels(transactions)}. Выполните Commit или Rollback.`,
+      );
+    if (running.length)
+      reasons.push(
+        `Выполняются операции БД: ${labels(running)}. Дождитесь завершения или отмените операцию перед закрытием.`,
+      );
+    if (reasons.length) throw new Error(reasons.join("\n"));
+    // Unknown effects are already durable and are recovered as unknown on the
+    // next launch. Do not turn this gate into a hidden replay or resolution.
+  }
   async dispose() {
+    this.disposing = true;
     await Promise.allSettled(
       [...this.clients.values()].map(async (p) => (await p).close()),
     );
+    await Promise.allSettled([...this.operations.values()]);
     await this.store.close();
   }
 }

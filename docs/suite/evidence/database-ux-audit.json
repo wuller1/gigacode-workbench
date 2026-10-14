@@ -1,0 +1,124 @@
+{
+  "status": "verified-macos-current-windows-pending",
+  "previousWindowsPass": "396be5b9c5cc071e8cf319f786158df0b0b15bf3",
+  "findings": [
+    {
+      "id": "D-UX-01",
+      "priority": 1,
+      "problem": "Cell editor indexed a mutable page, allowing a result/page transition to change target row",
+      "fix": "Capture console/result/offset/optimistic row key; block transitions until editing/staging resolved; keyboard navigation",
+      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+    },
+    {
+      "id": "D-UX-02",
+      "priority": 1,
+      "problem": "Routine document could fall through generic execute while definition loading; restart adopted changed server baseline",
+      "fix": "Host routine-only apply, persistent committed/session baseline, terminal receipt, explicit CAS DDL reload preserving prior text",
+      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+    },
+    {
+      "id": "D-UX-03",
+      "priority": 1,
+      "problem": "Debounced SQL and unmounted failed drafts could be lost on tab/window close",
+      "fix": "Shared retained draft queue, awaited tab/window flush, dynamic read-only, window freeze, repeat-quit protection",
+      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+    },
+    {
+      "id": "D-UX-04",
+      "priority": 2,
+      "problem": "Retargeted old documents looked like new-server data",
+      "fix": "Target fingerprint required for object reuse; explicit previous-server read-only banner; lost lease state",
+      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+    },
+    {
+      "id": "D-UX-05",
+      "priority": 2,
+      "problem": "Empty SQL editor and JSON metadata waste desktop space",
+      "fix": "Table grid first; optional SQL area; compact metadata tabs and actual directed FK graph",
+      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+    },
+    {
+      "id": "D-UX-06",
+      "priority": 1,
+      "problem": "Async waitForFunction predicate Promise was treated as immediate success by installed Playwright",
+      "fix": "Await actual evaluated value in Node poll; explicit negative control for async false",
+      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+    },
+    {
+      "id": "D-UX-07",
+      "priority": 1,
+      "problem": "Equal sibling keys for SQL/metadata caused retained editors during production React refresh",
+      "fix": "Unique key namespaces and explicit single editor ownership; one-editor invariant across metadata refresh",
+      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+    },
+    {
+      "id": "D-UX-08",
+      "priority": 1,
+      "problem": "Native Quit silently rolled back an active manual transaction; forgiving status errors could be mistaken for safety",
+      "fix": "Strict parallel fresh status with a 5-second SDK timeout/cancellation. Status failure cannot erase a previously known open transaction. Active, failed, busy, opening or unavailable leases block shutdown; reject new windows during the barrier",
+      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+    },
+    {
+      "id": "IDE-UX-09",
+      "priority": 1,
+      "problem": "Untitled and failed recovery flush were not protected at native shutdown; separate native editor remained editable during recovery",
+      "fix": "Native IDE preflight suspends the separate view, drains accepted bridge mutations and checks actual dirty documents before disposal. File-backed recovery is confirmed by POST plus exact GET readback; unsupported dirty documents require Save As. Failed persistence cancels shutdown and restores the view",
+      "verification": "45 live Electron/Theia regression cases passed on current macOS source; exact guards additionally reviewed. Windows pending."
+    },
+    {
+      "id": "IDE-UX-10",
+      "priority": 2,
+      "problem": "An already accepted stop/restart could finish its async preparation after global shutdown changed ownership; late preparation must not freeze or destroy a restored editor",
+      "fix": "Check close epoch and suspended ownership after readiness and after executeJavaScript. Main rejects new IDE mutations during shutdown; local stop/restart rejects concurrent suspended ownership and rechecks global shutdown before destroying a view",
+      "verification": "45 live Electron/Theia regression cases passed on current macOS source; exact guards additionally reviewed. Windows pending."
+    },
+    {
+      "id": "IDE-UX-11",
+      "priority": 2,
+      "problem": "A timed-out offline recovery write could publish its old snapshot after a newer retry because timeout alone does not cancel filesystem I/O",
+      "fix": "Per-file serialized recovery publisher with timeout cancellation token; stale attempt checks before publish; queue prevents an already-issued old OS rename from overtaking newer publication",
+      "verification": "Two actual temporary-filesystem delayed-sync/cancellation/superseding tests and 45 live IDE regression cases passed; Windows pending."
+    },
+    {
+      "id": "D-UX-12",
+      "priority": 1,
+      "problem": "A later parallel acceptance rerun exposed a readiness gap: the selected result could differ from the page currently available for grid editing",
+      "fix": "canEdit now requires page.id === resultId and page.offset === offset. DOM result identity/editability and aria-busy expose actual readiness; the UI test waits for the latest completed job's result ID before F2",
+      "verification": "43 live PostgreSQL cases and 25 production Electron cases passed on current macOS source; corrected grid acceptance repeated under PostgreSQL load. Windows pending."
+    }
+  ],
+  "remainingLimits": [
+    "Direct FK neighborhood graph is bounded to 30 tables, 50 FKs, 8 columns per table; not full ERD",
+    "DDL compare is not an atomic external PostgreSQL DDL CAS lock",
+    "Rollback-to-savepoint conservatively requires full rollback or explicit DDL reload before further routine apply",
+    "Retained unsaved renderer drafts survive tab unmount, not an OS/process crash; acknowledged SQL/operation receipts persist",
+    "Untitled, out-of-workspace and oversized dirty IDE documents require explicit Save As; shutdown does not silently save all files",
+    "A live IDE renderer can rescue its buffer after backend failure; Unacknowledged last keystrokes after renderer/OS loss are not guaranteed recoverable",
+    "Full DataGrip/Ultimate parity remains open in feature matrices"
+  ],
+  "previousRecordedVerification": {
+    "scope": "Historical snapshot only; these counts and source-hash statements are not current-source certification",
+    "databaseLive": 42,
+    "databaseDesktop": 24,
+    "unit": 99,
+    "legacyDesktop": 16,
+    "sourceHashes": "database-runtime-live-darwin.json and database-runtime-ui.json match current code",
+    "remaining": "Current Windows source/package acceptance pending; workplace GigaCode and VARM not available"
+  },
+  "verification": {
+    "status": "verified-macos-current-windows-pending",
+    "unit": 116,
+    "platformSkips": 2,
+    "databaseLiveSkipsWithoutIsolatedCluster": 43,
+    "databaseLive": 43,
+    "databaseDesktop": 25,
+    "ideDesktop": 45,
+    "legacyDesktop": 16,
+    "fullApplicationChat": 3,
+    "ideDependencies": 9,
+    "offlineRecoveryFaultCases": 2,
+    "sourceHashes": "Current Database reports and IDE report record matching source SHA-256; no workplace/GigaCode/VARM claim",
+    "windows": "New source and packaged acceptance pending; previousWindowsPass remains historical",
+    "remaining": "Windows source/package run and release; workplace GigaCode and VARM unavailable. Full DataGrip/Ultimate parity remains open."
+  }
+}

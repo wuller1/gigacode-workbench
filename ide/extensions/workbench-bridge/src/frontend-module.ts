@@ -31,6 +31,7 @@ declare global {
 }
 @injectable()
 class WorkbenchFrontend implements FrontendApplicationContribution {
+    private readonly mutations = new Set<Promise<unknown>>();
     @inject(EditorManager) protected readonly editors!: EditorManager;
     @inject(CommandRegistry) protected readonly commands!: CommandRegistry;
     @inject(ProblemManager) protected readonly problems!: ProblemManager;
@@ -96,6 +97,25 @@ class WorkbenchFrontend implements FrontendApplicationContribution {
         return result.map(value => value.edit);
     }
     async invoke(method: string, p: Record<string, any>): Promise<unknown> {
+        if (method === 'recovery.cancelClose') return this.recovery.cancelClose();
+        if (method === 'recovery.verifyClose') return this.recovery.verifyClose();
+        if (method === 'recovery.prepareClose') {
+            const generation = this.recovery.beginClose();
+            try {
+                await Promise.allSettled([...this.mutations]);
+                if (!p.offline) { this.layout.storeLayout(this.app); await this.storage.flush(); }
+                return await this.recovery.prepareClose(p.offline === true, generation);
+            } catch (error) { this.recovery.reportCloseError(error); throw error; }
+        }
+        const readonly = ['status','read','diagnostics','commands','recovery.read','recovery.export','output','terminal.output'].includes(method)
+            || ['semantic.files','semantic.preview','semantic.proposals','semantic.status'].includes(method);
+        if (!readonly) this.recovery.assertMutable();
+        const operation = this.dispatch(method, p);
+        if (!readonly) this.mutations.add(operation);
+        try { return await operation; }
+        finally { this.mutations.delete(operation); }
+    }
+    private async dispatch(method: string, p: Record<string, any>): Promise<unknown> {
         if (method === 'output' || method === 'terminal.output' || /^(tests|tasks|debug)\./.test(method)) return this.execution.invoke(method,p);
         if (method.startsWith('semantic.')) return this.semantic.invoke(method.slice('semantic.'.length), p);
         switch (method) {

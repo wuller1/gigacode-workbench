@@ -8,6 +8,7 @@ export const databaseOperations = [
   "dropResult",
   "catalog",
   "describe",
+  "relations",
   "transaction",
   "table",
   "changes",

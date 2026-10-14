@@ -41,14 +41,42 @@ env.WORKBENCH_DATA_DIR = path.join(temporary, 'userdata');
 env.WORKBENCH_CLI_PATH = path.join(root, 'tests/fixtures/acp-fixture.mjs');
 const results = [], errors = [];
 let application;
+let testFailed = false;
 const keep = process.argv.includes('--keep-open');
 const packaged = process.argv.includes('--packaged');
 const record = (name, observed) => { results.push({ name, observed }); console.log('PASS', name, JSON.stringify(observed).slice(0, 400)); };
+// A correctly blocked shutdown must not hang failed-test cleanup. Only this
+// isolated Electron app and its currently registered fixture engines are owned.
+async function forceOwnedCleanup() {
+  if (!application) return;
+  const canonicalFixture = await fs.realpath(fixture);
+  const engines = await Promise.race([
+    application.evaluate(async ({ BrowserWindow }) => {
+      const host = BrowserWindow.getAllWindows().find(window => !window.isDestroyed());
+      return host ? host.webContents.executeJavaScript('window.workbench?.invoke("ide.list", {})').catch(() => []) : [];
+    }).catch(() => []),
+    new Promise(resolve => setTimeout(() => resolve([]), 3000)),
+  ]);
+  const ownedPids = engines.filter(engine =>
+    typeof engine.root === 'string' &&
+    (process.platform === 'win32' ? engine.root.toLowerCase() === canonicalFixture.toLowerCase() : engine.root === canonicalFixture) &&
+    Number.isSafeInteger(engine.pid) && engine.pid > 1,
+  ).map(engine => engine.pid);
+  await Promise.race([
+    application.evaluate(({ app }) => app.exit(0)).catch(() => {}),
+    new Promise(resolve => setTimeout(resolve, 3000)),
+  ]);
+  application.process()?.kill('SIGKILL');
+  for (const pid of ownedPids) {
+    if (process.platform === 'win32') await exec('taskkill.exe', ['/PID', String(pid), '/T', '/F']).catch(() => {});
+    else { try { process.kill(-pid, 'SIGKILL'); } catch { /* This test engine already exited. */ } }
+  }
+}
 try {
   const executablePath = packaged ? path.join(root, 'release/win-unpacked/GigaCode Workbench.exe') : require('electron');
   if (packaged && process.platform !== 'win32') throw new Error('Packaged acceptance requires the Windows x64 build');
   application = await _electron.launch({ executablePath, args: packaged ? [] : [root], env, timeout: 60_000 });
-  process.once('SIGTERM', () => { void application.close().finally(() => process.exit(0)); });
+  process.once('SIGTERM', () => { void forceOwnedCleanup().finally(() => process.exit(0)); });
   const page = await application.firstWindow();
   page.on('pageerror', error => errors.push(String(error)));
   await page.waitForFunction(() => Boolean(window.workbench), { timeout: 30_000 });
@@ -289,9 +317,108 @@ try {
   console.log('Native UI:', native.text.slice(0, 2500));
   const capture = await page.evaluate(async (projectId) => window.workbench.invoke('ide.capture', { projectId }), project.id);
   record('Native editor screenshot', capture);
+
+  const nativePage = application.context().pages().find(candidate => candidate.url() === native.url);
+  if (!nativePage) throw new Error('Playwright cannot observe the actual native Theia page');
+  nativePage.setDefaultTimeout(20_000);
+  nativePage.on('pageerror', error => errors.push(String(error)));
+  const nativeViewState = () => application.evaluate(({ BrowserWindow }, id) => {
+    for (const window of BrowserWindow.getAllWindows()) {
+      for (const view of window.contentView.children) {
+        if (view.webContents?.id === id) return { visible: view.getVisible(), bounds: view.getBounds(), id };
+      }
+    }
+    return { visible: false, id };
+  }, native.id);
+  const nativeBuffer = uri => nativePage.evaluate(uri => window.workbenchIDE.invoke('read', { uri }), uri);
+  const dismissQuitNotice = async () => {
+    await page.waitForFunction(() => !document.body.inert);
+    const close = page.getByRole('button', { name: 'Закрыть сообщение', exact: true });
+    if (await close.isVisible()) await close.click();
+  };
+
+  // Create through Theia's real command palette, then type through Monaco's
+  // keyboard input. A manufactured dirty object would not test this failure.
+  await application.evaluate(({ webContents }, id) => webContents.fromId(id).focus(), native.id);
+  await nativePage.keyboard.press('F1');
+  const commandInput = nativePage.locator('.quick-input-widget input:visible');
+  await commandInput.fill('>New Untitled Text File');
+  await nativePage.locator('.quick-input-list .monaco-list-row:visible').filter({ hasText: 'New Untitled Text File' }).first().click();
+  const untitled = await until('Native Untitled editor exists', () => invoke('ide.status'), value => value.activeDocument?.uri?.startsWith('untitled:'));
+  const untitledUri = untitled.activeDocument.uri;
+  const untitledText = '// Native Untitled shutdown fixture · ' + Date.now() + '\n';
+  await nativePage.keyboard.insertText(untitledText);
+  await until('Native Untitled keyboard text', () => nativeBuffer(untitledUri), value => value.dirty && value.text === untitledText);
+  await application.evaluate(({ app }) => app.quit());
+  await page.locator('.error-toast').filter({ hasText: /Save\s?As/ }).waitFor();
+  if (page.isClosed()) throw new Error('Quit destroyed an unsupported unsaved Untitled editor');
+  const restoredUntitledView = await until('Untitled native view restored after refused Quit', nativeViewState, value => value.visible);
+  await dismissQuitNotice();
+  const keptUntitled = await nativeBuffer(untitledUri);
+  if (keptUntitled.text !== untitledText || !keptUntitled.dirty) throw new Error('Refused native Quit changed or lost the Untitled text');
+  await application.evaluate(({ webContents }, id) => webContents.fromId(id).focus(), native.id);
+  await nativePage.keyboard.press('ControlOrMeta+End');
+  await nativePage.keyboard.insertText('// Still editable after refused Quit\n');
+  const resumedUntitled = await nativeBuffer(untitledUri);
+  if (!resumedUntitled.text.includes('Still editable after refused Quit')) throw new Error('Cancelled shutdown left the native IDE editor frozen');
+  record('Native Untitled keyboard text blocks Quit and the same editor remains visible and editable', { uri: untitledUri, view: restoredUntitledView, characters: resumedUntitled.text.length });
+  // Explicitly discard only this test-created Untitled buffer after verifying
+  // its contents. Product shutdown itself must never do this or save all files.
+  await nativePage.evaluate(() => window.workbenchIDE.invoke('command', { id: 'workbench.action.revertAndCloseActiveEditor', args: [] }).then(() => undefined));
+  await until('Fixture Untitled explicitly closed', () => invoke('ide.status'), value => !value.documents.some(document => document.uri === untitledUri));
+
+  const shutdownPath = 'src/shutdown.ts', diskText = 'export const closeMarker = "disk";\n';
+  await fs.writeFile(path.join(fixture, shutdownPath), diskText);
+  const shutdownDocument = await invoke('ide.open', { path: shutdownPath, focus: true });
+  const failRecoveryPost = async route => {
+    if (route.request().method() === 'POST') await route.fulfill({ status: 500, contentType: 'text/plain', body: 'Intentional fixture recovery persistence failure' });
+    else await route.continue();
+  };
+  let shutdownText;
+  await nativePage.route('**/workbench/recovery', failRecoveryPost);
+  try {
+    await nativePage.keyboard.press('ControlOrMeta+End');
+    await nativePage.keyboard.insertText('// Native recovery failure fixture · ' + Date.now() + ' · 🧪\n');
+    const dirty = await until('Native dirty file keyboard text', () => invoke('ide.read', { path: shutdownPath }), value => value.dirty && value.text.includes('Native recovery failure fixture'));
+    shutdownText = dirty.text;
+    await application.evaluate(({ app }) => app.quit());
+    await page.locator('.error-toast').filter({ hasText: /IDE_CLOSE_BLOCKED|RECOVERY|восстановлен/i }).waitFor();
+    if (page.isClosed()) throw new Error('Recovery POST failure still destroyed the native editor');
+    const restoredFileView = await until('Dirty file native view restored after refused Quit', nativeViewState, value => value.visible);
+    await dismissQuitNotice();
+    const kept = await invoke('ide.read', { path: shutdownPath });
+    if (!kept.dirty || kept.text !== shutdownText) throw new Error('Failed recovery persistence lost the actual dirty file buffer');
+    if (await fs.readFile(path.join(fixture, shutdownPath), 'utf8') !== diskText) throw new Error('Shutdown silently saved the dirty file instead of preserving its draft');
+    record('Actual recovery POST failure refuses native Quit and preserves exact dirty text without saving disk', { uri: shutdownDocument.uri, view: restoredFileView, characters: shutdownText.length });
+  } finally {
+    await nativePage.unroute('**/workbench/recovery', failRecoveryPost);
+  }
+  await invoke('ide.recovery.flush');
+  const finalEngine = (await invoke('ide.list')).find(engine => engine.projectIds.includes(project.id));
+  if (!finalEngine) throw new Error('Fixture IDE engine missing before native shutdown');
+  const nativeClosed = application.waitForEvent('close', { timeout: 60_000 });
+  await application.evaluate(({ app }) => app.quit());
+  await nativeClosed;
+  const durable = JSON.parse(await fs.readFile(path.join(path.dirname(finalEngine.logPath), 'config/workbench-recovery.json'), 'utf8'));
+  if (durable.drafts?.[shutdownDocument.uri]?.text !== shutdownText) throw new Error('Successful native Quit did not durably preserve the exact dirty editor text');
+  if (await fs.readFile(path.join(fixture, shutdownPath), 'utf8') !== diskText) throw new Error('Successful native Quit changed the unsaved source file on disk');
+  record('Native Quit confirms exact disk-backed recovery while leaving the source file unsaved', { uri: shutdownDocument.uri, characters: shutdownText.length });
+
+  application = await _electron.launch({ executablePath, args: packaged ? [] : [root], env, timeout: 60_000 });
+  const reopenedPage = await application.firstWindow();
+  reopenedPage.on('pageerror', error => errors.push(String(error)));
+  await reopenedPage.waitForFunction(() => Boolean(window.workbench));
+  await reopenedPage.locator('.project-name').filter({ hasText: 'IDE Live Fixture' }).click();
+  if (!(await reopenedPage.locator('section.dock-content[aria-label="IDE"]').isVisible())) await reopenedPage.getByRole('button', { name: 'IDE', exact: true }).click();
+  const reopenedBuffer = await reopenedPage.evaluate(({ projectId, file }) => window.workbench.invoke('ide.read', { projectId, path: file }), { projectId: project.id, file: shutdownPath });
+  if (!reopenedBuffer.dirty || reopenedBuffer.text !== shutdownText) throw new Error('Fresh Electron/Theia startup did not restore the exact native-shutdown draft');
+  if (await fs.readFile(path.join(fixture, shutdownPath), 'utf8') !== diskText) throw new Error('Native shutdown recovery overwrote the original disk file');
+  record('Fresh Electron and Theia startup restores the exact dirty buffer after successful native Quit', { characters: reopenedBuffer.text.length, dirty: reopenedBuffer.dirty, freshRevision: reopenedBuffer.revision });
+  if (errors.length) throw new Error('Actual Electron/Theia renderer errors: ' + errors.join('; '));
   await fs.writeFile(path.join(temporary, 'result.json'), JSON.stringify({ results, errors, fixture, temporary, level: 'live Electron / real Theia on ' + process.platform }, null, 2));
   console.log('LIVE_IDE_REPORT', path.join(temporary, 'result.json'));
 } catch (error) {
+  testFailed = true;
   if(application) {
     const channels=await application.evaluate(async ({webContents})=>{const view=webContents.getAllWebContents().find(v=>v.getURL().startsWith('http://localhost:'));if(!view)return [];const channels=await view.executeJavaScript('window.workbenchIDE.invoke("output")');const logs=[];for(const channel of channels)logs.push(await view.executeJavaScript('window.workbenchIDE.invoke("output",'+JSON.stringify({channel:channel.name,limit:12000})+')'));return logs;}).catch(error=>({error:String(error)}));
     await fs.writeFile(path.join(temporary,'native-output.json'),JSON.stringify(channels,null,2));
@@ -301,5 +428,11 @@ try {
   process.exitCode = 1;
 } finally {
   if (keep && application) { console.log('IDE QA window retained for inspection.'); await new Promise(() => {}); }
-  await application?.close();
+  if (testFailed) await forceOwnedCleanup();
+  else if (application) {
+    await Promise.race([
+      application.close(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Test-owned app cleanup timed out')), 15_000)),
+    ]).catch(async error => { console.error('IDE_TEST_CLEANUP', String(error)); await forceOwnedCleanup(); });
+  }
 }

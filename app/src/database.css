@@ -10,7 +10,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-width: 520px;
+  min-width: 0;
   min-height: 300px;
   background: var(--surface);
   font-size: 13px;
@@ -741,4 +741,26 @@
   color: var(--muted);
   border-top: 1px solid var(--line);
   padding-top: 4px;
+}
+
+/* Desktop split panels keep controls reachable without growing the outer window. */
+.db-target,
+.db-pagination {
+  overflow-x: auto;
+}
+.db-target > *,
+.db-pagination > *,
+.db-result-tabs > * {
+  flex-shrink: 0;
+}
+.db-grid [data-row]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.db-console-editor {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  min-width: 0;
 }

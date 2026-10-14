@@ -2548,8 +2548,8 @@
         "docs/suite/evidence/database-runtime-live-darwin.json",
         "docs/suite/evidence/database-runtime-ui.json"
       ],
-      "observedSubset": "Shared native PostgreSQL/MCP workspace: isolated SQL sessions, precise paged results, inline optimistic changesets, transactions, routine hash/readback, EXPLAIN, streaming CSV/SQL/XLSX, durable SQL/parameter history, actual lost-COMMIT reconciliation. macOS engine/desktop evidence; Windows pending. Native multi-schema selection and server catalog search/paging; original operation ledger; manual lost-COMMIT and actual hard-heap worker acceptance added.",
-      "remainingAcceptance": "Deep object/column tree and offline metadata, typed large cells, complete SQL semantics/refactoring, schema/data comparison/ERD, full JDBC/vendor depth and workplace/Windows parity checks remain open."
+      "observedSubset": "Shared native PostgreSQL/MCP workspace: isolated SQL sessions, precise paged results, inline optimistic changesets, transactions, routine hash/readback, EXPLAIN, streaming CSV/SQL/XLSX, durable SQL/parameter history, actual lost-COMMIT reconciliation. macOS engine/desktop evidence; Windows pending. Native multi-schema selection and server catalog search/paging; original operation ledger; manual lost-COMMIT and actual hard-heap worker acceptance added. Real bounded FK graph, compact structured metadata, keyboard grid identity guards, persistent host routine baseline and awaited close/quit are now under separate macOS/Windows acceptance. Historical Windows396be5b passed prior subset; current source hashes determine coverage.",
+      "remainingAcceptance": "Deep/offline catalog, typed large cells, full SQL semantics/refactoring, schema/data comparison and complete ERD/modeling, JDBC/vendor depth and workplace parity remain open."
     },
     {
       "id": "IUP-135",

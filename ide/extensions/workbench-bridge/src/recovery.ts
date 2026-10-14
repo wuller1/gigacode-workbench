@@ -11,6 +11,7 @@ import { QuickPickService } from '@theia/core/lib/common/quick-pick-service';
 import { CommandRegistry } from '@theia/core/lib/common/command';
 
 type Draft = { uri: string; base: string; text: string; updated: string; conflict?: boolean };
+type CloseDocument = { uri: string; version: number; text: string };
 /** Recovery is disk-backed, independent of the backend's changing local HTTP port. */
 @injectable()
 export class RecoveryService {
@@ -30,6 +31,9 @@ export class RecoveryService {
     private loaded?: Promise<void>;
     private writes: Promise<unknown> = Promise.resolve();
     private timer?: ReturnType<typeof setTimeout>;
+    private preparingClose = false;
+    private closeGeneration = 0;
+    private prepared?: { generation: number; documents: CloseDocument[] };
     error?: string;
     start(): Promise<void> { return this.loaded ||= this.initialize(); }
     private async initialize(): Promise<void> {
@@ -88,13 +92,109 @@ export class RecoveryService {
     async flush(): Promise<void> {
         clearTimeout(this.timer);
         const payload = JSON.stringify({ drafts: this.drafts, receipts: this.receipts });
-        if (payload.length > 18_000_000) { this.fail('Лимит восстановления исчерпан. Сохраните несохранённые файлы.'); throw new Error('RECOVERY_LIMIT'); }
+        if (new TextEncoder().encode(payload).byteLength > 18_000_000) { this.fail('Лимит восстановления исчерпан. Сохраните несохранённые файлы.'); throw new Error('RECOVERY_LIMIT'); }
         const next = this.writes.catch(() => {}).then(async () => {
             const response = await fetch('/workbench/recovery', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload });
             if (!response.ok) throw new Error('RECOVERY_WRITE_FAILED');
         });
         this.writes = next;
         try { await next; this.error = undefined; } catch (error) { this.fail('Не удалось сохранить восстановление IDE. Не закрывайте несохранённые файлы.'); throw error; }
+    }
+    beginClose(): number {
+        if (!this.preparingClose) { this.preparingClose = true; this.closeGeneration++; }
+        return this.closeGeneration;
+    }
+    cancelClose(): { cancelled: true } {
+        this.preparingClose = false;
+        this.prepared = undefined;
+        this.closeGeneration++;
+        return { cancelled: true };
+    }
+    reportCloseError(error: unknown): void {
+        const message = error instanceof Error ? error.message : String(error);
+        this.fail('Закрытие IDE отменено. ' + message + ' Сохраните несохранённые файлы через Save As при необходимости.');
+    }
+    assertMutable(): void {
+        if (this.preparingClose) throw new Error('IDE_CLOSE_PENDING: IDE готовится к закрытию; дождитесь завершения или отмены.');
+    }
+    private assertClose(generation: number): void {
+        if (!this.preparingClose || generation !== this.closeGeneration) throw new Error('IDE_CLOSE_CANCELLED');
+    }
+    private dirtyDocuments(): CloseDocument[] {
+        const documents = new Map<string, CloseDocument>();
+        for (const widget of this.editors.all) {
+            const document = widget.editor.document;
+            if (!document.dirty && !widget.saveable.dirty) continue;
+            const current = { uri: document.uri, version: document.version, text: document.getText() };
+            const previous = documents.get(current.uri);
+            if (previous && (previous.text !== current.text || previous.version !== current.version)) {
+                throw new Error('IDE_CLOSE_BLOCKED: Открыты разные несохранённые версии одного файла. Сохраните каждую через Save As перед закрытием. ' + current.uri);
+            }
+            documents.set(current.uri, current);
+        }
+        return [...documents.values()].sort((a, b) => a.uri.localeCompare(b.uri));
+    }
+    verifyClose(generation = this.prepared?.generation): { verified: true } {
+        if (generation === undefined || !this.prepared) throw new Error('IDE_CLOSE_NOT_PREPARED');
+        this.assertClose(generation);
+        const current = this.dirtyDocuments(), expected = this.prepared.documents;
+        if (current.length !== expected.length || current.some((document, index) =>
+            document.uri !== expected[index].uri || document.version !== expected[index].version || document.text !== expected[index].text)) {
+            throw new Error('IDE_CLOSE_BLOCKED: Несохранённые файлы изменились во время подготовки. Закрытие отменено; проверьте текст и повторите.');
+        }
+        return { verified: true };
+    }
+    async prepareClose(offline: boolean, generation: number): Promise<Record<string, unknown>> {
+        await this.start();
+        this.assertClose(generation);
+        const documents = this.dirtyDocuments();
+        for (const document of documents) {
+            const resource = new URI(document.uri);
+            if (resource.scheme !== 'file' || !this.workspace.tryGetRoots().some(root => root.resource.isEqualOrParent(resource))) {
+                throw new Error('IDE_CLOSE_BLOCKED: Несохранённый untitled или файл вне проекта нельзя восстановить автоматически. Сохраните файл через Save As перед закрытием. ' + document.uri);
+            }
+            if (document.text.length > 2_000_000) {
+                throw new Error('IDE_CLOSE_BLOCKED: Файл превышает лимит восстановления (2 млн символов). Сохраните файл через Save As перед закрытием. ' + document.uri);
+            }
+            const existing = this.drafts[document.uri];
+            if (existing?.conflict) {
+                // Keep both the old disk baseline and its conflict flag. A
+                // different live text must never overwrite the preserved draft.
+                if (existing.text !== document.text) throw new Error('IDE_CLOSE_BLOCKED: Несохранённый файл отличается от конфликтного черновика. Сохраните файл через Save As и сравните версии перед закрытием. ' + document.uri);
+                continue;
+            }
+            let base = existing?.base ?? this.base.get(document.uri);
+            if (base === undefined) {
+                try { base = (await this.files.readFile(resource)).value.toString(); }
+                catch { throw new Error('IDE_CLOSE_BLOCKED: Не удалось проверить исходный файл. Сохраните файл через Save As перед закрытием. ' + document.uri); }
+            }
+            this.assertClose(generation);
+            if (base.length > 2_000_000) throw new Error('IDE_CLOSE_BLOCKED: Исходная версия превышает лимит восстановления. Сохраните файл через Save As перед закрытием. ' + document.uri);
+            this.drafts[document.uri] = { uri: document.uri, base, text: document.text, updated: new Date().toISOString() };
+        }
+        clearTimeout(this.timer);
+        const recovery = JSON.parse(JSON.stringify({ drafts: this.drafts, receipts: this.receipts }));
+        if (new TextEncoder().encode(JSON.stringify(recovery)).byteLength > 18_000_000) {
+            throw new Error('IDE_CLOSE_BLOCKED: Лимит восстановления исчерпан. Сохраните файлы через Save As перед закрытием.');
+        }
+        this.prepared = { generation, documents };
+        this.verifyClose(generation);
+        if (!offline) {
+            await this.flush();
+            const response = await fetch('/workbench/recovery');
+            if (!response.ok) throw new Error('IDE_CLOSE_BLOCKED: Не удалось проверить запись восстановления на диске. Не закрывайте IDE.');
+            const stored = await response.json();
+            for (const document of documents) {
+                const persisted = stored.drafts?.[document.uri], expected = recovery.drafts[document.uri];
+                if (!persisted || persisted.text !== document.text || persisted.base !== expected.base || persisted.conflict !== expected.conflict) {
+                    throw new Error('IDE_CLOSE_BLOCKED: Проверка сохранённого черновика не совпала с редактором. Не закрывайте IDE. ' + document.uri);
+                }
+            }
+            this.verifyClose(generation);
+        }
+        return { persisted: !offline, dirtyCount: documents.length,
+            documents: documents.map(({ text, ...document }) => ({ ...document, characters: text.length })),
+            ...(offline ? { recovery } : {}) };
     }
     async show(): Promise<void> {
         const drafts = Object.values(this.drafts);

@@ -326,6 +326,74 @@ describe.skipIf(!url)(
       expect(routine.ddl).toContain("wb_twice");
       expect(routine.hash).toHaveLength(64);
     });
+    it("reads real incoming/outgoing/composite/self foreign keys with bounded graph counts and ordered columns", async () => {
+      await admin.query(`CREATE SCHEMA wb_rel;
+        CREATE TABLE wb_rel.parent(a int,b int,PRIMARY KEY(a,b));
+        CREATE TABLE wb_rel.child(id int PRIMARY KEY,x int,y int,parent_id int,
+          CONSTRAINT child_parent FOREIGN KEY(x,y) REFERENCES wb_rel.parent(a,b) ON DELETE CASCADE,
+          CONSTRAINT child_self FOREIGN KEY(parent_id) REFERENCES wb_rel.child(id));
+        CREATE TABLE public.wb_rel_incoming(id int REFERENCES wb_rel.child(id));`);
+      const oid = (
+        await admin.query("SELECT 'wb_rel.child'::regclass::oid::text oid")
+      ).rows[0].oid;
+      const graph = await engine.relations(lease.id, oid);
+      expect(graph.rootOid).toBe(oid);
+      expect(graph.nodes).toHaveLength(3);
+      expect(graph.edges).toHaveLength(3);
+      expect(graph.totals).toEqual({ nodes: 3, edges: 3 });
+      expect(graph.truncated).toBe(false);
+      expect(
+        graph.edges.find((e) => e.name === "child_parent")?.columns,
+      ).toEqual([
+        { ordinal: 1, source: "x", target: "a" },
+        { ordinal: 2, source: "y", target: "b" },
+      ]);
+      expect(graph.edges.find((e) => e.name === "child_parent")?.onDelete).toBe(
+        "CASCADE",
+      );
+      expect(
+        graph.edges.filter((e) => e.sourceOid === e.targetOid),
+      ).toHaveLength(1);
+      expect(
+        graph.nodes.find((n) => n.oid === oid)?.columns[0].primaryKey,
+      ).toBe(true);
+      expect(Date.parse(graph.capturedAt)).toBeGreaterThan(0);
+      await expect(
+        engine.relations(lease.id, "1;DROP TABLE wb_data"),
+      ).rejects.toThrow("OID");
+      await admin.query("CREATE TABLE wb_rel.hub(id int PRIMARY KEY)");
+      for (let i = 0; i < 34; i++)
+        await admin.query(
+          `CREATE TABLE wb_rel.neighbor_${i}(id int REFERENCES wb_rel.hub(id))`,
+        );
+      const hub = (
+        await admin.query("SELECT 'wb_rel.hub'::regclass::oid::text oid")
+      ).rows[0].oid;
+      const bounded = await engine.relations(lease.id, hub);
+      expect(bounded.nodes).toHaveLength(30);
+      expect(bounded.edges).toHaveLength(29);
+      expect(bounded.totals).toEqual({ nodes: 35, edges: 34 });
+      expect(bounded.truncated).toBe(true);
+      expect(bounded.nodes.some((n) => n.oid === hub)).toBe(true);
+      for (const edge of bounded.edges)
+        for (const id of [edge.sourceOid, edge.targetOid])
+          expect(bounded.nodes.some((n) => n.oid === id)).toBe(true);
+      await admin.query(
+        "CREATE TABLE wb_rel.many_self(id int PRIMARY KEY);" +
+          Array.from(
+            { length: 55 },
+            (_, i) =>
+              `ALTER TABLE wb_rel.many_self ADD CONSTRAINT self_${i} FOREIGN KEY(id) REFERENCES wb_rel.many_self(id);`,
+          ).join(""),
+      );
+      const many = (
+        await admin.query("SELECT 'wb_rel.many_self'::regclass::oid::text oid")
+      ).rows[0].oid;
+      const capped = await engine.relations(lease.id, many);
+      expect(capped.edges).toHaveLength(50);
+      expect(capped.totals.edges).toBe(55);
+      expect(capped.truncated).toBe(true);
+    });
     it("selects several schemas, pages/searches objects on the server and exposes system schemas only when requested", async () => {
       await admin.query(
         "CREATE SCHEMA wb_alpha;CREATE SCHEMA wb_beta;CREATE TABLE wb_alpha.same_name(id int);CREATE TABLE wb_beta.same_name(id int);CREATE TABLE wb_beta.other_name(id int)",
@@ -908,6 +976,19 @@ describe.skipIf(!url)(
           connection,
           password: new URL(url!).password,
         });
+        const relationCatalog = await client.call("catalog", {
+          leaseId: l.id,
+          schema: "wb_rel",
+        });
+        const child = relationCatalog.objects.find(
+          (o: any) => o.name === "child",
+        );
+        const graph = await client.call("relations", {
+          leaseId: l.id,
+          oid: child.oid,
+        });
+        expect(graph.rootOid).toBe(child.oid);
+        expect(graph.edges).toHaveLength(3);
         const j = await client.call("execute", {
           leaseId: l.id,
           consoleId: "mcp",

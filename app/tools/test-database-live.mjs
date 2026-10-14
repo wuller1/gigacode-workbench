@@ -131,6 +131,7 @@ try {
         "node_modules/vitest/vitest.mjs",
         "run",
         "tests/database-live.test.ts",
+        "tests/database-routine-live.test.ts",
         "--reporter=default",
         "--reporter=json",
         "--outputFile=" + reportFile,

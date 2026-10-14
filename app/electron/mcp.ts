@@ -62,7 +62,31 @@ const tools: Tool[] = [
   tool(
     "database_console_create",
     "Create a visible project SQL console on a connection returned by database_snapshot.",
-    { connectionId: str, title: str, sql: str },
+    {
+      connectionId: str,
+      title: str,
+      sql: str,
+      object: {
+        type: "object",
+        properties: {
+          oid: str,
+          kind: {
+            type: "string",
+            enum: [
+              "table",
+              "view",
+              "materialized view",
+              "foreign table",
+              "function",
+              "procedure",
+              "sequence",
+            ],
+          },
+        },
+        required: ["oid", "kind"],
+        additionalProperties: false,
+      },
+    },
     ["connectionId"],
   ),
   tool(
@@ -134,6 +158,12 @@ const tools: Tool[] = [
     ["consoleId", "operationId"],
   ),
   tool(
+    "database_relations",
+    "Read real PostgreSQL direct incoming/outgoing foreign keys around a table, ordered column pairs and bounded schema graph. Counts and truncation are explicit; not a complete database ERD.",
+    { consoleId: str, oid: str },
+    ["consoleId", "oid"],
+  ),
+  tool(
     "database_describe",
     "Read actual columns, constraints, indexes, dependencies or routine source by catalog OID.",
     { consoleId: str, oid: str, kind: str },
@@ -189,10 +219,20 @@ const tools: Tool[] = [
     ["consoleId", "oid", "operationId"],
   ),
   tool(
+    "database_routine_reload",
+    "Explicitly adopt the current server DDL into this routine document and its version baseline, preserving the prior draft in recovery. Use only when the user requests loading/adopting the server version; never silently resolve an external-change conflict. Requires idle transaction and exact console revision.",
+    {
+      consoleId: str,
+      revision: num,
+      adoptServerVersion: { type: "boolean", const: true },
+    },
+    ["consoleId", "revision", "adoptServerVersion"],
+  ),
+  tool(
     "database_routine_apply",
-    "Apply one CREATE OR REPLACE FUNCTION/PROCEDURE after checking original source hash. Inspect terminal job and read back the routine definition. This is not a SQL semantic rename.",
+    "Apply one CREATE OR REPLACE FUNCTION/PROCEDURE in a routine document against its persistent host-owned baseline. Waits for terminal result; manual DDL still needs Commit. Caller hashes never rebase the document. Never replay an unknown write.",
     { consoleId: str, oid: str, originalHash: str, sql: str, operationId: str },
-    ["consoleId", "oid", "originalHash", "sql", "operationId"],
+    ["consoleId", "oid", "sql", "operationId"],
   ),
   tool(
     "database_import",
@@ -921,6 +961,7 @@ export class UiMcpServer {
       database_operation_read: "database.operation.read",
       database_catalog: "database.catalog",
       database_describe: "database.describe",
+      database_relations: "database.relations",
       database_transaction: "database.transaction",
       database_changes: "database.changes",
       database_cancel: "database.cancel",
@@ -929,6 +970,7 @@ export class UiMcpServer {
       database_console_read: "database.console.read",
       database_table: "database.table",
       database_routine_apply: "database.routineApply",
+      database_routine_reload: "database.routine.reload",
       database_import: "database.import",
       database_export: "database.export",
       database_admin: "database.admin",

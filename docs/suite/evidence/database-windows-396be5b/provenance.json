@@ -1,0 +1,9 @@
+{
+  "commit": "396be5b9c5cc071e8cf319f786158df0b0b15bf3",
+  "run": "https://github.com/wuller1/gigacode-workbench/actions/runs/38500965402",
+  "conclusion": "success",
+  "scope": "Windows source + packaged database acceptance, prior to current ER/grid/routine/close changes. Source hashes inside reports are authoritative.",
+  "databaseLive": 35,
+  "databaseDesktopSource": 15,
+  "databaseDesktopPackaged": 15
+}

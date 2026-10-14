@@ -1,0 +1,383 @@
+.db-relations {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 260px;
+  overflow: hidden;
+  color: var(--text);
+  background: var(--canvas);
+}
+.db-relations-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.db-relations.dragging,
+.db-relations.dragging * {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grabbing;
+}
+.db-relations-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 3px 7px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  overflow-x: auto;
+}
+.db-relations-toolbar > button {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 3px 7px;
+  border-color: transparent;
+  background: transparent;
+  border-radius: 4px;
+}
+.db-relations-toolbar > button:hover {
+  background: var(--selected);
+}
+.db-relations-toolbar > select {
+  flex: 1;
+  width: 190px;
+  min-width: 120px;
+  max-width: 45%;
+  padding: 3px 6px;
+  min-height: 27px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  text-overflow: ellipsis;
+}
+.db-relations-count {
+  color: var(--muted);
+  white-space: nowrap;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  padding-right: 7px;
+}
+.db-relations-toolbar-spacer {
+  flex: 1;
+  min-width: 0;
+}
+.db-relations-toolbar .db-relations-zoom {
+  min-width: 45px;
+  padding-inline: 3px;
+  font-variant-numeric: tabular-nums;
+}
+.db-relations-viewport {
+  flex: 1;
+  min-height: 120px;
+  min-width: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  background-color: var(--canvas);
+  background-image: radial-gradient(var(--line) 0.7px, transparent 0.7px);
+  background-size: 16px 16px;
+}
+.db-relations-viewport:focus-visible {
+  outline-offset: -2px;
+}
+.db-relations-stage {
+  position: relative;
+  min-width: 100%;
+  min-height: 100%;
+}
+.db-relations-world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+.db-relations-lines {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+.db-relations-edge {
+  cursor: pointer;
+}
+.db-relations-edge-line {
+  fill: none;
+  stroke: var(--control);
+  stroke-width: 1.5px;
+  pointer-events: none;
+}
+.db-relations-edge-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 15px;
+  pointer-events: stroke;
+}
+.db-relations-edge.selected .db-relations-edge-line,
+.db-relations-edge:hover .db-relations-edge-line,
+.db-relations-edge:focus-visible .db-relations-edge-line {
+  stroke: var(--focus);
+  stroke-width: 2.5px;
+}
+.db-relations-edge:focus-visible {
+  outline: none;
+}
+.db-relations-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: 0 2px 5px #0000000b;
+}
+.db-relations-node.root {
+  border-color: var(--control);
+}
+.db-relations-node.related {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 1px var(--focus);
+}
+.db-relations-node-head {
+  display: flex;
+  align-items: center;
+  height: 47px;
+  flex-shrink: 0;
+  padding-right: 3px;
+  border-bottom: 1px solid var(--line);
+  background: var(--subtle);
+}
+.db-relations-node.root .db-relations-node-head {
+  background: var(--selected);
+}
+.db-relations-node-head .db-relations-node-drag {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  min-height: 0;
+  display: flex;
+  gap: 7px;
+  justify-content: flex-start;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 4px 8px;
+  text-align: left;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.db-relations-node-drag:active {
+  cursor: grabbing;
+}
+.db-relations-node-drag > .icon {
+  flex-shrink: 0;
+  color: var(--secondary);
+}
+.db-relations-node-drag > span:last-child {
+  min-width: 0;
+  flex: 1;
+}
+.db-relations-node-drag small,
+.db-relations-node-drag strong {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 18px;
+}
+.db-relations-node-drag small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 400;
+}
+.db-relations-node-drag strong {
+  font-size: 12px;
+  font-weight: 600;
+}
+.db-relations-root-tag {
+  margin-left: 7px;
+  color: var(--secondary);
+  font-size: 9px;
+  font-weight: 400;
+}
+.db-relations-node-head > .icon-button {
+  border: 0;
+  background: transparent;
+  flex-shrink: 0;
+}
+.db-relations-node-head > .icon-button:hover {
+  background: var(--surface);
+}
+.db-relations-columns {
+  flex: 1;
+  min-height: 0;
+  padding-top: 1px;
+}
+.db-relations-columns > div {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 21px;
+  padding: 0 9px 0 6px;
+  font-size: 11px;
+}
+.db-relations-columns > div:hover {
+  background: var(--subtle);
+}
+.db-relations-key {
+  width: 17px;
+  min-width: 17px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 600;
+}
+.db-relations-key.primary {
+  color: var(--focus);
+  background: transparent;
+}
+.db-relations-columns code {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.db-relations-column-type {
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 10px;
+}
+.db-relations-no-columns {
+  color: var(--muted);
+}
+.db-relations-node-foot {
+  display: flex;
+  justify-content: space-between;
+  flex-shrink: 0;
+  height: 24px;
+  align-items: center;
+  padding: 0 8px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 10px;
+}
+.db-relations-inspector {
+  flex-shrink: 0;
+  max-height: 42%;
+  overflow: auto;
+  padding: 3px 9px 7px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+.db-relations-inspector-head,
+.db-relations-targets,
+.db-relations-attributes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.db-relations-inspector-head {
+  min-height: 28px;
+}
+.db-relations-inspector-head > strong {
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.db-relations-inspector-head .icon-button {
+  border: 0;
+  background: transparent;
+}
+.db-relations-warning {
+  color: var(--danger);
+  font-size: 10px;
+}
+.db-relations-targets {
+  gap: 5px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.db-relations-targets > button {
+  padding: 0;
+  min-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--secondary);
+  text-align: left;
+  display: block;
+}
+.db-relations-targets > button:hover {
+  color: var(--focus);
+  text-decoration: underline;
+}
+.db-relations-column-pairs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  max-height: 78px;
+  overflow: auto;
+  padding-block: 2px;
+  font-size: 11px;
+}
+.db-relations-column-pairs > code {
+  display: inline-flex;
+  gap: 5px;
+  overflow-wrap: anywhere;
+}
+.db-relations-column-pairs > code > span:nth-child(2) {
+  color: var(--muted);
+}
+.db-relations-attributes {
+  gap: 5px 13px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.db-relations-attributes b {
+  color: var(--secondary);
+  font-weight: 500;
+}
+.db-relations-caption {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  min-height: 25px;
+  align-items: center;
+  padding: 4px 9px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 10px;
+}
+.db-relations-caption > span:first-child {
+  flex-shrink: 0;
+}
+.db-relations-caption > span:nth-child(2) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.db-relations-limited {
+  white-space: nowrap;
+  color: var(--secondary);
+}

@@ -296,9 +296,14 @@
       "feature": "Планы и производительность",
       "scope": "EXPLAIN/ANALYZE, graphical tree, estimates vs actual, plan comparison, query metrics, locks/sessions, slow-query adapters",
       "card": "S7-03",
-      "status": "planned_unverified",
+      "status": "partial_evidence",
       "acceptance": "ANALYZE явно выполняет запрос; unsupported metrics отсутствуют; cancel не объявляет серверную операцию завершённой без результата.",
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "runtimeHandoff": "docs/suite/DATABASE-RUNTIME-HANDOFF.md",
+      "remainingAcceptance": "Only the actual bounded direct FK neighborhood / EXPLAIN subset is verified. Full modeling/export/virtual relations or plan comparison/slow-query adapters remain open; see runtime handoff."
     },
     {
       "id": "DATX-10",
@@ -306,9 +311,14 @@
       "feature": "Диаграммы и моделирование",
       "scope": "ERD, FK navigation, filtering/layout/export, virtual relations with provenance, DDL from model where supported",
       "card": "S7-03",
-      "status": "planned_unverified",
+      "status": "partial_evidence",
       "acceptance": "Composite/cross-schema FK верны; виртуальные связи отделены от серверных.",
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "runtimeHandoff": "docs/suite/DATABASE-RUNTIME-HANDOFF.md",
+      "remainingAcceptance": "Only the actual bounded direct FK neighborhood / EXPLAIN subset is verified. Full modeling/export/virtual relations or plan comparison/slow-query adapters remain open; see runtime handoff."
     },
     {
       "id": "DATX-11",

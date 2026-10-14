@@ -38,14 +38,25 @@ export type DatabaseConsole = {
   schema: string;
   leaseId?: string;
   object?: { oid: string; kind: string };
+  /** Host-owned DDL baseline. Metadata reads never implicitly accept a new version. */
+  routineBaseline?: {
+    committedHash: string;
+    /** Initial source hash has been checked against the actual database. */
+    verified: boolean;
+    /** Uncommitted DDL belongs only to this physical PostgreSQL session. */
+    session?: { leaseId: string; generation: string; hash: string };
+    /** Complex/unknown transaction transitions require explicit DDL reload. */
+    blocked?: string;
+  };
   pendingEffect?: {
     operationId: string;
-    kind: "changes" | "transaction";
+    kind: "changes" | "transaction" | "routine";
     phase: "submitting" | "unknown";
     at: string;
     requestHash: string;
     intent?: Record<string, unknown>;
     reason?: string;
+    jobId?: string;
   };
   lastResolution?: {
     operationId: string;
@@ -130,6 +141,49 @@ export type DatabaseObject = {
   schema: string;
   name: string;
   kind: string;
+};
+export type DatabaseRelationColumn = {
+  ordinal: number;
+  name: string;
+  type: string;
+  primaryKey: boolean;
+};
+export type DatabaseRelationNode = {
+  oid: string;
+  schema: string;
+  name: string;
+  /** PostgreSQL relkind: r (ordinary), p (partitioned), f (foreign table). */
+  kind: string;
+  columns: DatabaseRelationColumn[];
+  columnCount: number;
+  columnsTruncated: boolean;
+};
+export type DatabaseRelationEdge = {
+  oid: string;
+  name: string;
+  /** Referencing table -> referenced table, including self-references once. */
+  sourceOid: string;
+  targetOid: string;
+  columns: { ordinal: number; source: string; target: string }[];
+  onUpdate: "NO ACTION" | "RESTRICT" | "CASCADE" | "SET NULL" | "SET DEFAULT";
+  onDelete: "NO ACTION" | "RESTRICT" | "CASCADE" | "SET NULL" | "SET DEFAULT";
+  match: "SIMPLE" | "FULL" | "PARTIAL";
+  validated: boolean;
+  deferrable: boolean;
+  initiallyDeferred: boolean;
+};
+export type DatabaseRelations = {
+  rootOid: string;
+  capturedAt: string;
+  /** Only direct incoming/outgoing foreign keys of rootOid, not a full ERD. */
+  scope: "direct-foreign-keys";
+  nodes: DatabaseRelationNode[];
+  edges: DatabaseRelationEdge[];
+  /** Complete direct-neighborhood counts before the display limits. */
+  totals: { nodes: number; edges: number };
+  limits: { nodes: number; edges: number; columnsPerNode: number };
+  /** Also true when any displayed node's column preview was shortened. */
+  truncated: boolean;
 };
 export type DatabaseChange = {
   kind: "update" | "insert" | "delete";

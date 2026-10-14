@@ -8,6 +8,59 @@ import type { IncomingMessage, Server } from 'node:http';
 import { EnvVariablesServer } from '@theia/core/lib/common/env-variables';
 import { EnvVariablesServerImpl } from '@theia/core/lib/node/env-variables/env-variables-server';
 
+const MAX_RECOVERY_BYTES = 18_000_000;
+function validRecovery(value: unknown): boolean {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+    const state = value as Record<string, unknown>;
+    // An empty file is the legacy initial state, not a malformed draft.
+    if (!Object.keys(state).length) return true;
+    if (Object.keys(state).some(key => !['drafts', 'receipts'].includes(key))) return false;
+    const drafts = state.drafts, receipts = state.receipts;
+    if (!drafts || typeof drafts !== 'object' || Array.isArray(drafts)
+        || !receipts || typeof receipts !== 'object' || Array.isArray(receipts)
+        || Object.keys(drafts).length > 500 || Object.keys(receipts).length > 500) return false;
+    for (const [key, entry] of Object.entries(drafts)) {
+        if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return false;
+        const draft = entry as Record<string, unknown>;
+        if (typeof draft.uri !== 'string' || draft.uri.length > 8192 || draft.uri !== key
+            || typeof draft.text !== 'string' || draft.text.length > 2_000_000
+            || typeof draft.base !== 'string' || draft.base.length > 2_000_000
+            || typeof draft.updated !== 'string' || draft.updated.length > 80
+            || (draft.conflict !== undefined && typeof draft.conflict !== 'boolean')) return false;
+        try { if (new URL(draft.uri).protocol !== 'file:') return false; } catch { return false; }
+    }
+    for (const [key, entry] of Object.entries(receipts)) {
+        if (!/^[a-zA-Z0-9._:-]{8,200}$/.test(key) || !entry || typeof entry !== 'object' || Array.isArray(entry)) return false;
+        const receipt = entry as Record<string, unknown>;
+        if (typeof receipt.request !== 'string' || receipt.request.length > 4096 || !('result' in receipt)) return false;
+    }
+    return Buffer.byteLength(JSON.stringify(value), 'utf8') <= MAX_RECOVERY_BYTES;
+}
+async function persistRecovery(file: string, contents: string): Promise<void> {
+    const directory = path.dirname(file), temporary = file + '.partial-' + randomUUID();
+    await fs.mkdir(directory, { recursive: true });
+    let handle: import('node:fs/promises').FileHandle | undefined;
+    try {
+        handle = await fs.open(temporary, 'wx', 0o600);
+        await handle.writeFile(contents, 'utf8');
+        await handle.sync();
+        await handle.close(); handle = undefined;
+        await fs.rename(temporary, file);
+        // Windows does not provide the POSIX directory-fsync contract. The file
+        // is synced before its atomic rename; unsupported directory sync alone
+        // is not reported as a failed file write.
+        if (process.platform !== 'win32') {
+            const parent = await fs.open(directory, 'r');
+            try { await parent.sync(); }
+            catch (error) { if (!['EINVAL', 'ENOTSUP'].includes((error as NodeJS.ErrnoException).code || '')) throw error; }
+            finally { await parent.close(); }
+        }
+    } finally {
+        await handle?.close();
+        await fs.rm(temporary, { force: true });
+    }
+}
+
 @injectable()
 class ProtectedEnvironment extends EnvVariablesServerImpl {
     async getVariables() {
@@ -55,17 +108,18 @@ class WorkbenchBackend implements BackendApplicationContribution {
         const file = path.join(process.env.THEIA_CONFIG_DIR!, 'workbench-recovery.json');
         let writing: Promise<unknown> = Promise.resolve();
         app.get('/workbench/recovery', async (_req, res) => {
-            try { await writing; const data = await fs.readFile(file, 'utf8').catch(error => { if (error.code === 'ENOENT') return '{}'; throw error; });
+            try { await writing; const stat = await fs.stat(file).catch(error => { if (error.code === 'ENOENT') return undefined; throw error; });
+                if (stat && (!stat.isFile() || stat.size > MAX_RECOVERY_BYTES)) throw new Error('RECOVERY_LIMIT');
+                const data = await fs.readFile(file, 'utf8').catch(error => { if (error.code === 'ENOENT') return '{}'; throw error; });
+                if (!validRecovery(JSON.parse(data))) throw new Error('INVALID_RECOVERY');
                 res.type('application/json').send(data);
             } catch { res.status(500).send('Recovery read failed'); }
         });
         app.post('/workbench/recovery', json({ limit: '20mb' }), async (req, res) => {
-            if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) { res.status(400).send('Invalid recovery'); return; }
+            if (!validRecovery(req.body)) { res.status(400).send('Invalid recovery'); return; }
             const contents = JSON.stringify(req.body);
             const next = writing.catch(() => {}).then(async () => {
-                await fs.mkdir(path.dirname(file), { recursive: true });
-                await fs.writeFile(file + '.partial', contents, { mode: 0o600 });
-                await fs.rename(file + '.partial', file);
+                await persistRecovery(file, contents);
             });
             writing = next;
             try { await next; res.json({ persisted: true }); } catch { res.status(500).send('Recovery write failed'); }

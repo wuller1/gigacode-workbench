@@ -112,7 +112,13 @@ export class DatabaseMcpClient {
   async call(
     operation: DatabaseOperation,
     args: Record<string, unknown>,
+    options: { timeoutMs?: number } = {},
   ): Promise<any> {
+    const timeout = options.timeoutMs ?? 120000;
+    if (!Number.isSafeInteger(timeout) || timeout < 1)
+      throw Object.assign(new Error("Неверный timeout MCP-запроса"), {
+        outcome: "notApplied",
+      });
     const builtin = this.connection.transport === "postgres-mcp";
     const name = builtin
       ? "database_operation"
@@ -137,7 +143,7 @@ export class DatabaseMcpClient {
     const r = await this.client.callTool(
       { name, arguments: input },
       undefined,
-      { timeout: 120000 },
+      { timeout, maxTotalTimeout: timeout, resetTimeoutOnProgress: false },
     );
     const parts = Array.isArray(r.content)
       ? r.content.filter((x: any) => x.type === "text").map((x: any) => x.text)

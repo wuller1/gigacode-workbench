@@ -22,7 +22,9 @@ export function DatabaseEffect({
         <span className="working-arc" />
         {effect.kind === "transaction"
           ? "Подтверждаю транзакцию…"
-          : "Применяю changeset…"}
+          : effect.kind === "routine"
+            ? "Применяю определение процедуры…"
+            : "Применяю changeset…"}
       </div>
     );
   return (

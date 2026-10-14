@@ -1,0 +1,286 @@
+{
+  "at": "2026-10-14T02:33:40.200Z",
+  "os": "win32",
+  "tests": 35,
+  "passed": 35,
+  "failed": 0,
+  "cases": [
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP preserves BIGINT, NUMERIC, timestamps, JSON text and NULL without JavaScript coercion",
+      "status": "passed",
+      "durationMs": 116.394
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP isolates physical sessions, temporary tables and manual transactions",
+      "status": "passed",
+      "durationMs": 226.62599999999998
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP reports syntax positions and actual failed transaction state, then recovers with rollback",
+      "status": "passed",
+      "durationMs": 42.62339999999995
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP cancels a running server query and observes terminal cancellation",
+      "status": "passed",
+      "durationMs": 247.67720000000008
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP streams 100000 rows to disk and pages without storing all rows in a job",
+      "status": "passed",
+      "durationMs": 2540.3780000000006
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP returns multiple result sets without splitting semicolons inside literals/functions",
+      "status": "passed",
+      "durationMs": 101.6921999999995
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP captures wide rows with a byte-bounded batch, rejects oversized pages before materialization and streams export",
+      "status": "passed",
+      "durationMs": 8386.0814
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP real stdio worker streams 128 MiB wide rows and exports under a 64 MiB old-space cap without materializing an oversized page",
+      "status": "passed",
+      "durationMs": 5395.964999999998
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP retains column metadata and captured rows when a later fetched row raises a server error",
+      "status": "passed",
+      "durationMs": 63.39010000000053
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP discovers actual catalog columns, keys, indexes, dependencies and routine definitions",
+      "status": "passed",
+      "durationMs": 15.586699999999837
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP selects several schemas, pages/searches objects on the server and exposes system schemas only when requested",
+      "status": "passed",
+      "durationMs": 14.4971000000005
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP optimistic changesets are atomic and reject stale row identities",
+      "status": "passed",
+      "durationMs": 243.73170000000027
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP does not replay a duplicate operation ID or accept different SQL under it",
+      "status": "passed",
+      "durationMs": 104.51589999999851
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP COPY streams CSV and distinguishes NULL, empty text, quoted delimiters and numeric precision",
+      "status": "passed",
+      "durationMs": 137.02439999999842
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP rolls back a malformed COPY input without partial rows",
+      "status": "passed",
+      "durationMs": 118.20360000000073
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP exports CSV, SQL and XLSX from the captured result without reexecuting SQL",
+      "status": "passed",
+      "durationMs": 231.76320000000123
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP large CSV chunks preserve a split surrogate pair, quotes, newline and NULL on COPY round trip",
+      "status": "passed",
+      "durationMs": 62.508600000001024
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP never overwrites an existing export destination",
+      "status": "passed",
+      "durationMs": 113.24989999999889
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP preserves duplicate SQL column names by position in the result contract",
+      "status": "passed",
+      "durationMs": 62.75330000000031
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP materializes bounded table pages using captured filters and exact server offsets",
+      "status": "passed",
+      "durationMs": 148.3040000000001
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP a result display limit does not silently limit INSERT RETURNING side effects",
+      "status": "passed",
+      "durationMs": 254.78619999999864
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP large protocol values lose the session with an explicit unknown outcome instead of unbounded buffering",
+      "status": "passed",
+      "durationMs": 175.51410000000033
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP streams SQL files across chunk boundaries, rejects transaction control and rolls back the entire file on failure",
+      "status": "passed",
+      "durationMs": 221.51180000000022
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP XLSX follows workbook tab order, streams Unicode shared strings and does not evaluate formulas",
+      "status": "passed",
+      "durationMs": 82.25200000000041
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP COPY and full-table CSV export stream a 73 MB file with measured bounded JavaScript heap",
+      "status": "passed",
+      "durationMs": 19897.4761
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP manual savepoints preserve prior writes and commit only the intended rows",
+      "status": "passed",
+      "durationMs": 294.38820000000123
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP invalid UTF-8 is rejected instead of silently replacing source data",
+      "status": "passed",
+      "durationMs": 98.5844999999972
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP a changing SQL input file rolls back its completed statements",
+      "status": "passed",
+      "durationMs": 375.2982999999949
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP script errors identify the actual second statement and retain the captured SQL hash",
+      "status": "passed",
+      "durationMs": 57.145299999996496
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP real stdio MCP performs inventory, open, execute, page and close",
+      "status": "passed",
+      "durationMs": 674.1797000000006
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP HTTPS MCP validates its certificate, configurable credential header and actual tool schema",
+      "status": "passed",
+      "durationMs": 1308.3036000000066
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP survives actual COMMIT response loss for changes without repeating INSERT, persists intent and requires observed reconciliation",
+      "status": "passed",
+      "durationMs": 978.0288999999975
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP survives actual COMMIT response loss for manual-commit without repeating INSERT, persists intent and requires observed reconciliation",
+      "status": "passed",
+      "durationMs": 1124.2609000000011
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP recovers offline results and exact parameters after restart, and prevents silent retargeting of old documents",
+      "status": "passed",
+      "durationMs": 1019.0438000000067
+    },
+    {
+      "name": "live PostgreSQL data workspace through real driver/MCP host enforces project bindings, version conflicts and encrypted credential persistence",
+      "status": "passed",
+      "durationMs": 320.186099999999
+    }
+  ],
+  "metrics": {
+    "serverVersion": "PostgreSQL 14.24, compiled by Visual C++ build 1944, 64-bit",
+    "wideRows": {
+      "rows": 256,
+      "cellBytes": 524288,
+      "sampledHeapDelta": 33734200,
+      "exportBytes": 134220195
+    },
+    "hardHeapWorker": {
+      "oldSpaceMiB": 64,
+      "semiSpaceMiB": 4,
+      "observed": {
+        "process": {
+          "rss": 60170240,
+          "heapTotal": 21188608,
+          "heapUsed": 10709672,
+          "external": 2148232,
+          "arrayBuffers": 29695
+        },
+        "sampledPeak": {
+          "heapUsed": 33793536,
+          "rss": 86843392,
+          "intervalMs": 100
+        },
+        "activeJobs": 0,
+        "physicalSessions": 1,
+        "spoolBytes": 134220180,
+        "limits": {
+          "spoolBytes": 2147483648,
+          "wireMessageBytes": 8388608,
+          "concurrentJobs": 4,
+          "physicalSessions": 32
+        }
+      },
+      "exportBytes": 134220195
+    },
+    "bulk": {
+      "inputBytes": 72900000,
+      "exportBytes": 74400015,
+      "rows": 300000,
+      "sampledHeapDelta": 13415904,
+      "sampleIntervalMs": 10,
+      "copyAndExportMs": 19771
+    },
+    "node": "22.23.3",
+    "engine": {
+      "process": {
+        "rss": 136159232,
+        "heapTotal": 75612160,
+        "heapUsed": 46733624,
+        "external": 4492792,
+        "arrayBuffers": 338166
+      },
+      "sampledPeak": {
+        "heapUsed": 74493040,
+        "rss": 161259520,
+        "intervalMs": 100
+      },
+      "activeJobs": 0,
+      "physicalSessions": 3,
+      "spoolBytes": 957965,
+      "limits": {
+        "spoolBytes": 2147483648,
+        "wireMessageBytes": 8388608,
+        "concurrentJobs": 4,
+        "physicalSessions": 32
+      }
+    }
+  },
+  "scope": "Real disposable PostgreSQL. Direct engine/file tests, real stdio MCP provider and HTTPS transport fixture. No workplace adapter or 10 GB stress claim.",
+  "sourceHashes": {
+    "app/electron/database/client.ts": "44b5705b6d42f928919f0dcde68577c69c673aaf0fca6de29392209aef5d18a3",
+    "app/electron/database/engine.ts": "7001ce16867650415ca0e4a658b2a55d6e5e2513e257dcd895d3ed171f80d27f",
+    "app/electron/database/files.ts": "ff63e8bcc9b895ff51141a171965c4696ef686894f5a9a84c7e3701eede0d81c",
+    "app/electron/database/http.ts": "c34a214be47546f71a8ea0a7b8c02ac58dbfb6ba5112644d10d6af5f2376e233",
+    "app/electron/database/protocol.ts": "ae80930abc62c486f759254619f4b358fc8e3959ce6750b2ddfd86e0ba210cce",
+    "app/electron/database/provider.ts": "b3255b4e73450963fda18a7a341a5e5f2f3c207ff906b8984df8c94f5c537589",
+    "app/electron/database/query-stream.ts": "339a7a9d10b811bdafd77d511fa1c7b621aac37520e1caad262ed2b5deca0860",
+    "app/electron/database/response.ts": "402df493e74e447dcd41f98f9ecc0c311c30be3ac119f777b7da47691dfb7096",
+    "app/electron/database/service.ts": "8f7e284ae07578b5e7d64f436b6905b9eb48c9627d383142b224979d2bc1ea57",
+    "app/electron/database/sql-file.ts": "0a332e2b591b554ef77c74fb443b5ec72a2e904fd1b43a497ce692c57133ef80",
+    "app/electron/database/tls.ts": "fee9f6726e6a36337fe376d8eb52abead62d1aa7d400f0b1ab5bfca546591e19",
+    "app/electron/database/wire-limit.ts": "c611c00f4fbb60f1f47bdcea79f66a13ed66b9ea7bed93e1d025746bc7c05904",
+    "app/electron/main.ts": "5efff9729ac3cc99dbbf2a9ec485eb0516d2aa59fa5e6833a58d1272cf851e5a",
+    "app/electron/mcp.ts": "1c547b9b8feb9c51da8e0613c87965d5adcf3e5e20e2a536a5a1c939c909287e",
+    "app/package-lock.json": "3753f6f38d4ba27636439a83429bd3c888cd166dd2e478f7f7e3f73e52c3afeb",
+    "app/shared/database.ts": "3cc91dd04ca7fda1a972096a40248f0510b829c036e87fb7515416bab35466a9",
+    "app/shared/sql.ts": "f1bd1d2345f60f6fc0f36159601460066c1360e631374128acf54dd6da1dc1e3",
+    "app/src/DatabaseEffect.tsx": "edbdb309ca84d0047035c36e6696d189fc07505bc1dfc2bec50835d2d0bc95ef",
+    "app/src/DatabaseExplorer.tsx": "a3d3fbf023a8a50235aed95310ee7d466c99796996bb4e1dc144e3d9b633a38d",
+    "app/src/DatabaseHistory.tsx": "5b9ea7133d0684b33c908078ade92c211bfbfe1f8aa1fac5df944d95bd5ec203",
+    "app/src/DatabasePanel.tsx": "6ee4ca5981551211f023e4d59c6e907084c073825913b9b932b9782ee6fd80c0",
+    "app/src/DatabaseSettings.tsx": "34c0292535f7aef3fd1d227dad3bc9c2e4d14b0e1a496ec1d0564d6ac7c5cd0b",
+    "app/src/SqlEditor.tsx": "2c9d222f2f4bf4034888db139634fcf50f7f0b9e44464352e07c963f72674bc9",
+    "app/src/SqlPlan.tsx": "c01915b2490fb6b4a06328de153ead7bb56157947516ca6c9d317823c1dbdadf",
+    "app/src/database.css": "652cf350262d983f4d8dabd7b4237dc996c369e22fa2a901c5556c171af2b9bb",
+    "app/tests/database-live.test.ts": "54b43c12f6169f718e2178074af7ecbcf137c119a415099987fb57c74f5ba26e",
+    "app/tests/database-sql.test.ts": "db021e48461ab446682019b8203e991b7069604c3b670ff924b90ab2a746a706",
+    "app/tools/database-evidence.mjs": "8ff96fa93edc5d1255f7c6aa26d57dc3971fc6772101a9a96a98ca0ef626156f",
+    "app/tools/test-database-live.mjs": "1f9e774baea2be6458fc9c2bf44840c1b3f3eb3b4a36bb573dd1247c765c16c1",
+    "app/tools/test-database-ui.mjs": "5d228ae4f882a53f36b6aae8faa7c2e98a3919bab0285c0a72d4c8ef13edff2c"
+  }
+}

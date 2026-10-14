@@ -43,6 +43,7 @@ let service: WorkbenchService,
 let ide: IdeService;
 let database: DatabaseService;
 let quitting = false,
+  shutdownPreparing = false,
   previewServer: Server | undefined,
   previewPort = 0;
 const previews = new Map<string, { body: Buffer; mime: string }>();
@@ -90,7 +91,53 @@ const log = async (kind: string, message: unknown) => {
   } catch {}
 };
 
+const closeRequests = new Map<
+  number,
+  { id: string; promise: Promise<void>; resolve: (error?: string) => void }
+>();
+const closeApproved = new WeakSet<BrowserWindow>();
+async function prepareRendererClose(window: BrowserWindow) {
+  if (window.isDestroyed()) return;
+  const old = closeRequests.get(window.id);
+  if (old) return old.promise;
+  const id = randomUUID();
+  let finish!: (error?: string) => void;
+  const promise = new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(
+      () =>
+        finish(
+          "Редактор не подтвердил сохранение. Проверьте окно перед закрытием.",
+        ),
+      15000,
+    );
+    finish = (error) => {
+      clearTimeout(timer);
+      error ? reject(new Error(error)) : resolve();
+    };
+  });
+  closeRequests.set(window.id, { id, promise, resolve: finish });
+  window.webContents.send("workbench:event", {
+    type: "window.prepareClose",
+    payload: { requestId: id },
+  });
+  try {
+    await promise;
+  } catch (error) {
+    if (!window.isDestroyed())
+      window.webContents.send("workbench:event", {
+        type: "window.closeSettled",
+        payload: { error: String((error as Error).message) },
+      });
+    throw error;
+  } finally {
+    closeRequests.delete(window.id);
+  }
+}
 function createWindow() {
+  if (shutdownPreparing || quitting)
+    throw new Error(
+      "Приложение готовится к закрытию. Дождитесь завершения проверки сохранения.",
+    );
   const window = new BrowserWindow({
     width: 1440,
     height: 920,
@@ -133,33 +180,41 @@ function createWindow() {
   );
   window.on("close", (e) => {
     if (quitting) return;
-    const survivor = [...windows].find((w) => w !== window && !w.isDestroyed());
-    if (survivor) {
-      browser.transferWindow(window, survivor);
-      ide?.transferWindow(window, survivor);
-      for (const [id, owner] of sessionOwners)
-        if (owner === window.id) sessionOwners.set(id, survivor.id);
+    if (shutdownPreparing) {
+      closeApproved.delete(window);
+      e.preventDefault();
       return;
     }
-    if (
-      service
-        .snapshot()
-        .sessions.some((s) =>
-          ["starting", "running", "waiting", "cancelling"].includes(s.status),
-        )
-    ) {
-      const choice = dialog.showMessageBoxSync(window, {
-        type: "question",
-        title: "Есть выполняющиеся задачи",
-        message: "Закрыть приложение и запросить остановку задач?",
-        detail:
-          "История сохранится. Если исход операции останется неизвестным, после запуска понадобится его сверка.",
-        buttons: ["Продолжить работу", "Остановить и закрыть"],
-        defaultId: 0,
-        cancelId: 0,
-      });
-      if (choice === 0) e.preventDefault();
+    const survivor = [...windows].find((w) => w !== window && !w.isDestroyed());
+    if (!survivor) {
+      // Keep the last renderer alive until the global DB/save preflight passes.
+      e.preventDefault();
+      app.quit();
+      return;
     }
+    if (!closeApproved.has(window)) {
+      e.preventDefault();
+      if (!closeRequests.has(window.id))
+        void prepareRendererClose(window)
+          .then(() => {
+            if (!window.isDestroyed() && !shutdownPreparing) {
+              closeApproved.add(window);
+              window.close();
+            }
+          })
+          .catch((error) => {
+            void log("window-save-blocked", {
+              windowId: window.id,
+              message: error.message,
+            });
+          });
+      return;
+    }
+    closeApproved.delete(window);
+    browser.transferWindow(window, survivor);
+    ide?.transferWindow(window, survivor);
+    for (const [id, owner] of sessionOwners)
+      if (owner === window.id) sessionOwners.set(id, survivor.id);
   });
   window.on("closed", () => {
     browser.closeWindow(window.id);
@@ -202,6 +257,25 @@ async function invoke(
 ): Promise<any> {
   if (method === "workbench.reference") return readReference(resourceRoot, p);
   if (method.startsWith("database.")) {
+    if (
+      shutdownPreparing &&
+      ![
+        "database.console.update",
+        "database.console.read",
+        "database.snapshot",
+        "database.cancel",
+        "database.page",
+        "database.history.load",
+        "database.job.read",
+        "database.operation.list",
+        "database.operation.read",
+        "database.effect.read",
+      ].includes(method)
+    )
+      throw new Error(
+        "Приложение готовится к закрытию. Новые операции БД временно остановлены.",
+      );
+
     if (agentSession) {
       const owner = sessionProject(agentSession);
       if (p.projectId && p.projectId !== owner.id)
@@ -284,6 +358,12 @@ async function invoke(
     return result;
   }
   if (method.startsWith("ide.")) {
+    if (shutdownPreparing && method !== "ide.list") {
+      if (method === "ide.bounds") return { preparingClose: true };
+      throw new Error(
+        "Приложение готовится к закрытию. Изменения IDE временно остановлены.",
+      );
+    }
     if (agentSession) {
       const owner = sessionProject(agentSession);
       if (p.projectId && p.projectId !== owner.id)
@@ -392,6 +472,15 @@ async function invoke(
     case "window.maximize":
       window.isMaximized() ? window.unmaximize() : window.maximize();
       return { maximized: window.isMaximized() };
+    case "window.readyToClose": {
+      const request = closeRequests.get(window.id);
+      if (!request || request.id !== p.requestId)
+        throw new Error("Запрос закрытия устарел");
+      request.resolve(
+        typeof p.error === "string" ? p.error.slice(0, 2000) : undefined,
+      );
+      return { accepted: true };
+    }
     case "window.close":
       window.close();
       return;
@@ -678,6 +767,7 @@ async function start() {
     platform: process.platform,
   });
   app.on("second-instance", () => {
+    if (shutdownPreparing || quitting) return;
     const window = [...windows][0];
     if (window) {
       window.restore();
@@ -685,35 +775,92 @@ async function start() {
     } else createWindow();
   });
   app.on("activate", () => {
-    if (!windows.size) createWindow();
+    if (!windows.size && !shutdownPreparing && !quitting) createWindow();
   });
 }
 app.on("window-all-closed", () => app.quit());
 app.on("before-quit", (e) => {
   if (quitting) return;
   e.preventDefault();
-  quitting = true;
-  void Promise.allSettled([
-    service?.dispose(),
-    mcp?.dispose(),
-    terminal?.dispose(),
-    ide?.dispose(),
-    database?.dispose(),
-  ]).then(async (results) => {
-    const terminalResult = results[2];
-    if (
-      terminalResult?.status === "fulfilled" &&
-      terminalResult.value?.unconfirmed?.length
-    )
-      await log("terminal-exit-unconfirmed", terminalResult.value);
-    for (const result of results)
-      if (result.status === "rejected")
-        await log("shutdown-failed", result.reason);
-    browser?.dispose();
-    previewServer?.closeAllConnections();
-    previewServer?.close();
-    app.quit();
-  });
+  if (shutdownPreparing) return;
+  shutdownPreparing = true;
+  void Promise.allSettled([...windows].map(prepareRendererClose))
+    .then((results) => {
+      const failed = results.find((r) => r.status === "rejected");
+      if (failed?.status === "rejected") throw failed.reason;
+    })
+    .then(async () => {
+      const preflight = await Promise.allSettled([
+        database?.assertShutdownReady(),
+        ide?.assertShutdownReady(),
+      ]);
+      const blocked = preflight.find((result) => result.status === "rejected");
+      if (blocked?.status === "rejected") throw blocked.reason;
+      const window = [...windows].find((w) => !w.isDestroyed());
+      if (
+        window &&
+        service
+          ?.snapshot()
+          .sessions.some((session) =>
+            ["starting", "running", "waiting", "cancelling"].includes(
+              session.status,
+            ),
+          )
+      ) {
+        const choice = await dialog.showMessageBox(window, {
+          type: "question",
+          title: "Есть выполняющиеся задачи",
+          message: "Закрыть приложение и запросить остановку задач?",
+          detail:
+            "История сохранится. Неизвестные внешние эффекты потребуют сверки после запуска.",
+          buttons: ["Продолжить работу", "Остановить и закрыть"],
+          defaultId: 0,
+          cancelId: 0,
+        });
+        if (choice.response === 0)
+          throw new Error("Закрытие отменено: задачи продолжают выполняться.");
+      }
+      return Promise.allSettled([
+        service?.dispose(),
+        mcp?.dispose(),
+        terminal?.dispose(),
+        ide?.dispose(),
+        database?.dispose(),
+      ]);
+    })
+    .then(async (results) => {
+      const terminalResult = results[2];
+      if (
+        terminalResult?.status === "fulfilled" &&
+        terminalResult.value?.unconfirmed?.length
+      )
+        await log("terminal-exit-unconfirmed", terminalResult.value);
+      for (const result of results)
+        if (result.status === "rejected")
+          await log("shutdown-failed", result.reason);
+      browser?.dispose();
+      previewServer?.closeAllConnections();
+      previewServer?.close();
+      quitting = true;
+      shutdownPreparing = false;
+      app.quit();
+    })
+    .catch(async (error) => {
+      quitting = false;
+      try {
+        await ide?.cancelShutdown();
+      } catch (restoreError) {
+        void log("ide-shutdown-restore-failed", restoreError);
+      }
+      shutdownPreparing = false;
+      for (const window of windows)
+        if (!window.isDestroyed())
+          window.webContents.send("workbench:event", {
+            type: "window.closeSettled",
+            payload: { error: String(error.message) },
+          });
+      void log("shutdown-save-blocked", error);
+    });
 });
 process.on("uncaughtException", (error) => void log("uncaught", error));
 process.on("unhandledRejection", (error) => void log("unhandled", error));

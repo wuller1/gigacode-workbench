@@ -14,10 +14,10 @@
     {
       "name": "Open real project file",
       "observed": {
-        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:2066433594211720",
+        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:3420430782387918",
         "uri": "file://<FIXTURE_RUN>/project/src/main.ts",
         "version": 1,
-        "revision": "00930e3a-aade-402b-9056-5a4a4f2a5f16:1",
+        "revision": "ec83d20d-8b01-40d3-874b-6e941250657e:1",
         "languageId": "typescript",
         "dirty": false,
         "lineCount": 4,
@@ -71,10 +71,10 @@
     {
       "name": "Edit same unsaved buffer without overwriting disk",
       "observed": {
-        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:2066433594211720",
+        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:3420430782387918",
         "uri": "file://<FIXTURE_RUN>/project/src/main.ts",
         "version": 2,
-        "revision": "00930e3a-aade-402b-9056-5a4a4f2a5f16:2",
+        "revision": "ec83d20d-8b01-40d3-874b-6e941250657e:2",
         "languageId": "typescript",
         "dirty": true,
         "lineCount": 4,
@@ -94,10 +94,10 @@
     {
       "name": "Duplicate operation does not apply twice",
       "observed": {
-        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:2066433594211720",
+        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:3420430782387918",
         "uri": "file://<FIXTURE_RUN>/project/src/main.ts",
         "version": 2,
-        "revision": "00930e3a-aade-402b-9056-5a4a4f2a5f16:2",
+        "revision": "ec83d20d-8b01-40d3-874b-6e941250657e:2",
         "languageId": "typescript",
         "dirty": true,
         "lineCount": 4,
@@ -122,10 +122,10 @@
     {
       "name": "Save verified on disk and diagnostics cleared",
       "observed": {
-        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:2066433594211720",
+        "id": "code-editor-opener:file://<FIXTURE_RUN>/project/src/main.ts:3420430782387918",
         "uri": "file://<FIXTURE_RUN>/project/src/main.ts",
         "version": 2,
-        "revision": "00930e3a-aade-402b-9056-5a4a4f2a5f16:2",
+        "revision": "ec83d20d-8b01-40d3-874b-6e941250657e:2",
         "languageId": "typescript",
         "dirty": false,
         "lineCount": 4,
@@ -172,7 +172,7 @@
     {
       "name": "Multi-file semantic rename preview",
       "observed": {
-        "proposalId": "aaf6cd6e-bf5d-4cba-acfb-2d72ea44ebe8",
+        "proposalId": "b0833218-ae04-4d48-8ff9-763a355a64e4",
         "label": "Rename greet → welcome",
         "files": [
           {
@@ -194,7 +194,7 @@
         "filesTruncated": false,
         "editCount": 3,
         "applied": false,
-        "expiresAt": "2026-10-13T22:21:27.230Z",
+        "expiresAt": "2026-10-14T04:45:12.996Z",
         "preview": [
           {
             "uri": "file://<FIXTURE_RUN>/project/src/greet.ts",
@@ -236,7 +236,7 @@
     {
       "name": "Semantic rename updates actual usages",
       "observed": {
-        "proposalId": "aaf6cd6e-bf5d-4cba-acfb-2d72ea44ebe8",
+        "proposalId": "b0833218-ae04-4d48-8ff9-763a355a64e4",
         "label": "Rename greet → welcome",
         "applied": true,
         "summary": "Made 9 text edits in 2 files",
@@ -258,7 +258,7 @@
     {
       "name": "Native refactoring preview is explicitly pending, not reported as applied",
       "observed": {
-        "proposalId": "e2fa90f5-cab1-4ece-a702-caecad7fe797",
+        "proposalId": "4c6cd3d9-ad10-4ced-a465-2cd93326c2c1",
         "previewOpened": true,
         "applied": false,
         "requiresReadback": true,
@@ -361,7 +361,7 @@
     },
     {
       "name": "Real Python virtualenv unittest",
-      "observed": ".\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK"
+      "observed": ".\n----------------------------------------------------------------------\nRan 1 test in 0.002s\n\nOK"
     },
     {
       "name": "Real JDT Java definition across Maven project",
@@ -386,7 +386,7 @@
     },
     {
       "name": "Real Java21 Spring Maven JUnit build",
-      "observed": "resourceDirectory <FIXTURE_RUN>/project/java-maven/src/main/resources\n[INFO] \n[INFO] --- compiler:3.13.0:compile (default-compile) @ ide-fixture ---\n[INFO] Recompiling the module because of added or removed source files.\n[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/classes\n[INFO] \n[INFO] --- resources:3.3.1:testResources (default-testResources) @ ide-fixture ---\n[INFO] skip non existing resourceDirectory <FIXTURE_RUN>/project/java-maven/src/test/resources\n[INFO] \n[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ ide-fixture ---\n[INFO] Recompiling the module because of changed dependency.\n[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes\n[INFO] \n[INFO] --- surefire:3.5.2:test (default-test) @ ide-fixture ---\n[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider\n[INFO] \n[INFO] -------------------------------------------------------\n[INFO]  T E S T S\n[INFO] -------------------------------------------------------\n[INFO] Running dev.workbench.GreetingServiceTest\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in dev.workbench.GreetingServiceTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  2.273 s\n[INFO] Finished at: 2026-10-14T08:06:42+10:00\n[INFO] ------------------------------------------------------------------------\n"
+      "observed": "resourceDirectory <FIXTURE_RUN>/project/java-maven/src/main/resources\n[INFO] \n[INFO] --- compiler:3.13.0:compile (default-compile) @ ide-fixture ---\n[INFO] Recompiling the module because of added or removed source files.\n[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/classes\n[INFO] \n[INFO] --- resources:3.3.1:testResources (default-testResources) @ ide-fixture ---\n[INFO] skip non existing resourceDirectory <FIXTURE_RUN>/project/java-maven/src/test/resources\n[INFO] \n[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ ide-fixture ---\n[INFO] Recompiling the module because of changed dependency.\n[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes\n[INFO] \n[INFO] --- surefire:3.5.2:test (default-test) @ ide-fixture ---\n[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider\n[INFO] \n[INFO] -------------------------------------------------------\n[INFO]  T E S T S\n[INFO] -------------------------------------------------------\n[INFO] Running dev.workbench.GreetingServiceTest\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in dev.workbench.GreetingServiceTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  2.594 s\n[INFO] Finished at: 2026-10-14T14:30:32+10:00\n[INFO] ------------------------------------------------------------------------\n"
     },
     {
       "name": "Native test controllers discover real tests",
@@ -438,7 +438,7 @@
     {
       "name": "Native IDE test runner passed actual tests: python-tests",
       "observed": {
-        "id": "d0053e13-3826-46c6-8ba6-bdf1d5dc5db0",
+        "id": "63947dea-f166-4bd6-a418-b9068893dd0a",
         "name": "Running Tests for Workspace(s): <FIXTURE_RUN>/project",
         "running": false,
         "totalResults": 1,
@@ -463,7 +463,7 @@
     {
       "name": "Native test runner reports actual assertion failure",
       "observed": {
-        "id": "243c62cf-6a78-43d7-88a5-0191c09d53f6",
+        "id": "4daf8ceb-f647-48ea-a0ed-7a54b887d226",
         "name": "Running Tests for Workspace(s): <FIXTURE_RUN>/project",
         "running": false,
         "totalResults": 1,
@@ -502,13 +502,13 @@
             }
           }
         ],
-        "output": "test_greeting (test_greeting.GreetingTest) ... FAIL\r\n\r\n======================================================================\r\nFAIL: test_greeting (test_greeting.GreetingTest)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"<FIXTURE_RUN>/project/python/test_greeting.py\", line 5, in test_greeting\r\n    self.assertEqual(greet(\"Workbench\"), \"Intentional failing expectation\")\r\nAssertionError: 'Hello, Workbench' != 'Intentional failing expectation'\r\n- Hello, Workbench\r\n+ Intentional failing expectation\r\n\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.003s\r\n\r\nFAILED (failures=1)\r\nFinished running tests!\r\n"
+        "output": "test_greeting (test_greeting.GreetingTest) ... FAIL\r\n\r\n======================================================================\r\nFAIL: test_greeting (test_greeting.GreetingTest)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"<FIXTURE_RUN>/project/python/test_greeting.py\", line 5, in test_greeting\r\n    self.assertEqual(greet(\"Workbench\"), \"Intentional failing expectation\")\r\nAssertionError: 'Hello, Workbench' != 'Intentional failing expectation'\r\n- Hello, Workbench\r\n+ Intentional failing expectation\r\n\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.001s\r\n\r\nFAILED (failures=1)\r\nFinished running tests!\r\n"
       }
     },
     {
       "name": "Native test runner passes after actual repair",
       "observed": {
-        "id": "cac731c4-b263-488a-a955-6901e421c18c",
+        "id": "13630b28-6a68-4df9-9205-a2b90b841ee6",
         "name": "Running Tests for Workspace(s): <FIXTURE_RUN>/project",
         "running": false,
         "totalResults": 1,
@@ -533,7 +533,7 @@
     {
       "name": "Native IDE test runner passed actual tests: java",
       "observed": {
-        "id": "1925faee-e161-40dc-aec1-fb669be6f565",
+        "id": "d06f918b-9556-45f2-92d1-992809659d9f",
         "name": "",
         "running": false,
         "totalResults": 1,
@@ -549,7 +549,7 @@
                 "ide-fixture@dev.workbench.GreetingServiceTest#greetsByName()"
               ],
               "state": 3,
-              "duration": 11
+              "duration": 7
             }
           }
         ],
@@ -586,7 +586,7 @@
           "threads": [
             {
               "id": 0,
-              "name": "debug.mjs [56462]"
+              "name": "debug.mjs [68750]"
             }
           ]
         }
@@ -1015,12 +1015,12 @@
       "name": "Actual mouse drag groups tabs in the same pane",
       "observed": {
         "kind": "split",
-        "id": "03821b2b-bc00-446f-9085-af0b6f46000b",
+        "id": "5e364d47-9480-416d-ae76-cec883e91cf6",
         "axis": "x",
         "ratio": 0.34,
         "a": {
           "kind": "group",
-          "id": "de536fb1-1087-4c15-b27e-7a3570aeacec",
+          "id": "deb4c4c2-e6ec-4ccc-a6ff-c22e121e72d4",
           "tabs": [
             "chat"
           ],
@@ -1028,7 +1028,7 @@
         },
         "b": {
           "kind": "group",
-          "id": "efac7988-fcd5-44cd-8ad7-21f97a24fe7e",
+          "id": "1d8f9048-eba9-4e7c-9448-627755876b9a",
           "tabs": [
             "files",
             "plan"
@@ -1068,7 +1068,56 @@
     {
       "name": "Native editor screenshot",
       "observed": {
-        "path": "<FIXTURE_RUN>/userdata/artifacts/ide-1791929227552.png"
+        "path": "<FIXTURE_RUN>/userdata/artifacts/ide-1791952259791.png"
+      }
+    },
+    {
+      "name": "Native Untitled keyboard text blocks Quit and the same editor remains visible and editable",
+      "observed": {
+        "uri": "untitled:/Untitled-1",
+        "view": {
+          "visible": true,
+          "bounds": {
+            "x": 669,
+            "y": 139,
+            "width": 771,
+            "height": 781
+          },
+          "id": 5
+        },
+        "characters": 89
+      }
+    },
+    {
+      "name": "Actual recovery POST failure refuses native Quit and preserves exact dirty text without saving disk",
+      "observed": {
+        "uri": "file://<FIXTURE_RUN>/project/src/shutdown.ts",
+        "view": {
+          "visible": true,
+          "bounds": {
+            "x": 669,
+            "y": 139,
+            "width": 771,
+            "height": 781
+          },
+          "id": 5
+        },
+        "characters": 94
+      }
+    },
+    {
+      "name": "Native Quit confirms exact disk-backed recovery while leaving the source file unsaved",
+      "observed": {
+        "uri": "file://<FIXTURE_RUN>/project/src/shutdown.ts",
+        "characters": 94
+      }
+    },
+    {
+      "name": "Fresh Electron and Theia startup restores the exact dirty buffer after successful native Quit",
+      "observed": {
+        "characters": 94,
+        "dirty": true,
+        "freshRevision": "c83823b7-8e03-425e-bbc3-deb53a853e76:2"
       }
     }
   ],
@@ -1078,9 +1127,90 @@
   "level": "live Electron / real Theia on darwin",
   "verification": {
     "platform": "macOS ARM64",
-    "sourceCommit": "0f9d8eb8c22b5d966022b384da8bceb6e5bdf3ec",
+    "sourceState": "working-tree",
+    "baseCommit": "396be5b9c5cc071e8cf319f786158df0b0b15bf3",
+    "at": "2026-10-14T04:32:40.363769+00:00",
     "command": "node app/tools/test-ide-live.mjs --languages",
-    "scope": "Real Electron/Theia/language/task/test/debug/recovery; local offline ACP peer, no paid model/corporate MCP",
-    "passed": 41
+    "passed": 45,
+    "scope": "Real Electron/Theia/language/task/test/debug/recovery; local offline ACP peer, no paid model or corporate MCP",
+    "sourceHashes": {
+      "app/electron/acp.ts": "867fd974234acc8d4ebba987b1451cedbb40e6e49f09b6e42ea46f4ebdb5c07c",
+      "app/electron/browser.ts": "18c63c48cce24dae8c7fd0d0f44ba684302fd37e2e5467c81d4cfa82d41cb860",
+      "app/electron/bundled-cli.ts": "db84a765aa451f01190a861c7a34f17bacc7c2bcac342de81e9a910b88404ab4",
+      "app/electron/database/client.ts": "93180086cc089ed64b9cc4e15c381aabac0e17a96012500a3e79f7231d372a71",
+      "app/electron/database/engine.ts": "29f7d3423c992c5bcec899056d182552f50c8d2dbd2d3dcb38229692d683fa87",
+      "app/electron/database/files.ts": "ff63e8bcc9b895ff51141a171965c4696ef686894f5a9a84c7e3701eede0d81c",
+      "app/electron/database/http.ts": "c34a214be47546f71a8ea0a7b8c02ac58dbfb6ba5112644d10d6af5f2376e233",
+      "app/electron/database/protocol.ts": "a7cc9a7400b6b227beeae081da5883d14fbbc409a63b98506d8ed5087a3f71de",
+      "app/electron/database/provider.ts": "6ca1594902bd53c0b307e349e5594f8281700fb7f73601eab3fcb9933c8ecdb1",
+      "app/electron/database/query-stream.ts": "339a7a9d10b811bdafd77d511fa1c7b621aac37520e1caad262ed2b5deca0860",
+      "app/electron/database/relations.ts": "1d2850b936e1d6059dc8eec6061475957074e0e771bf607599bc5e7bfee0c98e",
+      "app/electron/database/response.ts": "c456e60b1a304dda2c94d9f2307d0dc4268fbf53c3e4c9752aede46b5ed1d46c",
+      "app/electron/database/service.ts": "2c158070d573a6fcbe972ba63c9eb73c241206818b02c025dae78bd9031ed43f",
+      "app/electron/database/sql-file.ts": "0a332e2b591b554ef77c74fb443b5ec72a2e904fd1b43a497ce692c57133ef80",
+      "app/electron/database/tls.ts": "fee9f6726e6a36337fe376d8eb52abead62d1aa7d400f0b1ab5bfca546591e19",
+      "app/electron/database/wire-limit.ts": "c611c00f4fbb60f1f47bdcea79f66a13ed66b9ea7bed93e1d025746bc7c05904",
+      "app/electron/ide-process.ts": "5d532c1b5f13c6532eef6477b85f9b2b63a2e08a0faaaff210b0cf4b4d65d13e",
+      "app/electron/ide-recovery-persist.ts": "5f769c4b8d79cc13e40918b325f8f66afc3a19d6a4daf99cf4366942de881c2a",
+      "app/electron/ide.ts": "cbde2d17202393532a050cb73c763b107b2ad198f46e80766a5c5b4eefa4ef16",
+      "app/electron/main.ts": "e865f8cb37f444b358b3b5bd2eeef0752785c42f245739156d4b7bf5d748139f",
+      "app/electron/mcp.ts": "601ec13f92a5f3e581b583f3d549686faee14cbc678ba6ffe6dab73f6c153198",
+      "app/electron/preload.ts": "08e8dabebfa14df73b9295c7dcaa3c08450628686ff9723f8729fedbb4af8ea5",
+      "app/electron/reference.ts": "acb655693830f6188febef155c7275cf632bb3bd09a4ecb98d6d589f3623612b",
+      "app/electron/service.ts": "52a526ddf50c75849767febabe8c3ec6029d811dad12f0bd590d6c68905c4b27",
+      "app/electron/store.ts": "115e1473ca4c4807ead220dc50320623c87290508d650ba52ab64e9fde14086c",
+      "app/electron/terminal.ts": "8e14ce700e57e401e97b5d185c16dee059fe74cd8f99cfbf7d12d983435dbec7",
+      "app/electron/workspace.ts": "dc83194e912539aafbabb03e9a3aa6f90172ede932e06d1e8b61045aedb5d1c6",
+      "app/package-lock.json": "3753f6f38d4ba27636439a83429bd3c888cd166dd2e478f7f7e3f73e52c3afeb",
+      "app/package.json": "24de18f9a0acfe5620aa2a02645b0d5de045ebaf70dfd13158fd5258f0b96db6",
+      "app/shared/database.ts": "3d48de3de7998d9a2aae724958e273ac6447b442e94ffe588123e32478847c4a",
+      "app/shared/sql.ts": "f1bd1d2345f60f6fc0f36159601460066c1360e631374128acf54dd6da1dc1e3",
+      "app/shared/suite-contracts.ts": "ac3b15643d0c7423f65f08f77edf3e08c1287b5e10cf850482d6e566ee0119a7",
+      "app/shared/types.ts": "17fa16c55dd180b85463e53d577eb3d01d0596199039ec4020c41efe73beadba",
+      "app/src/App.tsx": "e9c802b05ea6d4b39a326f43de1ee395f0005143d6cffc893bffc53be37309a9",
+      "app/src/DatabaseConsoleEditor.tsx": "dbbd06603b03ab53e7416338531d537f02cfa96fc55dadff8a947c80c061df27",
+      "app/src/DatabaseEffect.tsx": "8dc051c4af1fa77b2a2cde123759e9ac3ebe2d443c641e90f8749a21d8678c8d",
+      "app/src/DatabaseExplorer.tsx": "a3d3fbf023a8a50235aed95310ee7d466c99796996bb4e1dc144e3d9b633a38d",
+      "app/src/DatabaseHistory.tsx": "79907e400279578dbf085c784e41e720d665b1efe85e657e1d37b3ae1847f756",
+      "app/src/DatabasePanel.tsx": "d8540d46bb7b363f9c57d9689f2315e42248d76e8ccb639d2261bca8d497677b",
+      "app/src/DatabaseRelations.tsx": "c4eeeed0feb8e6c76efb531b6708e11c249dab4126c2c33930e4785faea6887a",
+      "app/src/DatabaseSettings.tsx": "34c0292535f7aef3fd1d227dad3bc9c2e4d14b0e1a496ec1d0564d6ac7c5cd0b",
+      "app/src/DatabaseStructure.tsx": "3fc1a5755c7499e686a066845f3f0e218ac0d596c17e1efdc4028ebe8071c42e",
+      "app/src/ErrorBoundary.tsx": "bc30aa30564871288e5fc0eaf359ce78922c79af6b6b38e9368540fd8bc0a43e",
+      "app/src/IdePanel.tsx": "6a10f055d4eb6e652e8b7f208c5678839510805af8d7dbfb938bfb9912436987",
+      "app/src/IdeSettings.tsx": "6be334f9735ea973d7081d380772719804f3cfdc09cba3a2bc5a8e7bc9fad1d3",
+      "app/src/ModelPicker.tsx": "0c39e7c2f0378817655c78ceff91a815ed26843ff5ca5e850f9c4d9d40e73bbc",
+      "app/src/Panels.tsx": "a36df1617132e178a4f93752aa18c9623b9bf5cb2676657ea337150f3754b468",
+      "app/src/QueueMessages.tsx": "e5f68b279c6967d5a6240392109e94a5f5f014a5a068c2f690261a7c7470e285",
+      "app/src/SettingsView.tsx": "69819ac10520375b560102597499a4b188d1b4956aa7a05b5288dccd260160be",
+      "app/src/SqlEditor.tsx": "eebe0424ea213087342f4d529d245555c951e6340b86573c94d4d58d9622a642",
+      "app/src/SqlPlan.tsx": "c01915b2490fb6b4a06328de153ead7bb56157947516ca6c9d317823c1dbdadf",
+      "app/src/Workspace.tsx": "2c0bc4aa94d4844c8bdbd4f85db30134850d72837a2125b9b62677d14f5dc0ab",
+      "app/src/api.ts": "965b0f78c7719697844969212e39d1df18638e36c4e47e8b9557afed97e4d26e",
+      "app/src/database-relations.css": "2a81b405623604ad682c91c791c0f65e5efdecd508cb9d54088cc8ce923d4029",
+      "app/src/database-structure.css": "f4e607369ce6fb52f75c6db84c203e05fa1e930dcfabd8cc2aed108c8e76d9c0",
+      "app/src/database.css": "ced273257f148ad648f5e7c3d024c6e0ec70f9d93fe1ec63130ff3bb27cd85cd",
+      "app/src/docking.ts": "1bec6883f137c16b9fef4b28dccd2f3d5b3aa0c3f0a1a872a53725cc879b3c3e",
+      "app/src/labels.ts": "013f58cbf409d6a6c3063e0596bcf4d02048a3212f13ff0781409e8e88a9e4fc",
+      "app/src/main.tsx": "64ec4e3e17bfb0ef08e2f123e79a1fb06fe03b045e0cc91c7e015a0795fae6e9",
+      "app/src/motion.ts": "1db3cef535cddd41b3538b667be291a1226e8bcdbb61e250c721b61d2006cb2f",
+      "app/src/styles.css": "8ec016a2a51752769faa91bb128bd0712c059b2d548359d15c61456a99f48997",
+      "app/src/ui.tsx": "c393a5ba5856c58b75b4738ae8d3ccdf47a30b83531e61825f14fdc598692dcd",
+      "app/src/window-close.ts": "196e50c3362d8c72178da07867131c055101a04af428d707d8339862c82eb5bb",
+      "app/tests/ide-recovery-persist.test.ts": "d9c73005eec7ff7d2f5cc82cc84cc118b184c433943df239422ea36ac94ba95a",
+      "app/tools/test-ide-live.mjs": "e4ba683f8d7638294733624b3b960e22d7a664e96c1f63429fcb058d2b80e5ca",
+      "ide/extensions/workbench-bridge/package.json": "95bdbbe1f4f1b6cf08e347e6d0de483342c60a1d0839b2feff7b7eb4f6db7a19",
+      "ide/extensions/workbench-bridge/src/backend-module.ts": "d25eb4f3dac1de81be4cb8bc7469aa9c3fe7b45989e53eb46f6e9e19a93d8a00",
+      "ide/extensions/workbench-bridge/src/execution.ts": "48cf7fa5ace3a4fbdbb9a207e21d4eabc43b23b767800f5413ecf64e8877fc22",
+      "ide/extensions/workbench-bridge/src/frame-clock.ts": "ff9121d82370c7d011fffe94cd9a1e4736d6b23daf44c0c79eb0d69e6a4df9d3",
+      "ide/extensions/workbench-bridge/src/frontend-module.ts": "41ee3370747393a32c9d0d0cfc1aec0d2df5399b4861a3433e2348961dc73615",
+      "ide/extensions/workbench-bridge/src/layout-recovery.ts": "6122aeb74c778f179b1aa468dc7d8a8d3aebbe4a5f50b108cc3b28b501136e44",
+      "ide/extensions/workbench-bridge/src/recovery.ts": "3bbe2de91c1f704bd44840341e5ceca6cd3969046d4590f432367731426bcfc7",
+      "ide/extensions/workbench-bridge/src/revision.ts": "88a5d9c3dc23d1fdea1e0fddff8bb744e29bc341429b8646acf79cfa047e2f67",
+      "ide/extensions/workbench-bridge/src/semantic.ts": "8aff19994b70cb079af9537dda5d8d75e721c26ef35145b3a78aa05c269710dc",
+      "ide/extensions/workbench-bridge/src/storage.ts": "cead756b39d8d49e268fa45c612e5f2f7f505f8e24fa6c40221d3d996119bd81",
+      "ide/package-lock.json": "5be3a351daa4daf6cc41034cfdf825b86fde4593d07593b1db2308b910fb5aa5",
+      "ide/package.json": "e5d51a6b624b859b682e0411455765d569ad89631907f65c23fb0469f2fc6d83"
+    }
   }
 }

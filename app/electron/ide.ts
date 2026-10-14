@@ -1,8 +1,10 @@
 import { BrowserWindow, WebContentsView, session, shell } from "electron";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { randomUUID } from "node:crypto";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { IdeProcessPool, type IdeEngine } from "./ide-process";
+import { SerializedRecoveryPublisher } from "./ide-recovery-persist";
 import { scopedPath } from "./workspace";
 import { redact } from "./acp";
 import type { HostEvent, Project } from "../shared/types";
@@ -19,6 +21,15 @@ export class IdeService {
   private views = new Map<string, IdeView>();
   private creating = new Map<string, Promise<IdeView>>();
   private closing = false;
+  private shutdownPreparing = false;
+  private shutdownPrepared = false;
+  private shutdownAttempt?: Promise<void>;
+  private closeEpoch = 0;
+  private recoveryPublisher = new SerializedRecoveryPublisher();
+  private suspended = new Map<
+    IdeView,
+    { visible: boolean; bounds: ReturnType<WebContentsView["getBounds"]> }
+  >();
   private placements = new Map<string, { epoch: number; visible: boolean }>();
   constructor(
     readonly options: {
@@ -37,16 +48,20 @@ export class IdeService {
     });
   }
   async ensure(projectId: string): Promise<IdeView> {
-    if (this.closing) throw new Error("IDE is shutting down");
+    if (this.closing || this.shutdownPreparing)
+      throw new Error("IDE is shutting down");
     const engine = await this.pool.ensure(this.options.project(projectId));
-    if (this.closing) throw new Error("IDE is shutting down");
+    if (this.closing || this.shutdownPreparing)
+      throw new Error("IDE is shutting down");
     const existing = this.views.get(engine.id);
     if (
       existing &&
       existing.engine === engine &&
       !existing.view.webContents.isDestroyed()
-    )
+    ) {
+      if (this.suspended.has(existing)) throw new Error("IDE_CLOSE_PENDING");
       return existing;
+    }
     const pending = this.creating.get(engine.id);
     if (pending) return pending;
     const creation = (async () => {
@@ -58,22 +73,53 @@ export class IdeService {
       if (existing) {
         if (!existing.view.webContents.isDestroyed()) {
           // If only the backend died, rescue the still-live editor memory before replacing its view.
-          const recovery = await existing.view.webContents
-            .executeJavaScript('window.workbenchIDE?.invoke("recovery.export")')
-            .catch(() => undefined);
-          if (recovery) {
-            const file = path.join(
-              engine.configPath,
-              "workbench-recovery.json",
+          this.suspend(existing);
+          const recoveryEpoch = this.closeEpoch;
+          const recoveryFile = path.join(
+            engine.configPath,
+            "workbench-recovery.json",
+          );
+          const recoveryAttempt = this.recoveryPublisher.begin(
+            recoveryFile,
+            () =>
+              this.closeEpoch === recoveryEpoch && this.suspended.has(existing),
+          );
+          try {
+            await recoveryAttempt.withTimeout(
+              (async () => {
+                const prepared = await this.prepareView(existing, true);
+                recoveryAttempt.assertCurrent();
+                const contents = JSON.stringify(prepared.recovery);
+                if (
+                  !prepared.recovery ||
+                  Buffer.byteLength(contents) > 18_000_000
+                )
+                  throw new Error(
+                    "IDE_CLOSE_BLOCKED: Не удалось получить полный ограниченный recovery snapshot. Сохраните файлы через Save As.",
+                  );
+                await this.recoveryPublisher.persist(recoveryAttempt, contents);
+                recoveryAttempt.assertCurrent();
+                if ((await fs.readFile(recoveryFile, "utf8")) !== contents)
+                  throw new Error(
+                    "IDE_CLOSE_BLOCKED: Записанный recovery snapshot не совпал с редактором.",
+                  );
+                recoveryAttempt.assertCurrent();
+                await existing.view.webContents.executeJavaScript(
+                  'window.workbenchIDE.invoke("recovery.verifyClose")',
+                );
+                recoveryAttempt.assertCurrent();
+              })(),
             );
-            await fs.writeFile(file + ".partial", JSON.stringify(recovery), {
-              mode: 0o600,
-            });
-            await fs.rename(file + ".partial", file);
+          } catch (error) {
+            if (!this.shutdownPreparing) await this.restore([existing]);
+            throw error;
+          } finally {
+            recoveryAttempt.cancel();
           }
           if (previousWindow && !previousWindow.isDestroyed())
             previousWindow.contentView.removeChildView(existing.view);
           existing.view.webContents.close();
+          this.suspended.delete(existing);
         }
         this.views.delete(engine.id);
       }
@@ -83,6 +129,7 @@ export class IdeService {
         if (bounds) entry.view.setBounds(bounds);
         entry.visible = Boolean(visible);
         entry.view.setVisible(Boolean(visible));
+        if (this.shutdownPreparing) this.suspend(entry);
       }
       return entry;
     })().finally(() => this.creating.delete(engine.id));
@@ -266,6 +313,13 @@ export class IdeService {
       : result;
   }
   async invoke(method: string, p: any, window: BrowserWindow): Promise<any> {
+    if (
+      (this.closing || this.shutdownPreparing) &&
+      !["ide.list", "ide.installation"].includes(method)
+    )
+      throw new Error(
+        "IDE_CLOSE_PENDING: IDE готовится к закрытию. Дождитесь завершения проверки.",
+      );
     if (method === "ide.installation") {
       const exists = async (file: string) =>
         Boolean((await fs.stat(file).catch(() => undefined))?.isFile());
@@ -317,7 +371,9 @@ export class IdeService {
       if (
         window.isDestroyed() ||
         this.placements.get(key)?.epoch !== epoch ||
-        !this.placements.get(key)?.visible
+        !this.placements.get(key)?.visible ||
+        this.shutdownPreparing ||
+        this.suspended.has(entry)
       )
         return;
       if (entry.windowId && entry.windowId !== window.id && !p.claim)
@@ -343,29 +399,38 @@ export class IdeService {
       return { visible: true, engineId: entry.engine.id };
     }
     if (method === "ide.stop" || method === "ide.restart") {
-      for (const [id, entry] of this.views)
-        if (entry.engine.projectIds.has(projectId)) {
-          const owner = entry.windowId
-            ? BrowserWindow.fromId(entry.windowId)
-            : undefined;
-          if (owner && !owner.isDestroyed())
-            owner.contentView.removeChildView(entry.view);
-          const wasReady = await entry.ready.then(
-            () => true,
-            () => false,
-          );
-          if (
-            wasReady &&
-            !entry.engine.error &&
-            !entry.view.webContents.isDestroyed()
-          )
-            await entry.view.webContents.executeJavaScript(
-              'window.workbenchIDE.invoke("recovery.flush")',
-            );
-          entry.view.webContents.close();
-          this.views.delete(id);
-          await this.pool.terminate(entry.engine);
-        }
+      const entries = [...this.views.values()].filter((entry) =>
+        entry.engine.projectIds.has(projectId),
+      );
+      if (entries.some((entry) => this.suspended.has(entry)))
+        throw new Error(
+          "IDE_CLOSE_PENDING: Для этого редактора уже выполняется проверка сохранения.",
+        );
+      for (const entry of entries) this.suspend(entry);
+      try {
+        await this.withCloseTimeout(
+          Promise.all(entries.map((entry) => this.prepareView(entry))),
+        );
+      } catch (error) {
+        if (!this.shutdownPreparing) await this.restore(entries);
+        throw error;
+      }
+      if (this.shutdownPreparing || this.closing)
+        throw new Error(
+          "IDE_CLOSE_PENDING: Завершение приложения имеет приоритет над перезапуском редактора.",
+        );
+      for (const entry of entries) {
+        const id = entry.engine.id;
+        const owner = entry.windowId
+          ? BrowserWindow.fromId(entry.windowId)
+          : undefined;
+        if (owner && !owner.isDestroyed())
+          owner.contentView.removeChildView(entry.view);
+        entry.view.webContents.close();
+        this.views.delete(id);
+        this.suspended.delete(entry);
+        await this.pool.terminate(entry.engine);
+      }
       return method === "ide.restart"
         ? this.invoke("ide.start", p, window)
         : { stopped: true };
@@ -405,21 +470,139 @@ export class IdeService {
         entry.view.setVisible(false);
       }
   }
+  private suspend(entry: IdeView): void {
+    if (!this.suspended.has(entry))
+      this.suspended.set(entry, {
+        visible: entry.visible,
+        bounds: entry.view.getBounds(),
+      });
+    entry.visible = false;
+    entry.view.setVisible(false);
+  }
+  private async withCloseTimeout<T>(operation: Promise<T>): Promise<T> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await Promise.race([
+        operation,
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(
+            () =>
+              reject(
+                new Error(
+                  "IDE_CLOSE_BLOCKED: IDE не подтвердила сохранение за 5 секунд. Окно сохранено; проверьте файлы и используйте Save As при необходимости.",
+                ),
+              ),
+            5000,
+          );
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  private async prepareView(entry: IdeView, offline = false): Promise<any> {
+    const epoch = this.closeEpoch;
+    if (entry.view.webContents.isDestroyed())
+      throw new Error(
+        "IDE_CLOSE_BLOCKED: IDE renderer недоступен. Проверьте recovery перед закрытием.",
+      );
+    if (!offline) await entry.ready;
+    if (epoch !== this.closeEpoch || !this.suspended.has(entry))
+      throw new Error("IDE_CLOSE_CANCELLED");
+    const result = await entry.view.webContents.executeJavaScript(`(() => {
+      if (!window.workbenchIDE) throw new Error("IDE_CLOSE_BLOCKED: IDE bridge недоступен. Сохраните файлы через Save As.");
+      return window.workbenchIDE.invoke("recovery.prepareClose", { offline: ${offline} });
+    })()`);
+    if (epoch !== this.closeEpoch || !this.suspended.has(entry))
+      throw new Error("IDE_CLOSE_CANCELLED");
+    if (
+      !result ||
+      (!offline && result.persisted !== true) ||
+      !Array.isArray(result.documents)
+    )
+      throw new Error(
+        "IDE_CLOSE_BLOCKED: IDE не подтвердила сохранение всех несохранённых документов.",
+      );
+    return result;
+  }
+  /** Hide native views synchronously; they must not accept typing during an async save barrier. */
+  async assertShutdownReady(): Promise<void> {
+    if (this.shutdownAttempt) return this.shutdownAttempt;
+    this.shutdownPreparing = true;
+    this.shutdownPrepared = false;
+    const epoch = ++this.closeEpoch;
+    for (const entry of this.views.values()) this.suspend(entry);
+    const attempt = this.withCloseTimeout(
+      (async () => {
+        await Promise.all([...this.creating.values()]);
+        if (!this.shutdownPreparing || this.closeEpoch !== epoch)
+          throw new Error("IDE_CLOSE_CANCELLED");
+        for (const entry of this.views.values()) this.suspend(entry);
+        await Promise.all(
+          [...this.views.values()].map((entry) => this.prepareView(entry)),
+        );
+      })(),
+    );
+    this.shutdownAttempt = attempt;
+    try {
+      await attempt;
+      this.shutdownPrepared = true;
+    } catch (error) {
+      this.shutdownAttempt = undefined;
+      throw error;
+    }
+  }
+  private async restore(entries: IdeView[]): Promise<void> {
+    const errors: unknown[] = [];
+    for (const entry of entries) {
+      const previous = this.suspended.get(entry);
+      if (!previous) continue;
+      this.suspended.delete(entry);
+      if (entry.view.webContents.isDestroyed()) continue;
+      try {
+        entry.view.setBounds(previous.bounds);
+        entry.visible = previous.visible;
+        entry.view.setVisible(previous.visible);
+      } catch (error) {
+        errors.push(error);
+      }
+    }
+    const results = await Promise.allSettled(
+      entries
+        .filter((entry) => !entry.view.webContents.isDestroyed())
+        .map((entry) =>
+          this.withCloseTimeout(
+            entry.view.webContents.executeJavaScript(
+              'window.workbenchIDE?.invoke("recovery.cancelClose")',
+            ),
+          ),
+        ),
+    );
+    for (const result of results)
+      if (result.status === "rejected") errors.push(result.reason);
+    if (errors.length)
+      throw new Error("IDE_CLOSE_CANCEL_FAILED: " + String(errors[0]));
+  }
+  async cancelShutdown(): Promise<void> {
+    this.closeEpoch++;
+    this.shutdownPreparing = false;
+    this.shutdownPrepared = false;
+    this.shutdownAttempt = undefined;
+    await this.restore([...this.suspended.keys()]);
+  }
   async dispose(): Promise<void> {
+    if (this.views.size && !this.shutdownPrepared)
+      throw new Error(
+        "IDE_CLOSE_NOT_PREPARED: Перед уничтожением IDE необходим assertShutdownReady.",
+      );
     this.closing = true;
-    await Promise.allSettled([...this.creating.values()]);
+    await Promise.all([...this.creating.values()]);
     for (const entry of this.views.values())
       if (!entry.view.webContents.isDestroyed()) {
-        await entry.ready
-          .then(() =>
-            entry.view.webContents.executeJavaScript(
-              'window.workbenchIDE.invoke("recovery.flush")',
-            ),
-          )
-          .catch(() => {});
         entry.view.webContents.close();
       }
     this.views.clear();
+    this.suspended.clear();
     await this.pool.dispose();
   }
 }

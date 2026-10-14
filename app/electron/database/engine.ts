@@ -1,3 +1,4 @@
+import { readDatabaseRelations } from "./relations";
 import pg, { type ClientConfig } from "pg";
 import { SafeQueryStream as QueryStream } from "./query-stream";
 import { DatabaseSync } from "node:sqlite";
@@ -952,6 +953,15 @@ export class DatabaseEngine {
       l.info.busy = false;
     }
   }
+  async relations(id: string, oid: string) {
+    const l = this.available(id);
+    l.info.busy = true;
+    try {
+      return await readDatabaseRelations(l.client, oid);
+    } finally {
+      l.info.busy = false;
+    }
+  }
   async describe(id: string, oid: string, kind: string) {
     const l = this.available(id);
     l.info.busy = true;
@@ -989,7 +999,7 @@ export class DatabaseEngine {
         [oid],
       );
       const dependencies = await l.client.query(
-        "SELECT DISTINCT pg_describe_object(d.classid,d.objid,d.objsubid) object,d.deptype type FROM pg_depend d WHERE d.refobjid=$1::oid LIMIT 1000",
+        "SELECT DISTINCT pg_describe_object(d.classid,d.objid,d.objsubid) object,d.deptype type FROM pg_depend d WHERE d.refclassid='pg_class'::regclass AND d.refobjid=$1::oid LIMIT 1000",
         [oid],
       );
       const t = table.rows[0];
@@ -1038,18 +1048,24 @@ export class DatabaseEngine {
     sql: string;
     operationId: string;
   }) {
-    const old = await this.describe(p.leaseId, p.oid, "function");
-    if (old.hash !== p.originalHash)
-      throw new Error(
-        "Определение изменено на сервере. Обновите и сравните версии.",
-      );
-    if (
-      statements(p.sql).length !== 1 ||
-      !/^\s*CREATE\s+OR\s+REPLACE\s+(FUNCTION|PROCEDURE)\b/i.test(p.sql)
-    )
-      throw new Error(
-        "Редактор процедуры принимает один CREATE OR REPLACE FUNCTION/PROCEDURE",
-      );
+    try {
+      const old = await this.describe(p.leaseId, p.oid, "function");
+      if (old.hash !== p.originalHash)
+        throw new Error(
+          "Определение изменено на сервере. Обновите и сравните версии.",
+        );
+      if (
+        statements(p.sql).length !== 1 ||
+        !/^\s*CREATE\s+OR\s+REPLACE\s+(FUNCTION|PROCEDURE)\b/i.test(p.sql)
+      )
+        throw new Error(
+          "Редактор процедуры принимает один CREATE OR REPLACE FUNCTION/PROCEDURE",
+        );
+    } catch (error: any) {
+      // This branch precedes execution; no routine DDL has been dispatched.
+      error.outcome = "notApplied";
+      throw error;
+    }
     return this.execute({
       ...p,
       routineTarget: { oid: p.oid, originalHash: p.originalHash },

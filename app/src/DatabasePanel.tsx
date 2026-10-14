@@ -1,5 +1,5 @@
+import { registerWindowClose } from "./window-close";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { format } from "sql-formatter";
 import type {
   DatabaseSnapshot,
   DatabaseConsole,
@@ -8,12 +8,14 @@ import type {
   DatabaseJob,
   DatabaseResult,
 } from "../shared/database";
-import { statementAt } from "../shared/sql";
 import { useStored } from "./api";
 import type { PanelProps } from "./Panels";
 import { Empty, Icon, IconButton, Menu, Modal, useAsk } from "./ui";
 import { DatabaseEffect } from "./DatabaseEffect";
 import { DatabaseHistory } from "./DatabaseHistory";
+import { DatabaseConsoleEditor } from "./DatabaseConsoleEditor";
+import { DatabaseRelations } from "./DatabaseRelations";
+import { DatabaseStructure } from "./DatabaseStructure";
 import { DatabaseExplorer, type DatabaseCatalog } from "./DatabaseExplorer";
 import { SqlPlan } from "./SqlPlan";
 import { SqlEditor } from "./SqlEditor";
@@ -51,6 +53,8 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     [dismissedJob, setDismissedJob] = useState<string>(),
     [table, setTable] = useState<Record<string, any>>({}),
     [detail, setDetail] = useState<Record<string, any>>({}),
+    [relations, setRelations] = useState<Record<string, any>>({}),
+    [relationsLoading, setRelationsLoading] = useState(false),
     [view, setView] = useState("data"),
     [page, setPage] = useState<any>(),
     [offset, setOffset] = useState(0),
@@ -58,12 +62,21 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     [resultId, setResultId] = useState(""),
     [changes, setChanges] = useState<Record<string, DatabaseChange[]>>({}),
     [edit, setEdit] = useState<{
+      consoleId: string;
+      resultId: string;
+      offset: number;
+      key?: DatabaseChange["key"];
+      inserted?: DatabaseChange;
       row: number;
       column: string;
       text: string;
       null: boolean;
       default?: boolean;
     }>(),
+    [closing, setClosing] = useState<string>(),
+    [windowClosing, setWindowClosing] = useState(false),
+    [gridFocus, setGridFocus] = useState({ row: 0, column: 0 }),
+    [tableSql, setTableSql] = useState<Record<string, boolean>>({}),
     [fileDialog, setFileDialog] = useState<"import" | "export">(),
     [fileFormat, setFileFormat] = useState("csv"),
     [fileHeader, setFileHeader] = useState(true),
@@ -85,6 +98,48 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     [editorHeight, setEditorHeight] = useStored("database.editor.height", 260),
     [history, setHistory] = useState(false),
     [metrics, setMetrics] = useState<any>();
+  const gridRef = useRef<HTMLTableElement>(null);
+  const flushers = useRef(new Map<string, () => Promise<number>>());
+  const registerFlush = useCallback(
+    (id: string, flush?: () => Promise<number>) => {
+      if (flush) flushers.current.set(id, flush);
+      else {
+        const pending = flushers.current.get(id);
+        if (pending)
+          void pending()
+            .then(() => {
+              if (flushers.current.get(id) === pending)
+                flushers.current.delete(id);
+            })
+            .catch((error) => setError("SQL не сохранён: " + error.message));
+      }
+    },
+    [],
+  );
+  const unsavedGrid = useRef(false);
+  unsavedGrid.current =
+    !!edit || Object.values(changes).some((rows) => rows.length);
+  useEffect(() => {
+    const off = registerWindowClose("database", async () => {
+      if (unsavedGrid.current)
+        throw new Error(
+          "Есть несохранённые изменения таблицы. Примените или отмените их перед закрытием.",
+        );
+      setWindowClosing(true);
+      await Promise.all([...flushers.current.values()].map((flush) => flush()));
+      if (unsavedGrid.current)
+        throw new Error(
+          "Изменения таблицы появились во время сохранения. Завершите их перед закрытием.",
+        );
+    });
+    const unsubscribe = window.workbench?.subscribe((event) => {
+      if (event.type === "window.closeSettled") setWindowClosing(false);
+    });
+    return () => {
+      off();
+      unsubscribe?.();
+    };
+  }, []);
   const catalogKey = useRef("");
   const pendingCatalogKey = useRef("");
   const wantedCatalogKey = useRef("");
@@ -116,6 +171,11 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     t = active ? table[active.id] : undefined,
     d = active ? detail[active.id] : undefined,
     staged = changes[active?.id || ""] || [],
+    staleTarget = !!active && active.targetHash !== connection?.targetHash,
+    lostConnection = lease?.transaction === "unknown",
+    isTableDocument =
+      !!active?.object &&
+      !["function", "procedure"].includes(active.object.kind),
     ask = useAsk();
   const schemaScope = project?.id + ":" + connection?.id;
   const visibleSchemas = schemaSelections[schemaScope] || ["public"];
@@ -228,6 +288,10 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     };
   }, [active?.id, !!lease]);
   const activate = (c: DatabaseConsole) => {
+    if (edit && c.id !== edit.consoleId) {
+      setError("Сначала сохраните или отмените редактирование ячейки.");
+      return;
+    }
     setSelected((s) => ({ ...s, [project!.id]: c.id }));
     setOffset(0);
     setEdit(undefined);
@@ -242,6 +306,8 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     title?: string,
     object?: { oid: string; kind: string },
   ) => {
+    if (edit)
+      throw new Error("Сначала сохраните или отмените редактирование ячейки.");
     const c = await invoke("console.create", {
       connectionId,
       sql,
@@ -304,6 +370,8 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     if (awaitingQuery.current[id] && awaitingQuery.current[id] !== own?.id)
       return;
     if (
+      !edit &&
+      !staged.length &&
       r &&
       own?.status !== "running" &&
       (lastSelectedQuery.current[id] !== own?.id ||
@@ -317,7 +385,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
       setResultId(r.id);
       setOffset(0);
     }
-  }, [active?.id, job?.id, job?.status, resultId]);
+  }, [active?.id, job?.id, job?.status, resultId, !!edit, staged.length]);
   const jobError =
     job?.error &&
     ["failed", "unknown"].includes(job.status) &&
@@ -354,6 +422,10 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     setError("");
     setDismissedJob(job?.id);
     if (!consoleId) return;
+    if (consoleId === active?.id && (edit || staged.length))
+      throw new Error(
+        "Сначала примените или отмените изменения таблицы и завершите редактирование ячейки.",
+      );
     const c = snapshot.consoles.find((x) => x.id === consoleId);
     await connect(c);
     const r = await invoke(
@@ -369,7 +441,16 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
   };
   useEffect(() => {
     const c = active;
-    if (!c?.object || !c.leaseId || busy || table[c.id] || detail[c.id]) return;
+    if (
+      !c?.object ||
+      !c.leaseId ||
+      ["function", "procedure"].includes(c.object.kind) ||
+      busy ||
+      staleTarget ||
+      table[c.id] ||
+      detail[c.id]
+    )
+      return;
     void attempt(async () => {
       const definition = await invoke(
         "describe",
@@ -386,7 +467,10 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     if (
       !c?.object ||
       !["function", "procedure"].includes(c.object.kind) ||
-      job?.status !== "completed"
+      !c.leaseId ||
+      busy ||
+      staleTarget ||
+      lostConnection
     )
       return;
     void attempt(async () => {
@@ -397,22 +481,65 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
       );
       setDetail((v) => ({
         ...v,
-        [c.id]: job.routine
-          ? {
-              ...definition,
-              hash: job.routine.appliedHash,
-              externalChange: definition.hash !== job.routine.appliedHash,
-            }
-          : definition,
+        [c.id]: {
+          ...definition,
+          externalChange:
+            definition.hash !==
+            (c.routineBaseline?.session?.leaseId === lease?.id
+              ? c.routineBaseline?.session?.hash
+              : c.routineBaseline?.committedHash),
+        },
       }));
     });
-  }, [active?.id, job?.id, job?.status]);
+  }, [
+    active?.id,
+    job?.id,
+    job?.status,
+    active?.routineBaseline?.committedHash,
+    active?.routineBaseline?.session?.hash,
+    active?.routineBaseline?.blocked,
+    lease?.transaction,
+    active?.sql,
+    !!busy,
+    staleTarget,
+    lostConnection,
+    active?.leaseId,
+  ]);
+  const loadRelations = async () => {
+    if (!active || !t || !lease || staleTarget || lostConnection) return;
+    const id = active.id;
+    setRelationsLoading(true);
+    try {
+      const graph = await invoke("relations", { oid: t.oid }, id);
+      setRelations((v) => ({ ...v, [id]: graph }));
+    } finally {
+      setRelationsLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (
+      view === "dependencies" &&
+      t &&
+      ["r", "p", "f"].includes(t.kind) &&
+      lease &&
+      !busy &&
+      !relations[active!.id] &&
+      !staleTarget &&
+      !lostConnection
+    )
+      void attempt(loadRelations);
+  }, [active?.id, view, !!t, !!lease, !!busy, staleTarget, lostConnection]);
   const openObject = async (o: DatabaseObject) => {
     if (!active) return;
+    if (edit)
+      throw new Error("Сначала сохраните или отмените редактирование ячейки.");
     const connectionId = active.connectionId;
     const existing = snapshot.consoles.find(
       (c) =>
-        !c.closed && c.connectionId === connectionId && c.object?.oid === o.oid,
+        !c.closed &&
+        c.connectionId === connectionId &&
+        c.targetHash === connection?.targetHash &&
+        c.object?.oid === o.oid,
     );
     if (existing) {
       activate(existing);
@@ -449,8 +576,13 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
   const reloadTable = async (
     serverOffset = result?.source?.offset || 0,
     source?: DatabaseResult["source"],
+    afterApply = false,
   ) => {
     if (!t) return;
+    if (edit || (staged.length && !afterApply))
+      throw new Error(
+        "Сначала примените или отмените изменения таблицы и завершите редактирование ячейки.",
+      );
     const filters = source ? source.filter || [] : filter;
     const r = await invoke("table", {
       oid: t.oid,
@@ -486,7 +618,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     }
     delete submittedChanges.current[id];
     setChanges((s) => ({ ...s, [id]: [] }));
-    await reloadTable();
+    await reloadTable(undefined, undefined, true);
   };
   const rowKeyCount =
     result?.source &&
@@ -505,15 +637,44 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     ctid: row[page.fields.findIndex((f: any) => f.name === "__wb_ctid")],
     xmin: row[page.fields.findIndex((f: any) => f.name === "__wb_xmin")],
   });
-  const commitEdit = () => {
+  const focusCell = (row: number, column: number) => {
+    const count =
+      (page?.values?.length || 0) +
+      staged.filter((c) => c.kind === "insert").length;
+    const next = {
+      row: Math.max(0, Math.min(count - 1, row)),
+      column: Math.max(0, Math.min(visibleFields.length - 1, column)),
+    };
+    setGridFocus(next);
+    requestAnimationFrame(() =>
+      gridRef.current
+        ?.querySelector<HTMLElement>(
+          `[data-row="${next.row}"][data-column="${next.column}"]`,
+        )
+        ?.focus(),
+    );
+  };
+  const commitEdit = (move?: "next" | "previous" | "down") => {
     if (!edit || !active || !page) return;
-    const inserted =
-      edit.row >= page.values.length
-        ? staged.filter((c) => c.kind === "insert")[
-            edit.row - page.values.length
-          ]
+    const inserted = edit.inserted;
+    const currentKey =
+      !inserted && page.values[edit.row]
+        ? keyFor(page.values[edit.row])
         : undefined;
-    const key = inserted ? undefined : keyFor(page.values[edit.row]),
+    if (
+      edit.consoleId !== active.id ||
+      edit.resultId !== resultId ||
+      edit.offset !== offset ||
+      (inserted
+        ? !staged.includes(inserted)
+        : JSON.stringify(currentKey) !== JSON.stringify(edit.key))
+    ) {
+      setError(
+        "Строка или результат изменились. Текст ячейки сохранён в редакторе; отмените редактирование и повторите на актуальной строке.",
+      );
+      return;
+    }
+    const key = edit.key,
       value = edit.default
         ? { default: true as const }
         : edit.null
@@ -538,6 +699,19 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
       return { ...s, [active.id]: own };
     });
     setEdit(undefined);
+    const col = visibleFields.findIndex((f: any) => f.name === edit.column);
+    if (move === "down") focusCell(edit.row + 1, col);
+    else if (move === "next")
+      focusCell(
+        col + 1 < visibleFields.length ? edit.row : edit.row + 1,
+        (col + 1) % visibleFields.length,
+      );
+    else if (move === "previous")
+      focusCell(
+        col ? edit.row : edit.row - 1,
+        col ? col - 1 : visibleFields.length - 1,
+      );
+    else focusCell(edit.row, col);
   };
   const tableEditable =
     !!result?.source &&
@@ -545,8 +719,41 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
     ["r", "p"].includes(t.kind) &&
     !lease?.readOnly &&
     page?.fields?.some((f: any) => f.name === "__wb_xmin");
-  const canEdit = tableEditable && !active?.pendingEffect && !busy;
+  const canEdit =
+    tableEditable &&
+    page?.id === resultId &&
+    page?.offset === offset &&
+    !!lease &&
+    !lostConnection &&
+    !staleTarget &&
+    !active?.pendingEffect &&
+    !windowClosing &&
+    !closing &&
+    !busy;
+  const gridLocked =
+    !!edit || !!staged.length || !!busy || windowClosing || !!closing;
   const close = async (c: DatabaseConsole) => {
+    if (edit?.consoleId === c.id)
+      throw new Error("Сначала сохраните или отмените редактирование ячейки.");
+    const ownLease = snapshot.leases.find((l) => l.id === c.leaseId);
+    if (
+      ownLease?.busy ||
+      snapshot.jobs.some((j) => j.consoleId === c.id && j.status === "running")
+    )
+      throw new Error(
+        "Операция выполняется. Дождитесь завершения или отмените её перед закрытием вкладки.",
+      );
+    if (ownLease && ["active", "failed"].includes(ownLease.transaction)) {
+      if (
+        !(await ask("Откатить транзакцию и закрыть вкладку?", {
+          confirm: true,
+          message:
+            "Закрытая вкладка не должна оставлять незаметные блокировки. Отмена сохранит её открытой.",
+        }))
+      )
+        return;
+      await invoke("transaction", { action: "rollback" }, c.id);
+    }
     if (
       (changes[c.id] || []).length &&
       !(await ask("Скрыть вкладку с несохранёнными строками?", {
@@ -555,12 +762,19 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
       }))
     )
       return;
-    await invoke(
-      "console.update",
-      { revision: c.revision, closed: true },
-      c.id,
-    );
-    await refresh();
+    setClosing(c.id);
+    try {
+      await flushers.current.get(c.id)?.();
+      const latest = await invoke("console.read", {}, c.id);
+      await invoke(
+        "console.update",
+        { revision: latest.revision, closed: true },
+        c.id,
+      );
+      await refresh();
+    } finally {
+      setClosing(undefined);
+    }
   };
   const resize = (event: React.PointerEvent, axis: "x" | "y") => {
     event.preventDefault();
@@ -633,10 +847,23 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
           ))}
         </select>
         <span
-          className={"db-link-state " + (lease ? "connected" : "")}
-          title={lease?.server || "Нет соединения"}
+          className={
+            "db-link-state " +
+            (lease && !lostConnection && !staleTarget ? "connected" : "")
+          }
+          title={
+            staleTarget
+              ? "Документ прежнего подключения · сохранённые результаты"
+              : lostConnection
+                ? "Сессия потеряна · Disconnect перед повторным подключением"
+                : lease?.server || "Нет соединения"
+          }
         >
-          {lease?.database || connection?.database || "MCP"}
+          {staleTarget
+            ? "Прежний сервер"
+            : lostConnection
+              ? "Связь потеряна"
+              : lease?.database || connection?.database || "MCP"}
         </span>
         <div className="db-spacer" />
         <span
@@ -655,7 +882,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
             },
             {
               label: "Подключиться",
-              disabled: !active || !!lease,
+              disabled: !active || !!lease || staleTarget,
               action: () => void attempt(() => connect()),
             },
             {
@@ -737,7 +964,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                     setSystemSchemas(v);
                     setCatalogOffset(0);
                   }}
-                  connected={!!lease}
+                  connected={!!lease && !lostConnection && !staleTarget}
                   busy={!!busy}
                   loading={loadingCatalog}
                   refresh={() => void attempt(loadCatalog)}
@@ -823,8 +1050,16 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
               </Empty>
             ) : (
               <>
-                <ConsoleEditor
-                  key={active.id}
+                {staleTarget && (
+                  <div className="db-effect" role="status">
+                    Параметры подключения изменились. Этот документ и
+                    сохранённые результаты относятся к прежнему серверу;
+                    доступно только чтение. Откройте новую SQL-консоль для
+                    текущего подключения.
+                  </div>
+                )}
+                <DatabaseConsoleEditor
+                  key={"sql:" + active.id}
                   console={active}
                   table={t}
                   detail={d}
@@ -832,6 +1067,12 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                   names={catalog.objects.map((o) => o.name)}
                   height={editorHeight}
                   busy={!!busy}
+                  staleTarget={staleTarget}
+                  preparingClose={windowClosing || closing === active.id}
+                  registerFlush={registerFlush}
+                  collapsed={
+                    isTableDocument && (!tableSql[active.id] || view !== "data")
+                  }
                   lease={lease}
                   onError={setError}
                   refresh={refresh}
@@ -849,25 +1090,31 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                     )
                   }
                 />
-                <div
-                  className="db-resize-y"
-                  role="separator"
-                  aria-label="Высота SQL редактора"
-                  aria-orientation="horizontal"
-                  tabIndex={0}
-                  onPointerDown={(e) => resize(e, "y")}
-                  onKeyDown={(e) => {
-                    if (["ArrowUp", "ArrowDown"].includes(e.key)) {
-                      e.preventDefault();
-                      setEditorHeight((v) =>
-                        Math.max(
-                          120,
-                          Math.min(650, v + (e.key === "ArrowDown" ? 20 : -20)),
-                        ),
-                      );
-                    }
-                  }}
-                />
+                {(!isTableDocument ||
+                  (tableSql[active.id] && view === "data")) && (
+                  <div
+                    className="db-resize-y"
+                    role="separator"
+                    aria-label="Высота SQL редактора"
+                    aria-orientation="horizontal"
+                    tabIndex={0}
+                    onPointerDown={(e) => resize(e, "y")}
+                    onKeyDown={(e) => {
+                      if (["ArrowUp", "ArrowDown"].includes(e.key)) {
+                        e.preventDefault();
+                        setEditorHeight((v) =>
+                          Math.max(
+                            120,
+                            Math.min(
+                              650,
+                              v + (e.key === "ArrowDown" ? 20 : -20),
+                            ),
+                          ),
+                        );
+                      }
+                    }}
+                  />
+                )}
                 <div className="db-result-tabs" role="tablist">
                   <button
                     className={view === "data" ? "active" : ""}
@@ -886,7 +1133,10 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                           {
                             structure: "Структура",
                             ddl: "DDL",
-                            dependencies: "Связи",
+                            dependencies:
+                              t && ["r", "p", "f"].includes(t.kind)
+                                ? "Связи"
+                                : "Зависимости",
                           }[v]
                         }
                       </button>
@@ -906,11 +1156,28 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                     Вывод{job?.status === "running" ? " · выполняется" : ""}
                   </button>
                   <div className="db-spacer" />
+                  {isTableDocument && (
+                    <IconButton
+                      icon="code"
+                      label={
+                        tableSql[active.id] && view === "data"
+                          ? "Скрыть SQL редактор таблицы"
+                          : "Показать SQL редактор таблицы"
+                      }
+                      onClick={() => {
+                        const showing =
+                          !!tableSql[active.id] && view === "data";
+                        setTableSql((v) => ({ ...v, [active.id]: !showing }));
+                        if (!showing) setView("data");
+                      }}
+                    />
+                  )}
                   {jobs
                     .filter((j) => j.kind === "query")
                     .flatMap((j) => j.results).length > 1 && (
                     <select
                       aria-label="Результат запроса"
+                      disabled={gridLocked}
                       value={resultId}
                       onChange={(e) => {
                         setResultId(e.target.value);
@@ -950,7 +1217,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                           <IconButton
                             icon="reload"
                             label="Обновить данные таблицы"
-                            disabled={!!busy || !!staged.length}
+                            disabled={gridLocked}
                             onClick={() => void attempt(reloadTable)}
                           />
                           <button
@@ -984,7 +1251,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                           <IconButton
                             icon="plus"
                             label="Добавить строку DEFAULT"
-                            disabled={!canEdit}
+                            disabled={!canEdit || !!edit}
                             onClick={() =>
                               setChanges((s) => ({
                                 ...s,
@@ -1094,7 +1361,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                             }
                           />
                           <button
-                            disabled={!!busy || !!staged.length}
+                            disabled={gridLocked}
                             onClick={() => void attempt(() => reloadTable(0))}
                           >
                             Применить фильтр
@@ -1126,7 +1393,15 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                       </div>
                     )}
                     <div className="db-grid-scroll">
-                      <table className="db-grid">
+                      <table
+                        className="db-grid"
+                        ref={gridRef}
+                        data-editable={canEdit ? "true" : "false"}
+                        data-result-id={page?.id || ""}
+                        aria-busy={
+                          !!busy || (!!resultId && page?.id !== resultId)
+                        }
+                      >
                         <thead>
                           <tr>
                             <th className="db-row-number">#</th>
@@ -1188,7 +1463,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                                     ri +
                                     1}
                                 </td>
-                                {visibleFields.map((f: any) => {
+                                {visibleFields.map((f: any, ci: number) => {
                                   const index = f.index,
                                     changed =
                                       change?.values &&
@@ -1212,11 +1487,26 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                                   return (
                                     <td
                                       key={f.index}
-                                      tabIndex={0}
+                                      data-row={ri}
+                                      data-column={ci}
+                                      tabIndex={
+                                        gridFocus.row === ri &&
+                                        gridFocus.column === ci
+                                          ? 0
+                                          : -1
+                                      }
+                                      onFocus={() =>
+                                        setGridFocus({ row: ri, column: ci })
+                                      }
                                       className={changed ? "db-changed" : ""}
                                       onDoubleClick={() => {
-                                        if (editable)
+                                        if (editable && !edit)
                                           setEdit({
+                                            consoleId: active.id,
+                                            resultId,
+                                            offset,
+                                            key,
+                                            inserted,
                                             row: ri,
                                             column: f.name,
                                             text:
@@ -1232,12 +1522,60 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                                       }}
                                       onKeyDown={(e) => {
                                         if (
+                                          [
+                                            "ArrowLeft",
+                                            "ArrowRight",
+                                            "ArrowUp",
+                                            "ArrowDown",
+                                            "Tab",
+                                          ].includes(e.key)
+                                        ) {
+                                          e.preventDefault();
+                                          if (e.key === "Tab")
+                                            focusCell(
+                                              e.shiftKey
+                                                ? ci
+                                                  ? ri
+                                                  : ri - 1
+                                                : ci + 1 < visibleFields.length
+                                                  ? ri
+                                                  : ri + 1,
+                                              e.shiftKey
+                                                ? ci
+                                                  ? ci - 1
+                                                  : visibleFields.length - 1
+                                                : (ci + 1) %
+                                                    visibleFields.length,
+                                            );
+                                          else
+                                            focusCell(
+                                              ri +
+                                                (e.key === "ArrowDown"
+                                                  ? 1
+                                                  : e.key === "ArrowUp"
+                                                    ? -1
+                                                    : 0),
+                                              ci +
+                                                (e.key === "ArrowRight"
+                                                  ? 1
+                                                  : e.key === "ArrowLeft"
+                                                    ? -1
+                                                    : 0),
+                                            );
+                                        }
+                                        if (
                                           (e.key === "F2" ||
                                             e.key === "Enter") &&
-                                          editable
+                                          editable &&
+                                          !edit
                                         ) {
                                           e.preventDefault();
                                           setEdit({
+                                            consoleId: active.id,
+                                            resultId,
+                                            offset,
+                                            key,
+                                            inserted,
                                             row: ri,
                                             column: f.name,
                                             text:
@@ -1281,17 +1619,25 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                                                 e.key === "Tab"
                                               ) {
                                                 e.preventDefault();
-                                                commitEdit();
+                                                commitEdit(
+                                                  e.key === "Tab"
+                                                    ? e.shiftKey
+                                                      ? "previous"
+                                                      : "next"
+                                                    : "down",
+                                                );
                                               }
                                               if (e.key === "Escape") {
                                                 e.preventDefault();
                                                 setEdit(undefined);
+                                                focusCell(ri, ci);
                                               }
                                             }}
                                           />
                                           <label>
                                             <input
                                               type="checkbox"
+                                              autoFocus={edit.null}
                                               checked={edit.null}
                                               onChange={(e) =>
                                                 setEdit({
@@ -1306,6 +1652,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                                           <label>
                                             <input
                                               type="checkbox"
+                                              autoFocus={!!edit.default}
                                               checked={!!edit.default}
                                               onChange={(e) =>
                                                 setEdit({
@@ -1320,12 +1667,15 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                                           <IconButton
                                             icon="check"
                                             label="Сохранить ячейку в changeset"
-                                            onClick={commitEdit}
+                                            onClick={() => commitEdit()}
                                           />
                                           <IconButton
                                             icon="close"
                                             label="Отменить редактирование ячейки"
-                                            onClick={() => setEdit(undefined)}
+                                            onClick={() => {
+                                              setEdit(undefined);
+                                              focusCell(ri, ci);
+                                            }}
                                           />
                                         </div>
                                       ) : value && typeof value === "object" ? (
@@ -1344,7 +1694,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                                   <td>
                                     <IconButton
                                       icon="close"
-                                      disabled={!canEdit}
+                                      disabled={!canEdit || !!edit}
                                       label={
                                         "Удалить строку " + (offset + ri + 1)
                                       }
@@ -1406,6 +1756,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                       <select
                         aria-label="Строк на странице"
                         value={pageSize}
+                        disabled={gridLocked}
                         onChange={(e) => {
                           const size = Number(e.target.value);
                           setPageSize(size);
@@ -1429,9 +1780,10 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                         icon="chevron-left"
                         label="Предыдущая страница"
                         disabled={
-                          result?.source
+                          gridLocked ||
+                          (result?.source
                             ? result.source.offset === 0
-                            : offset === 0
+                            : offset === 0)
                         }
                         onClick={() =>
                           result?.source
@@ -1452,6 +1804,7 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                         icon="chevron-right"
                         label="Следующая страница"
                         disabled={
+                          gridLocked ||
                           !result ||
                           (result.source
                             ? result.rows <= result.source.pageSize
@@ -1474,39 +1827,10 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                 ) : view === "plan" ? (
                   <SqlPlan value={page?.values?.[0]?.[0]} />
                 ) : view === "structure" ? (
-                  <div className="db-grid-scroll">
-                    <table className="db-grid">
-                      <thead>
-                        <tr>
-                          <th>Столбец</th>
-                          <th>Тип</th>
-                          <th>NOT NULL</th>
-                          <th>Default</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {t?.columns?.map((c: any) => (
-                          <tr key={c.name}>
-                            <td>{c.name}</td>
-                            <td>{c.type}</td>
-                            <td>{c.required}</td>
-                            <td>{c.default}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    <pre>
-                      {JSON.stringify(
-                        {
-                          constraints: t?.constraints,
-                          indexes: t?.indexes,
-                          triggers: t?.triggers,
-                        },
-                        null,
-                        2,
-                      )}
-                    </pre>
-                  </div>
+                  <DatabaseStructure
+                    key={"structure:" + active.id}
+                    definition={t}
+                  />
                 ) : view === "ddl" ? (
                   <div className="db-definition">
                     <SqlEditor
@@ -1520,9 +1844,49 @@ export function DatabasePanel({ project, session, visible }: PanelProps) {
                     )}
                   </div>
                 ) : view === "dependencies" ? (
-                  <pre className="db-output">
-                    {JSON.stringify(t?.dependencies || [], null, 2)}
-                  </pre>
+                  t && ["r", "p", "f"].includes(t.kind) ? (
+                    relations[active.id] ? (
+                      <DatabaseRelations
+                        key={"relations:" + active.id}
+                        graph={relations[active.id]}
+                        busy={
+                          !!busy ||
+                          relationsLoading ||
+                          staleTarget ||
+                          !!lostConnection
+                        }
+                        refresh={() => void attempt(loadRelations)}
+                        open={(node) =>
+                          void attempt(() =>
+                            openObject({
+                              oid: node.oid,
+                              schema: node.schema,
+                              name: node.name,
+                              kind:
+                                node.kind === "f" ? "foreign table" : "table",
+                            }),
+                          )
+                        }
+                      />
+                    ) : (
+                      <div className="db-grid-empty">
+                        {relationsLoading ? (
+                          "Читаю внешние ключи…"
+                        ) : (
+                          <button
+                            disabled={!lease || staleTarget || !!lostConnection}
+                            onClick={() => void attempt(loadRelations)}
+                          >
+                            Загрузить связи таблицы
+                          </button>
+                        )}
+                      </div>
+                    )
+                  ) : (
+                    <pre className="db-output">
+                      {JSON.stringify((d || t)?.dependencies || [], null, 2)}
+                    </pre>
+                  )
                 ) : (
                   <div className="db-output">
                     {[...jobs].reverse().map((j) => (
@@ -1730,272 +2094,4 @@ function status(j: DatabaseJob) {
     cancelled: "Отменено",
     unknown: "Исход неизвестен",
   }[j.status];
-}
-function ConsoleEditor({
-  console: c,
-  table,
-  detail,
-  job,
-  names,
-  height,
-  busy,
-  lease,
-  onError,
-  refresh,
-  invoke,
-  runSql,
-  saveCopy,
-}: any) {
-  const [text, setText] = useState(c.sql),
-    [conflict, setConflict] = useState(false),
-    [dirty, setDirty] = useState(false),
-    [runMode, setRunMode] = useState("statement");
-  const draft = useRef(text),
-    saved = useRef({ revision: c.revision, text: c.sql }),
-    tail = useRef(Promise.resolve()),
-    timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined),
-    alive = useRef(true);
-  const save = () => {
-    const next = tail.current.then(async () => {
-      const value = draft.current;
-      if (value === saved.current.text) return;
-      const r = await invoke("console.update", {
-        revision: saved.current.revision,
-        sql: value,
-      });
-      saved.current = { revision: r.revision, text: r.sql };
-      if (alive.current) {
-        setDirty(draft.current !== r.sql);
-        setConflict(false);
-      }
-    });
-    tail.current = next.catch(() => {});
-    return next;
-  };
-  useEffect(() => {
-    if (c.revision > saved.current.revision) {
-      if (draft.current === saved.current.text) {
-        saved.current = { revision: c.revision, text: c.sql };
-        draft.current = c.sql;
-        setText(c.sql);
-      } else setConflict(true);
-    }
-  }, [c.revision, c.sql]);
-  useEffect(
-    () => () => {
-      alive.current = false;
-      clearTimeout(timer.current);
-      void save().catch(() => {});
-    },
-    [],
-  );
-  const change = (value: string) => {
-    setText(value);
-    draft.current = value;
-    setDirty(value !== saved.current.text);
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => {
-      void save().catch((e: any) => {
-        if (alive.current) {
-          setConflict(true);
-          onError(e.message);
-        }
-      });
-    }, 700);
-  };
-  const run = async (selection = "", from = 0, force?: string) => {
-    try {
-      await save();
-      await refresh();
-      if (detail?.hash) {
-        await invoke("routineApply", {
-          oid: detail.oid,
-          originalHash: detail.hash,
-          sql: draft.current,
-          operationId: crypto.randomUUID(),
-        });
-        await refresh();
-        return;
-      }
-      await runSql(
-        force ||
-          selection ||
-          (runMode === "script"
-            ? draft.current
-            : statementAt(draft.current, from)),
-      );
-    } catch (e: any) {
-      onError(e.message);
-    }
-  };
-  return (
-    <>
-      <div className="db-sql-toolbar">
-        <button
-          className="primary"
-          disabled={busy}
-          title={
-            detail?.hash
-              ? "Применить DDL с проверкой версии · Ctrl+Enter"
-              : "Выполнить SQL · Ctrl+Enter"
-          }
-          onClick={() => void run()}
-        >
-          <Icon name="play" size={15} />
-          {detail?.hash ? "Применить DDL" : "Выполнить"}
-        </button>
-        {!detail?.hash && (
-          <select
-            aria-label="Область запуска SQL"
-            value={runMode}
-            onChange={(e) => setRunMode(e.target.value)}
-          >
-            <option value="statement">Statement</option>
-            <option value="script">Script</option>
-          </select>
-        )}
-        <IconButton
-          icon="code"
-          label="Форматировать SQL"
-          onClick={() => {
-            try {
-              change(format(draft.current, { language: "postgresql" }));
-            } catch (e: any) {
-              onError(e.message);
-            }
-          }}
-        />
-        <IconButton
-          icon="stop"
-          label="Отменить операцию БД"
-          disabled={!busy}
-          onClick={() =>
-            void invoke("cancel").catch((e: any) => onError(e.message))
-          }
-        />
-        {!detail?.hash && (
-          <Menu
-            label="План выполнения SQL"
-            items={[
-              {
-                label: "EXPLAIN · оценка",
-                disabled: busy,
-                action: () =>
-                  void run(
-                    "",
-                    0,
-                    "EXPLAIN (FORMAT JSON) " + statementAt(draft.current, 0),
-                  ),
-              },
-              {
-                label: "EXPLAIN ANALYZE · выполнить запрос",
-                disabled: busy,
-                action: () =>
-                  void run(
-                    "",
-                    0,
-                    "EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) " +
-                      statementAt(draft.current, 0),
-                  ),
-              },
-            ]}
-          />
-        )}
-        {detail?.externalChange && (
-          <span className="db-conflict">Серверная версия изменилась</span>
-        )}
-        {dirty && <span className="muted">●</span>}
-        {conflict && (
-          <span
-            className="db-conflict"
-            title="SQL в другом окне изменился. Ваш текст сохранён в этом окне; он не перезапишет чужую версию."
-          >
-            Конфликт версии
-            <button onClick={() => void saveCopy(draft.current)}>
-              Сохранить копию
-            </button>
-            <button
-              onClick={() => {
-                clearTimeout(timer.current);
-                saved.current = { revision: c.revision, text: c.sql };
-                draft.current = c.sql;
-                setText(c.sql);
-                setConflict(false);
-                setDirty(false);
-              }}
-            >
-              Загрузить с сервера
-            </button>
-          </span>
-        )}
-        <div className="db-spacer" />
-        <select
-          aria-label="Режим транзакции"
-          disabled={busy || !lease}
-          value={lease?.mode || c.mode}
-          onChange={(e) =>
-            void invoke("transaction", { action: "mode", mode: e.target.value })
-              .then(refresh)
-              .catch((e: any) => onError(e.message))
-          }
-        >
-          <option value="auto">Auto-commit</option>
-          <option value="manual">Manual</option>
-        </select>
-        {lease?.transaction !== "idle" && lease && (
-          <>
-            <span className={"db-tx " + lease.transaction}>
-              {lease.transaction}
-            </span>
-            <button
-              disabled={
-                busy ||
-                lease.transaction === "failed" ||
-                lease.transaction === "unknown"
-              }
-              onClick={() =>
-                void invoke("transaction", { action: "commit" })
-                  .then(refresh)
-                  .catch((e: any) => onError(e.message))
-              }
-            >
-              Commit
-            </button>
-            <button
-              disabled={busy || lease.transaction === "unknown"}
-              onClick={() =>
-                void invoke("transaction", { action: "rollback" })
-                  .then(refresh)
-                  .catch((e: any) => onError(e.message))
-              }
-            >
-              Rollback
-            </button>
-          </>
-        )}
-      </div>
-      <div style={{ height, flexShrink: 0 }}>
-        <SqlEditor
-          errorPosition={
-            job?.error?.position &&
-            job.sql &&
-            text.indexOf(job.sql) >= 0 &&
-            text.indexOf(job.sql) === text.lastIndexOf(job.sql)
-              ? text.indexOf(job.sql) +
-                (job.error.statementOffset || 0) +
-                Array.from(
-                  (job.sql as string).slice(job.error.statementOffset || 0),
-                )
-                  .slice(0, job.error.position - 1)
-                  .join("").length
-              : undefined
-          }
-          value={text}
-          onChange={change}
-          onRun={(selection, from) => void run(selection, from)}
-          names={names}
-        />
-      </div>
-    </>
-  );
 }

@@ -1,6 +1,6 @@
 # GigaCode Workbench
 
-Обновление Data workspace: рабочие PostgreSQL/MCP консоли, inline data editing, transactions, routine DDL, EXPLAIN, потоковые CSV/SQL/XLSX import/export, durable history и защита unknown writes. [Перенос, проверки и открытые DataGrip gaps](docs/suite/DATABASE-RUNTIME-HANDOFF.md). Полное соответствие DataGrip ещё не объявляется.
+Обновление Data workspace: PostgreSQL/MCP консоли, inline grid с клавиатурой, transactions, сохранённая версия routine DDL, компактный metadata inspector, настоящая диаграмма FK, EXPLAIN, потоковые CSV/SQL/XLSX, durable history и защита unknown writes. [Перенос, проверки и открытые DataGrip gaps](docs/suite/DATABASE-RUNTIME-HANDOFF.md). Полное соответствие DataGrip ещё не объявляется.
 
 Обновление 14.10.2026: добавлена рабочая IDE на Theia с Java/Python/frontend расширениями, общими с агентом buffers, семантическими операциями, build/test/debug bridge и восстановлением. Установка, перенос и границы проверки: [IDE-RUNTIME-HANDOFF](docs/suite/IDE-RUNTIME-HANDOFF.md). Полная матрица Ultimate остаётся отдельной пофункциональной приёмкой.
 
@@ -40,7 +40,7 @@
 
 ## Быстрый запуск на Windows из исходников
 
-Понадобятся Windows x64, Git и **Node.js 22.12 или новее в ветке 22, либо Node.js 24** с npm. Qwen Code требует Node ≥22.0, но зависимости этого приложения повышают минимум до 22.12. Windows PowerShell 5.1 подходит для команд ниже; устанавливать PowerShell 7 не требуется.
+Понадобятся Windows x64, Git и **Node.js 22.19 или новее в ветке 22, либо Node.js 24** с npm. Это минимум текущего приложения; для IDE используется закреплённый Node 22.23.3. Windows PowerShell 5.1 подходит для команд ниже; устанавливать PowerShell 7 не требуется.
 
 Скачайте репозиторий или клонируйте его, откройте PowerShell в корневой папке и выполните:
 

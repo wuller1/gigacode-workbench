@@ -228,7 +228,11 @@ export function DatabaseHistory({
           ) : (
             <>
               <pre className="db-output">
-                {chunk?.text || "Читаю сохранённый текст…"}
+                {chunk
+                  ? chunk.text || "Сохранённый текст пуст"
+                  : (mode === "queries" ? !jobId : !operationId)
+                    ? "Нет сохранённых операций"
+                    : "Читаю сохранённый текст…"}
               </pre>
               {chunk && (
                 <small className="muted">

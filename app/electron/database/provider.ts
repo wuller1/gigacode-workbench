@@ -74,6 +74,9 @@ async function main() {
         case "catalog":
           value = await engine.catalog(p.leaseId, p.schema, p);
           break;
+        case "relations":
+          value = await engine.relations(p.leaseId, p.oid);
+          break;
         case "describe":
           value = await engine.describe(p.leaseId, p.oid, p.kind);
           break;

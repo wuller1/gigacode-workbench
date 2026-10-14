@@ -1,3 +1,4 @@
+import { prepareWindowClose } from "./window-close";
 import { QueueMessages } from "./QueueMessages";
 import { ModelPicker, ContextSend } from "./ModelPicker";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -93,6 +94,34 @@ function Application() {
     window.addEventListener("workbench-error", f);
     return () => window.removeEventListener("workbench-error", f);
   }, []);
+  useEffect(
+    () =>
+      window.workbench?.subscribe((event) => {
+        if (event.type === "window.closeSettled") document.body.inert = false;
+        if (
+          event.type === "window.closeSettled" &&
+          (event.payload as any)?.error
+        )
+          setNotice("Окно осталось открытым: " + (event.payload as any).error);
+        if (event.type !== "window.prepareClose") return;
+        document.body.inert = true;
+        const requestId = (event.payload as { requestId: string }).requestId;
+        void prepareWindowClose()
+          .then(
+            () =>
+              window.workbench!.invoke("window.readyToClose", { requestId }),
+            (error) => {
+              setNotice("Окно осталось открытым: " + errorText(error));
+              return window.workbench!.invoke("window.readyToClose", {
+                requestId,
+                error: errorText(error),
+              });
+            },
+          )
+          .catch((error) => setNotice(errorText(error)));
+      }),
+    [],
+  );
   const activeTask = state?.tasks.find(
     (t) => t.id === selection.taskId && !t.archived,
   );

@@ -1,0 +1,201 @@
+.db-structure {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--surface);
+  color: var(--text);
+}
+.db-structure-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+}
+.db-structure-tabs {
+  display: flex;
+  align-self: stretch;
+  flex-shrink: 0;
+  gap: 2px;
+}
+.db-structure-tabs > button {
+  min-height: 34px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 4px 8px;
+  background: transparent;
+  white-space: nowrap;
+}
+.db-structure-tabs > button[aria-selected="true"] {
+  border-bottom-color: var(--accent);
+}
+.db-structure-count {
+  color: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.db-structure-toolbar > input {
+  flex: 1;
+  min-width: 150px;
+  max-width: 240px;
+  margin-left: auto;
+  padding: 4px 8px;
+}
+.db-structure-comment {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 6px 10px;
+  max-height: 44px;
+  overflow: hidden;
+  color: var(--secondary);
+  font-size: 12px;
+  white-space: pre-wrap;
+  border-bottom: 1px solid var(--line);
+}
+.db-structure-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.db-structure-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 12px;
+}
+.db-structure-table > thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--subtle);
+  color: var(--secondary);
+  font-weight: 500;
+}
+.db-structure-table th,
+.db-structure-table td {
+  min-height: 28px;
+  height: 28px;
+  max-width: 360px;
+  padding: 4px 10px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-weight: 400;
+}
+.db-structure-table th:last-child,
+.db-structure-table td:last-child {
+  border-right: 0;
+}
+.db-structure-table tbody tr:hover > td,
+.db-structure-table tbody tr:hover > th {
+  background: var(--canvas);
+}
+.db-structure-table code,
+.db-structure-table th[scope="row"],
+.db-structure-oid {
+  font-family: Consolas, Menlo, monospace;
+  font-size: 12px;
+}
+.db-structure-table .db-structure-ordinal {
+  width: 38px;
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.db-structure-comment-cell {
+  color: var(--secondary);
+}
+.db-structure-expand {
+  justify-content: flex-start;
+  min-height: 24px !important;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  gap: 5px;
+}
+.db-structure-expand > .icon {
+  flex-shrink: 0;
+}
+.db-structure-expand > span:last-child {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.db-structure-actions {
+  width: 42px;
+  text-align: center !important;
+  padding: 0 6px !important;
+}
+.db-structure-definition-row > td {
+  padding: 0;
+  max-width: none;
+  white-space: normal;
+}
+.db-structure-definition {
+  height: 180px;
+  min-height: 90px;
+  max-height: 420px;
+  resize: vertical;
+  overflow: auto;
+  border: 0;
+}
+.db-structure-definition-note {
+  margin: 0;
+  padding: 6px 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.db-structure-empty {
+  margin: 0;
+  padding: 18px 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.db-structure-feedback,
+.db-structure-pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  min-height: 30px;
+  padding: 3px 8px;
+  font-size: 12px;
+}
+.db-structure-feedback {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-bottom: 1px solid var(--line);
+}
+.db-structure-feedback > span {
+  flex: 1;
+}
+.db-structure-pagination {
+  justify-content: flex-end;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+}
+.db-structure-pagination > span {
+  margin-right: auto;
+}
+.db-structure-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
