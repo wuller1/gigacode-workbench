@@ -15,7 +15,7 @@ $env:WORKBENCH_LIVE_CLI = (Read-Host 'Полный путь к CLI .js или .e
 $env:WORKBENCH_LIVE_ARGS_JSON = '["--acp"]'
 Remove-Item Env:WORKBENCH_LIVE_ALLOW_PAID -ErrorAction SilentlyContinue
 Remove-Item Env:WORKBENCH_LIVE_SET_CONFIG_JSON -ErrorAction SilentlyContinue
-npm exec --offline -- vitest run --config vitest.live.config.ts
+npm.cmd exec --offline -- vitest run --config vitest.live.config.ts
 ```
 
 `["--acp"]` — пример для CLI, в котором этот флаг действительно поддержан. При необходимости укажите проверенный `--auth-type` и другие параметры **отдельными элементами JSON**, без shell-интерполяции. Предпочтительнее `.js`/`.exe`: ограничения `.cmd` совпадают с адаптером приложения. Отсутствующий/относительный CLI path или невалидный JSON вызывает отказ; автоматической подстановки другого CLI нет.
@@ -30,7 +30,7 @@ npm exec --offline -- vitest run --config vitest.live.config.ts
 
 ```powershell
 $env:WORKBENCH_LIVE_SET_CONFIG_JSON = '{"id":"ID_ИЗ_ОТВЕТА","value":"VALUE_ИЗ_ОТВЕТА"}'
-npm exec --offline -- vitest run --config vitest.live.config.ts
+npm.cmd exec --offline -- vitest run --config vitest.live.config.ts
 Remove-Item Env:WORKBENCH_LIVE_SET_CONFIG_JSON
 ```
 
@@ -43,7 +43,7 @@ Remove-Item Env:WORKBENCH_LIVE_SET_CONFIG_JSON
 ```powershell
 $env:WORKBENCH_LIVE_ALLOW_PAID = '1'
 try {
-    npm exec --offline -- vitest run --config vitest.live.config.ts
+    npm.cmd exec --offline -- vitest run --config vitest.live.config.ts
 } finally {
     Remove-Item Env:WORKBENCH_LIVE_ALLOW_PAID -ErrorAction SilentlyContinue
 }

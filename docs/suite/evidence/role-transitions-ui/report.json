@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "passed",
-  "recordedAt": "2026-10-14T15:15:18.456Z",
+  "recordedAt": "2026-10-14T15:32:13.124Z",
   "platform": "darwin",
   "node": "v26.8.1",
   "cliPackageVersion": "0.25.1",
@@ -10,27 +10,27 @@
   "passed": [
     {
       "name": "Renderer cannot impersonate the bound task executor to request a role transition",
-      "elapsedMs": 37
+      "elapsedMs": 27
     },
     {
       "name": "One human request routes Backend, then agent requests Diagnostics while preserving draft",
-      "elapsedMs": 4560
+      "elapsedMs": 2691
     },
     {
       "name": "Held clean phase can resume from compact UI after classifier format failure without another human message",
-      "elapsedMs": 1775
+      "elapsedMs": 1435
     },
     {
       "name": "Host LLM reroutes the same task to Diagnostics without human queue fabrication",
-      "elapsedMs": 1888
+      "elapsedMs": 1838
     },
     {
       "name": "Frontend continues automatically with its own actual process and system fingerprint",
-      "elapsedMs": 2251
+      "elapsedMs": 1994
     },
     {
       "name": "Compact actual role and on-demand completed phase history fit desktop dark and light",
-      "elapsedMs": 1092
+      "elapsedMs": 1116
     }
   ],
   "total": 6,
@@ -332,34 +332,34 @@
   "receipts": [
     {
       "role": "backend",
-      "sessionId": "8c204919-d35b-44d7-8248-05cb19fb7bc7",
-      "taskId": "c56ae705-748d-49df-ad2b-6e805e5b3398",
-      "pid": 84697,
+      "sessionId": "779c2dd1-2ea6-4946-b80d-9931afe29f7c",
+      "taskId": "563081c1-f9b1-4a7a-866e-9d9d0da24af5",
+      "pid": 92781,
       "fingerprint": "16db6030c5fa72f652e9ddd8fe5284cdec075714b32c7acf829248c9207ef32d",
       "transitionStatus": "pending",
       "retiredPriorPids": []
     },
     {
       "role": "diagnostics",
-      "sessionId": "8c204919-d35b-44d7-8248-05cb19fb7bc7",
-      "taskId": "c56ae705-748d-49df-ad2b-6e805e5b3398",
-      "pid": 84836,
+      "sessionId": "779c2dd1-2ea6-4946-b80d-9931afe29f7c",
+      "taskId": "563081c1-f9b1-4a7a-866e-9d9d0da24af5",
+      "pid": 92867,
       "fingerprint": "4a432c319b473ad3b377c6b41bbb23ef40120bc03f1b2233f8daccb0a9aade13",
       "transitionStatus": "pending",
       "retiredPriorPids": [
-        84697
+        92781
       ]
     },
     {
       "role": "frontend",
-      "sessionId": "8c204919-d35b-44d7-8248-05cb19fb7bc7",
-      "taskId": "c56ae705-748d-49df-ad2b-6e805e5b3398",
-      "pid": 84896,
+      "sessionId": "779c2dd1-2ea6-4946-b80d-9931afe29f7c",
+      "taskId": "563081c1-f9b1-4a7a-866e-9d9d0da24af5",
+      "pid": 92924,
       "fingerprint": "1ca495bbd2645420a97a317428a966982055903a037f9bf5d3b76a57f296ad1d",
       "transitionStatus": "running",
       "retiredPriorPids": [
-        84697,
-        84836
+        92781,
+        92867
       ]
     }
   ],
@@ -478,7 +478,7 @@
     "shared/types.ts": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
     "dist-electron/main.cjs": "84dd5d9ecc9fb3be04f8312d40e0a137edd58e7918657cc30b89cfdb1eeb2de7",
     "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
-    "tools/test-role-transitions-ui.mjs": "a02cec29c3b9b9e70b67740a1c4d7c404fc133f11c2c2e33fde680eb4c12c5cb",
+    "tools/test-role-transitions-ui.mjs": "6c1805fa56447854674882a45d0810662bd7b5d67e4cc8fe7b430474ac516a5b",
     "../workbench/CORE.md": "1cea28b6fcf01f409ca2af06c92fdbc929fdc4e489c65d6e2de836e0a1beda27",
     "../workbench/profiles/analyst.md": "81437e3f1258b7fe5de3ff37d531a5b8b8c3d27c95f741b0c6d30d6cccbf11c2",
     "../workbench/profiles/architect.md": "e1c687701e8f3705888f45b05e7352fdf28a11e8a647b29e62ebefea22eb33ad",

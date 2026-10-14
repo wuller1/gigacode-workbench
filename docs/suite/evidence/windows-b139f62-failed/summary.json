@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-14T15:25:09.997381+00:00",
+  "repository": "wuller1/gigacode-workbench",
+  "runId": 38588207361,
+  "runUrl": "https://github.com/wuller1/gigacode-workbench/actions/runs/38588207361",
+  "jobId": 115935767608,
+  "commitSha": "b139f62d26e4deca7d65e6b9c16cd63b8bcfc183",
+  "conclusion": "failure",
+  "failedStep": "In-task role transitions through actual Qwen and desktop",
+  "failure": {
+    "stage": "startup",
+    "actualAssertionsPassed": 0,
+    "message": "electron.launch timeout30000ms after debugger ws connected/attached; pid5864. No classifier/executor requests or role receipts."
+  },
+  "platform": "win32/x64",
+  "node": "v22.23.3",
+  "artifact": {
+    "id": 11906731300,
+    "name": "agent-harness-windows-b139f62d26e4deca7d65e6b9c16cd63b8bcfc183",
+    "bytes": 3573224,
+    "sha256": "10a0d523ec7097c76051ed6b8b4bd0e26e319b395cd36718400f121554a37226",
+    "githubDigest": "sha256:10a0d523ec7097c76051ed6b8b4bd0e26e319b395cd36718400f121554a37226",
+    "digestMatches": true
+  },
+  "unit": {
+    "numTotalTests": 418,
+    "numPassedTests": 367,
+    "numFailedTests": 0,
+    "numPendingTests": 51,
+    "numTotalTestSuites": 91,
+    "numPassedTestSuites": 91,
+    "numFailedTestSuites": 0,
+    "success": true,
+    "freshWindowsEvidence": true,
+    "skippedTestsByFile": {
+      "tests/database-live.test.ts": 36,
+      "tests/database-routine-live.test.ts": 8,
+      "tests/instruction-retention.test.ts": 4,
+      "tests/terminal-lifecycle.test.ts": 1,
+      "tests/transport-resilience.test.ts": 1,
+      "tests/workspace-native.test.ts": 1
+    },
+    "skipClassification": "44opt-in PostgreSQL tests+7POSIX/platform exclusions; not claimed passed"
+  },
+  "roleTransition": {
+    "status": "failed before first role assertion",
+    "passed": 0,
+    "plannedTotal": 6,
+    "requests": 0,
+    "receipts": 0,
+    "file": "role-transition-startup-win32.json",
+    "sourceHashes": [
+      {
+        "path": "app/src/App.tsx",
+        "match": true,
+        "recordedSha256": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
+        "candidateSha256": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d"
+      },
+      {
+        "path": "app/src/SettingsView.tsx",
+        "match": true,
+        "recordedSha256": "22df05f952769ff01f0e020924703d7fa500f71528613527b9e2cb9921a07c66",
+        "candidateSha256": "22df05f952769ff01f0e020924703d7fa500f71528613527b9e2cb9921a07c66"
+      },
+      {
+        "path": "app/src/styles.css",
+        "match": true,
+        "recordedSha256": "83d00d8fdb1cb4c9044547efcf52e7d049e462b81d3e0a590ad3fb4efda84605",
+        "candidateSha256": "83d00d8fdb1cb4c9044547efcf52e7d049e462b81d3e0a590ad3fb4efda84605"
+      },
+      {
+        "path": "app/electron/service.ts",
+        "match": true,
+        "recordedSha256": "03d5fc8d1ddbe45b8217df48956026ef682aefbbd9463083308b4b5d2815adcd",
+        "candidateSha256": "03d5fc8d1ddbe45b8217df48956026ef682aefbbd9463083308b4b5d2815adcd"
+      },
+      {
+        "path": "app/electron/main.ts",
+        "match": true,
+        "recordedSha256": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
+        "candidateSha256": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501"
+      },
+      {
+        "path": "app/electron/mcp.ts",
+        "match": true,
+        "recordedSha256": "7e1235fa6a3764e4616694c0d123bb6ff62cde01556536674e3c926b8491b5c0",
+        "candidateSha256": "7e1235fa6a3764e4616694c0d123bb6ff62cde01556536674e3c926b8491b5c0"
+      },
+      {
+        "path": "app/electron/prompt-binding.ts",
+        "match": true,
+        "recordedSha256": "ae3a98495f88893a8681ca8757fc45b5c557e45840375048afea21c0dbfc7e34",
+        "candidateSha256": "ae3a98495f88893a8681ca8757fc45b5c557e45840375048afea21c0dbfc7e34"
+      },
+      {
+        "path": "app/electron/role-router.ts",
+        "match": true,
+        "recordedSha256": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f",
+        "candidateSha256": "73f7694199263fca2967ffb80797e89ab81a563667caedfc021511dfc23ad41f"
+      },
+      {
+        "path": "app/electron/preload.ts",
+        "match": true,
+        "recordedSha256": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3",
+        "candidateSha256": "a044622e9442c1daa7914103ca153003d587eecd11db37a2535ad454442f37d3"
+      },
+      {
+        "path": "app/electron/acp.ts",
+        "match": true,
+        "recordedSha256": "3ffba600ff11ce50ad373b2bf54c3565bce65d3607d03ca6f50078ba70b579ab",
+        "candidateSha256": "3ffba600ff11ce50ad373b2bf54c3565bce65d3607d03ca6f50078ba70b579ab"
+      },
+      {
+        "path": "app/shared/types.ts",
+        "match": true,
+        "recordedSha256": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657",
+        "candidateSha256": "d3fd38c08517f55bda14a3b8e3c4fbd26d41de3a651e33a32f00177fc53e9657"
+      },
+      {
+        "path": "app/tools/test-role-transitions-ui.mjs",
+        "match": true,
+        "recordedSha256": "a02cec29c3b9b9e70b67740a1c4d7c404fc133f11c2c2e33fde680eb4c12c5cb",
+        "candidateSha256": "a02cec29c3b9b9e70b67740a1c4d7c404fc133f11c2c2e33fde680eb4c12c5cb"
+      },
+      {
+        "path": "workbench/CORE.md",
+        "match": true,
+        "recordedSha256": "1cea28b6fcf01f409ca2af06c92fdbc929fdc4e489c65d6e2de836e0a1beda27",
+        "candidateSha256": "1cea28b6fcf01f409ca2af06c92fdbc929fdc4e489c65d6e2de836e0a1beda27"
+      },
+      {
+        "path": "workbench/profiles/analyst.md",
+        "match": true,
+        "recordedSha256": "81437e3f1258b7fe5de3ff37d531a5b8b8c3d27c95f741b0c6d30d6cccbf11c2",
+        "candidateSha256": "81437e3f1258b7fe5de3ff37d531a5b8b8c3d27c95f741b0c6d30d6cccbf11c2"
+      },
+      {
+        "path": "workbench/profiles/architect.md",
+        "match": true,
+        "recordedSha256": "e1c687701e8f3705888f45b05e7352fdf28a11e8a647b29e62ebefea22eb33ad",
+        "candidateSha256": "e1c687701e8f3705888f45b05e7352fdf28a11e8a647b29e62ebefea22eb33ad"
+      },
+      {
+        "path": "workbench/profiles/backend.md",
+        "match": true,
+        "recordedSha256": "ed4cac535bb002fbaa5d82b7953e25a22ef35dc96ec629dd1edc1607a0c7d264",
+        "candidateSha256": "ed4cac535bb002fbaa5d82b7953e25a22ef35dc96ec629dd1edc1607a0c7d264"
+      },
+      {
+        "path": "workbench/profiles/database.md",
+        "match": true,
+        "recordedSha256": "619f87a555a9d3a6f834ad1dd92c24a5ec4a893c6fdd3a12cbec4f5da4391e5b",
+        "candidateSha256": "619f87a555a9d3a6f834ad1dd92c24a5ec4a893c6fdd3a12cbec4f5da4391e5b"
+      },
+      {
+        "path": "workbench/profiles/designer.md",
+        "match": true,
+        "recordedSha256": "e9eb486894fd63e94297a8dac9584164da5d706074483a4e6732d34b98b25a79",
+        "candidateSha256": "e9eb486894fd63e94297a8dac9584164da5d706074483a4e6732d34b98b25a79"
+      },
+      {
+        "path": "workbench/profiles/devops.md",
+        "match": true,
+        "recordedSha256": "05ca52297f9a191b9fe7b9de6affe0af8ab1d53e2c1841dfcbe197abc27fe74a",
+        "candidateSha256": "05ca52297f9a191b9fe7b9de6affe0af8ab1d53e2c1841dfcbe197abc27fe74a"
+      },
+      {
+        "path": "workbench/profiles/diagnostics.md",
+        "match": true,
+        "recordedSha256": "ac294df40837a0dd8b226e213f7a7ddd9e0993252138d3a273872e0d71d8e2eb",
+        "candidateSha256": "ac294df40837a0dd8b226e213f7a7ddd9e0993252138d3a273872e0d71d8e2eb"
+      },
+      {
+        "path": "workbench/profiles/frontend.md",
+        "match": true,
+        "recordedSha256": "c2c147ec4391206a09da02cb6e4dd289d6dbe0cb09212892667610d94305d7aa",
+        "candidateSha256": "c2c147ec4391206a09da02cb6e4dd289d6dbe0cb09212892667610d94305d7aa"
+      },
+      {
+        "path": "workbench/profiles/gigacode-ui.md",
+        "match": true,
+        "recordedSha256": "f95c095102ef74fd64a107cca768e77b00d735effc4b562d32621bb0bdd11e06",
+        "candidateSha256": "f95c095102ef74fd64a107cca768e77b00d735effc4b562d32621bb0bdd11e06"
+      },
+      {
+        "path": "workbench/profiles/qa.md",
+        "match": true,
+        "recordedSha256": "5f8bf61325c4840908707cee85d5c0d19df03ab46dd4cadec5f25895f42bbf03",
+        "candidateSha256": "5f8bf61325c4840908707cee85d5c0d19df03ab46dd4cadec5f25895f42bbf03"
+      },
+      {
+        "path": "workbench/profiles/reviewer.md",
+        "match": true,
+        "recordedSha256": "59d2adc726726bb7461b9ba6e3c40f28cd631e567b902ed39aee90c34753940d",
+        "candidateSha256": "59d2adc726726bb7461b9ba6e3c40f28cd631e567b902ed39aee90c34753940d"
+      },
+      {
+        "path": "workbench/profiles/security.md",
+        "match": true,
+        "recordedSha256": "eb48df1300b48bf155cc09b35294aefd383bd5c5cb2910ec94678634672be0e8",
+        "candidateSha256": "eb48df1300b48bf155cc09b35294aefd383bd5c5cb2910ec94678634672be0e8"
+      },
+      {
+        "path": "workbench/profiles/spec.md",
+        "match": true,
+        "recordedSha256": "a9bc23ab2a85938f5b4ee2887fb7e4483c93164c83f2f8b4ec3f37821d043e7b",
+        "candidateSha256": "a9bc23ab2a85938f5b4ee2887fb7e4483c93164c83f2f8b4ec3f37821d043e7b"
+      },
+      {
+        "path": "workbench/profiles/technical-writer.md",
+        "match": true,
+        "recordedSha256": "2df4753a59674a01a6276783cafa08f79cd9bf38583fb6bb5e062fcb7890ad47",
+        "candidateSha256": "2df4753a59674a01a6276783cafa08f79cd9bf38583fb6bb5e062fcb7890ad47"
+      }
+    ],
+    "sourceHashComparisons": 27,
+    "sourceHashMatches": 27,
+    "sourceDrift": [],
+    "OSBuildHashes": "Recorded in raw failure report, excluded from tracked-candidate source comparisons."
+  },
+  "rendererResilience": {
+    "status": "skipped after startup failure",
+    "reportCopied": false,
+    "noPassClaim": true
+  },
+  "freshness": "Fresh win32 unit and fresh startup-failure report only; prior darwin/attempt reports not copied.",
+  "cleanup": {
+    "watcher": "No local native processes launched; artifact download completed and digest matched.",
+    "driver": "Old failure report says applicationclosed, but launch did not yield a handle; exit is unconfirmed. Owned data removal was reported, not a process-exit proof."
+  },
+  "gigaCode26106Tested": false
+}

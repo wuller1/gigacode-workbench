@@ -15,7 +15,8 @@ import { _electron } from "playwright";
 
 const require = createRequire(import.meta.url),
   execFile = promisify(execFileCallback);
-const appRoot = fileURLToPath(new URL("..", import.meta.url));
+// A quoted Windows argv ending in a backslash can escape its closing quote.
+const appRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 const repoRoot = path.dirname(appRoot);
 const preliminary = process.argv.includes("--preliminary");
 const evidence = path.join(
@@ -995,11 +996,38 @@ try {
   console.error("FAIL " + current + ": " + failure.message);
 } finally {
   for (const gate of Object.values(gates)) gate.release();
+  if (failure) {
+    // Preserve bounded, non-content startup evidence before cleanup. No environment,
+    // prompt, log message or provider credential is included in this report.
+    const hostLog = path.join(temp, "userdata/logs/host.jsonl");
+    failure.hostEvents = await fs.readFile(hostLog, "utf8").then(
+      (content) =>
+        content
+          .slice(-65536)
+          .split("\n")
+          .flatMap((line) => {
+            try {
+              const item = JSON.parse(line);
+              return [
+                {
+                  at: String(item.at).slice(0, 40),
+                  kind: String(item.kind).slice(0, 100),
+                },
+              ];
+            } catch {
+              return [];
+            }
+          })
+          .slice(-64),
+      () => [],
+    );
+  }
   try {
+    if (!application) throw new Error("Launch returned no application handle.");
     let timer;
     try {
       await Promise.race([
-        application?.close(),
+        application.close(),
         new Promise((_, reject) => {
           timer = setTimeout(
             () => reject(new Error("Owned App close deadline.")),
@@ -1036,7 +1064,11 @@ try {
           } catch {}
       }
     }
-    cleanup = { application: "owned process tree force-closed after deadline" };
+    cleanup = {
+      application: application
+        ? "owned process tree termination requested after close failure; exit not independently confirmed"
+        : "launch returned no handle; process exit not independently confirmed",
+    };
     if (!failure) {
       failure = {
         test: "cleanup",
@@ -1049,13 +1081,15 @@ try {
   provider?.closeAllConnections();
   if (provider) await new Promise((resolve) => provider.close(resolve));
   try {
-    await fs.rm(temp, {
-      recursive: true,
-      force: true,
-      maxRetries: 8,
-      retryDelay: 150,
-    });
-    cleanup.ownedData = "removed";
+    if (cleanup.application === "closed") {
+      await fs.rm(temp, {
+        recursive: true,
+        force: true,
+        maxRetries: 8,
+        retryDelay: 150,
+      });
+      cleanup.ownedData = "removed";
+    } else cleanup.ownedData = "retained: process exit unconfirmed";
   } catch {
     cleanup.ownedData = "remove failed";
     process.exitCode = 1;

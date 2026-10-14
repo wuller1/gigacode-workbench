@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-14T09:28:06.604Z",
+  "at": "2026-10-14T15:35:19.740Z",
   "os": "darwin",
   "packaged": false,
   "cases": 25,
@@ -51,12 +51,12 @@
     "app/electron/database/sql-file.ts": "0a332e2b591b554ef77c74fb443b5ec72a2e904fd1b43a497ce692c57133ef80",
     "app/electron/database/tls.ts": "fee9f6726e6a36337fe376d8eb52abead62d1aa7d400f0b1ab5bfca546591e19",
     "app/electron/database/wire-limit.ts": "c611c00f4fbb60f1f47bdcea79f66a13ed66b9ea7bed93e1d025746bc7c05904",
-    "app/electron/main.ts": "dc76d03a1a57da4faa9ad93e7efda9342560029b0914ae5c2d964e4ef8729369",
-    "app/electron/mcp.ts": "cf19131431d0f6f37cec37a6d37f96d628ee97a6551059c626d6c86195675e4a",
-    "app/package-lock.json": "8b5158c1bad051b2e6ba7bbc3d240ef4d73085a0dfa538385af7e86e3dbecdc7",
+    "app/electron/main.ts": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
+    "app/electron/mcp.ts": "7e1235fa6a3764e4616694c0d123bb6ff62cde01556536674e3c926b8491b5c0",
+    "app/package-lock.json": "944ff83d361c506c97cd33b429fe6d73594be97bc27c314c1cf09ee0ee1ba978",
     "app/shared/database.ts": "003aa11c1851081f0a15cb98ca3fef7fa0ba1399808e03237a40c3395cf74f4e",
     "app/shared/sql.ts": "f1bd1d2345f60f6fc0f36159601460066c1360e631374128acf54dd6da1dc1e3",
-    "app/src/App.tsx": "1ffbe697b57d47703c03adee20fc9c3ecc1570e2055077c3984f040d58a69a16",
+    "app/src/App.tsx": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
     "app/src/DatabaseConsoleEditor.tsx": "dbbd06603b03ab53e7416338531d537f02cfa96fc55dadff8a947c80c061df27",
     "app/src/DatabaseEffect.tsx": "8dc051c4af1fa77b2a2cde123759e9ac3ebe2d443c641e90f8749a21d8678c8d",
     "app/src/DatabaseExplorer.tsx": "a3d3fbf023a8a50235aed95310ee7d466c99796996bb4e1dc144e3d9b633a38d",
@@ -78,6 +78,6 @@
     "app/tests/window-close.test.ts": "6ece6d331e27708edd7d924d78a9ddee6867d3e5f184ebfc9264bbc1386cd27c",
     "app/tools/database-evidence.mjs": "7e67727b35b480f33da530b04cbecb87e669268ad5912c60e2be928cb3090690",
     "app/tools/test-database-live.mjs": "5e6df2da3c3d46f5ec16201356b858502fa72b8b366d67ba0fd6eb4947a6e8df",
-    "app/tools/test-database-ui.mjs": "e4fbdacac297b1ad6b307b0c4d7661d14ed9a31007d81b4dd058f21083b0e1d0"
+    "app/tools/test-database-ui.mjs": "b097522883cfd13546e4c02b31702941561ee5d98c8bb958926bb92f97915ea7"
   }
 }

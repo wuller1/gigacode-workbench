@@ -1209,64 +1209,153 @@ try {
       await invoke("window.new");
       const second = await opened;
       await second.waitForFunction(() => Boolean(window.workbench));
-      const editor = p.getByRole("textbox", { name: "SQL редактор" });
-      await editor.click();
-      await p.keyboard.press("ControlOrMeta+A");
-      await p.keyboard.insertText("SELECT 100 AS first_window_draft;");
-      const state = await invoke("database.snapshot", {
-          projectId: project.id,
-        }),
-        doc = state.consoles.find((c) => c.id === console.id);
-      await second.evaluate(
-        ({ projectId, consoleId, revision }) =>
-          window.workbench.invoke("database.console.update", {
-            projectId,
+      const firstWindow = (await invoke("app.info")).windowId;
+      // This scenario requires the foreign update to win before the first
+      // window's 700ms autosave. Scheduling that by wall-clock timing races on
+      // Windows. Hold only the actual first-window request before its real host
+      // handler, then release it after the other window commits normally.
+      await app.evaluate(
+        ({ ipcMain, BrowserWindow }, { windowId, consoleId }) => {
+          const original = ipcMain._invokeHandlers.get("workbench:invoke");
+          if (typeof original !== "function")
+            throw new Error("Owned database IPC barrier is unavailable");
+          const gate = {
+            original,
+            senderId: BrowserWindow.fromId(windowId).webContents.id,
             consoleId,
-            revision,
-            sql: "SELECT 200 AS second_window;",
+            captured: undefined,
+            release: undefined,
+            released: false,
+          };
+          globalThis.__databaseConflictBarrier = gate;
+          ipcMain.removeHandler("workbench:invoke");
+          ipcMain.handle("workbench:invoke", async (event, method, params) => {
+            if (
+              !gate.released &&
+              event.sender.id === gate.senderId &&
+              method === "database.console.update" &&
+              params.consoleId === consoleId &&
+              params.sql === "SELECT 100 AS first_window_draft;"
+            ) {
+              gate.captured = { revision: params.revision, sql: params.sql };
+              await new Promise((resolve) => {
+                gate.release = resolve;
+              });
+            }
+            return original(event, method, params);
+          });
+        },
+        { windowId: firstWindow, consoleId: console.id },
+      );
+      try {
+        const editor = p.getByRole("textbox", { name: "SQL редактор" });
+        await editor.click();
+        await p.keyboard.press("ControlOrMeta+A");
+        await p.keyboard.insertText("SELECT 100 AS first_window_draft;");
+        const captureDeadline = Date.now() + 10000;
+        while (
+          !(await app.evaluate(
+            () => !!globalThis.__databaseConflictBarrier.captured,
+          ))
+        ) {
+          if (Date.now() > captureDeadline)
+            throw new Error(
+              "First-window autosave did not reach the actual IPC conflict barrier",
+            );
+          await new Promise((resolve) => setTimeout(resolve, 40));
+        }
+        const state = await invoke("database.snapshot", {
+            projectId: project.id,
           }),
-        { projectId: project.id, consoleId: doc.id, revision: doc.revision },
-      );
-      await p
-        .getByRole("button", { name: "Сохранить копию", exact: true })
-        .waitFor();
-      assert(
-        (await editor.innerText()).includes("first_window_draft"),
-        "The foreign update replaced an unsaved buffer",
-      );
-      await waitForHost(
-        p,
-        async (projectId) =>
-          (
-            await window.workbench.invoke("database.recovery.list", {
+          doc = state.consoles.find((c) => c.id === console.id);
+        const held = await app.evaluate(
+          () => globalThis.__databaseConflictBarrier.captured,
+        );
+        assert(
+          held.revision === doc.revision,
+          "The held real autosave did not capture the current console revision",
+        );
+        await second.evaluate(
+          ({ projectId, consoleId, revision }) =>
+            window.workbench.invoke("database.console.update", {
               projectId,
-            })
-          ).length > 0,
-        project.id,
-      );
-      await p
-        .getByRole("button", { name: "Сохранить копию", exact: true })
-        .click();
-      await p
-        .getByRole("tab", { name: "SQL A · копия", exact: true })
-        .waitFor();
-      const final = await invoke("database.snapshot", {
-        projectId: project.id,
-      });
-      assert(
-        final.consoles
-          .find((c) => c.id === console.id)
-          .sql.includes("second_window"),
-        "Conflict copy overwrote the foreign console",
-      );
-      assert(
-        final.consoles.some(
-          (c) =>
-            c.title === "SQL A · копия" && c.sql.includes("first_window_draft"),
-        ),
-        "Conflict draft copy was not saved",
-      );
-      await second.close();
+              consoleId,
+              revision,
+              sql: "SELECT 200 AS second_window;",
+            }),
+          { projectId: project.id, consoleId: doc.id, revision: doc.revision },
+        );
+        await app.evaluate(() => {
+          globalThis.__databaseConflictBarrier.released = true;
+          globalThis.__databaseConflictBarrier.release();
+        });
+        await p
+          .getByRole("button", { name: "Сохранить копию", exact: true })
+          .waitFor();
+        assert(
+          (await editor.innerText()).includes("first_window_draft"),
+          "The foreign update replaced an unsaved buffer",
+        );
+        await waitForHost(
+          p,
+          async ({ projectId, consoleId, revision }) =>
+            (
+              await window.workbench.invoke("database.recovery.list", {
+                projectId,
+              })
+            ).some((r) => r.consoleId === consoleId && r.revision === revision),
+          { projectId: project.id, consoleId: doc.id, revision: held.revision },
+        );
+        const durableRecovery = JSON.parse(
+          await fs.readFile(
+            path.join(temp, "desktop/database/state.json"),
+            "utf8",
+          ),
+        ).recoveries;
+        assert(
+          durableRecovery.some(
+            (r) =>
+              r.consoleId === doc.id &&
+              r.revision === held.revision &&
+              r.sql === "SELECT 100 AS first_window_draft;",
+          ),
+          "The first window's exact conflicting SQL was not durably retained",
+        );
+        await p
+          .getByRole("button", { name: "Сохранить копию", exact: true })
+          .click();
+        await p
+          .getByRole("tab", { name: "SQL A · копия", exact: true })
+          .waitFor();
+        const final = await invoke("database.snapshot", {
+          projectId: project.id,
+        });
+        assert(
+          final.consoles
+            .find((c) => c.id === console.id)
+            .sql.includes("second_window"),
+          "Conflict copy overwrote the foreign console",
+        );
+        assert(
+          final.consoles.some(
+            (c) =>
+              c.title === "SQL A · копия" &&
+              c.sql.includes("first_window_draft"),
+          ),
+          "Conflict draft copy was not saved",
+        );
+        await second.close();
+      } finally {
+        await app.evaluate(({ ipcMain }) => {
+          const gate = globalThis.__databaseConflictBarrier;
+          if (!gate) return;
+          gate.released = true;
+          gate.release?.();
+          ipcMain.removeHandler("workbench:invoke");
+          ipcMain.handle("workbench:invoke", gate.original);
+          delete globalThis.__databaseConflictBarrier;
+        });
+      }
     },
   );
   await check(

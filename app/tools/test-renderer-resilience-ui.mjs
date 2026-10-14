@@ -9,7 +9,7 @@ import { createHash } from "node:crypto";
 import { build } from "esbuild";
 import { _electron } from "playwright";
 const require = createRequire(import.meta.url),
-  appRoot = fileURLToPath(new URL("..", import.meta.url)),
+  appRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url))),
   repoRoot = path.dirname(appRoot);
 const evidence = path.join(
     repoRoot,
@@ -1016,8 +1016,9 @@ try {
   } catch {}
   let timer;
   try {
+    if (!application) throw new Error("Launch returned no application handle.");
     await Promise.race([
-      application?.close(),
+      application.close(),
       new Promise((_, reject) => {
         timer = setTimeout(
           () => reject(new Error("owned close deadline")),
@@ -1028,7 +1029,11 @@ try {
     cleanup = { application: "closed" };
   } catch {
     application?.process().kill("SIGKILL");
-    cleanup = { application: "force-closed" };
+    cleanup = {
+      application: application
+        ? "owned process termination requested; exit not independently confirmed"
+        : "launch returned no handle; process exit not independently confirmed",
+    };
     if (!failure) {
       failure = {
         test: "cleanup",
@@ -1040,13 +1045,15 @@ try {
     clearTimeout(timer);
   }
   try {
-    await fs.rm(temp, {
-      recursive: true,
-      force: true,
-      maxRetries: 10,
-      retryDelay: 150,
-    });
-    cleanup.ownedData = "removed";
+    if (cleanup.application === "closed") {
+      await fs.rm(temp, {
+        recursive: true,
+        force: true,
+        maxRetries: 10,
+        retryDelay: 150,
+      });
+      cleanup.ownedData = "removed";
+    } else cleanup.ownedData = "retained: process exit unconfirmed";
   } catch {
     cleanup.ownedData = "remove failed";
     process.exitCode = 1;

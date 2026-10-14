@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-14T15:36:31.960Z",
+  "repository": "wuller1/gigacode-workbench",
+  "runId": 38588207301,
+  "runUrl": "https://github.com/wuller1/gigacode-workbench/actions/runs/38588207301",
+  "commitSha": "b139f62d26e4deca7d65e6b9c16cd63b8bcfc183",
+  "conclusion": "failure",
+  "job": "database-x64",
+  "failedStep": "Actual source Electron Data workspace acceptance",
+  "platform": "win32/x64",
+  "artifact": {
+    "id": 11905524143,
+    "name": "database-source-evidence-windows-b139f62d26e4deca7d65e6b9c16cd63b8bcfc183",
+    "bytes": 233665,
+    "sha256": "145a72fce9ddae6e63f604c97f56b827decf94f9247952998ad2531f264556f2",
+    "githubDigest": "sha256:145a72fce9ddae6e63f604c97f56b827decf94f9247952998ad2531f264556f2",
+    "digestMatches": true
+  },
+  "databaseLive": {
+    "passed": 44,
+    "failed": 0,
+    "file": "database-live-win32.json",
+    "freshWindowsEvidence": true
+  },
+  "databaseUi": {
+    "priorScenariosPassed": 20,
+    "failedScenario": "Two real windows preserve a conflicting SQL draft and can save it as a separate durable console",
+    "file": "app/tools/test-database-ui.mjs",
+    "line": 1220,
+    "error": "The direct second-window database.console.update was rejected as a stale revision: Консоль изменена в другом окне. Ваш SQL сохранён в восстановлении; чужой текст не перезаписан.",
+    "screenshot": "database-ui-failure-win32.png",
+    "failureClassification": "Fixture scheduling race between snapshot and foreign update versus the real first-window 700ms autosave. The host CAS refused the stale write. The replacement fixture orders the same actual IPC/host operations with an owned barrier; no product CAS rule is relaxed.",
+    "windowsUiNotClaimedPassed": true
+  },
+  "sourceHashComparisons": 41,
+  "sourceHashMatches": 41,
+  "sourceHashes": [
+    {
+      "path": "app/electron/database/client.ts",
+      "recordedSha256": "93180086cc089ed64b9cc4e15c381aabac0e17a96012500a3e79f7231d372a71",
+      "candidateSha256": "93180086cc089ed64b9cc4e15c381aabac0e17a96012500a3e79f7231d372a71",
+      "match": true
+    },
+    {
+      "path": "app/electron/database/engine.ts",
+      "recordedSha256": "29f7d3423c992c5bcec899056d182552f50c8d2dbd2d3dcb38229692d683fa87",
+      "candidateSha256": "29f7d3423c992c5bcec899056d182552f50c8d2dbd2d3dcb38229692d683fa87",
+      "match": true
+    },
+    {
+      "path": "app/electron/database/files.ts",
+      "recordedSha256": "ff63e8bcc9b895ff51141a171965c4696ef686894f5a9a84c7e3701eede0d81c",
+      "candidateSha256": "ff63e8bcc9b895ff51141a171965c4696ef686894f5a9a84c7e3701eede0d81c",
+      "match": true
+    },
+    {
+      "path": "app/electron/database/http.ts",
+      "recordedSha256": "c34a214be47546f71a8ea0a7b8c02ac58dbfb6ba5112644d10d6af5f2376e233",
+      "candidateSha256": "c34a214be47546f71a8ea0a7b8c02ac58dbfb6ba5112644d10d6af5f2376e233",
+      "match": true
+    },
+    {
+      "path": "app/electron/database/protocol.ts",
+      "recordedSha256": "a7cc9a7400b6b227beeae081da5883d14fbbc409a63b98506d8ed5087a3f71de",
+      "candidateSha256": "a7cc9a7400b6b227beeae081da5883d14fbbc409a63b98506d8ed5087a3f71de",
+      "match": true
+    },
+    {
+      "path": "app/electron/database/provider.ts",
+      "recordedSha256": "6ca1594902bd53c0b307e349e5594f8281700fb7f73601eab3fcb9933c8ecdb1",
+      "candidateSha256": "6ca1594902bd53c0b307e349e5594f8281700fb7f73601eab3fcb9933c8ecdb1",
+      "match": true
+    },
+    {
+      "path": "app/electron/database/query-stream.ts",
+      "recordedSha256": "339a7a9d10b811bdafd77d511fa1c7b621aac37520e1caad262ed2b5deca0860",
+      "candidateSha256": "339a7a9d10b811bdafd77d511fa1c7b621aac37520e1caad262ed2b5deca0860",
+      "match": true
+    },
+    {
+      "path": "app/electron/database/relations.ts",
+      "recordedSha256": "1d2850b936e1d6059dc8eec6061475957074e0e771bf607599bc5e7bfee0c98e",
+      "candidateSha256": "1d2850b936e1d6059dc8eec6061475957074e0e771bf607599bc5e7bfee0c98e",
+      "match": true
+    },
+    {
+      "path": "app/electron/database/response.ts",
+      "recordedSha256": "c456e60b1a304dda2c94d9f2307d0dc4268fbf53c3e4c9752aede46b5ed1d46c",
+      "candidateSha256": "c456e60b1a304dda2c94d9f2307d0dc4268fbf53c3e4c9752aede46b5ed1d46c",
+      "match": true
+    },
+    {
+      "path": "app/electron/database/service.ts",
+      "recordedSha256": "2123f69b79383800dcec9f8a2c4ee03523fc4641042995c57497b536791fa775",
+      "candidateSha256": "2123f69b79383800dcec9f8a2c4ee03523fc4641042995c57497b536791fa775",
+      "match": true
+    },
+    {
+      "path": "app/electron/database/sql-file.ts",
+      "recordedSha256": "0a332e2b591b554ef77c74fb443b5ec72a2e904fd1b43a497ce692c57133ef80",
+      "candidateSha256": "0a332e2b591b554ef77c74fb443b5ec72a2e904fd1b43a497ce692c57133ef80",
+      "match": true
+    },
+    {
+      "path": "app/electron/database/tls.ts",
+      "recordedSha256": "fee9f6726e6a36337fe376d8eb52abead62d1aa7d400f0b1ab5bfca546591e19",
+      "candidateSha256": "fee9f6726e6a36337fe376d8eb52abead62d1aa7d400f0b1ab5bfca546591e19",
+      "match": true
+    },
+    {
+      "path": "app/electron/database/wire-limit.ts",
+      "recordedSha256": "c611c00f4fbb60f1f47bdcea79f66a13ed66b9ea7bed93e1d025746bc7c05904",
+      "candidateSha256": "c611c00f4fbb60f1f47bdcea79f66a13ed66b9ea7bed93e1d025746bc7c05904",
+      "match": true
+    },
+    {
+      "path": "app/electron/main.ts",
+      "recordedSha256": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
+      "candidateSha256": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
+      "match": true
+    },
+    {
+      "path": "app/electron/mcp.ts",
+      "recordedSha256": "7e1235fa6a3764e4616694c0d123bb6ff62cde01556536674e3c926b8491b5c0",
+      "candidateSha256": "7e1235fa6a3764e4616694c0d123bb6ff62cde01556536674e3c926b8491b5c0",
+      "match": true
+    },
+    {
+      "path": "app/package-lock.json",
+      "recordedSha256": "944ff83d361c506c97cd33b429fe6d73594be97bc27c314c1cf09ee0ee1ba978",
+      "candidateSha256": "944ff83d361c506c97cd33b429fe6d73594be97bc27c314c1cf09ee0ee1ba978",
+      "match": true
+    },
+    {
+      "path": "app/shared/database.ts",
+      "recordedSha256": "003aa11c1851081f0a15cb98ca3fef7fa0ba1399808e03237a40c3395cf74f4e",
+      "candidateSha256": "003aa11c1851081f0a15cb98ca3fef7fa0ba1399808e03237a40c3395cf74f4e",
+      "match": true
+    },
+    {
+      "path": "app/shared/sql.ts",
+      "recordedSha256": "f1bd1d2345f60f6fc0f36159601460066c1360e631374128acf54dd6da1dc1e3",
+      "candidateSha256": "f1bd1d2345f60f6fc0f36159601460066c1360e631374128acf54dd6da1dc1e3",
+      "match": true
+    },
+    {
+      "path": "app/src/App.tsx",
+      "recordedSha256": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
+      "candidateSha256": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
+      "match": true
+    },
+    {
+      "path": "app/src/DatabaseConsoleEditor.tsx",
+      "recordedSha256": "dbbd06603b03ab53e7416338531d537f02cfa96fc55dadff8a947c80c061df27",
+      "candidateSha256": "dbbd06603b03ab53e7416338531d537f02cfa96fc55dadff8a947c80c061df27",
+      "match": true
+    },
+    {
+      "path": "app/src/DatabaseEffect.tsx",
+      "recordedSha256": "8dc051c4af1fa77b2a2cde123759e9ac3ebe2d443c641e90f8749a21d8678c8d",
+      "candidateSha256": "8dc051c4af1fa77b2a2cde123759e9ac3ebe2d443c641e90f8749a21d8678c8d",
+      "match": true
+    },
+    {
+      "path": "app/src/DatabaseExplorer.tsx",
+      "recordedSha256": "a3d3fbf023a8a50235aed95310ee7d466c99796996bb4e1dc144e3d9b633a38d",
+      "candidateSha256": "a3d3fbf023a8a50235aed95310ee7d466c99796996bb4e1dc144e3d9b633a38d",
+      "match": true
+    },
+    {
+      "path": "app/src/DatabaseHistory.tsx",
+      "recordedSha256": "79907e400279578dbf085c784e41e720d665b1efe85e657e1d37b3ae1847f756",
+      "candidateSha256": "79907e400279578dbf085c784e41e720d665b1efe85e657e1d37b3ae1847f756",
+      "match": true
+    },
+    {
+      "path": "app/src/DatabasePanel.tsx",
+      "recordedSha256": "419f2766c22a96e36e7b62144386da1d6d6815606aeb768c53a9c73c75d2eb6b",
+      "candidateSha256": "419f2766c22a96e36e7b62144386da1d6d6815606aeb768c53a9c73c75d2eb6b",
+      "match": true
+    },
+    {
+      "path": "app/src/DatabaseRelations.tsx",
+      "recordedSha256": "72fc8f941b416e26b8f5b0b5e467cfb145b00fb5b895d6d730de7eb853ab296b",
+      "candidateSha256": "72fc8f941b416e26b8f5b0b5e467cfb145b00fb5b895d6d730de7eb853ab296b",
+      "match": true
+    },
+    {
+      "path": "app/src/DatabaseSettings.tsx",
+      "recordedSha256": "34c0292535f7aef3fd1d227dad3bc9c2e4d14b0e1a496ec1d0564d6ac7c5cd0b",
+      "candidateSha256": "34c0292535f7aef3fd1d227dad3bc9c2e4d14b0e1a496ec1d0564d6ac7c5cd0b",
+      "match": true
+    },
+    {
+      "path": "app/src/DatabaseStructure.tsx",
+      "recordedSha256": "3fc1a5755c7499e686a066845f3f0e218ac0d596c17e1efdc4028ebe8071c42e",
+      "candidateSha256": "3fc1a5755c7499e686a066845f3f0e218ac0d596c17e1efdc4028ebe8071c42e",
+      "match": true
+    },
+    {
+      "path": "app/src/SqlEditor.tsx",
+      "recordedSha256": "eebe0424ea213087342f4d529d245555c951e6340b86573c94d4d58d9622a642",
+      "candidateSha256": "eebe0424ea213087342f4d529d245555c951e6340b86573c94d4d58d9622a642",
+      "match": true
+    },
+    {
+      "path": "app/src/SqlPlan.tsx",
+      "recordedSha256": "c01915b2490fb6b4a06328de153ead7bb56157947516ca6c9d317823c1dbdadf",
+      "candidateSha256": "c01915b2490fb6b4a06328de153ead7bb56157947516ca6c9d317823c1dbdadf",
+      "match": true
+    },
+    {
+      "path": "app/src/database-relations.css",
+      "recordedSha256": "2a81b405623604ad682c91c791c0f65e5efdecd508cb9d54088cc8ce923d4029",
+      "candidateSha256": "2a81b405623604ad682c91c791c0f65e5efdecd508cb9d54088cc8ce923d4029",
+      "match": true
+    },
+    {
+      "path": "app/src/database-structure.css",
+      "recordedSha256": "f4e607369ce6fb52f75c6db84c203e05fa1e930dcfabd8cc2aed108c8e76d9c0",
+      "candidateSha256": "f4e607369ce6fb52f75c6db84c203e05fa1e930dcfabd8cc2aed108c8e76d9c0",
+      "match": true
+    },
+    {
+      "path": "app/src/database.css",
+      "recordedSha256": "ced273257f148ad648f5e7c3d024c6e0ec70f9d93fe1ec63130ff3bb27cd85cd",
+      "candidateSha256": "ced273257f148ad648f5e7c3d024c6e0ec70f9d93fe1ec63130ff3bb27cd85cd",
+      "match": true
+    },
+    {
+      "path": "app/src/window-close.ts",
+      "recordedSha256": "196e50c3362d8c72178da07867131c055101a04af428d707d8339862c82eb5bb",
+      "candidateSha256": "196e50c3362d8c72178da07867131c055101a04af428d707d8339862c82eb5bb",
+      "match": true
+    },
+    {
+      "path": "app/tests/database-live.test.ts",
+      "recordedSha256": "e3e262fb65d0cf54f5acff039496e2cc9744a31c8aa6424eb2fa1b1c3006404d",
+      "candidateSha256": "e3e262fb65d0cf54f5acff039496e2cc9744a31c8aa6424eb2fa1b1c3006404d",
+      "match": true
+    },
+    {
+      "path": "app/tests/database-response.test.ts",
+      "recordedSha256": "c89448ef159c33df5e936b46456c5d55bf3d3995775a201e50351714c776b37b",
+      "candidateSha256": "c89448ef159c33df5e936b46456c5d55bf3d3995775a201e50351714c776b37b",
+      "match": true
+    },
+    {
+      "path": "app/tests/database-routine-live.test.ts",
+      "recordedSha256": "e834a1b11008e9b59aadec2e3cc2b1d766508a12fb74ae408a73e2f1c88c053a",
+      "candidateSha256": "e834a1b11008e9b59aadec2e3cc2b1d766508a12fb74ae408a73e2f1c88c053a",
+      "match": true
+    },
+    {
+      "path": "app/tests/database-sql.test.ts",
+      "recordedSha256": "db021e48461ab446682019b8203e991b7069604c3b670ff924b90ab2a746a706",
+      "candidateSha256": "db021e48461ab446682019b8203e991b7069604c3b670ff924b90ab2a746a706",
+      "match": true
+    },
+    {
+      "path": "app/tests/window-close.test.ts",
+      "recordedSha256": "6ece6d331e27708edd7d924d78a9ddee6867d3e5f184ebfc9264bbc1386cd27c",
+      "candidateSha256": "6ece6d331e27708edd7d924d78a9ddee6867d3e5f184ebfc9264bbc1386cd27c",
+      "match": true
+    },
+    {
+      "path": "app/tools/database-evidence.mjs",
+      "recordedSha256": "7e67727b35b480f33da530b04cbecb87e669268ad5912c60e2be928cb3090690",
+      "candidateSha256": "7e67727b35b480f33da530b04cbecb87e669268ad5912c60e2be928cb3090690",
+      "match": true
+    },
+    {
+      "path": "app/tools/test-database-live.mjs",
+      "recordedSha256": "5e6df2da3c3d46f5ec16201356b858502fa72b8b366d67ba0fd6eb4947a6e8df",
+      "candidateSha256": "5e6df2da3c3d46f5ec16201356b858502fa72b8b366d67ba0fd6eb4947a6e8df",
+      "match": true
+    },
+    {
+      "path": "app/tools/test-database-ui.mjs",
+      "recordedSha256": "e4fbdacac297b1ad6b307b0c4d7661d14ed9a31007d81b4dd058f21083b0e1d0",
+      "candidateSha256": "e4fbdacac297b1ad6b307b0c4d7661d14ed9a31007d81b4dd058f21083b0e1d0",
+      "match": true
+    }
+  ],
+  "sourceDrift": [],
+  "freshness": "Fresh win32 artifact live report and failure screenshot only. No stale darwin UI evidence copied. Subsequent Windows UI run must establish the corrected fixture result."
+}
