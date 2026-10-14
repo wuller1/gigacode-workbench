@@ -140,6 +140,8 @@ async function syncInstructionDirectories(
   }
 }
 
+const instructionWrites = new Map<string, Promise<void>>();
+
 /** Keep the exact host-controlled instruction version, not only an unrecoverable hash. */
 export async function retainInstructions(
   dataDir: string,
@@ -151,6 +153,28 @@ export async function retainInstructions(
     digest(JSON.stringify(compiled.manifest)) !== compiled.fingerprint
   )
     throw new Error("Invalid instruction snapshot.");
+  // Validate every caller before joining. AtomicStore owns this data directory;
+  // this only coalesces its in-process identical publications, not other owners.
+  const absoluteDir = path.resolve(dataDir);
+  const key = JSON.stringify([
+    process.platform === "win32" ? absoluteDir.toLowerCase() : absoluteDir,
+    compiled.fingerprint,
+  ]);
+  const current = instructionWrites.get(key);
+  if (current) return current;
+  const pending = writeRetainedInstructions(absoluteDir, compiled).finally(
+    () => {
+      if (instructionWrites.get(key) === pending) instructionWrites.delete(key);
+    },
+  );
+  instructionWrites.set(key, pending);
+  return pending;
+}
+
+async function writeRetainedInstructions(
+  dataDir: string,
+  compiled: CompiledInstructions,
+): Promise<void> {
   const directory = path.join(dataDir, "instructions");
   await fs.mkdir(directory, { recursive: true, mode: 0o700 });
   const destination = path.join(directory, `${compiled.fingerprint}.json`);
@@ -165,7 +189,7 @@ export async function retainInstructions(
       throw new Error(
         "Retained instruction version conflicts with the requested snapshot.",
       );
-    // Another identical writer may have renamed before reaching its own barrier.
+    // A later call revalidates retained bytes and establishes its own barrier.
     await syncInstructionDirectories(directory, dataDir);
     return;
   }
@@ -181,7 +205,7 @@ export async function retainInstructions(
     } finally {
       await file.close();
     }
-    // One data-directory owner; concurrent writers for this hash have identical content.
+    // One data-directory owner and one in-flight publisher for this fingerprint.
     await fs.rename(temporary, destination);
     // Persist the file entry, then the instructions/ entry when first created.
     await syncInstructionDirectories(directory, dataDir);

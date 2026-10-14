@@ -5,17 +5,18 @@
   "sourceSha256": {
     "app/electron/main.ts": "0e6064aea8e66cd96f15f55aea4494b908045d82cdc0dd3d21c0a25b699bc501",
     "app/electron/service.ts": "03d5fc8d1ddbe45b8217df48956026ef682aefbbd9463083308b4b5d2815adcd",
-    "app/electron/prompt-binding.ts": "ae3a98495f88893a8681ca8757fc45b5c557e45840375048afea21c0dbfc7e34",
+    "app/electron/prompt-binding.ts": "b507d171f0a8b0dfa76e906d83b806dab8c1143889496e52768920e889d8738a",
     "app/src/App.tsx": "3a897f625556c01ddaad39249cf7054439eb67b68c5ada42163d5b32706e0f8d",
     "app/src/QueueMessages.tsx": "def41a2ba59947f6c325721902f7eaaeb9034d886ddceed7e75a69a6d7282c79",
     "app/src/snapshot-feed.ts": "a68c59d601beb5a75a705a34e82b2fca11c0448aeec5f10b412a884a78c825bd",
     "app/src/styles.css": "83d00d8fdb1cb4c9044547efcf52e7d049e462b81d3e0a590ad3fb4efda84605",
-    "app/dist-electron/main.cjs": "84dd5d9ecc9fb3be04f8312d40e0a137edd58e7918657cc30b89cfdb1eeb2de7",
+    "app/dist-electron/main.cjs": "f392cc5274dffa875df9d98a420b940613ca0f8bb8d19513c66270d5301f411c",
     "app/tools/test-chat-live.mjs": "37aa29fb93a46e8946b63d26a2f4a8f73839422e710043ed699a7c3483b1db3e"
   },
   "cleanup": {
-    "application": "closed",
-    "ownedData": "removed"
+    "application": "driver.close resolved before exit0",
+    "ownedData": "removed after copying only result and PNGs"
   },
-  "scope": "Actual App with offline ACP fixture. No model intelligence, Windows, GigaCode or corporate MCP claim."
+  "scope": "Actual App with offline ACP fixture. No model intelligence, Windows, GigaCode or corporate MCP claim.",
+  "recordedAt": "2026-10-14T15:49:16.539982+00:00"
 }

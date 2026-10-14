@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-14T15:41:42.957521+00:00",
+  "repository": "wuller1/gigacode-workbench",
+  "commitSha": "26a857bb2d933c129b1aeadfdb99ed6e7fd14d76",
+  "runId": 38590893332,
+  "runUrl": "https://github.com/wuller1/gigacode-workbench/actions/runs/38590893332",
+  "jobId": 115945153559,
+  "conclusion": "failure",
+  "failedStep": "Run npm test -- --reporter=json --outputFile=../docs/suite/evidence/agent-runtime-qwen/unit-final-win32.json",
+  "platform": "win32/x64",
+  "artifact": {
+    "id": 11907057687,
+    "name": "agent-harness-windows-26a857bb2d933c129b1aeadfdb99ed6e7fd14d76",
+    "bytes": 3408609,
+    "sha256": "a393e606538c2f5aeeeca3e8cedb2cedb4b5af164b22b27aa2222df15eca3c44",
+    "githubDigest": "sha256:a393e606538c2f5aeeeca3e8cedb2cedb4b5af164b22b27aa2222df15eca3c44",
+    "digestMatches": true
+  },
+  "unit": {
+    "numTotalTests": 418,
+    "numPassedTests": 366,
+    "numFailedTests": 1,
+    "numPendingTests": 51,
+    "success": false,
+    "reportSha256": "20ddc4e0ba86bf6057cc51562ef743fbda9a91c90f326d1a8c3f378711fe50fc",
+    "failures": [
+      {
+        "file": "tests/instruction-retention.test.ts",
+        "name": "recoverable instruction versions deduplicates simultaneous identical snapshots and leaves no temporary files",
+        "messages": [
+          "Error: EPERM: operation not permitted, rename 'C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\workbench-instructions-g1vqRe\\instructions\\e2467a76b755d74a6fc088e186b3d99521e00c336ba68217452525b073ab71e2.80a80231-9211-44c2-a19e-d275dc1a4c98.tmp' -> 'C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\workbench-instructions-g1vqRe\\instructions\\e2467a76b755d74a6fc088e186b3d99521e00c336ba68217452525b073ab71e2.json'\n    at async Object.rename (node:internal/fs/promises:784:10)\n    at retainInstructions (D:/a/gigacode-workbench/gigacode-workbench/app/electron/prompt-binding.ts:185:5)\n    at async Promise.all (index 1)\n    at D:/a/gigacode-workbench/gigacode-workbench/app/tests/instruction-retention.test.ts:76:5\n    at async file:///D:/a/gigacode-workbench/gigacode-workbench/app/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:2783:20"
+        ]
+      }
+    ],
+    "skipsByFile": {
+      "tests/database-live.test.ts": 36,
+      "tests/database-routine-live.test.ts": 8,
+      "tests/instruction-retention.test.ts": 4,
+      "tests/terminal-lifecycle.test.ts": 1,
+      "tests/transport-resilience.test.ts": 1,
+      "tests/workspace-native.test.ts": 1
+    },
+    "skipClassification": "44 PostgreSQL opt-in +7 POSIX/platform exclusions"
+  },
+  "liveResults": {
+    "systemPlacement": "skipped after unit failure",
+    "qwenOffline": "skipped after unit failure",
+    "rolesUi": "skipped after unit failure",
+    "chatUi": "skipped after unit failure",
+    "roleTransitions": "skipped after unit failure",
+    "rendererResilience": "skipped after unit failure"
+  },
+  "sourceProvenance": {
+    "basis": "Actions headSha/checkout; fresh unit report does not provide its own source-byte hash map",
+    "candidateSourceHashes": {
+      "app/electron/prompt-binding.ts": "ae3a98495f88893a8681ca8757fc45b5c557e45840375048afea21c0dbfc7e34",
+      "app/tests/instruction-retention.test.ts": "36b729343e6a3f7909f43b364d185590fabbc393d380fcd94b5b8092a300e431",
+      ".github/workflows/agent-harness.yml": "d95946ff4edd6b5d16ac2c82b1604132b12ab1914be7974c1a9a12558414943a"
+    },
+    "freshLiveSourceHashComparisons": 0,
+    "OSBuildHashesCompared": false
+  },
+  "freshness": {
+    "accepted": [
+      "agent-runtime-qwen/unit-final-win32.json"
+    ],
+    "excluded": "All PNGs and historical attempt JSONs in artifact were committed earlier; no report.json live files were retained after clear step. They are not Windows evidence for this run."
+  },
+  "diagnosis": "Concurrent identical instruction snapshots race on Windows rename into same destination; EPERM is observed at prompt-binding.ts185. No test or product source changed by watcher.",
+  "cleanup": {
+    "watcher": "No product process launched; bounded download/extraction complete, archive retained ignored",
+    "nativeUnitExit": "Unit job completed; no independent final process inventory claimed"
+  },
+  "gigaCode26106Tested": false
+}

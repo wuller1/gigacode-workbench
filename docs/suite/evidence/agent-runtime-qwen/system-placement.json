@@ -3,7 +3,7 @@
   "platform": "darwin",
   "runtimeVersion": "0.25.1",
   "runtimeFingerprint": "213ad0f7b863c70f8ae0ae99f461633a13c777c8a032bd719a56636d7e70bb7b",
-  "hostBundleSha256": "a6214b1fd04af3e787cb278d2736060aa9768bfddfd16cb71ab2f326df24a3f6",
+  "hostBundleSha256": "a4f08858b8bf759f431d41c24ff957393a445b355404a5308fd81b76a582fd86",
   "helpVerified": true,
   "hostPromptDispatches": 2,
   "modelProvider": "owned loopback OpenAI protocol fixture",

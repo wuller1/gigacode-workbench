@@ -21,6 +21,27 @@ async function temporary() {
   folders.push(dir);
   return dir;
 }
+function barrier() {
+  let release!: () => void;
+  const promise = new Promise<void>((resolve) => (release = resolve));
+  return { promise, release };
+}
+async function entered(promise: Promise<void>) {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(
+          () => reject(new Error("Write barrier not reached")),
+          5000,
+        );
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
 describe("recoverable instruction versions", () => {
   it("binds retained content into the historical fingerprint even if its standalone hash is recomputed", async () => {
     const dir = await temporary();
@@ -82,6 +103,123 @@ describe("recoverable instruction versions", () => {
     expect(
       (await readRetainedInstructions(dir, compiled.fingerprint)).contentHash,
     ).toBe(compiled.contentHash);
+  });
+  it("coalesces eight held publications before rename, validates every joining caller and never suppresses a collision", async () => {
+    const dir = await temporary();
+    const compiled = compileInstructions({
+      core: "Common",
+      role: "One publisher",
+      profileId: "backend",
+    });
+    const reached = barrier(),
+      release = barrier();
+    const originalRename = fs.rename.bind(fs);
+    const rename = vi
+      .spyOn(fs, "rename")
+      .mockImplementation(async (from, to) => {
+        if (rename.mock.calls.length > 1)
+          throw Object.assign(new Error("Concurrent destination replacement"), {
+            code: "EPERM",
+          });
+        reached.release();
+        await release.promise;
+        await originalRename(from, to);
+      });
+    let acknowledgements = 0;
+    const writers = Array.from({ length: 8 }, (_, i) =>
+      retainInstructions(
+        i % 3 === 1
+          ? path.relative(process.cwd(), dir)
+          : i % 3 === 2 && process.platform === "win32"
+            ? dir.toUpperCase()
+            : dir,
+        compiled,
+      ).then(() => {
+        acknowledgements++;
+      }),
+    );
+    const settled = Promise.allSettled(writers);
+    try {
+      await entered(reached.promise);
+      expect(rename).toHaveBeenCalledTimes(1);
+      expect(acknowledgements).toBe(0);
+      expect(await fs.readdir(path.join(dir, "instructions"))).toHaveLength(1);
+      await expect(
+        retainInstructions(dir, {
+          ...compiled,
+          text: "Invalid joining caller",
+        }),
+      ).rejects.toThrow("Invalid instruction snapshot");
+      expect(acknowledgements).toBe(0);
+    } finally {
+      release.release();
+      await settled;
+    }
+    expect(
+      (await settled).every((result) => result.status === "fulfilled"),
+    ).toBe(true);
+    expect(acknowledgements).toBe(8);
+    expect(rename).toHaveBeenCalledTimes(1);
+    expect(await fs.readdir(path.join(dir, "instructions"))).toEqual([
+      `${compiled.fingerprint}.json`,
+    ]);
+    expect(await readRetainedInstructions(dir, compiled.fingerprint)).toEqual(
+      compiled,
+    );
+  });
+  it("rejects all joined writers on a real write failure, clears the in-flight entry and permits a clean retry", async () => {
+    const dir = await temporary();
+    const compiled = compileInstructions({
+      core: "Common",
+      role: "Retry after failed publication",
+      profileId: "backend",
+    });
+    const reached = barrier(),
+      release = barrier();
+    const open = fs.open.bind(fs);
+    let failing = true,
+      publications = 0;
+    vi.spyOn(fs, "open").mockImplementation(async (...args) => {
+      const handle = await open(...args);
+      if (String(args[0]).endsWith(".tmp")) {
+        publications++;
+        if (failing)
+          vi.spyOn(handle, "writeFile").mockImplementation(async () => {
+            reached.release();
+            await release.promise;
+            throw Object.assign(new Error("Injected write failure"), {
+              code: "EIO",
+            });
+          });
+      }
+      return handle;
+    });
+    const settled = Promise.allSettled(
+      Array.from({ length: 8 }, () => retainInstructions(dir, compiled)),
+    );
+    try {
+      await entered(reached.promise);
+      expect(publications).toBe(1);
+    } finally {
+      release.release();
+      await settled;
+    }
+    expect(
+      (await settled).every(
+        (result) =>
+          result.status === "rejected" && result.reason?.code === "EIO",
+      ),
+    ).toBe(true);
+    expect(await fs.readdir(path.join(dir, "instructions"))).toEqual([]);
+    failing = false;
+    await retainInstructions(dir, compiled);
+    expect(publications).toBe(2);
+    expect(await readRetainedInstructions(dir, compiled.fingerprint)).toEqual(
+      compiled,
+    );
+    expect(await fs.readdir(path.join(dir, "instructions"))).toEqual([
+      `${compiled.fingerprint}.json`,
+    ]);
   });
   it("preserves a corrupt version instead of silently rewriting historical evidence", async () => {
     const dir = await temporary();
@@ -190,7 +328,7 @@ describe("recoverable instruction versions", () => {
   );
 
   it.skipIf(process.platform === "win32")(
-    "does not acknowledge a concurrent existing-file writer before that writer's own directory barrier",
+    "joins the whole durable barrier and revalidates a later existing-file call after settlement",
     async () => {
       const dir = await temporary();
       const compiled = compileInstructions({
@@ -198,56 +336,75 @@ describe("recoverable instruction versions", () => {
         role: "Concurrent",
         profileId: "qa",
       });
-      const releases: (() => void)[] = [];
-      const entered: (() => void)[] = [];
-      const barriers = [0, 1].map(
-        () => new Promise<void>((resolve) => entered.push(resolve)),
-      );
-      const waits = [0, 1].map(
-        () => new Promise<void>((resolve) => releases.push(resolve)),
-      );
-      let calls = 0;
+      const directories = [barrier(), barrier()];
+      const parents = [barrier(), barrier()];
+      const directoryReleases = [barrier(), barrier()];
+      const parentReleases = [barrier(), barrier()];
+      let directoryCalls = 0,
+        parentCalls = 0,
+        fileCalls = 0;
       observeSync(async (location, sync) => {
         if (location === path.join(dir, "instructions")) {
-          const index = calls++;
-          entered[index]?.();
-          if (index < waits.length) await waits[index];
-        }
+          const index = directoryCalls++;
+          directories[index]?.release();
+          if (index < directoryReleases.length)
+            await directoryReleases[index].promise;
+        } else if (location === dir) {
+          const index = parentCalls++;
+          parents[index]?.release();
+          if (index < parentReleases.length)
+            await parentReleases[index].promise;
+        } else fileCalls++;
         await sync();
       });
-      const first = retainInstructions(dir, compiled);
+      const rename = vi.spyOn(fs, "rename");
+      let acknowledgements = 0;
+      const first = retainInstructions(dir, compiled).then(() => {
+        acknowledgements++;
+      });
       let second: Promise<void> | undefined;
-      const enter = async (barrier: Promise<void>) => {
-        let timer: ReturnType<typeof setTimeout> | undefined;
-        try {
-          await Promise.race([
-            barrier,
-            new Promise<never>((_, reject) => {
-              timer = setTimeout(
-                () => reject(new Error("Directory barrier was bypassed")),
-                1000,
-              );
-            }),
-          ]);
-        } finally {
-          if (timer) clearTimeout(timer);
-        }
-      };
+      let later: Promise<void> | undefined;
       try {
-        await enter(barriers[0]);
-        let acknowledged = false;
+        await entered(directories[0].promise);
         second = retainInstructions(dir, compiled).then(() => {
-          acknowledged = true;
+          acknowledgements++;
         });
-        await enter(barriers[1]);
-        expect(acknowledged).toBe(false);
-        releases[1]();
-        await second;
-        expect(acknowledged).toBe(true);
-        expect(calls).toBe(2);
+        expect(acknowledgements).toBe(0);
+        expect(fileCalls).toBe(1);
+        expect(directoryCalls).toBe(1);
+        directoryReleases[0].release();
+        await entered(parents[0].promise);
+        expect(acknowledgements).toBe(0);
+        expect(parentCalls).toBe(1);
+        parentReleases[0].release();
+        await Promise.all([first, second]);
+        expect(acknowledgements).toBe(2);
+        expect(rename).toHaveBeenCalledTimes(1);
+
+        later = retainInstructions(dir, compiled).then(() => {
+          acknowledgements++;
+        });
+        await entered(directories[1].promise);
+        expect(acknowledgements).toBe(2);
+        directoryReleases[1].release();
+        await entered(parents[1].promise);
+        expect(acknowledgements).toBe(2);
+        parentReleases[1].release();
+        await later;
+        expect(acknowledgements).toBe(3);
+        expect(fileCalls).toBe(1);
+        expect(directoryCalls).toBe(2);
+        expect(parentCalls).toBe(2);
+        expect(rename).toHaveBeenCalledTimes(1);
       } finally {
-        releases.forEach((release) => release());
-        await Promise.allSettled([first, ...(second ? [second] : [])]);
+        [...directoryReleases, ...parentReleases].forEach((release) =>
+          release.release(),
+        );
+        await Promise.allSettled([
+          first,
+          ...(second ? [second] : []),
+          ...(later ? [later] : []),
+        ]);
       }
       expect(
         (await readRetainedInstructions(dir, compiled.fingerprint)).text,
