@@ -114,7 +114,7 @@ export function ContextControls({
       </dl>
       {info?.hostEstimate && (
         <p className="fine-print">
-          Оценка доступного рабочего контекста: ≈
+          Учтённый рабочий контекст (оценка): ≈
           {info.hostEstimate.usedTokens.toLocaleString()} токенов. Скрытые
           native instructions, reasoning и усечённые outputs могут быть не
           учтены; это не счётчик провайдера.

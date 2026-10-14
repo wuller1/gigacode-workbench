@@ -53,6 +53,7 @@ export function SettingsView({
   const memoryLoaded = useRef(false);
   const dirty =
     !same(draft, baseline) || args !== JSON.stringify(baseline.cliArgs);
+  const commonSettings = ["general", "runtime", "execution"].includes(section);
   useEffect(() => {
     setEdit((old) => {
       if (same(old.baseline, state.settings)) return old;
@@ -423,6 +424,72 @@ export function SettingsView({
                   }
                 />
               </label>
+              <details className="context-policy-editor">
+                <summary>Управляемые исполнители</summary>
+                <label className="field">
+                  Исполнителей одного координатора одновременно
+                  <input
+                    aria-label="Лимит исполнителей координатора"
+                    type="number"
+                    min={1}
+                    max={16}
+                    value={draft.managedMaxPerParent ?? 2}
+                    onChange={(e) =>
+                      update("managedMaxPerParent", Number(e.target.value))
+                    }
+                  />
+                </label>
+                <label className="field">
+                  Попыток одного поручения
+                  <input
+                    aria-label="Лимит попыток исполнителя"
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={draft.managedAttempts ?? 3}
+                    onChange={(e) =>
+                      update("managedAttempts", Number(e.target.value))
+                    }
+                  />
+                </label>
+                <label className="field">
+                  Общий резерв пакетов, токенов
+                  <input
+                    aria-label="Общий резерв контекста исполнителей"
+                    type="number"
+                    min={2048}
+                    max={16000000}
+                    step={1024}
+                    value={draft.managedContextBudgetTokens ?? 32000}
+                    onChange={(e) =>
+                      update(
+                        "managedContextBudgetTokens",
+                        Number(e.target.value),
+                      )
+                    }
+                  />
+                </label>
+                <p className="fine-print">
+                  Резерв ограничивает сумму передаваемых пакетов. Это не полный
+                  контекст моделей. UNKNOWN удерживает резерв до сверки; число
+                  попыток не разрешает повторить неизвестные действия.
+                </p>
+                <label className="check-field">
+                  <input
+                    type="checkbox"
+                    checked={draft.allowCrossProjectCoordination !== false}
+                    onChange={(e) =>
+                      update("allowCrossProjectCoordination", e.target.checked)
+                    }
+                  />
+                  Разрешать новые межпроектные обращения
+                </label>
+                <p className="fine-print">
+                  Существующие связи можно отдельно отключить в панели
+                  исполнителей. Текущие запуски не отменяются изменением
+                  лимитов.
+                </p>
+              </details>
               <label className="field">
                 Настроенный предел контекста
                 <input
@@ -723,17 +790,23 @@ export function SettingsView({
       </div>
       <footer className="settings-footer">
         <span>
-          {dirty ? "Есть несохранённые изменения" : "Настройки приложения"}
+          {dirty
+            ? "Есть несохранённые общие настройки"
+            : commonSettings
+              ? "Настройки приложения"
+              : "Изменения сохраняются в выбранном разделе"}
         </span>
         <button onClick={() => void close()}>Закрыть</button>
-        <button
-          className="primary"
-          disabled={!dirty || saving}
-          aria-busy={saving}
-          onClick={() => void save()}
-        >
-          Сохранить
-        </button>
+        {(commonSettings || dirty) && (
+          <button
+            className="primary"
+            disabled={!dirty || saving}
+            aria-busy={saving}
+            onClick={() => void save()}
+          >
+            {commonSettings ? "Сохранить" : "Сохранить общие"}
+          </button>
+        )}
       </footer>
       {profile && (
         <Modal

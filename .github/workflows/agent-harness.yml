@@ -39,6 +39,10 @@ jobs:
           @('agent-runtime-qwen/unit-final-win32.json', 'agent-runtime-qwen/system-placement.json', 'agent-runtime-qwen/offline-router.json', 'agent-runtime-ui/report.json', 'agent-runtime-ui/roles-composer-dark-1440.png', 'agent-runtime-ui/roles-settings-light-1000.png', 'role-transitions-ui/report.json', 'renderer-resilience-ui/report.json') | ForEach-Object {
             Remove-Item (Join-Path $evidenceRoot $_) -Force -ErrorAction SilentlyContinue
           }
+          # Keep only freshly generated Windows receipts, never committed local failed iterations.
+          $flashEvidence = Join-Path $evidenceRoot 'flash-runtime-ui'
+          Remove-Item -LiteralPath $flashEvidence -Recurse -Force -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Path $flashEvidence -Force | Out-Null
       - run: npm test -- --reporter=json --outputFile=../docs/suite/evidence/agent-runtime-qwen/unit-final-win32.json
       - run: npm run build
       - name: Real Qwen system placement (local protocol provider, no external model)

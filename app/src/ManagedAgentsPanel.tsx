@@ -50,16 +50,33 @@ export function ManagedAgentsPanel({
     }
     return false;
   };
-  const workers = state.sessions.filter(
-    (s) =>
-      s.parentId &&
-      !s.archived &&
-      (scope === "all" ||
-        (scope === "task"
-          ? fromCurrentTask(s.id)
-          : state.tasks.find((t) => t.id === s.taskId)?.projectId ===
-            projectId)),
-  );
+  const priority = (s: (typeof state.sessions)[number]) =>
+    s.status === "unknown" || s.status === "waiting" || s.managed?.effectFence
+      ? 0
+      : busy(s.status)
+        ? 1
+        : s.status === "failed" || s.managed?.phase === "retry_wait"
+          ? 2
+          : s.queue.length || s.managed?.phase === "paused"
+            ? 3
+            : 4;
+  const workers = state.sessions
+    .filter(
+      (s) =>
+        s.parentId &&
+        !s.archived &&
+        (scope === "all" ||
+          (scope === "task"
+            ? fromCurrentTask(s.id)
+            : state.tasks.find((t) => t.id === s.taskId)?.projectId ===
+              projectId)),
+    )
+    .sort(
+      (a, b) =>
+        priority(a) - priority(b) ||
+        b.createdAt.localeCompare(a.createdAt) ||
+        a.id.localeCompare(b.id),
+    );
   const act = async (method: string, params: Record<string, unknown>) => {
     if (actionPending.current) return false;
     actionPending.current = true;

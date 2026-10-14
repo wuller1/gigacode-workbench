@@ -332,6 +332,9 @@ describe("flash context envelope and loop supervisor", () => {
       new URL("../node_modules/@qwen-code/qwen-code/cli.js", import.meta.url),
     );
     let connection: AcpConnection | undefined;
+    let ownedChild:
+      import("node:child_process").ChildProcessWithoutNullStreams | undefined;
+    let childClosed: Promise<void> | undefined;
     try {
       const capability = await discoverPromptCapability({ executable });
       expect(capability.support).toBe("source_verified");
@@ -385,7 +388,15 @@ describe("flash context envelope and loop supervisor", () => {
         cwd: root,
         env,
       });
-      await connection.start();
+      const starting = connection.start();
+      // start() spawns synchronously. Observe close before awaiting initialize,
+      // including a failed startup; dispose's bounded stop is not a close event.
+      ownedChild = (connection as any).child;
+      if (ownedChild)
+        childClosed = new Promise<void>((resolve) =>
+          ownedChild!.once("close", () => resolve()),
+        );
+      await starting;
       const created = await connection.newSession({
         cwd: root,
         mcpServers: [],
@@ -401,10 +412,42 @@ describe("flash context envelope and loop supervisor", () => {
       expect(read.breakdown.systemPrompt).toBeGreaterThan(0);
       expect(providerRequests).toBe(0);
     } finally {
-      await connection?.dispose();
-      provider.closeAllConnections();
-      await new Promise<void>((resolve) => provider.close(() => resolve()));
-      await fs.rm(root, { recursive: true, force: true });
+      try {
+        await connection?.dispose();
+        if (childClosed) {
+          let timer: ReturnType<typeof setTimeout> | undefined;
+          try {
+            await Promise.race([
+              childClosed,
+              new Promise<never>((_, reject) => {
+                timer = setTimeout(
+                  () =>
+                    reject(
+                      new Error("Owned Qwen process close was not confirmed."),
+                    ),
+                  5000,
+                );
+              }),
+            ]);
+          } finally {
+            if (timer) clearTimeout(timer);
+          }
+          expect(
+            ownedChild!.exitCode !== null || ownedChild!.signalCode !== null,
+          ).toBe(true);
+        }
+      } finally {
+        provider.closeAllConnections();
+        await new Promise<void>((resolve) => provider.close(() => resolve()));
+      }
+      // Only after confirmed child close: Windows can briefly retain filesystem
+      // handles while the OS finishes teardown. Bound those owned-temp retries.
+      await fs.rm(root, {
+        recursive: true,
+        force: true,
+        maxRetries: 5,
+        retryDelay: 100,
+      });
     }
   }, 30000);
 });

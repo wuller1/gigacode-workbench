@@ -47,6 +47,13 @@ export interface RuntimeContextRecord {
   measuredUsageId?: string;
   /** A byte estimate, never a tokenizer result or evidence of provider capacity. */
   hostEstimate?: ContextUsageObservation;
+  /** Conservative carry-over within one executor after a route identity edit.
+   * Old-route telemetry is not a measurement of the new route's tokenizer. */
+  inheritedRoutePressure?: {
+    usedTokens: number;
+    historyBytes: number;
+    sourceModelKey: string;
+  };
   lastRotation?: {
     at: string;
     beforeTokens?: number;
@@ -134,9 +141,17 @@ function refreshHostEstimate(record: RuntimeContextRecord, session: Session) {
     measured && record.measuredUsageId === actual.id
       ? Math.max(0, bytes - (record.measuredHistoryBytes || 0))
       : 0;
+  const inherited = record.inheritedRoutePressure;
+  const inheritedTokens = inherited
+    ? inherited.usedTokens +
+      Math.ceil(Math.max(0, bytes - inherited.historyBytes) / 2)
+    : 0;
   const usedTokens = measured
     ? Math.min(MAX_HISTORY_BYTES / 2, actual.usedTokens + Math.ceil(delta / 2))
-    : Math.ceil(bytes / 2);
+    : Math.min(
+        MAX_HISTORY_BYTES / 2,
+        Math.max(Math.ceil(bytes / 2), inheritedTokens),
+      );
   const observation: ContextUsageObservation = {
     kind: "usage",
     id: `host:${record.supervisor.generation}:${bytes}:${measured ? actual.id : "unmeasured"}`.slice(
@@ -259,38 +274,70 @@ export function runtimeContext(
       .filter((v) => Date.now() - v.at < 24 * 60 * 60 * 1000)
       .slice(-128),
   });
-  const record: RuntimeContextRecord =
-    previous &&
-    previous.supervisor?.modelKey === envelope.modelKey &&
-    previous.supervisor.generation === generation
-      ? structuredClone(previous)
-      : {
-          supervisor: createContextSupervisor(envelope.modelKey, generation),
-          evidence:
-            previous?.evidence
-              ?.filter((v) => v.modelKey === envelope.modelKey)
-              .slice(-128) || [],
-          rotations: previous?.rotations || 0,
-          historyFromIndex: session.messages.length,
-          historyBoundaryKnown:
-            session.messages.length === 0 ||
-            (!!previous && previous.supervisor.generation !== generation),
-          historyBaselineBytes:
-            previous?.supervisor.modelKey === envelope.modelKey
-              ? previous.lastRotation?.checkpointBytes || 0
-              : 0,
-          dispatches: 0,
-          ...(previous?.supervisor.modelKey === envelope.modelKey
-            ? {
-                lastRotation: previous.lastRotation,
-                ineffectiveRotations: previous.ineffectiveRotations,
-                estimatedIneffectiveRotations:
-                  previous.estimatedIneffectiveRotations,
-                // A manual recovery may keep the rotation count. Its first fresh
-                // baseline must still re-evaluate and release a resolved overhead hold.
-              }
-            : {}),
+  let record: RuntimeContextRecord;
+  if (previous?.supervisor.generation === generation) {
+    // A label/model/reasoning edit is not an executor reset. Preserve its known
+    // history boundary and pressure while invalidating route-specific evidence.
+    record = structuredClone(previous);
+    record.historyFromIndex ??= session.messages.length;
+    if (previous.supervisor.modelKey !== envelope.modelKey) {
+      refreshHostEstimate(record, session);
+      const pressure = Math.max(
+        record.supervisor.latestUsage?.usedTokens || 0,
+        record.hostEstimate?.usedTokens || 0,
+      );
+      const sourceModelKey =
+        record.supervisor.latestUsage?.estimated === false
+          ? record.supervisor.modelKey
+          : record.inheritedRoutePressure?.sourceModelKey ||
+            record.supervisor.modelKey;
+      record.supervisor = createContextSupervisor(
+        envelope.modelKey,
+        generation,
+      );
+      record.evidence = record.evidence.filter(
+        (item) => item.modelKey === envelope.modelKey,
+      );
+      delete record.measuredUsageId;
+      delete record.measuredHistoryBytes;
+      delete record.hostEstimate;
+      if (pressure > 0)
+        record.inheritedRoutePressure = {
+          usedTokens: pressure,
+          historyBytes: record.historyBytes || 0,
+          sourceModelKey,
         };
+      else delete record.inheritedRoutePressure;
+    }
+  } else {
+    record = {
+      supervisor: createContextSupervisor(envelope.modelKey, generation),
+      evidence:
+        previous?.evidence
+          ?.filter((v) => v.modelKey === envelope.modelKey)
+          .slice(-128) || [],
+      rotations: previous?.rotations || 0,
+      historyFromIndex: session.messages.length,
+      historyBoundaryKnown:
+        session.messages.length === 0 ||
+        (!!previous && previous.supervisor.generation !== generation),
+      historyBaselineBytes:
+        previous?.supervisor.modelKey === envelope.modelKey
+          ? previous.lastRotation?.checkpointBytes || 0
+          : 0,
+      dispatches: 0,
+      ...(previous?.supervisor.modelKey === envelope.modelKey
+        ? {
+            lastRotation: previous.lastRotation,
+            ineffectiveRotations: previous.ineffectiveRotations,
+            estimatedIneffectiveRotations:
+              previous.estimatedIneffectiveRotations,
+            // A manual recovery may keep the rotation count. Its first fresh
+            // baseline must still re-evaluate and release a resolved overhead hold.
+          }
+        : {}),
+    };
+  }
   // Records from earlier builds acquire an explicit boundary on first observation.
   record.historyFromIndex ??= session.messages.length;
   refreshHostEstimate(record, session);
@@ -403,6 +450,7 @@ export function recordRuntimeUsage(
     !observation.estimated &&
     record.supervisor.latestUsage?.id === observation.id
   ) {
+    delete record.inheritedRoutePressure;
     record.measuredUsageId = observation.id;
     record.measuredHistoryBytes = record.historyBytes || 0;
     record.hostEstimate = {
@@ -481,6 +529,19 @@ export function validateRuntimeContextRecord(
       )
         return false;
       observeContext(baseline, r.hostEstimate);
+    }
+    if (r.inheritedRoutePressure) {
+      const p = r.inheritedRoutePressure;
+      if (
+        !Number.isSafeInteger(p.usedTokens) ||
+        p.usedTokens < 0 ||
+        p.usedTokens > MAX_HISTORY_BYTES / 2 ||
+        !Number.isSafeInteger(p.historyBytes) ||
+        p.historyBytes < 0 ||
+        p.historyBytes > MAX_HISTORY_BYTES ||
+        !/^[a-f0-9]{64}$/.test(p.sourceModelKey)
+      )
+        return false;
     }
     return true;
   } catch {

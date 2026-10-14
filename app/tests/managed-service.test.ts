@@ -668,9 +668,16 @@ describe("actual managed service ownership, retries, and coordination", () => {
     const b = await x.spawn("alias-2", "alias-second", {
       writeScopes: ["src/new"],
     });
-    expect(x.current(a.id).managed?.writeScopes[0]).toBe(
-      path.join(await fs.realpath(src), "new", "File.java"),
-    );
+    const recordedScope = x.current(a.id).managed?.writeScopes[0];
+    const expectedScope = path.join(await fs.realpath(src), "new", "File.java");
+    expect(typeof recordedScope).toBe("string");
+    // Compare the same resolved location, accepting Windows separators/casing.
+    // A still-unresolved junction alias must not pass this comparison.
+    const filesystemPath = (value: string) =>
+      process.platform === "win32"
+        ? path.win32.normalize(value).toLowerCase()
+        : value;
+    expect(filesystemPath(recordedScope!)).toBe(filesystemPath(expectedScope));
     await expect(
       x.spawn("escape", "never dispatch", {
         writeScopes: ["escape/new/File.java"],

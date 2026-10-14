@@ -2,84 +2,89 @@
   "schemaVersion": 1,
   "status": "passed",
   "platform": "darwin",
-  "time": "2026-10-14T18:40:14.963Z",
+  "time": "2026-10-14T18:54:02.396Z",
   "scope": "Actual built Electron App with owned deterministic ACP/MCP fixture processes; no paid/real vision model/corporate service",
   "baseline": false,
   "diagnosticContinue": false,
   "checks": [
     {
       "name": "Actual queue: editing then visible Send now cancels once and dispatches edited message once",
-      "elapsedMs": 2626,
+      "elapsedMs": 1208,
       "passed": true
     },
     {
       "name": "Managed delegate created through the actual UI remains visible in current-task scope",
-      "elapsedMs": 1135,
+      "elapsedMs": 566,
       "passed": true
     },
     {
       "name": "Host write conflicts and DAG dependencies hold children, queued pause/resume is controlled through UI",
-      "elapsedMs": 3739,
+      "elapsedMs": 1444,
       "passed": true
     },
     {
       "name": "Managed followup uses actual card UI and prior attempt is not replayed",
-      "elapsedMs": 1033,
+      "elapsedMs": 432,
       "passed": true
     },
     {
       "name": "Directed cross-project delegation, durable note dedup and revocation use the same host queue",
-      "elapsedMs": 2008,
+      "elapsedMs": 685,
       "passed": true
     },
     {
       "name": "Managed dispatched process failure is fenced; retry and followup do not replay UNKNOWN",
-      "elapsedMs": 2243,
+      "elapsedMs": 988,
       "passed": true
     },
     {
       "name": "Predispatch HTML 429 startup failure retries with a bounded new attempt and exactly one prompt",
-      "elapsedMs": 2733,
+      "elapsedMs": 1442,
       "passed": true
     },
     {
       "name": "Actual settings edit stdio args JSON and mapping; secret vault never returns plaintext",
-      "elapsedMs": 739,
+      "elapsedMs": 558,
       "passed": true
     },
     {
       "name": "Actual vision MCP schema/mapping delivers real PNG bytes, scrubs secret and caches exact image/query",
-      "elapsedMs": 124,
+      "elapsedMs": 105,
       "passed": true
     },
     {
       "name": "Vision discovered schema rejects wrong mapping before tool/model dispatch",
-      "elapsedMs": 494,
+      "elapsedMs": 149,
       "passed": true
     },
     {
       "name": "Vision settings CAS rejects stale draft without replacing the accepted route",
-      "elapsedMs": 77,
+      "elapsedMs": 28,
       "passed": true
     },
     {
       "name": "High-water context supervision rotates only at clean boundary, preserving full host history and queued request",
-      "elapsedMs": 2975,
+      "elapsedMs": 1286,
       "passed": true
     },
     {
       "name": "Advanced context policy validates inline, retains invalid/stale drafts and applies explicit thresholds with CAS",
-      "elapsedMs": 1086,
+      "elapsedMs": 1257,
       "passed": true
     },
     {
       "name": "Actual desktop light/dark 1024/1440 settings and worker controls fit; Escape dismisses settings",
-      "elapsedMs": 2146,
+      "elapsedMs": 1842,
+      "passed": true
+    },
+    {
+      "name": "Execution settings edit and durably restore managed admission limits without sending a prompt",
+      "elapsedMs": 550,
       "passed": true
     },
     {
       "name": "Fake bridge secret absent from plaintext logs/state/rendered UI and no renderer exceptions",
-      "elapsedMs": 14,
+      "elapsedMs": 6,
       "passed": true
     }
   ],
@@ -93,9 +98,9 @@
     },
     {
       "stage": "managed-dag",
-      "first": "2f66d5ea-49d4-448f-89b4-5f92509d8d0b",
-      "second": "bf9ee31a-7f05-4888-bd14-27e46c759bcc",
-      "dependent": "37ba6cb7-80d1-4428-b903-3e454a34e77d",
+      "first": "0ec4a64c-3106-4c7d-a22c-105b8ce5ab09",
+      "second": "73fe1b3a-c0cd-4107-869d-5e0648447632",
+      "dependent": "a87a1dfa-10a6-4c50-a32d-d407882b13cb",
       "dependentAndConflictingBeforeRelease": 0,
       "queuedCancellationDispatched": 0,
       "queuedCancellationInputRetained": true,
@@ -103,7 +108,7 @@
     },
     {
       "stage": "cross-project",
-      "linkId": "ce824523-3bdf-4c7c-86d3-74fd4576cf04",
+      "linkId": "e86e0b06-9463-40ac-ae88-8df63a37bc03",
       "distinctProject": true,
       "noteDispatches": 1,
       "revokedAdmission": "held"
@@ -120,6 +125,7 @@
       "stage": "unknown-worker",
       "replayed": false,
       "unresolvedHistoricalEvidenceRetained": true,
+      "needsAttentionSortedFirst": true,
       "externalReadback": "Owned fixture has no external effect implementation; corporate write reconciliation not tested"
     },
     {
@@ -161,6 +167,15 @@
       "queuedDispatches": 1,
       "hostHistoryPreserved": true,
       "opaqueCliHistoryEdited": false
+    },
+    {
+      "stage": "context-route-metadata",
+      "generationUnchanged": true,
+      "knownHostTokensBefore": 38022,
+      "knownHostTokensAfter": 38022,
+      "priorRouteNativeMeasurementReusedAsActual": false,
+      "priorRoutePressureRetainedAsEstimate": true,
+      "calibratedRecallEvidenceExercised": false
     },
     {
       "stage": "context-policy",
@@ -344,14 +359,6 @@
           "height": 32,
           "centreHit": true,
           "disabled": false
-        },
-        {
-          "name": "Сохранить",
-          "tag": "button",
-          "width": 94.0859375,
-          "height": 32,
-          "centreHit": true,
-          "disabled": true
         }
       ]
     },
@@ -377,7 +384,7 @@
           "disabled": false
         },
         {
-          "name": "hold worker-primary",
+          "name": "Retry startup worker",
           "tag": "button",
           "width": 551.5,
           "height": 32,
@@ -417,7 +424,7 @@
           "disabled": false
         },
         {
-          "name": "Worker conflict",
+          "name": "Unknown worker",
           "tag": "button",
           "width": 551.5,
           "height": 32,
@@ -457,7 +464,7 @@
           "disabled": false
         },
         {
-          "name": "Worker dependent",
+          "name": "Backend contract fix",
           "tag": "button",
           "width": 551.5,
           "height": 32,
@@ -537,7 +544,7 @@
           "disabled": false
         },
         {
-          "name": "Backend contract fix",
+          "name": "Worker dependent",
           "tag": "button",
           "width": 551.5,
           "height": 32,
@@ -717,14 +724,6 @@
           "height": 32,
           "centreHit": true,
           "disabled": false
-        },
-        {
-          "name": "Сохранить",
-          "tag": "button",
-          "width": 94.0859375,
-          "height": 32,
-          "centreHit": true,
-          "disabled": true
         }
       ]
     },
@@ -750,7 +749,7 @@
           "disabled": false
         },
         {
-          "name": "hold worker-primary",
+          "name": "Retry startup worker",
           "tag": "button",
           "width": 355.5,
           "height": 32,
@@ -790,7 +789,7 @@
           "disabled": false
         },
         {
-          "name": "Worker conflict",
+          "name": "Unknown worker",
           "tag": "button",
           "width": 355.5,
           "height": 32,
@@ -830,7 +829,7 @@
           "disabled": false
         },
         {
-          "name": "Worker dependent",
+          "name": "Backend contract fix",
           "tag": "button",
           "width": 355.5,
           "height": 32,
@@ -1082,14 +1081,6 @@
           "height": 32,
           "centreHit": true,
           "disabled": false
-        },
-        {
-          "name": "Сохранить",
-          "tag": "button",
-          "width": 94.0859375,
-          "height": 32,
-          "centreHit": true,
-          "disabled": true
         }
       ]
     },
@@ -1115,7 +1106,7 @@
           "disabled": false
         },
         {
-          "name": "hold worker-primary",
+          "name": "Retry startup worker",
           "tag": "button",
           "width": 551.5,
           "height": 32,
@@ -1155,7 +1146,7 @@
           "disabled": false
         },
         {
-          "name": "Worker conflict",
+          "name": "Unknown worker",
           "tag": "button",
           "width": 551.5,
           "height": 32,
@@ -1195,7 +1186,7 @@
           "disabled": false
         },
         {
-          "name": "Worker dependent",
+          "name": "Backend contract fix",
           "tag": "button",
           "width": 551.5,
           "height": 32,
@@ -1275,7 +1266,7 @@
           "disabled": false
         },
         {
-          "name": "Backend contract fix",
+          "name": "Worker dependent",
           "tag": "button",
           "width": 551.5,
           "height": 32,
@@ -1455,14 +1446,6 @@
           "height": 32,
           "centreHit": true,
           "disabled": false
-        },
-        {
-          "name": "Сохранить",
-          "tag": "button",
-          "width": 94.0859375,
-          "height": 32,
-          "centreHit": true,
-          "disabled": true
         }
       ]
     },
@@ -1488,7 +1471,7 @@
           "disabled": false
         },
         {
-          "name": "hold worker-primary",
+          "name": "Retry startup worker",
           "tag": "button",
           "width": 355.5,
           "height": 32,
@@ -1528,7 +1511,7 @@
           "disabled": false
         },
         {
-          "name": "Worker conflict",
+          "name": "Unknown worker",
           "tag": "button",
           "width": 355.5,
           "height": 32,
@@ -1568,7 +1551,7 @@
           "disabled": false
         },
         {
-          "name": "Worker dependent",
+          "name": "Backend contract fix",
           "tag": "button",
           "width": 355.5,
           "height": 32,
@@ -1648,12 +1631,24 @@
           "disabled": false
         }
       ]
+    },
+    {
+      "stage": "managed-execution-settings",
+      "accepted": {
+        "managedMaxPerParent": 3,
+        "managedAttempts": 4,
+        "managedContextBudgetTokens": 48000,
+        "allowCrossProjectCoordination": false
+      },
+      "durableReadback": true,
+      "originalRestored": true,
+      "additionalACPPrompts": 0
     }
   ],
   "captures": [
     {
       "name": "queue-send-now-dark.png",
-      "sha256": "bbc77603054a2a29e1d50270a16a8ce720bcb987669e67a68f3cf22c3dec80e9",
+      "sha256": "50c95d3da0e4c437478c0f9014af87ed69aef5f250be002effd3b1310d950559",
       "viewport": {
         "width": 1440,
         "height": 920,
@@ -1663,7 +1658,7 @@
     },
     {
       "name": "managed-worker-dark.png",
-      "sha256": "9d4c75629aaed50fdb805e632a28d25f43204c71b9fcb56572179c94cb825d3c",
+      "sha256": "98b85a485e975bc76d1d256438856f5469c297a5964e51b35facbb05492bbb24",
       "viewport": {
         "width": 1440,
         "height": 920,
@@ -1673,7 +1668,7 @@
     },
     {
       "name": "vision-settings-dark.png",
-      "sha256": "a8ec0fb30a512a422744f837121a6a784ad7fa42d795e9b482426c3bcac33f3b",
+      "sha256": "be288f423be16a4d5e177433beab3c08badc14fec3a051ca362a5fe972242d1f",
       "viewport": {
         "width": 1440,
         "height": 920,
@@ -1683,7 +1678,7 @@
     },
     {
       "name": "context-controls-dark.png",
-      "sha256": "e44486600ae423cdf6bd0d57a9be1f56f9c540e21c94b0dd8678439d64253da1",
+      "sha256": "32feb6f281339910a7228c1565a22e728089aae07b1ea4fc146b1e1b26c95513",
       "viewport": {
         "width": 1440,
         "height": 920,
@@ -1693,7 +1688,7 @@
     },
     {
       "name": "context-policy-dark.png",
-      "sha256": "f16d6a0aa06899c7543aa1988f29e33a2bcf656572848a1d33a0983f553030df",
+      "sha256": "b960971ea618411c88d10c88054dce3464c521d24e4ad9484df5430fcaa59843",
       "viewport": {
         "width": 1440,
         "height": 920,
@@ -1703,7 +1698,7 @@
     },
     {
       "name": "vision-settings-dark-1440.png",
-      "sha256": "c4b288e4e254ede6939d5fea33d5f16e524876cfe9d725c08be0e47f73563dbf",
+      "sha256": "b2dcbc7017cb658a44a9babf48cfb750a7de44c2187abc6470d7e755ee6c21d5",
       "viewport": {
         "width": 1440,
         "height": 900,
@@ -1713,7 +1708,7 @@
     },
     {
       "name": "managed-workers-dark-1440.png",
-      "sha256": "ac0a9c90bd7c511e75479beff680cd8e9b5bbb7370797917c69bfd29ed531097",
+      "sha256": "e85b5dc2ad24fafdbed57a12cf41b6a7d31d1aa4d875c5704a8869f855650459",
       "viewport": {
         "width": 1440,
         "height": 900,
@@ -1723,7 +1718,7 @@
     },
     {
       "name": "vision-settings-dark-1024.png",
-      "sha256": "6963683a22fe578b19f75b0e746422833b81896f3afa8b1fcf4ef7302919c18c",
+      "sha256": "451169e0357f0c20c9a2d2fd31489e61c1fc52423b64cf7a3b1e8efbaf9bee8b",
       "viewport": {
         "width": 1024,
         "height": 900,
@@ -1733,7 +1728,7 @@
     },
     {
       "name": "managed-workers-dark-1024.png",
-      "sha256": "b6bf4d8319a0a84cc40cf79fa8f4a05d40379572242436fb43ce3a4bee2b2a8e",
+      "sha256": "50778a440f2c54aee45c3f6712d69ce50ae3a57b6907700587ee92e4369a5526",
       "viewport": {
         "width": 1024,
         "height": 900,
@@ -1743,7 +1738,7 @@
     },
     {
       "name": "vision-settings-light-1440.png",
-      "sha256": "a3f570f7331f28a7be33b67fc628ef7c4770231984a44913c2dc267d341f2497",
+      "sha256": "82b3ef443aa141c99b345e71512617c6fd55eab0ea6a07481cf87875f23f8a27",
       "viewport": {
         "width": 1440,
         "height": 900,
@@ -1753,7 +1748,7 @@
     },
     {
       "name": "managed-workers-light-1440.png",
-      "sha256": "967099ceb5f6deac5051439c1b2a43099fe9eb6a93e2e87d1c0e0851632db4a3",
+      "sha256": "9675ecabca37d1d7ea2aa7c409600f7107a3537fb4c556c651bb8d2de2b9e74a",
       "viewport": {
         "width": 1440,
         "height": 900,
@@ -1763,7 +1758,7 @@
     },
     {
       "name": "vision-settings-light-1024.png",
-      "sha256": "d413b18b12062bb35d9471efd911826b9dec2a79a971251be59a3b580d3e1904",
+      "sha256": "6def51aa7f21eee27cb6844a713c5847e94ccb8ece428266a6d4359c6cd6d793",
       "viewport": {
         "width": 1024,
         "height": 900,
@@ -1773,7 +1768,17 @@
     },
     {
       "name": "managed-workers-light-1024.png",
-      "sha256": "5237bcd33eeeca0ea72c34723c871a8d55d53dfa1c1aad56e96f90505f20ed4b",
+      "sha256": "d794decd54b9b9feab6e24ba4a1f97f5b95d456af52ae356c87122b6da3f137e",
+      "viewport": {
+        "width": 1024,
+        "height": 900,
+        "dpr": 2,
+        "theme": "light"
+      }
+    },
+    {
+      "name": "execution-settings-light-1024.png",
+      "sha256": "e071b33fdf5efd0215232b522c727500d80e4cd30233d2b1510e9fe59e4e8f5d",
       "viewport": {
         "width": 1024,
         "height": 900,
@@ -1791,14 +1796,14 @@
     "build/icon.ico": "53867cc8be8bd87ee8b2412816a6bb5990af711c4b63ca3c9da6f94bfa591829",
     "build/icon.png": "b5f839e46c666f6347a1a5d84f60c34a423f22d6ce2266bb2f811ab8d00219e2",
     "build/icon.svg": "e1e3bc2680cd41c6bf780ea5af8502edd023cb9f62dfe18b99b07fac2adfa95f",
-    "dist-electron/main.cjs": "1a0b9c6866109493cd47af00bc806ec258208003db9378f6532138633c4561ae",
+    "dist-electron/main.cjs": "956dc3a57c3630d30773dfa38291b2fc4da8f8196dd5497f0af4e951d8e679b4",
     "dist-electron/preload.cjs": "ed53d9eb15fd102c45bae331118be9f0e189e9fa1eb6bb15265df3568846cc61",
     "electron/acp.ts": "cc1f1accce1ecc2908b35b97bb99da751d62f79f4458e697b05665fcce57bfca",
     "electron/application-identity.ts": "6ea5a9018715351175b9c20089cf724bc599672ba40ce2475f124623fb1ef086",
     "electron/browser.ts": "f42b0d6a75a05638562ea679279026ebd649e5bb142bcae54a11d194bb06d86a",
     "electron/bundled-cli.ts": "db84a765aa451f01190a861c7a34f17bacc7c2bcac342de81e9a910b88404ab4",
     "electron/context-calibration.ts": "47af3d995f5a26e8fad106e66851ed9f5a28d1a93097b655010cc66082b26f1f",
-    "electron/context-runtime.ts": "40f7fdfde7673f4b5d5c7a57339ee07b2c806378f9af3b33dc6da10161475636",
+    "electron/context-runtime.ts": "e70b72954743f48b63659102bc896089fa7401488e74dd5c59000d9d437dec88",
     "electron/context-supervisor.ts": "cc945c24c3750ec0f4091586db3bd44c6a9ebe63ca885b63f5057311ffa41d65",
     "electron/database/client.ts": "93180086cc089ed64b9cc4e15c381aabac0e17a96012500a3e79f7231d372a71",
     "electron/database/engine.ts": "29f7d3423c992c5bcec899056d182552f50c8d2dbd2d3dcb38229692d683fa87",
@@ -1904,7 +1909,7 @@
     "shared/vision.ts": "43e7f68854d9fc0d38b5b5652fa336f7e75916be2f0202d5d1490413aa251aa6",
     "src/App.tsx": "20f2a1f522cad024ad1be6b24092ac4c167a991d7ac1f5ce47272ad440c7ca55",
     "src/ClusterPanel.tsx": "ce2aa4b9cc808c94c86874e92b592640386989b26a80bbbfbb86522cbf60be1b",
-    "src/ContextControls.tsx": "9ff7aa977b40332051f190b032a5243334071599779e5bcb77e06767c7e70214",
+    "src/ContextControls.tsx": "1f0e56151706c6e47e5d1a78667f7fb4c55b3d85eed41409eab26524b2337f3d",
     "src/DatabaseConsoleEditor.tsx": "dbbd06603b03ab53e7416338531d537f02cfa96fc55dadff8a947c80c061df27",
     "src/DatabaseEffect.tsx": "8dc051c4af1fa77b2a2cde123759e9ac3ebe2d443c641e90f8749a21d8678c8d",
     "src/DatabaseExplorer.tsx": "a3d3fbf023a8a50235aed95310ee7d466c99796996bb4e1dc144e3d9b633a38d",
@@ -1917,12 +1922,12 @@
     "src/IdePanel.tsx": "6a10f055d4eb6e652e8b7f208c5678839510805af8d7dbfb938bfb9912436987",
     "src/IdeSettings.tsx": "6be334f9735ea973d7081d380772719804f3cfdc09cba3a2bc5a8e7bc9fad1d3",
     "src/JenkinsPanel.tsx": "3d92d1d9b6e06a3fc539dce1f5b7cedf5d30f944a3053e88d53b46a6ba7ef60d",
-    "src/ManagedAgentsPanel.tsx": "fb3d3c889d3bdc2bd2f93b7507e34f8081984bb9c4266e8259fa410a0467a431",
+    "src/ManagedAgentsPanel.tsx": "6d6f3030e4b483c7200b0f92431dc4a34ab3f3d904249139d2a9ab0f11dd4ce0",
     "src/ModelPicker.tsx": "c91162085289a0c5e92295649e2d21f3cbb9b5fdc94991c6f1f6ff43c40d897b",
     "src/OperationsSettings.tsx": "d43aa156d1d68f95d4b8d7b797e38d024539eaee8615571625937bd322932566",
     "src/Panels.tsx": "8f26455c21f2942865c9a9971b6a924a103742eb48af17a87fc781a7f30308c4",
     "src/QueueMessages.tsx": "01a93bc8a5077777fb67e47b805e33e5be52c37c5f46969b259f28d91f5ccbb2",
-    "src/SettingsView.tsx": "af3e496cf6c7524ea825f9fe9d2ef598fd4df920667906f5145a24da38730c2c",
+    "src/SettingsView.tsx": "925a71646ccf81c2b5fe72474088756f95b998ab3ea0e534b857df15501afd32",
     "src/SqlEditor.tsx": "eebe0424ea213087342f4d529d245555c951e6340b86573c94d4d58d9622a642",
     "src/SqlPlan.tsx": "c01915b2490fb6b4a06328de153ead7bb56157947516ca6c9d317823c1dbdadf",
     "src/ToolBoundary.tsx": "c5201b14523d6d8fb08ba944c49402a8bf766d87193ac3ccf7ae137b97f2b5c8",
@@ -1944,19 +1949,19 @@
     "src/styles.css": "7508672f7f11f1aa3e1ee352527aa7a4a6ec96aba2a12321d184f0fdedea2d38",
     "src/ui.tsx": "c393a5ba5856c58b75b4738ae8d3ccdf47a30b83531e61825f14fdc598692dcd",
     "src/window-close.ts": "196e50c3362d8c72178da07867131c055101a04af428d707d8339862c82eb5bb",
-    "tools/test-flash-runtime-ui.mjs": "3ae1c7553eb50cf7ac86cece4c142249703aa09863990ed1088d977ec5c28422",
+    "tools/test-flash-runtime-ui.mjs": "1fa3e89887bd8174870cd06ea251edffa27671eb3971b24425124692437b98af",
     "tsconfig.json": "d3bfdd8024d47eee4cd4ac1e66f7f5efc57f501288cfc8cf4833114b80af26ed",
     "vite.config.ts": "f7c1a3238afdbc3dc59f969bf33dc384d243c9acc17f7d7d19dfc3bb5b30ff71",
-    "dist/assets/ClusterPanel-X-B4HqoF.js": "94f81b0cb65fd517729f499e05aaedda54327602cedb802f931e2917566a8e3f",
-    "dist/assets/DatabasePanel-CZN4P8I8.js": "1294484b2933ccc553f7a133a539615df0ede9431ab327448765503980fc05b8",
+    "dist/assets/ClusterPanel-D7tuFdkp.js": "193e1a6fde44ee48bdb787bcbd71e47577ef6914ed84d33117aa267d2ccf068e",
+    "dist/assets/DatabasePanel-5KM1QoV6.js": "daffe96b51426d8b2b5f00d0d270bf5f4aeac3fd8a1e5d62d7cc9446b633f9c5",
     "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
-    "dist/assets/JenkinsPanel-C3Z5qRV8.js": "b9d3c2c96c19cee74af2cbc096063b2891908cea311ab6e150f4f41848365707",
-    "dist/assets/OperationsSettings-Bmb6UBC5.js": "f245b5448d42b4af79c76babd2a4f369cf772f217e0bdb3b57f9549b1732f8d7",
+    "dist/assets/JenkinsPanel-CZWXKiCM.js": "9e57580893cc353063e56e5aee5bbc786a32e35b756d247e19d131d2a72a7ff4",
+    "dist/assets/OperationsSettings-UkfRz3ZM.js": "690650a5f9104151ba6cabbf9daaea5bdc29e751f14e44a5220310cd34ce1b5e",
     "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
-    "dist/assets/index-BDk6pS8-.js": "02512367039ad7a964d9d0ee4c10adeaee9d1bf2702d31b532cac5e11a3b1c8e",
     "dist/assets/index-tGRkdgCC.css": "93062faa3f619aa58de031ed09864759bc8d5274bcaa051253c24f3eb1e01ee3",
+    "dist/assets/index-wZljyAVC.js": "7c72290fc24d835e422e046e450b9eac3994bce9b540a5d33463fa335fe67090",
     "dist/assets/ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
-    "dist/assets/ops-ui-CvLERfsJ.js": "2a459a5b03800ae67e7edc726aa42ced5ff80b60a9e0b5ca6c97ecf1f58c7081"
+    "dist/assets/ops-ui-DAG_KdC3.js": "e3dec39f8c7c20ec2734ab9d725cd13a950e0718af9ef709077a35923cef05dc"
   },
   "paidRequests": 0,
   "cleanup": "closed",
@@ -1965,7 +1970,7 @@
     "signal": null
   },
   "ownedProcesses": {
-    "observed": 18,
+    "observed": 19,
     "remaining": []
   },
   "fixtureEvents": [
@@ -1974,272 +1979,294 @@
       "events": [
         {
           "type": "new",
-          "pid": 4779,
-          "at": 1792003191755
+          "pid": 13295,
+          "at": 1792004029701
         },
         {
           "type": "prompt",
           "command": "hold queue-original",
-          "contentHash": "a642b372bc61dccf53767315e8c09a77797469e22ecab935a79d0b612a3c0be2",
+          "contentHash": "427e463fb1fbc7fb1290b90e82500c314d936bb54496b988bc10e7e3e465b8d1",
           "contentBytes": 31400,
           "hasManagedContract": false,
           "hasReferenceFence": true,
-          "pid": 4779,
-          "at": 1792003192019
+          "pid": 13295,
+          "at": 1792004029756
         },
         {
           "type": "cancel",
           "command": "hold queue-original",
-          "pid": 4779,
-          "at": 1792003192518
+          "pid": 13295,
+          "at": 1792004030186
         },
         {
           "type": "terminal",
           "command": "hold queue-original",
           "reason": "cancelled",
-          "pid": 4779,
-          "at": 1792003192598
+          "pid": 13295,
+          "at": 1792004030269
         },
         {
           "type": "new",
-          "pid": 4798,
-          "at": 1792003193281
+          "pid": 13311,
+          "at": 1792004030488
         },
         {
           "type": "prompt",
           "command": "queued-edited-send-now",
-          "contentHash": "4e96abf74c812de6340cfad9a95c4fb2c3c41016d49491c7a9347dd09b96e7ac",
+          "contentHash": "640ad8673b99f5c8e2cdd21eefe15201dab22d4ad2c1e5012fe1f6b963310b53",
           "contentBytes": 32361,
           "hasManagedContract": false,
           "hasReferenceFence": true,
-          "pid": 4798,
-          "at": 1792003193537
+          "pid": 13311,
+          "at": 1792004030541
         },
         {
           "type": "terminal",
           "command": "queued-edited-send-now",
           "reason": "end_turn",
-          "pid": 4798,
-          "at": 1792003193605
+          "pid": 13311,
+          "at": 1792004030603
         },
         {
           "type": "new",
-          "pid": 4825,
-          "at": 1792003194572
+          "pid": 13319,
+          "at": 1792004031068
         },
         {
           "type": "prompt",
           "command": "hold worker-primary",
-          "contentHash": "890d81aefda5f81e7ec6cd748fce108832f031d15806ac4ba55e44be192afbe6",
+          "contentHash": "7abdcdc3de0d23527d0b1ddb7b722f4da8f2757854667ac043e6700f6b063975",
           "contentBytes": 33193,
           "hasManagedContract": true,
           "hasReferenceFence": true,
-          "pid": 4825,
-          "at": 1792003194852
+          "pid": 13319,
+          "at": 1792004031137
         },
         {
           "type": "terminal",
           "command": "hold worker-primary",
           "reason": "end_turn",
-          "pid": 4825,
-          "at": 1792003195996
+          "pid": 13319,
+          "at": 1792004031859
         },
         {
           "type": "new",
-          "pid": 4852,
-          "at": 1792003196712
+          "pid": 13341,
+          "at": 1792004032071
         },
         {
           "type": "new",
-          "pid": 4854,
-          "at": 1792003196785
+          "pid": 13342,
+          "at": 1792004032085
         },
         {
           "type": "prompt",
           "command": "worker-second",
-          "contentHash": "86f770b3c5f7f9374fddf342ea66808e365de9ccabb3318962879f260b530eaa",
+          "contentHash": "9cff87843c2e5de15c73eca676f35742c5e3f555f30bf994499ebedd273146b5",
           "contentBytes": 33187,
           "hasManagedContract": true,
           "hasReferenceFence": true,
-          "pid": 4852,
-          "at": 1792003197039
+          "pid": 13341,
+          "at": 1792004032172
+        },
+        {
+          "type": "prompt",
+          "command": "worker-dependent",
+          "contentHash": "ba123445a67b2b72307827ac77f2a10de582d05930f22c4030047e5913acd16e",
+          "contentBytes": 33122,
+          "hasManagedContract": true,
+          "hasReferenceFence": true,
+          "pid": 13342,
+          "at": 1792004032192
         },
         {
           "type": "terminal",
           "command": "worker-second",
           "reason": "end_turn",
-          "pid": 4852,
-          "at": 1792003197108
-        },
-        {
-          "type": "prompt",
-          "command": "worker-dependent",
-          "contentHash": "7f6791c08e25e09ec2fbd9310cad631bbb2bf0271fe3342a3c77fc0546efd6e0",
-          "contentBytes": 33122,
-          "hasManagedContract": true,
-          "hasReferenceFence": true,
-          "pid": 4854,
-          "at": 1792003197287
+          "pid": 13341,
+          "at": 1792004032235
         },
         {
           "type": "terminal",
           "command": "worker-dependent",
           "reason": "end_turn",
-          "pid": 4854,
-          "at": 1792003197357
+          "pid": 13342,
+          "at": 1792004032253
         },
         {
           "type": "new",
-          "pid": 4874,
-          "at": 1792003198190
+          "pid": 13343,
+          "at": 1792004032549
         },
         {
           "type": "prompt",
           "command": "must-not-run-cancelled-worker",
-          "contentHash": "19318328d15c55e97239db6db6b32983aeb74c6c6ec543f4e838eddd3d7569b2",
+          "contentHash": "bc09225688ae2962e10e9c23b4cbf8cd31f60f2a6da8fcb981c4fd44f9153139",
           "contentBytes": 33203,
           "hasManagedContract": true,
           "hasReferenceFence": true,
-          "pid": 4874,
-          "at": 1792003198453
+          "pid": 13343,
+          "at": 1792004032607
         },
         {
           "type": "terminal",
           "command": "must-not-run-cancelled-worker",
           "reason": "end_turn",
-          "pid": 4874,
-          "at": 1792003198517
+          "pid": 13343,
+          "at": 1792004032669
         },
         {
           "type": "new",
-          "pid": 4881,
-          "at": 1792003199244
+          "pid": 13344,
+          "at": 1792004032965
         },
         {
           "type": "prompt",
           "command": "worker-followup",
-          "contentHash": "a1a1f98900c20fbcbf0ec9f57f52ebfd6204a24f0e20c57570e2f449a6375a63",
+          "contentHash": "9c445939314d6540f4484c8ee9f198a530db41e4342e3714c04dc37af524d9fa",
           "contentBytes": 34152,
           "hasManagedContract": true,
           "hasReferenceFence": true,
-          "pid": 4881,
-          "at": 1792003199462
+          "pid": 13344,
+          "at": 1792004033018
         },
         {
           "type": "terminal",
           "command": "worker-followup",
           "reason": "end_turn",
-          "pid": 4881,
-          "at": 1792003199525
+          "pid": 13344,
+          "at": 1792004033080
         },
         {
           "type": "new",
-          "pid": 4929,
-          "at": 1792003202219
+          "pid": 13356,
+          "at": 1792004034020
         },
         {
           "type": "prompt",
           "command": "unknown-after-dispatch",
-          "contentHash": "098a2c7a26fd779de4d646237f2ce4185d663aa486b437c378e916c74b134690",
+          "contentHash": "16cd03b5201f0a5d24b202d9b128878d3fd150e1abc0b44ec9ef0fe7f00f76c7",
           "contentBytes": 33090,
           "hasManagedContract": true,
           "hasReferenceFence": true,
-          "pid": 4929,
-          "at": 1792003202494
+          "pid": 13356,
+          "at": 1792004034081
         },
         {
           "type": "new",
-          "pid": 4937,
-          "at": 1792003203503
+          "pid": 13357,
+          "at": 1792004034632
         },
         {
           "type": "prompt",
           "command": "fresh-after-unknown-readback",
-          "contentHash": "c8c1056728409d58c4749102ddc85b65c5664fbd551135a3e45d3cd5c9ea0211",
+          "contentHash": "216707fc3d3261f508851a273a15fb2d3c83624104fe613d3e48047f61a7fdb2",
           "contentBytes": 34477,
           "hasManagedContract": true,
           "hasReferenceFence": true,
-          "pid": 4937,
-          "at": 1792003203692
+          "pid": 13357,
+          "at": 1792004034690
         },
         {
           "type": "terminal",
           "command": "fresh-after-unknown-readback",
           "reason": "end_turn",
-          "pid": 4937,
-          "at": 1792003203766
+          "pid": 13357,
+          "at": 1792004034753
         },
         {
           "type": "startup-failure",
           "status": 429,
-          "pid": 4956,
-          "at": 1792003204506
+          "pid": 13358,
+          "at": 1792004035014
         },
         {
           "type": "new",
-          "pid": 4990,
-          "at": 1792003206179
+          "pid": 13371,
+          "at": 1792004036074
         },
         {
           "type": "prompt",
           "command": "retry-startup-once",
-          "contentHash": "82ab6072597aebee3c0fddec4e9a1bb4d775e565b8d35741fba1097c3cd55d3b",
+          "contentHash": "5724d046318380a7a13a5c63a23860d5f1d83f5f53f03e0af04bd0233a404484",
           "contentBytes": 33086,
           "hasManagedContract": true,
           "hasReferenceFence": true,
-          "pid": 4990,
-          "at": 1792003206464
+          "pid": 13371,
+          "at": 1792004036132
         },
         {
           "type": "terminal",
           "command": "retry-startup-once",
           "reason": "end_turn",
-          "pid": 4990,
-          "at": 1792003206555
+          "pid": 13371,
+          "at": 1792004036195
         },
         {
           "type": "new",
-          "pid": 5068,
-          "at": 1792003209021
+          "pid": 13387,
+          "at": 1792004037482
         },
         {
           "type": "prompt",
           "command": "hold usage-high",
-          "contentHash": "48b72b7b6d79eb7a190f9e8678a95f3a726101c41b10b7b465ffc2c4e9b920a4",
+          "contentHash": "a809706f4c1a8a062ae7eb5bdd7b0bd8e1287a54ad77e95af06ab6e7cbfb7284",
           "contentBytes": 31368,
           "hasManagedContract": false,
           "hasReferenceFence": true,
-          "pid": 5068,
-          "at": 1792003209294
+          "pid": 13387,
+          "at": 1792004037541
         },
         {
           "type": "terminal",
           "command": "hold usage-high",
           "reason": "end_turn",
-          "pid": 5068,
-          "at": 1792003209619
+          "pid": 13387,
+          "at": 1792004037701
         },
         {
           "type": "new",
-          "pid": 5113,
-          "at": 1792003210460
+          "pid": 13408,
+          "at": 1792004037975
         },
         {
           "type": "prompt",
           "command": "context-after-checkpoint",
-          "contentHash": "89c8ba872f92f6807761b3713a0d087156a52ee50b4d137dd08ebad3ae3940cd",
+          "contentHash": "13a5a4383e1fec858b00cf880e11c7e8940b04286347f1aa014c21b7312917e8",
           "contentBytes": 32326,
           "hasManagedContract": false,
           "hasReferenceFence": true,
-          "pid": 5113,
-          "at": 1792003210712
+          "pid": 13408,
+          "at": 1792004038034
         },
         {
           "type": "terminal",
           "command": "context-after-checkpoint",
           "reason": "end_turn",
-          "pid": 5113,
-          "at": 1792003210776
+          "pid": 13408,
+          "at": 1792004038096
+        },
+        {
+          "type": "new",
+          "pid": 13419,
+          "at": 1792004038659
+        },
+        {
+          "type": "prompt",
+          "command": "usage-low-measured",
+          "contentHash": "19b2e1f91247d4fd17acebf3e4ca9dd34bbcceef48ad8efb2f49e25ec1ccf036",
+          "contentBytes": 32570,
+          "hasManagedContract": false,
+          "hasReferenceFence": true,
+          "pid": 13419,
+          "at": 1792004038718
+        },
+        {
+          "type": "terminal",
+          "command": "usage-low-measured",
+          "reason": "end_turn",
+          "pid": 13419,
+          "at": 1792004038780
         }
       ]
     },
@@ -2248,42 +2275,42 @@
       "events": [
         {
           "type": "new",
-          "pid": 4900,
-          "at": 1792003200277
+          "pid": 13345,
+          "at": 1792004033335
         },
         {
           "type": "prompt",
           "command": "backend-contract-fix",
-          "contentHash": "23e64d9e67f03760b26fd568b2d45691e1fdb1c7e34127c02a047c8c889015e4",
+          "contentHash": "9bb1262c82f7e8d14b1145b3e58a7ccc8acd0983addff9966603e39c16a30579",
           "contentBytes": 33034,
           "hasManagedContract": true,
           "hasReferenceFence": true,
-          "pid": 4900,
-          "at": 1792003200538
+          "pid": 13345,
+          "at": 1792004033393
         },
         {
           "type": "terminal",
           "command": "backend-contract-fix",
           "reason": "end_turn",
-          "pid": 4900,
-          "at": 1792003200605
+          "pid": 13345,
+          "at": 1792004033455
         },
         {
           "type": "prompt",
           "command": "contract-note-reference-only",
-          "contentHash": "dcf93f4d8b22f2264070d1284c95a1860d7321d965683f0622c1e08ae359ec54",
+          "contentHash": "b661096c01228e730abaa92b347e571d79da1e01aa22643929ef56c09e108e8d",
           "contentBytes": 583,
           "hasManagedContract": false,
           "hasReferenceFence": true,
-          "pid": 4900,
-          "at": 1792003201358
+          "pid": 13345,
+          "at": 1792004033674
         },
         {
           "type": "terminal",
           "command": "contract-note-reference-only",
           "reason": "end_turn",
-          "pid": 4900,
-          "at": 1792003201425
+          "pid": 13345,
+          "at": 1792004033736
         }
       ]
     }
@@ -2292,17 +2319,17 @@
     {
       "type": "list",
       "hadSecret": true,
-      "pid": 5010
+      "pid": 13374
     },
     {
       "type": "list",
       "hadSecret": true,
-      "pid": 5013
+      "pid": 13375
     },
     {
       "type": "list",
       "hadSecret": true,
-      "pid": 5034
+      "pid": 13376
     },
     {
       "type": "call",
@@ -2311,12 +2338,12 @@
       "questionHadUntrustedFence": true,
       "model": "Qwen 3.6 Flash",
       "hadSecret": true,
-      "pid": 5034
+      "pid": 13376
     },
     {
       "type": "list",
       "hadSecret": true,
-      "pid": 5038
+      "pid": 13377
     }
   ]
 }

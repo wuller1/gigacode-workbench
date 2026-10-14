@@ -30,11 +30,12 @@
 - Небольшая успешная recall probe ошибочно уменьшала рабочее окно до своего размера. Успешное принятие и sampled recall теперь только нижние наблюдённые границы.
 - После ручного восстановления сохранялся marker старой проверки overhead. Новое поколение заново оценивает уменьшение нагрузки и не наследует вечное удержание.
 - Canonical HTML title/h1 «429 Too Many Requests» не распознавался без буквального HTTP/status. Теперь reason phrase проверяется в heading, произвольные body/script числа не запускают retry; после dispatch остаётся UNKNOWN.
+- Метка маршрута сбрасывала учёт истории без нового CLI. Теперь same-generation offset/wrappers сохраняются; прежнее фактическое давление переносится как оценка до нового actual usage. Настоящее новое поколение сбрасывает её.
 - Windows case aliases обходили защищённые migration paths, а PowerShell UTF-8 BOM не читался. Добавлены сравнения без регистра и строгий UTF-8 decoder с BOM support.
 
 ## Как проверять результат
 
-Источники фактов: [actual Electron report](evidence/flash-runtime-ui/report.json), [unit report](evidence/flash-runtime-ui/unit-local.json), [native Qwen read-only](evidence/flash-runtime-ui/managed-qwen-readonly.json), [UI kit gallery](../../ui-kit/evidence/desktop/report.json). Читайте status, source hashes, платформу, cases и cleanup; наличие файла само по себе не означает pass. Failed iterations сохранены отдельно. Локальная приёмка: 526 passed / 46 skipped; полный actual Electron 15/15; migration 26/26; UI kit 20/20 desktop + 4/4 contracts. Windows run и архив публикации добавляются после приёмки зафиксированного candidate.
+Источники фактов: [actual Electron report](evidence/flash-runtime-ui/report.json), [unit report](evidence/flash-runtime-ui/unit-local.json), [native Qwen read-only](evidence/flash-runtime-ui/managed-qwen-readonly.json), [UI kit gallery](../../ui-kit/evidence/desktop/report.json). Читайте status, source hashes, платформу, cases и cleanup; наличие файла само по себе не означает pass. Failed iterations сохранены отдельно. Локальная приёмка: 529 passed / 46 skipped; полный actual Electron 16/16; migration 26/26; UI kit 20/20 desktop + 4/4 contracts. Windows run и архив публикации добавляются после приёмки зафиксированного candidate.
 
 Из корня:
 

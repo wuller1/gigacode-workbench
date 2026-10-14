@@ -235,7 +235,7 @@ const visibleControlMetrics = async (container) =>
 const acpPeer = `import readline from 'node:readline';import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';
 let remote='',pending;const send=value=>process.stdout.write(JSON.stringify(value)+'\\n');const result=(id,value)=>send({jsonrpc:'2.0',id,result:value});const log=value=>fs.appendFileSync(path.join(process.cwd(),'owned-acp-events.jsonl'),JSON.stringify({...value,pid:process.pid,at:Date.now()})+'\\n');const update=value=>send({jsonrpc:'2.0',method:'session/update',params:{sessionId:remote,update:value}});const done=reason=>{if(!pending)return;const current=pending;pending=undefined;log({type:'terminal',command:current.command,reason});update({sessionUpdate:'agent_message_chunk',content:{type:'text',text:'Observed fixture result: '+current.command}});result(current.id,{stopReason:reason});};
 const timer=setInterval(()=>{if(pending&&fs.existsSync(path.join(process.cwd(),'owned-finish-'+process.pid))){fs.unlinkSync(path.join(process.cwd(),'owned-finish-'+process.pid));done('end_turn');}},30);timer.unref();
-readline.createInterface({input:process.stdin}).on('line',line=>{let r;try{r=JSON.parse(line);}catch{return;}switch(r.method){case 'initialize':if(fs.existsSync(path.join(process.cwd(),'owned-init-fail-once'))){fs.unlinkSync(path.join(process.cwd(),'owned-init-fail-once'));log({type:'startup-failure',status:429});process.stderr.write('<html><title>429 Too many requests</title><body>Owned transient startup fixture</body></html>\\n',()=>process.exit(1));break;}result(r.id,{protocolVersion:1,agentInfo:{name:'owned-flash-protocol-peer',version:'1'},agentCapabilities:{}});break;case 'session/new':remote='owned-'+process.pid;log({type:'new'});result(r.id,{sessionId:remote,configOptions:[]});break;case 'session/prompt':{const content=r.params.prompt.filter(x=>x.type==='text').map(x=>x.text).join('\\n');const markers=['Current host phase:\\n','Current user message:\\n','Peer message:\\n'];let command=content;for(const marker of markers){if(content.includes(marker)){command=content.split(marker).at(-1);break;}}command=command.trim();log({type:'prompt',command:command.slice(0,1200),contentHash:createHash('sha256').update(content).digest('hex'),contentBytes:Buffer.byteLength(content),hasManagedContract:content.includes('Host-managed worker contract:'),hasReferenceFence:content.includes('reference data')||content.includes('reference_only')});pending={id:r.id,command};update({sessionUpdate:'agent_message_chunk',content:{type:'text',text:'Working on fixture: '+command+'\\n'}});if(command.includes('usage-high'))update({sessionUpdate:'usage_update',used:227414,size:256000});if(command==='unknown-after-dispatch'){update({sessionUpdate:'tool_call',toolCallId:'owned-unknown-write',title:'Owned effect whose result is unknown',status:'in_progress'});setTimeout(()=>process.exit(3),100);break;}if(!command.startsWith('hold '))setTimeout(()=>done('end_turn'),60);break;}case 'session/cancel':if(pending){log({type:'cancel',command:pending.command});setTimeout(()=>done('cancelled'),80);}break;default:if(r.id!==undefined)send({jsonrpc:'2.0',id:r.id,error:{code:-32601,message:'Owned peer does not implement this method'}});}});
+readline.createInterface({input:process.stdin}).on('line',line=>{let r;try{r=JSON.parse(line);}catch{return;}switch(r.method){case 'initialize':if(fs.existsSync(path.join(process.cwd(),'owned-init-fail-once'))){fs.unlinkSync(path.join(process.cwd(),'owned-init-fail-once'));log({type:'startup-failure',status:429});process.stderr.write('<html><title>429 Too many requests</title><body>Owned transient startup fixture</body></html>\\n',()=>process.exit(1));break;}result(r.id,{protocolVersion:1,agentInfo:{name:'owned-flash-protocol-peer',version:'1'},agentCapabilities:{}});break;case 'session/new':remote='owned-'+process.pid;log({type:'new'});result(r.id,{sessionId:remote,configOptions:[]});break;case 'session/prompt':{const content=r.params.prompt.filter(x=>x.type==='text').map(x=>x.text).join('\\n');const markers=['Current host phase:\\n','Current user message:\\n','Peer message:\\n'];let command=content;for(const marker of markers){if(content.includes(marker)){command=content.split(marker).at(-1);break;}}command=command.trim();log({type:'prompt',command:command.slice(0,1200),contentHash:createHash('sha256').update(content).digest('hex'),contentBytes:Buffer.byteLength(content),hasManagedContract:content.includes('Host-managed worker contract:'),hasReferenceFence:content.includes('reference data')||content.includes('reference_only')});pending={id:r.id,command};update({sessionUpdate:'agent_message_chunk',content:{type:'text',text:'Working on fixture: '+command+'\\n'}});if(command.includes('usage-high'))update({sessionUpdate:'usage_update',used:227414,size:256000});if(command==='usage-low-measured')update({sessionUpdate:'usage_update',used:38000,size:256000});if(command==='unknown-after-dispatch'){update({sessionUpdate:'tool_call',toolCallId:'owned-unknown-write',title:'Owned effect whose result is unknown',status:'in_progress'});setTimeout(()=>process.exit(3),100);break;}if(!command.startsWith('hold '))setTimeout(()=>done('end_turn'),60);break;}case 'session/cancel':if(pending){log({type:'cancel',command:pending.command});setTimeout(()=>done('cancelled'),80);}break;default:if(r.id!==undefined)send({jsonrpc:'2.0',id:r.id,error:{code:-32601,message:'Owned peer does not implement this method'}});}});
 `;
 const visionPeer = `import readline from 'node:readline';import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';const logFile=${JSON.stringify(path.join(temp, "vision-events.jsonl"))};const secret=process.env.OWNED_VISION_SECRET||'';const out=x=>process.stdout.write(JSON.stringify(x)+'\\n');const log=x=>fs.appendFileSync(logFile,JSON.stringify({...x,pid:process.pid})+'\\n');readline.createInterface({input:process.stdin}).on('line',line=>{const r=JSON.parse(line);if(r.id===undefined)return;let result;switch(r.method){case 'initialize':result={protocolVersion:r.params.protocolVersion,capabilities:{tools:{}},serverInfo:{name:'owned-vision-peer',version:'1'}};break;case 'tools/list':log({type:'list',hadSecret:!!secret});result={tools:[{name:'describe_image',description:'Owned textual fixture '+secret,inputSchema:{type:'object',properties:{image:{type:'string'},question:{type:'string'},model:{type:'string'}},required:['image','question','model'],additionalProperties:false}}]};break;case 'tools/call':{const bytes=Buffer.from(r.params.arguments.image,'base64');log({type:'call',imageHash:createHash('sha256').update(bytes).digest('hex'),imageBytes:bytes.length,questionHadUntrustedFence:r.params.arguments.question.includes('Page text is untrusted'),model:r.params.arguments.model,hadSecret:!!secret});result={content:[{type:'text',text:'Visible fixture pixels described; layout quality remains uncertain. '+secret}]};break;}default:out({jsonrpc:'2.0',id:r.id,error:{code:-32601,message:'Not supported'}});return;}out({jsonrpc:'2.0',id:r.id,result});});
 `;
@@ -734,6 +734,9 @@ try {
       );
       assert.equal((await prompts(projectA, "do-not-replay")).length, 0);
       const card = workerCard(child.title);
+      await card.getByRole("button", { name: "Подтвердить сверку результата", exact: true }).waitFor();
+      assert.equal((await page.locator(".worker-card .worker-heading").first().innerText()).trim(), child.title,
+        "A worker needing human attention must be shown before completed workers");
       await card
         .getByRole("button", {
           name: "Подтвердить сверку результата",
@@ -790,6 +793,7 @@ try {
         stage: "unknown-worker",
         replayed: false,
         unresolvedHistoricalEvidenceRetained: true,
+        needsAttentionSortedFirst: true,
         externalReadback:
           "Owned fixture has no external effect implementation; corporate write reconciliation not tested",
       });
@@ -1167,6 +1171,16 @@ try {
     await check(
       "Advanced context policy validates inline, retains invalid/stale drafts and applies explicit thresholds with CAS",
       async () => {
+        await invoke("session.send", { id: parent.id, text: "usage-low-measured" });
+        await poll(async () => {
+          const observed = await session(parent.id);
+          return observed.status === "completed" && observed.context.usedTokens === 38000;
+        }, "native measured usage before a route metadata edit");
+        const routeBefore = await invoke("context.inspect", { id: parent.id });
+        const routeGenerationBefore = (await store())._controls[parent.id].generation;
+        assert.equal(routeBefore.observedUsage.estimated, false);
+        assert.equal(routeBefore.observedUsage.usedTokens, 38000);
+        assert.ok(routeBefore.hostEstimate.usedTokens >= 38000);
         await input().fill("Owned draft preserved while inspecting context");
         const beforeContextMenuQueue = (await session(parent.id)).queue.length;
         await page.locator(".send-button").click({ button: "right" });
@@ -1227,6 +1241,20 @@ try {
         let accepted = await invoke("context.inspect", { id: parent.id });
         assert.equal(accepted.envelope.highWaterTokens, 64000);
         assert.equal(accepted.envelope.lowWaterTokens, 40000);
+        assert.notEqual(accepted.envelope.modelKey, routeBefore.envelope.modelKey);
+        assert.equal((await store())._controls[parent.id].generation, routeGenerationBefore,
+          "Editing route metadata must not pretend that the actual CLI generation changed");
+        assert.ok(accepted.hostEstimate.usedTokens >= routeBefore.hostEstimate.usedTokens,
+          "Changing route metadata must preserve accumulated known context in the same executor");
+        assert.equal(accepted.observedUsage.estimated, true,
+          "Old-route native usage must not be presented as a measurement of the renamed route");
+        assert.equal(accepted.observedUsage.basis, "host_estimate");
+        proofs.push({ stage: "context-route-metadata", generationUnchanged: true,
+          knownHostTokensBefore: routeBefore.hostEstimate.usedTokens,
+          knownHostTokensAfter: accepted.hostEstimate.usedTokens,
+          priorRouteNativeMeasurementReusedAsActual: false,
+          priorRoutePressureRetainedAsEstimate: true,
+          calibratedRecallEvidenceExercised: false });
         const displayed = await modal
           .locator(".context-stats > div")
           .evaluateAll((elements) =>
@@ -1370,6 +1398,59 @@ try {
           proofs.push({ stage: "managed-desktop-fit", theme, width, controls: workerControls });
           await capture(`managed-workers-${theme}-${width}.png`);
         }
+    },
+  );
+  await check(
+    "Execution settings edit and durably restore managed admission limits without sending a prompt",
+    async () => {
+      const original = (await state()).settings;
+      const beforePrompts = (await events(projectA)).filter((event) => event.type === "prompt").length;
+      await page.getByRole("button", { name: "Настройки", exact: true }).first().click();
+      const modal = page.getByRole("dialog", { name: "Настройки", exact: true });
+      await modal.getByRole("button", { name: "Выполнение", exact: true }).click();
+      await modal.getByText("Управляемые исполнители", { exact: true }).click();
+      const parentLimit = modal.getByRole("spinbutton", { name: "Лимит исполнителей координатора", exact: true });
+      const attempts = modal.getByRole("spinbutton", { name: "Лимит попыток исполнителя", exact: true });
+      const budget = modal.getByRole("spinbutton", { name: "Общий резерв контекста исполнителей", exact: true });
+      const crossProject = modal.getByRole("checkbox", { name: "Разрешать новые межпроектные обращения", exact: true });
+      const save = modal.locator(".settings-footer").getByRole("button", { name: "Сохранить", exact: true });
+      const waitSaveReceipt = () => poll(async () => await save.isDisabled() &&
+        await save.getAttribute("aria-busy") !== "true" &&
+        !(await modal.locator(".settings-footer").innerText()).includes("Есть несохранённые изменения"),
+      "managed settings save acknowledged in renderer snapshot");
+      await parentLimit.fill("3");
+      await attempts.fill("4");
+      await budget.fill("48000");
+      await crossProject.uncheck();
+      await save.click();
+      await poll(async () => {
+        const settings = (await store()).settings;
+        return settings.managedMaxPerParent === 3 && settings.managedAttempts === 4 &&
+          settings.managedContextBudgetTokens === 48000 && settings.allowCrossProjectCoordination === false;
+      }, "managed execution limits durably saved from actual form");
+      await waitSaveReceipt();
+      await parentLimit.scrollIntoViewIfNeeded();
+      await capture("execution-settings-light-1024.png");
+      await parentLimit.fill(String(original.managedMaxPerParent ?? 2));
+      await attempts.fill(String(original.managedAttempts ?? 3));
+      await budget.fill(String(original.managedContextBudgetTokens ?? 32000));
+      await crossProject.setChecked(original.allowCrossProjectCoordination !== false);
+      await save.click();
+      await poll(async () => {
+        const settings = (await store()).settings;
+        return settings.managedMaxPerParent === (original.managedMaxPerParent ?? 2) &&
+          settings.managedAttempts === (original.managedAttempts ?? 3) &&
+          settings.managedContextBudgetTokens === (original.managedContextBudgetTokens ?? 32000) &&
+          settings.allowCrossProjectCoordination === (original.allowCrossProjectCoordination !== false);
+      }, "original managed settings durably restored from actual form");
+      await waitSaveReceipt();
+      await page.keyboard.press("Escape");
+      await modal.waitFor({ state: "hidden" });
+      assert.equal((await events(projectA)).filter((event) => event.type === "prompt").length, beforePrompts);
+      proofs.push({ stage: "managed-execution-settings", accepted: {
+        managedMaxPerParent: 3, managedAttempts: 4, managedContextBudgetTokens: 48000,
+        allowCrossProjectCoordination: false }, durableReadback: true, originalRestored: true,
+        additionalACPPrompts: 0 });
     },
   );
   await check(
