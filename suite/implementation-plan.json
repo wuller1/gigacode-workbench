@@ -971,7 +971,7 @@
     {
       "id": "S7-01",
       "title": "Database connection vault и read-only explorer",
-      "status": "planned",
+      "status": "in_progress",
       "dependsOn": [
         "S0-02",
         "S1-02"
@@ -981,7 +981,8 @@
         "docs/suite/UX-MULTIWORKSPACE-AUDIT.md",
         "docs/suite/IDE-DATA-FULL-SCOPE.md",
         "suite/ide-data-coverage.json",
-        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md"
+        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md",
+        "docs/suite/DATABASE-RUNTIME-HANDOFF.md"
       ],
       "outcome": "Изолированные drivers, project datasources и metadata explorer",
       "acceptance": [
@@ -991,12 +992,16 @@
         "DATX-01",
         "DATX-02"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "remaining": "Partial native PostgreSQL runtime and macOS tests; full scope, global dependencies, workplace adapter and Windows acceptance remain open."
     },
     {
       "id": "S7-02",
       "title": "SQL console, result grid и transactions",
-      "status": "planned",
+      "status": "in_progress",
       "dependsOn": [
         "S7-01",
         "S4-01"
@@ -1005,7 +1010,8 @@
         "docs/suite/DATABASE.md",
         "docs/suite/IDE-DATA-FULL-SCOPE.md",
         "suite/ide-data-coverage.json",
-        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md"
+        "docs/suite/POSTGRES-COPY-AND-DEVELOPER-INTEGRATIONS.md",
+        "docs/suite/DATABASE-RUNTIME-HANDOFF.md"
       ],
       "outcome": "Parameterized queries, pagination, cancel, grid и safe transaction flow",
       "acceptance": [
@@ -1016,12 +1022,16 @@
         "DATX-05",
         "DATX-14"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "remaining": "Partial native PostgreSQL runtime and macOS tests; full scope, global dependencies, workplace adapter and Windows acceptance remain open."
     },
     {
       "id": "S7-03",
       "title": "Data editing, schema tools, explain и ERD",
-      "status": "planned",
+      "status": "in_progress",
       "dependsOn": [
         "S7-02"
       ],
@@ -1034,7 +1044,8 @@
         "docs/suite/IDE-ULTIMATE-PARITY.md",
         "suite/ide-ultimate-parity.json",
         "suite/ide-research-sources.json",
-        "suite/ide-engine-fixtures.json"
+        "suite/ide-engine-fixtures.json",
+        "docs/suite/DATABASE-RUNTIME-HANDOFF.md"
       ],
       "outcome": "DataGrip-подобный полный цикл с preview/conflicts/import/export/plan/diagram",
       "acceptance": [
@@ -1046,12 +1057,16 @@
         "DATX-09",
         "DATX-10"
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
       "ultimateParityRows": [
         "IUP-134",
         "IUP-135",
         "IUP-136"
-      ]
+      ],
+      "remaining": "Partial native PostgreSQL runtime and macOS tests; full scope, global dependencies, workplace adapter and Windows acceptance remain open."
     },
     {
       "id": "SD-01",
@@ -1838,6 +1853,34 @@
         "KUX-02"
       ],
       "evidence": []
+    }
+  ],
+  "requestedFollowUps": [
+    {
+      "priority": "after_current_ide_database_work",
+      "requestedAt": "2026-10-14",
+      "scope": "Optimize workplace LLM role router and profiles after current IDE/Data work.",
+      "currentUserProfiles": [
+        "analyst",
+        "spec",
+        "backend",
+        "frontend",
+        "devops",
+        "qa",
+        "reviewer",
+        "diagnostics",
+        "gigacode-ui"
+      ],
+      "constraints": [
+        "Always select through LLM from request, task goal/stage and conversation/project context; no manual role selection.",
+        "Compare and retain the better existing workplace router; local keyword fallback is not its implementation.",
+        "Improve role boundaries and compactness, add useful specialists without keyword-triggered oscillation."
+      ]
+    },
+    {
+      "priority": "after_current_ide_database_work",
+      "requestedAt": "2026-10-14",
+      "scope": "Maximize Task tracker and Knowledge base usability/functionality; user deferred starting until current work is finished."
     }
   ]
 }

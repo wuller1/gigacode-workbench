@@ -6,6 +6,7 @@ import {
   dialog,
   shell,
   clipboard,
+  safeStorage,
 } from "electron";
 import { promises as fs, existsSync } from "node:fs";
 import path from "node:path";
@@ -22,6 +23,7 @@ import { redact } from "./acp";
 import { readReference } from "./reference";
 import { bundledCli } from "./bundled-cli";
 import { IdeService } from "./ide";
+import { DatabaseService } from "./database/service";
 import type { HostEvent } from "../shared/types";
 
 if (process.env.WORKBENCH_DATA_DIR)
@@ -39,6 +41,7 @@ let service: WorkbenchService,
   workspace: Workspace,
   mcp: UiMcpServer;
 let ide: IdeService;
+let database: DatabaseService;
 let quitting = false,
   previewServer: Server | undefined,
   previewPort = 0;
@@ -198,6 +201,52 @@ async function invoke(
   agentSession?: string,
 ): Promise<any> {
   if (method === "workbench.reference") return readReference(resourceRoot, p);
+  if (method.startsWith("database.")) {
+    if (agentSession) {
+      const owner = sessionProject(agentSession);
+      if (p.projectId && p.projectId !== owner.id)
+        throw new Error("Нельзя управлять БД другого проекта");
+      p = { ...p, projectId: owner.id };
+    }
+    if (method === "database.reveal") {
+      project(p.projectId);
+      emit({
+        type: "database.reveal",
+        targetWindowId: window.id,
+        payload: { projectId: p.projectId },
+      });
+      return { requested: true };
+    }
+    if (["database.import", "database.export"].includes(method)) {
+      const owner = project(p.projectId);
+      const importing = method === "database.import";
+      if (!agentSession && p.chooseFile) {
+        const extensions = [String(p.format || "csv")];
+        if (importing) {
+          const selection = await dialog.showOpenDialog(window, {
+            title: "Импорт данных через COPY",
+            properties: ["openFile"],
+            filters: [{ name: "Данные", extensions }],
+          });
+          if (selection.canceled) return null;
+          p = { ...p, file: selection.filePaths[0] };
+        } else {
+          const selection = await dialog.showSaveDialog(window, {
+            title: "Экспорт результата БД",
+            defaultPath: `result.${extensions[0]}`,
+            filters: [{ name: "Данные", extensions }],
+          });
+          if (selection.canceled || !selection.filePath) return null;
+          p = { ...p, file: selection.filePath };
+        }
+      } else {
+        if (typeof p.file !== "string")
+          throw new Error("Нужен путь к файлу внутри проекта");
+        p = { ...p, file: (await scopedPath(owner, p.file, !importing)).full };
+      }
+    }
+    return database.invoke(method, p, !!agentSession);
+  }
   if (method === "session.attach") {
     sessionProject(p.id);
     const owner = sessionOwners.get(p.id);
@@ -451,6 +500,23 @@ async function start() {
     mcpServersForSession: (id) => mcp.binding(id),
   });
   await service.init();
+  database = new DatabaseService({
+    dataDir,
+    node: process.execPath,
+    provider: path.join(__dirname, "database-provider.cjs"),
+    project,
+    vault: {
+      available: () =>
+        safeStorage.isEncryptionAvailable() &&
+        (process.platform !== "linux" ||
+          safeStorage.getSelectedStorageBackend() !== "basic_text"),
+      encrypt: (value) => safeStorage.encryptString(value),
+      decrypt: (value) => safeStorage.decryptString(value),
+    },
+    changed: (projectId) =>
+      emit({ type: "database.changed", payload: { projectId } }),
+  });
+  await database.init();
   const ideRuntimeRoot = path.join(resourceRoot, "ide");
   const ideNodeLock = await fs
     .readFile(path.join(ideRuntimeRoot, "node-runtime-lock.json"), "utf8")
@@ -567,7 +633,9 @@ async function start() {
       void log("operation-failed", {
         ...operation,
         durationMs: Date.now() - started,
-        message: error?.message,
+        message: method.startsWith("database.")
+          ? "Database operation failed; details are visible in the requesting console"
+          : error?.message,
       });
       throw new Error(redact(error?.message || error));
     }
@@ -630,6 +698,7 @@ app.on("before-quit", (e) => {
     mcp?.dispose(),
     terminal?.dispose(),
     ide?.dispose(),
+    database?.dispose(),
   ]).then(async (results) => {
     const terminalResult = results[2];
     if (

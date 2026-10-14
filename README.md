@@ -1,5 +1,7 @@
 # GigaCode Workbench
 
+Обновление Data workspace: рабочие PostgreSQL/MCP консоли, inline data editing, transactions, routine DDL, EXPLAIN, потоковые CSV/SQL/XLSX import/export, durable history и защита unknown writes. [Перенос, проверки и открытые DataGrip gaps](docs/suite/DATABASE-RUNTIME-HANDOFF.md). Полное соответствие DataGrip ещё не объявляется.
+
 Обновление 14.10.2026: добавлена рабочая IDE на Theia с Java/Python/frontend расширениями, общими с агентом buffers, семантическими операциями, build/test/debug bridge и восстановлением. Установка, перенос и границы проверки: [IDE-RUNTIME-HANDOFF](docs/suite/IDE-RUNTIME-HANDOFF.md). Полная матрица Ultimate остаётся отдельной пофункциональной приёмкой.
 
 Локальное desktop-приложение для работы с агентом: **проект → задачи → разговоры и роли**. Чат, очередь поручений, файлы, браузер, терминал и материалы задачи находятся в одном рабочем пространстве.

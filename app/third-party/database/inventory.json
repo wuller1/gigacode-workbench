@@ -1,0 +1,163 @@
+[
+  {
+    "package": "@codemirror/autocomplete",
+    "version": "6.20.3",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "codemirror__autocomplete.txt"
+  },
+  {
+    "package": "@codemirror/commands",
+    "version": "6.11.1",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "codemirror__commands.txt"
+  },
+  {
+    "package": "@codemirror/lang-sql",
+    "version": "6.10.0",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "codemirror__lang-sql.txt"
+  },
+  {
+    "package": "@codemirror/language",
+    "version": "6.13.1",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "codemirror__language.txt"
+  },
+  {
+    "package": "@codemirror/search",
+    "version": "6.7.2",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "codemirror__search.txt"
+  },
+  {
+    "package": "@codemirror/state",
+    "version": "6.7.6",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "codemirror__state.txt"
+  },
+  {
+    "package": "@codemirror/view",
+    "version": "6.43.14",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "codemirror__view.txt"
+  },
+  {
+    "package": "@lezer/highlight",
+    "version": "1.2.5",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "lezer__highlight.txt"
+  },
+  {
+    "package": "@lezer/common",
+    "version": "1.5.3",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "lezer__common.txt"
+  },
+  {
+    "package": "@lezer/lr",
+    "version": "1.4.11",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "lezer__lr.txt"
+  },
+  {
+    "package": "@modelcontextprotocol/sdk",
+    "version": "1.32.1",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "modelcontextprotocol__sdk.txt"
+  },
+  {
+    "package": "pg",
+    "version": "8.23.1",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "pg.txt"
+  },
+  {
+    "package": "pg-query-stream",
+    "version": "4.17.1",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "pg-query-stream.txt"
+  },
+  {
+    "package": "pg-cursor",
+    "version": "2.22.1",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "pg-cursor.txt"
+  },
+  {
+    "package": "pg-copy-streams",
+    "version": "7.0.0",
+    "license": "MIT",
+    "sourceLicense": "README.md#license",
+    "copy": "pg-copy-streams.txt"
+  },
+  {
+    "package": "iconv-lite",
+    "version": "0.7.2",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "iconv-lite.txt"
+  },
+  {
+    "package": "saxes",
+    "version": "6.0.0",
+    "license": "ISC",
+    "sourceLicense": "https://github.com/lddubeau/saxes/blob/v6.0.0/LICENSE",
+    "copy": "saxes.txt"
+  },
+  {
+    "package": "xmlchars",
+    "version": "2.2.0",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "xmlchars.txt"
+  },
+  {
+    "package": "sql-formatter",
+    "version": "15.9.0",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "sql-formatter.txt"
+  },
+  {
+    "package": "undici",
+    "version": "8.11.2",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "undici.txt"
+  },
+  {
+    "package": "yauzl",
+    "version": "3.2.1",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "yauzl.txt"
+  },
+  {
+    "package": "yazl",
+    "version": "3.3.1",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "yazl.txt"
+  },
+  {
+    "package": "ajv",
+    "version": "8.20.0",
+    "license": "MIT",
+    "sourceLicense": "LICENSE",
+    "copy": "ajv.txt"
+  }
+]

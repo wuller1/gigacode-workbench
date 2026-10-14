@@ -1,6 +1,19 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useStored } from "./api";
 import { IdePanel } from "./IdePanel";
+const DatabasePanel = lazy(() =>
+  import("./DatabasePanel").then((module) => ({
+    default: module.DatabasePanel,
+  })),
+);
 import { Icon, IconButton, Menu, useLayer } from "./ui";
 import {
   ArtifactsPanel,
@@ -38,6 +51,7 @@ const panels: Record<DockId, { title: string; icon: string }> = {
   artifacts: { title: "Материалы", icon: "file" },
   changes: { title: "Изменения", icon: "diff" },
   workers: { title: "Исполнители", icon: "agents" },
+  data: { title: "Базы данных", icon: "database" },
 };
 type Layout = {
   version: 2;
@@ -325,6 +339,16 @@ export function Workspace({
     switch (id) {
       case "files":
         return <IdePanel {...p} />;
+      case "data":
+        return (
+          <Suspense
+            fallback={
+              <div className="empty-state">Открываю инструменты БД…</div>
+            }
+          >
+            <DatabasePanel {...p} />
+          </Suspense>
+        );
       case "browser":
         return <BrowserPanel {...p} />;
       case "terminal":

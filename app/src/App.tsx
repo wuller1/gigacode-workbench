@@ -114,10 +114,13 @@ function Application() {
     () =>
       window.workbench?.subscribe((event) => {
         if (
-          event.type === "ide.reveal" &&
+          ["ide.reveal", "database.reveal"].includes(event.type) &&
           (event.payload as any).projectId === project?.id
         )
-          setRequested({ id: "files", nonce: Date.now() });
+          setRequested({
+            id: event.type === "database.reveal" ? "data" : "files",
+            nonce: Date.now(),
+          });
       }),
     [project?.id],
   );

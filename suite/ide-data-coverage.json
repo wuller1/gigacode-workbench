@@ -181,9 +181,14 @@
       "feature": "Подключения и драйверы",
       "scope": "MCP-first registry, shared project bindings, per-engine capabilities, TLS/client cert/SSH/proxy/SSO where supported, test/reconnect, driver management",
       "card": "S7-01",
-      "status": "planned_unverified",
+      "status": "partial_evidence",
       "acceptance": "Общее подключение к двум проектам сохраняет разные database/schema/session scopes.",
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "runtimeHandoff": "docs/suite/DATABASE-RUNTIME-HANDOFF.md",
+      "remainingAcceptance": "Only the implemented subset and explicit limits in the runtime handoff are verified; this row remains open for its full scope and Windows/workplace acceptance."
     },
     {
       "id": "DATX-02",
@@ -191,9 +196,14 @@
       "feature": "Каталог объектов",
       "scope": "databases/schemas/tables/views/materialized views, columns/keys/indexes, routines/triggers/sequences/types/users/grants where supported; filters, refresh, search",
       "card": "S7-01",
-      "status": "planned_unverified",
+      "status": "partial_evidence",
       "acceptance": "Partial introspection различается с пустым каталогом; metadata соответствует версии сервера.",
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "runtimeHandoff": "docs/suite/DATABASE-RUNTIME-HANDOFF.md",
+      "remainingAcceptance": "Only the implemented subset and explicit limits in the runtime handoff are verified; this row remains open for its full scope and Windows/workplace acceptance."
     },
     {
       "id": "DATX-03",
@@ -201,9 +211,14 @@
       "feature": "SQL intelligence",
       "scope": "dialect-aware completion, inspections, quick fixes, format, references/usages, rename, extract, parameters, injected SQL, live templates",
       "card": "S7-04",
-      "status": "planned_unverified",
+      "status": "partial_evidence",
       "acceptance": "Corpus каждого диалекта: quoted identifiers, CTE, temp objects и routine body; ошибки parser не приводят к выполнению другого SQL.",
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "runtimeHandoff": "docs/suite/DATABASE-RUNTIME-HANDOFF.md",
+      "remainingAcceptance": "Only the implemented subset and explicit limits in the runtime handoff are verified; this row remains open for its full scope and Windows/workplace acceptance."
     },
     {
       "id": "DATX-04",
@@ -211,9 +226,14 @@
       "feature": "SQL файлы и offline schemas",
       "scope": "scratch/query files, datasource association, SQL history, DDL files as schema source, offline navigation, versioned migration scripts",
       "card": "S7-04",
-      "status": "planned_unverified",
+      "status": "partial_evidence",
       "acceptance": "После перезапуска file-to-target binding сохраняется; offline metadata отмечена timestamp/revision.",
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "runtimeHandoff": "docs/suite/DATABASE-RUNTIME-HANDOFF.md",
+      "remainingAcceptance": "Only the implemented subset and explicit limits in the runtime handoff are verified; this row remains open for its full scope and Windows/workplace acceptance."
     },
     {
       "id": "DATX-05",
@@ -221,9 +241,14 @@
       "feature": "Исполнение и транзакции",
       "scope": "current/selection/script, batches, parameters, multiple results, notices, cancel/timeout, autocommit/manual, isolation/savepoints where supported",
       "card": "S7-02",
-      "status": "planned_unverified",
+      "status": "partial_evidence",
       "acceptance": "Disconnect mid-commit остаётся unknown до сверки; mutation не повторяется автоматически.",
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "runtimeHandoff": "docs/suite/DATABASE-RUNTIME-HANDOFF.md",
+      "remainingAcceptance": "Only the implemented subset and explicit limits in the runtime handoff are verified; this row remains open for its full scope and Windows/workplace acceptance."
     },
     {
       "id": "DATX-06",
@@ -231,9 +256,14 @@
       "feature": "Просмотр и правка данных",
       "scope": "paged/virtual grid, transpose/record view, filters/sort, FK navigation, cell editors JSON/XML/LOB, compare, bulk edit, submit/revert",
       "card": "S7-03",
-      "status": "planned_unverified",
+      "status": "partial_evidence",
       "acceptance": "BIGINT/decimal/NULL/timezone round-trip; stale row конфликт; нет stable identity — нет притворной правки строки.",
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "runtimeHandoff": "docs/suite/DATABASE-RUNTIME-HANDOFF.md",
+      "remainingAcceptance": "Only the implemented subset and explicit limits in the runtime handoff are verified; this row remains open for its full scope and Windows/workplace acceptance."
     },
     {
       "id": "DATX-07",
@@ -251,9 +281,14 @@
       "feature": "Структура и миграции",
       "scope": "DDL editor/create/alter, dependency-aware schema diff, migration preview, introspection snapshots, object compare, rollback limitations",
       "card": "S7-03",
-      "status": "planned_unverified",
+      "status": "partial_evidence",
       "acceptance": "Rename не угадывается как факт; повторный diff стабилен; nontransactional DDL отражён честно.",
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "runtimeHandoff": "docs/suite/DATABASE-RUNTIME-HANDOFF.md",
+      "remainingAcceptance": "Only the implemented subset and explicit limits in the runtime handoff are verified; this row remains open for its full scope and Windows/workplace acceptance."
     },
     {
       "id": "DATX-09",
@@ -281,9 +316,14 @@
       "feature": "Импорт, экспорт и файлы",
       "scope": "CSV/TSV/JSON/SQL/XLSX adapters, encoding/mapping/type inference, streaming, custom extractors, table file viewer, copy formats",
       "card": "S7-05",
-      "status": "planned_unverified",
+      "status": "partial_evidence",
       "acceptance": "Round-trip данных по типам, большие файлы без OOM; formula cells не исполняются при просмотре.",
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "runtimeHandoff": "docs/suite/DATABASE-RUNTIME-HANDOFF.md",
+      "remainingAcceptance": "Only the implemented subset and explicit limits in the runtime handoff are verified; this row remains open for its full scope and Windows/workplace acceptance."
     },
     {
       "id": "DATX-12",
@@ -311,9 +351,14 @@
       "feature": "Агент и восстановление",
       "scope": "visible SQL+results, immutable target, operation receipts, crash recovery, history retention/redaction, multiwindow consoles",
       "card": "S7-02",
-      "status": "planned_unverified",
+      "status": "partial_evidence",
       "acceptance": "В двух проектах и окнах нет чужих результатов, утечки секретов или повторного исполнения запроса.",
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "runtimeHandoff": "docs/suite/DATABASE-RUNTIME-HANDOFF.md",
+      "remainingAcceptance": "Only the implemented subset and explicit limits in the runtime handoff are verified; this row remains open for its full scope and Windows/workplace acceptance."
     }
   ]
 }

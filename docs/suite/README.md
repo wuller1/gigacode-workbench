@@ -12,12 +12,13 @@
 | [BROWSER](BROWSER.md) | Browser Lab, автоматизацию, identity/certificates, DevTools и evidence |
 | [DESIGN-AND-ARTIFACTS](DESIGN-AND-ARTIFACTS.md) | Сбор интерактивных макетов, версии, количественный audit, handoff и проверку реализации |
 | [DESIGN-SYSTEM-AND-UI-KIT](DESIGN-SYSTEM-AND-UI-KIT.md) | Корпоративные DTCG tokens, component/state catalog, оригинальные icons/templates, repository governance, releases и consumer updates |
-| [PROTOTYPE-REVIEW-GATE](PROTOTYPE-REVIEW-GATE.md) | Объём визуального review, две итерации самокритики и обязательное пользовательское одобрение до runtime implementation |
+| [PROTOTYPE-REVIEW-GATE](PROTOTYPE-REVIEW-GATE.md) | Визуальный review и актуальное прямое разрешение реализации от 14.10.2026 |
 | [IDE](IDE.md) | Выбор IDE engine, единые buffers, LSP/DAP, run/test и Java/Python/React |
 | [IDE-ULTIMATE-RESEARCH](IDE-ULTIMATE-RESEARCH.md) | Сравнение IDEA/IntelliJ Platform, Code-OSS, Theia и Monaco; лицензии, gaps и этапы |
 | [IDE-ULTIMATE-PARITY](IDE-ULTIMATE-PARITY.md) | 151 адресных IDE capabilities с реализацией, ограничениями и проверяемой приёмкой |
 | [TASK-TRACKER](TASK-TRACKER.md) | Task aggregate, list/board/timeline, требования, связи и историю |
 | [OPERATIONS](OPERATIONS.md) | OpenShift/Kubernetes, Jenkins, knowledge и MCP adapters |
+| [DATABASE-RUNTIME-HANDOFF](DATABASE-RUNTIME-HANDOFF.md) | Рабочий PostgreSQL/MCP runtime, UI, Windows перенос, проверки и открытые gaps |
 | [DATABASE](DATABASE.md) | Connection vault, schema, SQL, grid, transactions, explain и diagrams |
 | [DEPENDENCY-SECURITY](DEPENDENCY-SECURITY.md) | Sprut, уязвимые версии библиотек, baseline, upgrade proposal и verification |
 | [SOURCE-CONTROL](SOURCE-CONTROL.md) | Git, изменения агента, clone/push и корпоративные pull requests/review |

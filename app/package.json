@@ -1,6 +1,6 @@
 {
   "name": "gigacode-workbench-ui",
-  "version": "0.2.0-preview.1",
+  "version": "0.3.0-preview.1",
   "private": true,
   "description": "A local desktop workspace for ACP coding agents",
   "license": "Apache-2.0",
@@ -23,22 +23,47 @@
     "test:ide": "npm run build && node tools/test-ide-live.mjs",
     "prepare:ide-package": "node tools/package-ide.mjs",
     "test:ide:languages": "npm run build && node tools/test-ide-live.mjs --languages",
-    "test:chat": "npm run build && node tools/test-chat-live.mjs"
+    "test:chat": "npm run build && node tools/test-chat-live.mjs",
+    "test:database": "npm run build && node tools/test-database-live.mjs",
+    "test:database:ui": "npm run build && node tools/test-database-live.mjs --ui"
   },
   "dependencies": {
+    "@codemirror/autocomplete": "6.20.3",
+    "@codemirror/commands": "6.11.1",
+    "@codemirror/lang-sql": "6.10.0",
+    "@codemirror/language": "6.13.1",
+    "@codemirror/search": "6.7.2",
+    "@codemirror/state": "6.7.6",
+    "@codemirror/view": "6.43.14",
+    "@lezer/highlight": "1.2.5",
     "@lydell/node-pty": "1.2.0-beta.15",
+    "@modelcontextprotocol/sdk": "1.32.1",
     "@qwen-code/qwen-code": "0.25.1",
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/xterm": "6.0.0",
+    "ajv": "8.20.0",
+    "iconv-lite": "0.7.2",
+    "pg": "8.23.1",
+    "pg-copy-streams": "7.0.0",
+    "pg-query-stream": "4.17.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "saxes": "6.0.0",
+    "sql-formatter": "15.9.0",
+    "undici": "8.11.2",
+    "yauzl": "3.2.1",
+    "yazl": "3.3.1"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "@types/pg": "8.23.1",
+    "@types/pg-copy-streams": "1.2.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "@types/yauzl": "3.4.0",
+    "@types/yazl": "3.3.1",
     "@vitejs/plugin-react": "^6.0.0",
     "electron": "44.7.0",
     "electron-builder": "26.15.3",
@@ -58,7 +83,8 @@
     "files": [
       "dist/**",
       "dist-electron/**",
-      "package.json"
+      "package.json",
+      "third-party/**/*"
     ],
     "extraResources": [
       {
@@ -154,7 +180,7 @@
     "@electron/get": "5.1.0"
   },
   "engines": {
-    "node": "^22.12.0 || ^24.0.0 || ^26.0.0"
+    "node": "^22.19.0 || ^24.0.0 || ^26.0.0"
   },
   "author": "wuller1"
 }

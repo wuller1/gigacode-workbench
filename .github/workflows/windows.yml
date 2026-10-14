@@ -159,6 +159,14 @@ jobs:
         timeout-minutes: 2
         run: node tools/test-chat-live.mjs
 
+      - name: Real PostgreSQL engine, stdio MCP, COPY and desktop data checks
+        timeout-minutes: 5
+        run: |
+          node tools/test-database-live.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'Database engine acceptance failed' }
+          node tools/test-database-live.mjs --ui
+          if ($LASTEXITCODE -ne 0) { throw 'Database desktop acceptance failed' }
+
       - name: Real IDE language, edit, refactor, task, debug and recovery checks
         timeout-minutes: 12
         run: npm run test:ide:languages
@@ -168,6 +176,10 @@ jobs:
 
       - name: Build unpacked Windows application
         run: npm exec --offline -- electron-builder --win --dir --x64 --publish never
+
+      - name: Packaged application database provider and desktop acceptance
+        timeout-minutes: 5
+        run: node tools/test-database-live.mjs --ui --packaged
 
       - name: Launch and verify actual packaged IDE languages and recovery
         timeout-minutes: 12

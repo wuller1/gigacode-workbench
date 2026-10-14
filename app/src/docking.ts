@@ -6,7 +6,9 @@ export type DockId =
   | "terminal"
   | "artifacts"
   | "changes"
-  | "workers";
+  | "workers"
+  | "data";
+// Database tools share the same editor-group docking behavior as IDE/browser.
 export type Edge = "left" | "right" | "top" | "bottom" | "center";
 export type Group = {
   kind: "group";
@@ -34,6 +36,7 @@ export const validIds: DockId[] = [
   "artifacts",
   "changes",
   "workers",
+  "data",
 ];
 const uid = () => crypto.randomUUID();
 export const group = (tabs: DockId[]): Group => ({

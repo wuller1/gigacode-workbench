@@ -1,4 +1,5 @@
-import { IdeSettings } from './IdeSettings';
+import { DatabaseSettings } from "./DatabaseSettings";
+import { IdeSettings } from "./IdeSettings";
 import { useEffect, useState } from "react";
 import type { AppState, Profile, Settings } from "../shared/types";
 import { profileName } from "./labels";
@@ -103,6 +104,7 @@ export function SettingsView({
     ["general", "Внешний вид", "settings"],
     ["runtime", "CLI и модели", "terminal"],
     ["ide", "IDE", "code"],
+    ["database", "Подключения БД", "database"],
     ["execution", "Выполнение", "agents"],
     ["profiles", "Роли", "branch"],
     ["memory", "Память", "memory"],
@@ -169,7 +171,10 @@ export function SettingsView({
               </button>
             </>
           )}
-          {section === "ide" && <IdeSettings state={state} run={run}/>}
+          {section === "ide" && <IdeSettings state={state} run={run} />}
+          {section === "database" && (
+            <DatabaseSettings state={state} run={run} />
+          )}
           {section === "runtime" && (
             <>
               <h3>CLI и модели</h3>

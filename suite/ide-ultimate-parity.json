@@ -2543,8 +2543,13 @@
         "PERSISTENCE",
         "JPA"
       ],
-      "runtimeStatus": "planned_unverified",
-      "evidence": []
+      "runtimeStatus": "partial_evidence",
+      "evidence": [
+        "docs/suite/evidence/database-runtime-live-darwin.json",
+        "docs/suite/evidence/database-runtime-ui.json"
+      ],
+      "observedSubset": "Shared native PostgreSQL/MCP workspace: isolated SQL sessions, precise paged results, inline optimistic changesets, transactions, routine hash/readback, EXPLAIN, streaming CSV/SQL/XLSX, durable SQL/parameter history, actual lost-COMMIT reconciliation. macOS engine/desktop evidence; Windows pending.",
+      "remainingAcceptance": "Deep multi-schema tree/filters, typed large cells, complete SQL semantics/refactoring, schema/data comparison/ERD, full JDBC/vendor depth and workplace/Windows parity checks remain open."
     },
     {
       "id": "IUP-135",
