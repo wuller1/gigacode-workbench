@@ -1,0 +1,71 @@
+{
+  "suite": "operations-actual-electron",
+  "status": "passed",
+  "platform": "darwin",
+  "mode": "source application and its own provider",
+  "cases": [
+    "Actual App opens Jenkins and discovers its real root catalog",
+    "Folder navigation and favorite filtering include nested real jobs",
+    "Real parameter form runs once and screen updates without a refresh click",
+    "Completed Jenkins build refreshes its catalog row and confirms its receipt without clicks",
+    "Jenkins test and stage tabs read the actual APIs and report absent plugins explicitly",
+    "Actual desktop Jenkins dark and light screenshots preserve usable controls",
+    "Switching projects and independent CI does not retain the old job or log",
+    "Discussing an actual job preserves composer draft and selected session",
+    "Host reveal opens an exact real job instead of just the generic panel",
+    "A delayed same-connection reveal cannot override a newer manual selection",
+    "Actual App stops its running Jenkins build and updates to ABORTED without refresh",
+    "Actual Kubernetes panel selects a namespace and true ConfigMap identities",
+    "Actual YAML editor preserves a dirty draft through external update and blocks stale Apply",
+    "Closing and reopening resource details restores the exact unsaved YAML",
+    "Desktop split panels keep YAML actions in bounds at 1440 and 1024 and restore their dirty editor after maximize",
+    "Actual desktop Kubernetes dark and light screenshots show conflict and syntax",
+    "Reloading server YAML requires an explicit choice, then actual dry-run/apply succeeds",
+    "Cross-project switching retains target-bound YAML instead of exposing another project draft",
+    "Cluster user labels remain editable and are updated on the live toolbar",
+    "Actual resource creation validates and persists the exact user YAML",
+    "Host reveal locates an exact resource and retains its true UID",
+    "Create drafts with the same name in two namespaces keep separate exact contents",
+    "Actual Operations settings warns before discarding secret and CA drafts"
+  ],
+  "passed": 23,
+  "screenshots": [
+    "<SOURCE_ROOT>/app/test-results/operations/operations-jenkins-dark-darwin.png",
+    "<SOURCE_ROOT>/app/test-results/operations/operations-jenkins-light-darwin.png",
+    "<SOURCE_ROOT>/app/test-results/operations/operations-split-1024-dark-darwin.png",
+    "<SOURCE_ROOT>/app/test-results/operations/operations-cluster-dark-darwin.png",
+    "<SOURCE_ROOT>/app/test-results/operations/operations-cluster-light-darwin.png"
+  ],
+  "artifactHashes": {
+    "dist/assets/ClusterPanel-CzmA-yK6.js": "80d17dfdb6cac6adb208647a947dcf4df527fc168ec9551b6dca9a226ffcc190",
+    "dist/assets/DatabasePanel-C_YYDQLK.js": "f61b4cc008a8f479daf0776958d37f0c7012aad0646b3e8b929cf331da13d4b2",
+    "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+    "dist/assets/JenkinsPanel-BE_tbqQK.js": "5f48ac74b2a5fd1575921c6222f70233e7fac55efee07bc1bbb4561337d23b28",
+    "dist/assets/OperationsSettings-CnwBs2EW.js": "097e6a6af5561605d1f1edb6d4e82f79135c83d0598105aa3c6e46ae483409bf",
+    "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+    "dist/assets/index-CXMx8Mqs.js": "54dd4fac7d6ae2423072c7eecfd9b10a45a2a5bf8841156a11de08f899a33b02",
+    "dist/assets/index-jJ59orzg.css": "5e21e6886bf4ac107b72d597de6d151cd8b9965009e983b13be1253f2fd8e1ae",
+    "dist/assets/ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+    "dist/assets/ops-ui-BktV5xRc.js": "fd3475e9c63a3fe9281b57088770d4d3ed3143ff6b2dedc2cd1b0b04844726be",
+    "dist/index.html": "941af9c70ce9d4752c48e3d9152f8c39da1bde3832c5060d6a8604450ceb7234",
+    "dist-electron/database-provider.cjs": "0be6d6f778fa715e6a37aa90c22a25b4c46c911a20e855b0ae24959ce306ef20",
+    "dist-electron/main.cjs": "be0dfc1c94f048ba0670e15f19aaf24c5df52064c250cda20a558dd0aff26fd2",
+    "dist-electron/operations-provider.cjs": "1ff87c73fb0acc0f6893f039bea02718a91913a37ddd5ea64c0e2482d1ecbc20",
+    "dist-electron/preload.cjs": "089cefee118d4335518e4dd90819506adde2a2696d9eafd2ee28ec75f56fb767"
+  },
+  "loadedFixtureHash": "4cc3795b8a06671fbb3e89f1d5f8d84b84abd798bd07dcf42aba8c95d6a96dfe",
+  "faultInjection": "One selected real Jenkins response delayed by a private forwarding proxy; response data remains upstream",
+  "optionalApiReads": [
+    {
+      "method": "GET",
+      "path": "/job/Team/job/Build/2/testReport/api/json",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/job/Team/job/Build/2/wfapi/describe",
+      "status": 404
+    }
+  ],
+  "errors": []
+}

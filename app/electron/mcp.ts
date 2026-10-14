@@ -2,6 +2,11 @@ import { createServer, type Server } from "node:http";
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import { promises as fs } from "node:fs";
 import type { AppState } from "../shared/types";
+import { opsReadOperations, opsActionOperations } from "../shared/operations";
+import {
+  failure as opsFailure,
+  normalizeError as normalizeOpsError,
+} from "./operations/errors";
 type Tool = {
   name: string;
   description: string;
@@ -30,6 +35,56 @@ const tool = (
   },
 });
 const tools: Tool[] = [
+  tool(
+    "ops_snapshot",
+    "List project-bound Jenkins/Kubernetes/OpenShift connections, actual capabilities and captured operation receipts. Credentials, manifest bodies and full logs are excluded. Select an actual connection ID; do not invent controllers or namespaces.",
+    {},
+  ),
+  tool(
+    "ops_query",
+    "Read the actual Operations MCP adapter. Use ci.jobs/job/queue/run/logs for Jenkins or discovered cluster resource group/version/resource/namespace/name. Results are bounded/cursored. Unsupported, Forbidden, stale and empty are distinct; never infer success from HTML or old results.",
+    {
+      connectionId: str,
+      operation: { type: "string", enum: [...opsReadOperations] },
+      input: { type: "object", additionalProperties: true },
+    },
+    ["connectionId", "operation"],
+  ),
+  tool(
+    "ops_prepare",
+    "Prepare an exact Jenkins trigger/cancel/stop or Kubernetes apply/scale/restart/delete from real parameter schema, RBAC, UID/resourceVersion and dry-run. The immutable preview captures connection/auth/schema generation. Preparing does not execute the mutation; never invent job parameters.",
+    {
+      connectionId: str,
+      operation: { type: "string", enum: [...opsActionOperations] },
+      input: { type: "object", additionalProperties: true },
+      operationId: str,
+    },
+    ["connectionId", "operation", "input"],
+  ),
+  tool(
+    "ops_execute",
+    "Execute the previously captured preparedActionId once. Duplicate IDs return the same durable receipt. Unknown outcome requires read-only ops_reconcile; do not create a new action to replay an unconfirmed trigger or apply.",
+    { preparedActionId: str },
+    ["preparedActionId"],
+  ),
+  tool(
+    "ops_reconcile",
+    "Read remote queue/build or Kubernetes state for a captured receipt. This never repeats the write. Terminal status requires observed remote evidence; leaving the panel or switching projects does not cancel the remote operation.",
+    { receiptId: str },
+    ["receiptId"],
+  ),
+  tool(
+    "ops_reveal",
+    "Show the actual Jenkins or Cluster panel in this session's window with the captured connection/target. This changes only the visible tool, never the remote resource.",
+    {
+      kind: { type: "string", enum: ["jenkins", "cluster"] },
+      connectionId: str,
+      jobId: str,
+      number: num,
+      creation: { type: "boolean" },
+      target: { type: "object", additionalProperties: true },
+    },
+  ),
   tool(
     "database_effect_read",
     "Inspect the durably captured changeset whose commit outcome is unknown. This does not replay writes. Read bounded chunks and verify actual records via a separate console.",
@@ -640,6 +695,13 @@ export class UiMcpServer {
   private port = 0;
   private tokens = new Map<string, string>();
   private stopping = false;
+  private opsTargets = new Map<
+    string,
+    {
+      projectId: string;
+      connections: Map<string, { targetHash: string; authGeneration: number }>;
+    }
+  >();
   constructor(
     private snapshot: () => AppState,
     private invoke: (method: string, p: any, sessionId: string) => Promise<any>,
@@ -741,7 +803,14 @@ export class UiMcpServer {
               content: [
                 {
                   type: "text",
-                  text: String(error?.message || "Tool failed").slice(0, 2000),
+                  text: String(message.params?.name || "").startsWith("ops_")
+                    ? JSON.stringify({
+                        error: normalizeOpsError(
+                          error,
+                          message.params?.name === "ops_execute",
+                        ),
+                      })
+                    : String(error?.message || "Tool failed").slice(0, 2000),
                 },
               ],
             };
@@ -948,6 +1017,12 @@ export class UiMcpServer {
       throw new Error("No user answer yet; do not assume approval");
     }
     const mapping: Record<string, string> = {
+      ops_snapshot: "ops.snapshot",
+      ops_query: "ops.query",
+      ops_prepare: "ops.prepare",
+      ops_execute: "ops.execute",
+      ops_reconcile: "ops.reconcile",
+      ops_reveal: "ops.reveal",
       database_effect_read: "database.effect.read",
       database_effect_resolve: "database.effect.resolve",
       database_snapshot: "database.snapshot",
@@ -1016,10 +1091,43 @@ export class UiMcpServer {
     };
     const method = mapping[name];
     if (!method) throw new Error("Unsupported tool");
+    if (name === "ops_snapshot") {
+      const value = await this.invoke(
+        method,
+        { projectId: task.projectId, sessionId },
+        sessionId,
+      );
+      this.opsTargets.set(sessionId, {
+        projectId: task.projectId,
+        connections: new Map(
+          value.connections.map((c: any) => [
+            c.id,
+            { targetHash: c.targetHash, authGeneration: c.authGeneration },
+          ]),
+        ),
+      });
+      return value;
+    }
+    const observed = this.opsTargets.get(sessionId);
+    const captured =
+      observed?.projectId === task.projectId
+        ? observed.connections.get(p.connectionId)
+        : undefined;
+    if (["ops_query", "ops_prepare"].includes(name) && !captured)
+      throw opsFailure(
+        "validation",
+        "Сначала прочитайте ops_snapshot и выберите доступное подключение из его результата.",
+      );
     return this.invoke(
       method,
       {
         ...p,
+        ...(["ops_query", "ops_prepare"].includes(name)
+          ? {
+              expectedTargetHash: captured!.targetHash,
+              expectedAuthGeneration: captured!.authGeneration,
+            }
+          : {}),
         sessionId,
         projectId: task.projectId,
         taskId: task.id,
@@ -1035,6 +1143,7 @@ export class UiMcpServer {
   async dispose() {
     this.stopping = true;
     this.tokens.clear();
+    this.opsTargets.clear();
     this.server?.closeAllConnections();
     await new Promise<void>((r) => {
       if (!this.server) return r();

@@ -1,0 +1,50 @@
+{
+  "command": "npm run test:ui",
+  "script": "node tools/test-modal-ui.mjs && node tools/test-composer-ui.mjs && node tools/test-settings-ui.mjs && node tools/test-operations-review-ui.mjs && node tools/test-panel-boundary-ui.mjs",
+  "exitCode": 0,
+  "status": "passed",
+  "passed": 43,
+  "suites": [
+    {
+      "suite": "offline-modal-ui",
+      "passed": 10
+    },
+    {
+      "suite": "offline-composer-ui",
+      "passed": 6,
+      "evidence": "<ISOLATED_TEST_ROOT>/workbench-composer-ui-HyId7G"
+    },
+    {
+      "suite": "offline-settings-ui",
+      "passed": 7
+    },
+    {
+      "suite": "offline-operations-review-ui",
+      "passed": 14,
+      "evidence": "<ISOLATED_TEST_ROOT>/workbench-ops-review-ui-5idqb2/report.json"
+    },
+    {
+      "suite": "offline-panel-boundary-ui",
+      "passed": 6
+    }
+  ],
+  "scope": "Actual isolated Electron; dev React StrictMode for Ops Review, production React for ToolBoundary. Controlled IPC fixtures; real SettingsView/WorkbenchService/AtomicStore. No live Jenkins/Kubernetes/CLI/provider/Windows validation claim. Modal/Settings/Boundary temp fixtures clean themselves up after printing successful results.",
+  "baseCommit": "afd7b2c779cbc0606cbeb3f79f1da2cb3e973274",
+  "workingTreeUncommitted": true,
+  "reportedAt": "2026-10-14T09:14:13.158975+00:00",
+  "observedSourceHashesAtReport": {
+    "src/App.tsx": "1ffbe697b57d47703c03adee20fc9c3ecc1570e2055077c3984f040d58a69a16",
+    "src/ui.tsx": "c393a5ba5856c58b75b4738ae8d3ccdf47a30b83531e61825f14fdc598692dcd",
+    "src/ToolBoundary.tsx": "f17ecccba2101bc1f9d0f22c05ca749e16ad9eaccbdc29f2e554e81e38ed102b",
+    "src/SettingsView.tsx": "0f0c3768992b262769eca55290b91d52b4c7891d3aab4717cfb9c33b164c4c61",
+    "src/ops-ui.tsx": "3dad227d49fa638842878f8c7349121e509c480b8d05ce99a3608f1d13d31131",
+    "src/ClusterPanel.tsx": "ce2aa4b9cc808c94c86874e92b592640386989b26a80bbbfbb86522cbf60be1b",
+    "src/JenkinsPanel.tsx": "94e0f864053be37ec2a85bb639376b4d2c7ceb03859c6debc152bd5b52874eb0",
+    "src/operations.css": "b9038c0975357f06516a9486a00a960e5095beb0ede08ae6e24a40fb9309c03e",
+    "tools/test-modal-ui.mjs": "15afe091b537b7f6901ca7cb7331ded5fe47173ec94734a92e463b34d18ed538",
+    "tools/test-composer-ui.mjs": "a799ab05cdb340200b5e8dc259bae697057a81662d873d17bc6fc36708e7da60",
+    "tools/test-settings-ui.mjs": "a8992f2bcbcd0d152bcd4b0221c3de12481e2d5e496c9b5aabfc6d4df9740a11",
+    "tools/test-operations-review-ui.mjs": "cbd6d14759e0853fd50bfe0ac489928d037b6283b7d788a43ecbbf62fe9c8168",
+    "tools/test-panel-boundary-ui.mjs": "3aaad918f79f4ba0c1dc1fb94fdbca05f2273be2d02a1492daf2f0e312da119d"
+  }
+}

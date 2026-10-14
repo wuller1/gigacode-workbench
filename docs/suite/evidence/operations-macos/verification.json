@@ -1,0 +1,43 @@
+{
+  "status": "passed",
+  "platform": "darwin-arm64",
+  "appVersion": "0.4.0-preview.1",
+  "baseCommit": "afd7b2c779cbc0606cbeb3f79f1da2cb3e973274",
+  "workingTreeUncommittedAtTest": true,
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "note": "Vite main chunk size warning remains; build passes."
+  },
+  "unit": {
+    "command": "npm test",
+    "passed": 182,
+    "skipped": 46,
+    "passedFiles": 23,
+    "skippedFiles": 2,
+    "skipReason": "2 platform-specific +44 opt-in live PostgreSQL without fixture-server",
+    "node": "v26.8.1"
+  },
+  "isolatedUi": {
+    "passed": 43,
+    "report": "isolated-ui.json"
+  },
+  "liveNative": {
+    "passed": 23,
+    "report": "native.json"
+  },
+  "liveDesktop": {
+    "passed": 23,
+    "report": "desktop.json"
+  },
+  "postRunHashVerification": {
+    "sourceFiles": 26,
+    "compiledArtifacts": 15,
+    "matchesCurrentSource": true
+  },
+  "appNpmAudit": {
+    "reportedVulnerabilities": 0,
+    "scope": "app tree only, IDE upstream warnings remain separately documented"
+  },
+  "boundary": "No corporate access, paid model prompts, Windows, real OpenShift/Istio controllers or kubelet claims."
+}

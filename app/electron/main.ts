@@ -24,6 +24,11 @@ import { readReference } from "./reference";
 import { bundledCli } from "./bundled-cli";
 import { IdeService } from "./ide";
 import { DatabaseService } from "./database/service";
+import { OpsService } from "./operations/service";
+import {
+  normalizeError as normalizeOpsError,
+  failure as opsFailure,
+} from "./operations/errors";
 import type { HostEvent } from "../shared/types";
 
 if (process.env.WORKBENCH_DATA_DIR)
@@ -42,6 +47,7 @@ let service: WorkbenchService,
   mcp: UiMcpServer;
 let ide: IdeService;
 let database: DatabaseService;
+let operations: OpsService;
 let quitting = false,
   shutdownPreparing = false,
   previewServer: Server | undefined,
@@ -256,6 +262,57 @@ async function invoke(
   agentSession?: string,
 ): Promise<any> {
   if (method === "workbench.reference") return readReference(resourceRoot, p);
+  if (method.startsWith("ops.")) {
+    if (
+      shutdownPreparing &&
+      !["ops.snapshot", "ops.query", "ops.reconcile"].includes(method)
+    )
+      throw opsFailure(
+        "conflict",
+        "Приложение готовится к закрытию. Новые Operations dispatch временно остановлены.",
+      );
+    if (agentSession) {
+      const owner = sessionProject(agentSession);
+      if (p.projectId && p.projectId !== owner.id)
+        throw opsFailure(
+          "forbidden",
+          "Нельзя управлять Operations другого проекта",
+        );
+      p = { ...p, projectId: owner.id };
+    }
+    if (method === "ops.reveal") {
+      if (
+        !service
+          .snapshot()
+          .projects.some((value) => value.id === p.projectId && !value.archived)
+      )
+        throw opsFailure("validation", "Выберите существующий проект");
+      const connection = p.connectionId
+        ? operations
+            .snapshot(p.projectId)
+            .connections.find((value) => value.id === p.connectionId)
+        : undefined;
+      if (p.connectionId && !connection)
+        throw opsFailure(
+          "forbidden",
+          "Подключение не привязано к выбранному проекту",
+        );
+      const kind = connection
+        ? connection.kind === "jenkins"
+          ? "jenkins"
+          : "cluster"
+        : p.kind;
+      if (!["jenkins", "cluster"].includes(kind))
+        throw opsFailure("validation", "Выберите Jenkins или Cluster панель");
+      emit({
+        type: "ops.reveal",
+        targetWindowId: window.id,
+        payload: { ...p, kind },
+      });
+      return { requested: true, kind };
+    }
+    return operations.invoke(method, p, !!agentSession);
+  }
   if (method.startsWith("database.")) {
     if (
       shutdownPreparing &&
@@ -606,6 +663,26 @@ async function start() {
       emit({ type: "database.changed", payload: { projectId } }),
   });
   await database.init();
+  operations = new OpsService({
+    dataDir,
+    node: process.execPath,
+    provider: path.join(__dirname, "operations-provider.cjs"),
+    project: (id) =>
+      service
+        .snapshot()
+        .projects.find((value) => value.id === id && !value.archived),
+    vault: {
+      available: () =>
+        safeStorage.isEncryptionAvailable() &&
+        (process.platform !== "linux" ||
+          safeStorage.getSelectedStorageBackend() !== "basic_text"),
+      encrypt: (value) => safeStorage.encryptString(value),
+      decrypt: (value) => safeStorage.decryptString(value),
+    },
+    changed: (projectId) =>
+      emit({ type: "ops.changed", payload: { projectId } }),
+  });
+  await operations.init();
   const ideRuntimeRoot = path.join(resourceRoot, "ide");
   const ideNodeLock = await fs
     .readFile(path.join(ideRuntimeRoot, "node-runtime-lock.json"), "utf8")
@@ -699,7 +776,15 @@ async function start() {
       method,
       windowId: window.id,
       ...Object.fromEntries(
-        ["id", "sessionId", "taskId", "projectId"]
+        [
+          "id",
+          "sessionId",
+          "taskId",
+          "projectId",
+          "connectionId",
+          "preparedActionId",
+          "receiptId",
+        ]
           .filter(
             (key) =>
               typeof p[key] === "string" &&
@@ -722,10 +807,16 @@ async function start() {
       void log("operation-failed", {
         ...operation,
         durationMs: Date.now() - started,
-        message: method.startsWith("database.")
-          ? "Database operation failed; details are visible in the requesting console"
-          : error?.message,
+        message:
+          method.startsWith("database.") || method.startsWith("ops.")
+            ? "Scoped operation failed; details are visible in the requesting tool"
+            : error?.message,
       });
+      if (method.startsWith("ops."))
+        throw new Error(
+          "OPS_ERROR:" +
+            JSON.stringify(normalizeOpsError(error, method === "ops.execute")),
+        );
       throw new Error(redact(error?.message || error));
     }
   });
@@ -826,6 +917,7 @@ app.on("before-quit", (e) => {
         terminal?.dispose(),
         ide?.dispose(),
         database?.dispose(),
+        operations?.dispose(),
       ]);
     })
     .then(async (results) => {

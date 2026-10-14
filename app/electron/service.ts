@@ -67,6 +67,7 @@ type Live = {
   intentionalClose: boolean;
   assistantId?: string;
   cancelled: boolean;
+  persistenceError?: Error;
 };
 export interface WorkbenchOptions {
   dataDir: string;
@@ -969,12 +970,22 @@ export class WorkbenchService {
         return this.snapshot().artifacts.filter(
           (a) => a.taskId === params.taskId,
         );
-      case "memory.read":
-        return { text: this.store.read()._memory };
+      case "memory.read": {
+        const text = this.store.read()._memory;
+        return { text, hash: createHash("sha256").update(text).digest("hex") };
+      }
       case "memory.write":
         return this.change((state) => {
+          const hash = createHash("sha256").update(state._memory).digest("hex");
+          if (params.expectedHash !== hash)
+            throw new Error(
+              "MEMORY_CONFLICT: Память изменилась. Перечитайте её и объедините изменения; ваш черновик не сохранён.",
+            );
           state._memory = memoryText(params.text, 20000, true);
-          return { saved: true };
+          return {
+            saved: true,
+            hash: createHash("sha256").update(state._memory).digest("hex"),
+          };
         });
       case "memory.remember":
         return this.remember(params);
@@ -1396,6 +1407,9 @@ export class WorkbenchService {
       dispatched = true;
       const result = await live.client.prompt(live.remoteId, prompt);
       await this.flushUpdates();
+      // A timed flush may already have failed before the terminal ACP response.
+      // Its settled queue tail must not erase that turn's unknown outcome.
+      if (live.persistenceError) throw live.persistenceError;
       live.hasContext = true;
       await this.change((state) => {
         const s = present(state.sessions, sessionId, "Session");
@@ -1885,7 +1899,7 @@ export class WorkbenchService {
     const batches = this.streamUpdates;
     this.streamUpdates = new Map();
     if (!batches.size) return this.flushPromise;
-    this.flushPromise = this.flushPromise
+    const operation = this.flushPromise
       .then(async () => {
         const artifactClaims: {
           sessionId: string;
@@ -2050,10 +2064,24 @@ export class WorkbenchService {
         }
       })
       .catch(async (e) => {
-        await this.diagnostic(`Could not persist ACP output: ${redact(e)}`);
+        for (const [sessionId, entries] of batches) {
+          const live = this.live.get(sessionId);
+          if (
+            live &&
+            entries.some((entry) => entry.generation === live.generation)
+          )
+            live.persistenceError ||=
+              e instanceof Error ? e : new Error(String(e));
+        }
+        await this.diagnostic(
+          `Could not persist ACP output: ${redact(e)}`,
+        ).catch(() => undefined);
         throw e;
       });
-    return this.flushPromise;
+    // Serialize writes without letting one failed batch poison every session.
+    // The caller still receives the rejection, and affected turns retain it above.
+    this.flushPromise = operation.catch(() => undefined);
+    return operation;
   }
   private async requestPermission(
     sessionId: string,

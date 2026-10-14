@@ -1,0 +1,26 @@
+{
+  "passed": [
+    "ConsoleNote envelopes are stripped across every chunk boundary without changing visible text",
+    "development StrictMode reuses pending prepare and unlocks preview",
+    "accepted receipt becomes confirmed from host event without another execute",
+    "unmounted pending prepare cannot replace the next target",
+    "failed StrictMode prepare can be explicitly retried",
+    "unknown execute follows durable receipt and never retries write",
+    "initial Jenkins and Cluster empty/unassigned/unprobed states render without crashes or queries",
+    "same-origin native windows serialize YAML CAS and retain both drafts",
+    "typing during an awaited lock preserves and durably saves newer text",
+    "unavailable Web Locks retains draft and blocks close without a racy fallback",
+    "pending old resource close cannot close a newer selected resource",
+    "pending old type change cannot replace another connection creation draft",
+    "confirmed old creation cannot navigate after a newer connection selection",
+    "confirmed creation keeps newer typing while its persistence is pending"
+  ],
+  "sourceHashes": {
+    "src/ops-ui.tsx": "3dad227d49fa638842878f8c7349121e509c480b8d05ce99a3608f1d13d31131",
+    "src/ClusterPanel.tsx": "ce2aa4b9cc808c94c86874e92b592640386989b26a80bbbfbb86522cbf60be1b",
+    "src/JenkinsPanel.tsx": "94e0f864053be37ec2a85bb639376b4d2c7ceb03859c6debc152bd5b52874eb0",
+    "src/window-close.ts": "196e50c3362d8c72178da07867131c055101a04af428d707d8339862c82eb5bb",
+    "tools/test-operations-review-ui.mjs": "cbd6d14759e0853fd50bfe0ac489928d037b6283b7d788a43ecbbf62fe9c8168"
+  },
+  "scope": "Actual Electron development React StrictMode, controlled IPC fixture; native same-origin Web Locks. No live Jenkins/Kubernetes validation claim."
+}

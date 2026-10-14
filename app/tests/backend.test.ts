@@ -96,6 +96,10 @@ async function logs(directory: string) {
     return [];
   }
 }
+async function writeMemory(service: WorkbenchService, text: string) {
+  const { hash: expectedHash } = await service.invoke("memory.read");
+  return service.invoke("memory.write", { text, expectedHash });
+}
 afterEach(async () => {
   await Promise.all(
     services.splice(0).map((s) => s.dispose().catch(() => undefined)),
@@ -180,9 +184,7 @@ describe("durable backend", () => {
       emit: () => undefined,
     });
     await expect(second.init()).rejects.toThrow("already owned");
-    await x.service.invoke("memory.write", {
-      text: "User prefers scoped evidence.",
-    });
+    await writeMemory(x.service, "User prefers scoped evidence.");
     await x.service.dispose();
     services.splice(services.indexOf(x.service), 1);
     const resumed = new WorkbenchService({
@@ -198,6 +200,7 @@ describe("durable backend", () => {
     ]);
     expect(await resumed.invoke("memory.read")).toEqual({
       text: "User prefers scoped evidence.",
+      hash: expect.stringMatching(/^[a-f0-9]{64}$/),
     });
   });
   it("does not replace corrupt history with an empty state", async () => {
@@ -251,7 +254,7 @@ describe("durable backend", () => {
   });
   it("refuses memory overflow, foreign scope and common secrets without changing stored notes", async () => {
     const x = await setup();
-    await x.service.invoke("memory.write", { text: "x".repeat(19990) });
+    await writeMemory(x.service, "x".repeat(19990));
     const note = { statement: "A fact", evidence: "A source", scope: "global" };
     await expect(x.service.invoke("memory.remember", note)).rejects.toThrow(
       "nothing was truncated",
@@ -271,18 +274,76 @@ describe("durable backend", () => {
         statement: "s".repeat(1001),
       }),
     ).rejects.toThrow("Invalid");
-    await expect(
-      x.service.invoke("memory.write", { text: "y".repeat(20001) }),
-    ).rejects.toThrow("Invalid");
+    await expect(writeMemory(x.service, "y".repeat(20001))).rejects.toThrow(
+      "Invalid",
+    );
     expect((await x.service.invoke("memory.read")).text).toBe(
       "x".repeat(19990),
     );
   });
+  it("rejects a stale memory editor after a concurrent agent append and survives restart", async () => {
+    const x = await setup();
+    await writeMemory(x.service, "Original user note.");
+    const stale = await x.service.invoke("memory.read");
+    await x.service.invoke("memory.remember", {
+      scope: "global",
+      statement: "Concurrent agent note.",
+      evidence: "Verified source in another session.",
+    });
+    await expect(
+      x.service.invoke("memory.write", {
+        text: stale.text + "\nEditor draft.",
+        expectedHash: stale.hash,
+      }),
+    ).rejects.toThrow("MEMORY_CONFLICT");
+    const current = await x.service.invoke("memory.read");
+    expect(current.text).toContain("Concurrent agent note.");
+    expect(current.text).not.toContain("Editor draft.");
+    const merged = current.text + "\nEditor draft.";
+    const receipt = await x.service.invoke("memory.write", {
+      text: merged,
+      expectedHash: current.hash,
+    });
+    expect(receipt.hash).not.toBe(current.hash);
+    await x.service.dispose();
+    services.splice(services.indexOf(x.service), 1);
+    const resumed = new WorkbenchService({
+      dataDir: x.data,
+      bundleDir: x.bundle,
+      emit: () => undefined,
+    });
+    await resumed.init();
+    services.push(resumed);
+    expect(await resumed.invoke("memory.read")).toEqual({
+      text: merged,
+      hash: receipt.hash,
+    });
+  });
+  it("serializes competing memory editors and refuses unversioned overwrite", async () => {
+    const x = await setup();
+    const baseline = await x.service.invoke("memory.read");
+    const writes = await Promise.allSettled([
+      x.service.invoke("memory.write", {
+        text: "First editor",
+        expectedHash: baseline.hash,
+      }),
+      x.service.invoke("memory.write", {
+        text: "Second editor",
+        expectedHash: baseline.hash,
+      }),
+    ]);
+    expect(writes.map((r) => r.status)).toEqual(["fulfilled", "rejected"]);
+    await expect(
+      x.service.invoke("memory.write", { text: "Blind overwrite" }),
+    ).rejects.toThrow("MEMORY_CONFLICT");
+    expect((await x.service.invoke("memory.read")).text).toBe("First editor");
+  });
   it("keeps deferred-tool discovery and bounded memory retrieval in fresh and recovered context", async () => {
     const x = await setup();
-    await x.service.invoke("memory.write", {
-      text: "Reference ".repeat(700) + "MEMORY_TAIL_ON_DEMAND",
-    });
+    await writeMemory(
+      x.service,
+      "Reference ".repeat(700) + "MEMORY_TAIL_ON_DEMAND",
+    );
     await x.service.invoke("session.send", {
       id: x.a.id,
       text: "first context",
@@ -893,6 +954,71 @@ describe("durable backend", () => {
       x.service.snapshot().sessions[0].messages.at(-1)?.tools?.[0].output,
     ).toBe("done");
   });
+  it.each([false, true])(
+    "contains a failed ACP output write without poisoning another real process (timed flush: %s)",
+    async (timed) => {
+      const x = await setup();
+      const store = (x.service as any).store;
+      const original = store.atomic.bind(store);
+      let faults = 0;
+      store.atomic = async (destination: string, content: string) => {
+        if (
+          !faults &&
+          destination === store.filename &&
+          content.includes("start:FAULT_A")
+        ) {
+          faults++;
+          throw Object.assign(new Error("CONTROLLED_TRANSIENT_EIO"), {
+            code: "EIO",
+          });
+        }
+        return original(destination, content);
+      };
+      await x.service.invoke("session.send", {
+        id: x.a.id,
+        text: timed ? "FAULT_A hold" : "FAULT_A",
+      });
+      await until(() => faults === 1);
+      if (timed)
+        expect(x.service.snapshot().sessions[0].status).toBe("running");
+      await until(() => x.service.snapshot().sessions[0].status === "unknown");
+      const failed = x.service.snapshot().sessions[0];
+      expect(failed.error).toContain("CONTROLLED_TRANSIENT_EIO");
+      expect(failed.messages.at(-1)?.outcome).toBe("unknown");
+      await expect(
+        x.service.invoke("queue.resume", { sessionId: x.a.id }),
+      ).rejects.toThrow("Recover the unknown");
+      // A separate durable write proves that the fault has gone away; no prompt is retried.
+      await x.service.invoke("settings.update", {
+        patch: { maxConcurrent: 3 },
+      });
+      await x.service.invoke("session.send", { id: x.b.id, text: "HEALTHY_B" });
+      await until(
+        () => x.service.snapshot().sessions[1].status === "completed",
+      );
+      const healthy = x.service.snapshot().sessions[1];
+      expect(healthy.messages.at(-1)?.content).toBe(
+        "start:HEALTHY_B done:HEALTHY_B",
+      );
+      expect(healthy.messages.at(-1)?.outcome).toBe("completed");
+      const prompts = (await logs(x.project)).filter(
+        (entry) => entry.type === "prompt",
+      );
+      expect(prompts.map((entry) => entry.command)).toEqual([
+        timed ? "FAULT_A hold" : "FAULT_A",
+        "HEALTHY_B",
+      ]);
+      expect(new Set(prompts.map((entry) => entry.pid)).size).toBe(2);
+      expect(faults).toBe(1);
+      const persisted = JSON.parse(
+        await fs.readFile(path.join(x.data, "state.json"), "utf8"),
+      );
+      expect(persisted.sessions.map((s: any) => s.status)).toEqual([
+        "unknown",
+        "completed",
+      ]);
+    },
+  );
   it("captures immutable artifacts and rejects application-private files", async () => {
     const x = await setup();
     const source = path.join(x.project, "note.txt");

@@ -1,3 +1,4 @@
+import type { OpsPanelProps } from "./ops-ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
@@ -29,7 +30,10 @@ export interface PanelProps {
   visible: boolean;
   selectSession: (id: string) => void;
   openBrowser?: () => void;
+  onSettings?: () => void;
+  onAssist?: (text: string) => void;
   requestedArtifact?: { id: string; nonce: number };
+  requestedOps?: OpsPanelProps["reveal"];
 }
 interface BrowserTab {
   id: string;

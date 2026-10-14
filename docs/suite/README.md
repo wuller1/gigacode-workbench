@@ -1,5 +1,7 @@
 # Полное рабочее пространство: карта реализации
 
+Рабочий Jenkins/cluster срез: [перенос и настройка](OPERATIONS-RUNTIME-HANDOFF.md), [итеративный runtime-аудит](OPERATIONS-RUNTIME-AUDIT.md). Полные целевые console workflows остаются отдельными карточками.
+
 Этот пакет описывает целевую реализацию расширенного GigaCode Workbench и автономный перенос уже существующего кода на рабочем компьютере. Он не утверждает, что перечисленные функции уже находятся в runtime текущего `app/`.
 
 Главная точка входа для агента — [`SUITE-UPGRADE-AGENT.md`](../../SUITE-UPGRADE-AGENT.md). Интерактивный визуальный контракт — [`design/suite-workspace-prototype.html`](../../design/suite-workspace-prototype.html). 14.10.2026 пользователь разрешил реализацию и любые улучшения UI/UX: [`implementation_authorized_by_user`](PROTOTYPE-REVIEW-GATE.md). Рабочая IDE описана в [IDE-RUNTIME-HANDOFF](IDE-RUNTIME-HANDOFF.md). Машиночитаемые карточки — [`suite/implementation-plan.json`](../../suite/implementation-plan.json).

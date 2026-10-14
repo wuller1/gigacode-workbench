@@ -1,0 +1,77 @@
+{
+  "status": "passed",
+  "commands": [
+    {
+      "command": "node tools/test-chat-live.mjs",
+      "passed": 3,
+      "scope": "Shipped current Electron app with offline ACP model peer, no paid provider",
+      "evidence": "<ISOLATED_TEST_ROOT>/workbench-chat-live-0Dm3RW"
+    },
+    {
+      "command": "node tools/test-database-live.mjs",
+      "passed": 44,
+      "scope": "Disposable real PostgreSQL backend tests",
+      "vitest": "<ISOLATED_TEST_ROOT>/workbench-pg-live-EvNnlO/vitest.json"
+    },
+    {
+      "command": "node tools/test-database-live.mjs --ui",
+      "passed": 25,
+      "scope": "Actual shipped current Electron and disposable real PostgreSQL"
+    }
+  ],
+  "totalPassed": 72,
+  "buildPerformed": false,
+  "productEditsPerformed": false,
+  "nodeVersion": "v26.8.1",
+  "reportedAt": "2026-10-14T09:28:45.206340+00:00",
+  "trackedEvidenceRewritten": [
+    "docs/suite/evidence/database-runtime-dark.png",
+    "docs/suite/evidence/database-runtime-live-darwin.json",
+    "docs/suite/evidence/database-runtime-ui.json",
+    "docs/suite/evidence/database-runtime-relations.png",
+    "docs/suite/evidence/database-runtime-light.png"
+  ],
+  "dataEvidenceSummary": {
+    "database-runtime-live-darwin.json": {
+      "at": "2026-10-14T09:27:50.581Z",
+      "tests": 44,
+      "passed": 44,
+      "failed": 0,
+      "scope": "Real disposable PostgreSQL. Direct engine/file tests, real stdio MCP provider and HTTPS transport fixture. No workplace adapter or 10 GB stress claim."
+    },
+    "database-runtime-ui.json": {
+      "at": "2026-10-14T09:28:06.604Z",
+      "passed": [
+        "Asynchronous host waits reject false results instead of accepting a Promise as success",
+        "SQL editor executes through actual MCP and displays precise result without another click",
+        "Keyboard SQL execution and persisted console draft",
+        "Schema popup selects several schemas, filters at source and preserves the SQL document",
+        "Catalog opens table in its own document and keeps SQL console intact",
+        "Grid keyboard editing preserves row identity, blocks result transitions and leaves PostgreSQL unchanged until submit",
+        "Data editor stages a cell inline and applies an actual optimistic row update",
+        "A new row is edited inline with DEFAULT/NULL semantics and inserted on submit",
+        "Structured filters execute on PostgreSQL and can be removed without editing JSON",
+        "Manual transaction reports active, keeps writes private, and rollback restores actual data",
+        "Table metadata uses compact real columns/keys/indexes with inline highlighted definitions",
+        "Relations graph reads actual foreign keys and follows pointer across classic scrollbar appearance at reduced zoom",
+        "Document close rejects work added during confirmation; reopen and switching preserve independent SQL",
+        "Closing immediately after typing flushes the SQL draft before hiding and reopening the document",
+        "Duplicate column labels display distinct positional values",
+        "EXPLAIN shows the actual server plan and keeps estimates distinct from measured execution",
+        "Server syntax errors produce a position marker and a successful new query clears the error",
+        "Light and dark SQL palettes, desktop tree resize and layout bounds",
+        "SQL history reads captured SQL and target in bounded chunks and closes with Escape",
+        "Routine documents reject generic SQL execution and apply the verified server definition through the protected editor",
+        "Two real windows preserve a conflicting SQL draft and can save it as a separate durable console",
+        "Retargeting a disconnected connection labels old documents as previous-server snapshots and prevents execution",
+        "Native window close awaits the last SQL keystrokes before destroying renderer",
+        "Native Close and application Quit preserve an active manual transaction until explicit Rollback",
+        "Repeated application Quit cannot bypass the final durable SQL save"
+      ],
+      "scope": "Real Electron renderer/IPC/stdio MCP/PostgreSQL, isolated cluster. No workplace MCP, GigaCode fork, VARM or unsupported platform claim."
+    },
+    "database-ux-audit.json": {
+      "status": "macos-and-windows-source-packaged-verified"
+    }
+  }
+}

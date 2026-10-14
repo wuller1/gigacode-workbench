@@ -1,0 +1,34 @@
+{
+  "suite": "operations-actual-electron",
+  "status": "failed",
+  "platform": "darwin",
+  "mode": "source application and its own provider",
+  "cases": [],
+  "passed": 0,
+  "screenshots": [],
+  "artifactHashes": {
+    "dist/assets/ClusterPanel-DhtrtBXl.js": "feca7950ace7b0150709ed2a469e6841a89eaecc0fb9e1856603da6356af625a",
+    "dist/assets/DatabasePanel-DDzgksRp.js": "d0b8a69ad25a67ded7adda8d51f003e9dc112aa10da547a60a8602212039684f",
+    "dist/assets/DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+    "dist/assets/JenkinsPanel-z6Fq0vm8.js": "8cd24ab06faefb446db138e3f0e5ff43a6ceaf98f84e249ca91bc43b305ef1fe",
+    "dist/assets/OperationsSettings-ZD8FoDh8.js": "e6d0bdda6b06bd77288ac7fa6196f92c120c0d86f73ca8f60b9c12039ae94fe8",
+    "dist/assets/dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+    "dist/assets/index-DaaC9pjX.js": "61c6afdfffa46c0279b610ffa8165e768564d41a897b3e2b009fa4eb96c428b1",
+    "dist/assets/index-jJ59orzg.css": "5e21e6886bf4ac107b72d597de6d151cd8b9965009e983b13be1253f2fd8e1ae",
+    "dist/assets/ops-ui-Bo-vvy5X.js": "0fa6cca6b5755e2b7e33e899d80e8415de1f74d29c8656b410ccd63127ef1ce5",
+    "dist/assets/ops-ui-delBNgYm.css": "21d621066669a4b3fbdbc52836dc07cf960bef4a73263db29b185dbd373914e8",
+    "dist/index.html": "315f2de0a9ace6394eace1dd7c28e9cff72fedaeeb7e6587d31def3b9d31db35",
+    "dist-electron/database-provider.cjs": "0be6d6f778fa715e6a37aa90c22a25b4c46c911a20e855b0ae24959ce306ef20",
+    "dist-electron/main.cjs": "2592f5e9e799b1ae74356e5014b9c27e4040251d31a50dfb0cd3d52f1f629473",
+    "dist-electron/operations-provider.cjs": "77aef58c9471e8ace6db43a9d9e8cc8e13a48844002654b26df637347917ab56",
+    "dist-electron/preload.cjs": "089cefee118d4335518e4dd90819506adde2a2696d9eafd2ee28ec75f56fb767"
+  },
+  "loadedFixtureHash": "bb67819c0e17456ce3a9164f4fd4b173ae05de688d9fac237233facdfbf87514",
+  "faultInjection": "One selected real Jenkins response delayed by a private forwarding proxy; response data remains upstream",
+  "errors": [],
+  "failure": {
+    "test": "Actual App opens Jenkins and discovers its real root catalog",
+    "message": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('region', { name: 'Jenkins', exact: true }).getByRole('table', { name: 'Джобы Jenkins' }).getByRole('button', { name: 'Team', exact: true }) to be visible\u001b[22m\n",
+    "stack": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('region', { name: 'Jenkins', exact: true }).getByRole('table', { name: 'Джобы Jenkins' }).getByRole('button', { name: 'Team', exact: true }) to be visible\u001b[22m\n\n    at <APP_SOURCE>/tests/fixtures/ops-ui-checks.mjs:278:12\n    at async check (<APP_SOURCE>/tests/fixtures/ops-ui-checks.mjs:147:5)\n    at async runOperationsUi (<APP_SOURCE>/tests/fixtures/ops-ui-checks.mjs:268:5)\n    at async file://<APP_SOURCE>/tools/test-operations-live.mjs:1125:20"
+  }
+}

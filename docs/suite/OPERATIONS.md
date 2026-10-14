@@ -82,7 +82,7 @@ knowledge.draft/save/preparePublish/publish/reconcile
 - Action review показывает manifest/diff/parameters/target/preflight/rollback.
 - Exec/port-forward/stream/log follow имеют явный lifecycle и Stop.
 - Close/hide panel не останавливает operation без команды.
-- Credential и TLS настройка централизована; запрета TLS bypass нет.
+- Credential и TLS настройка централизована; TLS bypass отсутствует; доверие настраивается через системные корни и CA.
 - Agent получает стабильные narrow tools, а host переводит их в фактический MCP.
 
 ## Этапы

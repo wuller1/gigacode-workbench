@@ -1,38 +1,89 @@
 import { DatabaseSettings } from "./DatabaseSettings";
+const OperationsSettings = lazy(() =>
+  import("./OperationsSettings").then((module) => ({
+    default: module.OperationsSettings,
+  })),
+);
 import { IdeSettings } from "./IdeSettings";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import type { AppState, Profile, Settings } from "../shared/types";
 import { profileName } from "./labels";
 import type { Invoke } from "./api";
 import { Empty, Icon, IconButton, Modal, useAsk } from "./ui";
+const same = (a: unknown, b: unknown) =>
+  JSON.stringify(a) === JSON.stringify(b);
 export function SettingsView({
   state,
   run,
   onClose,
   onAssist,
+  initialSection = "general",
+  projectId,
 }: {
   state: AppState;
+  initialSection?: string;
+  projectId?: string;
   run: Invoke;
   onClose: () => void;
   onAssist: (text: string) => void;
 }) {
-  const [section, setSection] = useState("general"),
-    [draft, setDraft] = useState<Settings>(state.settings),
+  const [section, setSection] = useState(initialSection),
+    [edit, setEdit] = useState(() => ({
+      draft: state.settings,
+      baseline: state.settings,
+      args: JSON.stringify(state.settings.cliArgs),
+      protected: {} as Partial<Record<keyof Settings, boolean>>,
+    })),
+    [opsDirty, setOpsDirty] = useState(false),
+    [saving, setSaving] = useState(false),
     [error, setError] = useState(""),
-    [args, setArgs] = useState(JSON.stringify(state.settings.cliArgs)),
     [saved, setSaved] = useState(false),
     [memory, setMemory] = useState(""),
     [savedMemory, setSavedMemory] = useState(""),
+    [memoryHash, setMemoryHash] = useState<string>(),
+    [memoryBusy, setMemoryBusy] = useState(false),
+    [memoryError, setMemoryError] = useState(""),
     [info, setInfo] = useState<any>(),
     [profile, setProfile] = useState<Partial<Profile>>(),
     [query, setQuery] = useState("");
   const ask = useAsk();
+  const { draft, baseline, args } = edit;
+  const memoryRequest = useRef(0);
+  const memoryLoaded = useRef(false);
   const dirty =
-    JSON.stringify(draft) !== JSON.stringify(state.settings) ||
-    args !== JSON.stringify(state.settings.cliArgs);
+    !same(draft, baseline) || args !== JSON.stringify(baseline.cliArgs);
+  useEffect(() => {
+    setEdit((old) => {
+      if (same(old.baseline, state.settings)) return old;
+      const rebased = { ...old.draft };
+      const protectedFields = { ...old.protected };
+      for (const key of Object.keys(state.settings) as (keyof Settings)[]) {
+        if (key === "cliArgs") {
+          rebased.cliArgs = state.settings.cliArgs;
+          continue; // The editable JSON text has its own intent below.
+        }
+        if (same(old.draft[key], state.settings[key]))
+          delete protectedFields[key];
+        if (!old.protected[key] && same(old.draft[key], old.baseline[key]))
+          Object.assign(rebased, { [key]: state.settings[key] });
+      }
+      const currentArgs = JSON.stringify(state.settings.cliArgs);
+      if (old.args === currentArgs) delete protectedFields.cliArgs;
+      return {
+        baseline: state.settings,
+        draft: rebased,
+        protected: protectedFields,
+        args:
+          !old.protected.cliArgs &&
+          old.args === JSON.stringify(old.baseline.cliArgs)
+            ? currentArgs
+            : old.args,
+      };
+    });
+  }, [state.settings]);
   const close = async () => {
     if (
-      (dirty || memory !== savedMemory) &&
+      (dirty || memory !== savedMemory || opsDirty) &&
       !(await ask("Закрыть без сохранения?", {
         message: "Изменения настроек ещё не применены.",
         confirm: true,
@@ -41,22 +92,49 @@ export function SettingsView({
       return;
     onClose();
   };
+  const readMemory = async () => {
+    const request = ++memoryRequest.current;
+    setMemoryBusy(true);
+    setMemoryError("");
+    try {
+      const result = await run("memory.read");
+      if (request !== memoryRequest.current) return;
+      if (result && typeof result.hash === "string") {
+        setMemory(result.text);
+        setSavedMemory(result.text);
+        setMemoryHash(result.hash);
+        memoryLoaded.current = true;
+      } else setMemoryError("Не удалось прочитать память. Повторите загрузку.");
+    } catch (e) {
+      if (request === memoryRequest.current)
+        setMemoryError(e instanceof Error ? e.message : String(e));
+    } finally {
+      if (request === memoryRequest.current) setMemoryBusy(false);
+    }
+  };
   useEffect(() => {
-    if (section === "memory" && memory === savedMemory)
-      void run("memory.read").then((r) => {
-        if (r) {
-          setMemory(r.text);
-          setSavedMemory(r.text);
-        }
-      });
+    if (section === "memory" && !memoryLoaded.current) void readMemory();
     if (section === "about" || section === "runtime")
       void run("app.info").then(setInfo);
   }, [section, run]);
+  useEffect(
+    () => () => {
+      ++memoryRequest.current;
+    },
+    [],
+  );
   const update = <K extends keyof Settings>(key: K, value: Settings[K]) => {
-    setDraft((old) => ({ ...old, [key]: value }));
+    setEdit((old) => ({
+      ...old,
+      draft: { ...old.draft, [key]: value },
+      // A user can intentionally revert to the old baseline while a save is
+      // pending. Preserve that newer intent when its delayed snapshot arrives.
+      protected: { ...old.protected, [key]: saving || old.protected[key] },
+    }));
     setSaved(false);
   };
   const save = async () => {
+    if (saving) return;
     try {
       const cliArgs = JSON.parse(args);
       if (
@@ -70,17 +148,27 @@ export function SettingsView({
         draft.maxConcurrent > 8
       )
         throw new Error("Параллельность: целое число от 1 до 8.");
-      const result = await run("settings.update", {
-        patch: { ...draft, cliArgs },
-      });
+      const patch: Partial<Settings> = {};
+      for (const key of Object.keys(draft) as (keyof Settings)[])
+        if (key !== "cliArgs" && !same(draft[key], baseline[key]))
+          Object.assign(patch, { [key]: draft[key] });
+      if (!same(cliArgs, baseline.cliArgs)) patch.cliArgs = cliArgs;
+      setSaving(true);
+      const result = await run("settings.update", { patch });
       if (result !== undefined) {
         setError("");
         setSaved(true);
-        setDraft({ ...draft, cliArgs });
-        setArgs(JSON.stringify(cliArgs));
+        // Live snapshots rebase untouched fields. Never replace an editor with
+        // a stale submission acknowledgement while the user is still typing.
+        setEdit((old) => ({
+          ...old,
+          args: old.args === args ? JSON.stringify(cliArgs) : old.args,
+        }));
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSaving(false);
     }
   };
   const closeProfile = async () => {
@@ -105,6 +193,7 @@ export function SettingsView({
     ["runtime", "CLI и модели", "terminal"],
     ["ide", "IDE", "code"],
     ["database", "Подключения БД", "database"],
+    ["operations", "Jenkins и кластеры", "cluster"],
     ["execution", "Выполнение", "agents"],
     ["profiles", "Роли", "branch"],
     ["memory", "Память", "memory"],
@@ -118,7 +207,19 @@ export function SettingsView({
             <button
               key={id}
               className={section === id ? "selected" : ""}
-              onClick={() => setSection(id)}
+              onClick={async () => {
+                if (section === id) return;
+                if (
+                  opsDirty &&
+                  !(await ask("Перейти без сохранения подключения?", {
+                    message:
+                      "Введённые настройки подключения ещё не применены.",
+                    confirm: true,
+                  }))
+                )
+                  return;
+                setSection(id);
+              }}
             >
               <Icon name={icon} />
               {label}
@@ -171,6 +272,19 @@ export function SettingsView({
               </button>
             </>
           )}
+          {section === "operations" && (
+            <Suspense
+              fallback={
+                <div className="empty-state">Открываю подключения…</div>
+              }
+            >
+              <OperationsSettings
+                projects={state.projects.filter((p) => !p.archived)}
+                projectId={projectId}
+                onDirtyChange={setOpsDirty}
+              />
+            </Suspense>
+          )}
           {section === "ide" && <IdeSettings state={state} run={run} />}
           {section === "database" && (
             <DatabaseSettings state={state} run={run} />
@@ -220,7 +334,15 @@ export function SettingsView({
                   spellCheck={false}
                   value={args}
                   onChange={(e) => {
-                    setArgs(e.target.value);
+                    const value = e.target.value;
+                    setEdit((old) => ({
+                      ...old,
+                      args: value,
+                      protected: {
+                        ...old.protected,
+                        cliArgs: saving || old.protected.cliArgs,
+                      },
+                    }));
                     setSaved(false);
                   }}
                 />
@@ -388,17 +510,59 @@ export function SettingsView({
                 className="memory-editor"
                 aria-label="Память"
                 value={memory}
+                disabled={memoryBusy}
                 onChange={(e) => setMemory(e.target.value)}
               />
               <button
                 className="primary"
+                disabled={memoryBusy || !memoryHash || memory === savedMemory}
                 onClick={async () => {
-                  const result = await run("memory.write", { text: memory });
-                  if (result !== undefined) setSavedMemory(memory);
+                  const submitted = memory;
+                  setMemoryBusy(true);
+                  setMemoryError("");
+                  try {
+                    const result = await run("memory.write", {
+                      text: submitted,
+                      expectedHash: memoryHash,
+                    });
+                    if (result?.saved && result.hash) {
+                      setSavedMemory(submitted);
+                      setMemoryHash(result.hash);
+                    } else
+                      setMemoryError(
+                        "Память не сохранена. Черновик оставлен; перечитайте текущую версию перед объединением изменений.",
+                      );
+                  } catch (e) {
+                    setMemoryError(e instanceof Error ? e.message : String(e));
+                  } finally {
+                    setMemoryBusy(false);
+                  }
                 }}
               >
                 Сохранить память
               </button>
+              <button
+                disabled={memoryBusy}
+                onClick={async () => {
+                  if (
+                    memory !== savedMemory &&
+                    !(await ask("Перечитать память?", {
+                      message:
+                        "Скопируйте свой черновик перед загрузкой: редактор будет заменён текущей сохранённой версией.",
+                      confirm: true,
+                    }))
+                  )
+                    return;
+                  await readMemory();
+                }}
+              >
+                Перечитать память
+              </button>
+              {memoryError && (
+                <p role="alert" className="error-inline">
+                  {memoryError}
+                </p>
+              )}
             </>
           )}
           {section === "about" && (
@@ -438,7 +602,7 @@ export function SettingsView({
               {error}
             </p>
           )}
-          {saved && (
+          {saved && !dirty && (
             <p role="status" className="saved-status">
               Настройки сохранены. Параметры запуска действуют для следующего
               подходящего запуска.
@@ -453,7 +617,8 @@ export function SettingsView({
         <button onClick={() => void close()}>Закрыть</button>
         <button
           className="primary"
-          disabled={!dirty}
+          disabled={!dirty || saving}
+          aria-busy={saving}
           onClick={() => void save()}
         >
           Сохранить

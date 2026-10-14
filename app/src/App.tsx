@@ -31,6 +31,7 @@ import {
   useAsk,
   useLayer,
 } from "./ui";
+import type { OpsPanelProps } from "./ops-ui";
 import { Workspace, type PanelId } from "./Workspace";
 import { ErrorBoundary } from "./ErrorBoundary";
 import {
@@ -62,6 +63,7 @@ function Application() {
   const { state, error, refresh } = useSnapshot();
   const [notice, setNotice] = useState("");
   const [settings, setSettings] = useState(false),
+    [settingsSection, setSettingsSection] = useState("general"),
     [search, setSearch] = useState(false),
     [archive, setArchive] = useState(false),
     [sidebar, setSidebar] = useStored("workbench.sidebar", true),
@@ -74,11 +76,16 @@ function Application() {
       "workbench.drafts.v1",
       {},
     ),
-    [requested, setRequested] = useState<{ id: PanelId; nonce: number }>(),
+    [requested, setRequested] = useState<{
+      id: PanelId | "chat";
+      nonce: number;
+    }>(),
+    [requestedOps, setRequestedOps] = useState<OpsPanelProps["reveal"]>(),
     [requestedArtifact, setRequestedArtifact] = useState<{
       id: string;
       nonce: number;
     }>();
+  const panelRequestNonce = useRef(0);
   const ask = useAsk();
   const run: Invoke = useCallback(async (method, params = {}) => {
     try {
@@ -143,13 +150,28 @@ function Application() {
     () =>
       window.workbench?.subscribe((event) => {
         if (
-          ["ide.reveal", "database.reveal"].includes(event.type) &&
+          ["ide.reveal", "database.reveal", "ops.reveal"].includes(
+            event.type,
+          ) &&
           (event.payload as any).projectId === project?.id
-        )
+        ) {
+          if (event.type === "ops.reveal")
+            setRequestedOps({
+              nonce: ++panelRequestNonce.current,
+              payload: event.payload as any,
+            });
           setRequested({
-            id: event.type === "database.reveal" ? "data" : "files",
-            nonce: Date.now(),
+            id:
+              event.type === "ops.reveal"
+                ? (event.payload as any).kind === "jenkins"
+                  ? "jenkins"
+                  : "cluster"
+                : event.type === "database.reveal"
+                  ? "data"
+                  : "files",
+            nonce: ++panelRequestNonce.current,
           });
+        }
       }),
     [project?.id],
   );
@@ -267,7 +289,8 @@ function Application() {
       void refresh();
     }
   };
-  const openPanel = (id: PanelId) => setRequested({ id, nonce: Date.now() });
+  const openPanel = (id: PanelId) =>
+    setRequested({ id, nonce: ++panelRequestNonce.current });
   useEffect(() => {
     const handle = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement)?.closest?.(".xterm-host,.file-editor"))
@@ -320,9 +343,19 @@ function Application() {
         : "idle")
     );
   };
-  const assist = (text: string) => {
-    if (session) setDraft((old) => ({ ...old, text }));
-    else void newTask(project?.id, text);
+  const assist = async (text: string) => {
+    if (session)
+      setDraft((old) => ({
+        ...old,
+        text: old.text.trim() ? old.text + "\n\n" + text : text,
+      }));
+    else await newTask(project?.id, text);
+    setRequested({ id: "chat", nonce: ++panelRequestNonce.current });
+    requestAnimationFrame(() =>
+      document
+        .querySelector<HTMLTextAreaElement>(".composer textarea")
+        ?.focus(),
+    );
   };
   if (!state)
     return (
@@ -600,7 +633,16 @@ function Application() {
               run,
               selectSession,
               requestedArtifact,
+              requestedOps:
+                requestedOps?.payload.projectId === project?.id
+                  ? requestedOps
+                  : undefined,
               openBrowser: () => openPanel("browser"),
+              onSettings: () => {
+                setSettingsSection("operations");
+                setSettings(true);
+              },
+              onAssist: assist,
             }}
             requested={requested}
             onRequested={() => {}}
@@ -699,7 +741,10 @@ function Application() {
                   onSettings={() => setSettings(true)}
                   onPanel={openPanel}
                   onArtifact={(id) => {
-                    setRequestedArtifact({ id, nonce: Date.now() });
+                    setRequestedArtifact({
+                      id,
+                      nonce: ++panelRequestNonce.current,
+                    });
                     openPanel("artifacts");
                   }}
                   refresh={refresh}
@@ -733,7 +778,12 @@ function Application() {
         <SettingsView
           state={state}
           run={run}
-          onClose={() => setSettings(false)}
+          initialSection={settingsSection}
+          projectId={project?.id}
+          onClose={() => {
+            setSettings(false);
+            setSettingsSection("general");
+          }}
           onAssist={assist}
         />
       )}{" "}

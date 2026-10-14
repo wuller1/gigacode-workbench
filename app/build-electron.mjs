@@ -1,5 +1,13 @@
 import { build } from "esbuild";
 await build({
+  entryPoints: ["electron/operations/provider.ts"],
+  bundle: true,
+  platform: "node",
+  target: "node22",
+  format: "cjs",
+  outfile: "dist-electron/operations-provider.cjs",
+});
+await build({
   entryPoints: ["electron/database/provider.ts"],
   bundle: true,
   platform: "node",

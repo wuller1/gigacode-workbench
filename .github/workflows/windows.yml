@@ -73,7 +73,7 @@ jobs:
   windows-x64:
     needs: database-x64
     runs-on: windows-2022
-    timeout-minutes: 60
+    timeout-minutes: 75
     defaults:
       run:
         shell: pwsh
@@ -212,13 +212,17 @@ jobs:
       - name: Typecheck and build renderer/main/preload
         run: npm run build
 
-      - name: Offline Electron modal and focus regression
-        timeout-minutes: 2
+      - name: Offline Electron modal, composer and settings concurrency regression
+        timeout-minutes: 3
         run: npm run test:ui
 
       - name: Full application model catalog, queue and cancellation workflow
         timeout-minutes: 2
         run: node tools/test-chat-live.mjs
+
+      - name: Actual isolated Jenkins, Operations MCP and desktop acceptance
+        timeout-minutes: 10
+        run: node tools/test-operations-live.mjs --jenkins-only --ui
 
       - name: Real IDE language, edit, refactor, task, debug and recovery checks
         timeout-minutes: 12
@@ -233,6 +237,10 @@ jobs:
       - name: Packaged application database provider and desktop acceptance
         timeout-minutes: 5
         run: node tools/test-database-live.mjs --ui --packaged
+
+      - name: Packaged application Jenkins and Operations desktop acceptance
+        timeout-minutes: 10
+        run: node tools/test-operations-live.mjs --jenkins-only --ui --packaged
 
       - name: Launch and verify actual packaged IDE languages and recovery
         timeout-minutes: 12
@@ -321,5 +329,17 @@ jobs:
             docs/suite/evidence/database-runtime-*-win32-packaged.json
             docs/suite/evidence/database-runtime-*-win32-packaged.png
             app/test-results/database
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload isolated Operations reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: operations-evidence-windows-${{ github.sha }}
+          path: |
+            docs/suite/evidence/operations-*-win32*.json
+            docs/suite/evidence/operations-*-win32*.png
+            app/test-results/operations
           if-no-files-found: warn
           retention-days: 14

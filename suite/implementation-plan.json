@@ -792,12 +792,13 @@
     {
       "id": "S6-02",
       "title": "Jenkins read и action flows",
-      "status": "planned",
+      "status": "in_progress",
       "dependsOn": [
         "S0-02"
       ],
       "docs": [
-        "docs/suite/OPERATIONS.md"
+        "docs/suite/OPERATIONS.md",
+        "docs/suite/OPERATIONS-RUNTIME-HANDOFF.md"
       ],
       "outcome": "Jobs, queue, runs, logs, tests, artifacts, trigger/cancel и reconciliation",
       "acceptance": [
@@ -806,18 +807,27 @@
         "CON-03",
         "OPS-09"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/operations-macos/verification.json",
+        "docs/suite/OPERATIONS-RUNTIME-AUDIT.md"
+      ],
+      "runtimeSlice": {
+        "implementation": "app/electron/operations + JenkinsPanel/ClusterPanel",
+        "status": "macos_verified_windows_pending",
+        "limitations": "See OPERATIONS-RUNTIME-HANDOFF.md; full card acceptance remains open, no full console/Ultimate parity claim."
+      }
     },
     {
       "id": "S6-03",
       "title": "Kubernetes/OpenShift read workspace",
-      "status": "planned",
+      "status": "in_progress",
       "dependsOn": [
         "S0-02"
       ],
       "docs": [
         "docs/suite/OPERATIONS.md",
-        "docs/suite/OPENSHIFT-K8S-FULL-SCOPE.md"
+        "docs/suite/OPENSHIFT-K8S-FULL-SCOPE.md",
+        "docs/suite/OPERATIONS-RUNTIME-HANDOFF.md"
       ],
       "outcome": "Discovery, resources, topology, events, logs, watch и RBAC по нескольким clusters",
       "acceptance": [
@@ -826,18 +836,27 @@
         "OPS-04",
         "KUX-03"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/operations-macos/verification.json",
+        "docs/suite/OPERATIONS-RUNTIME-AUDIT.md"
+      ],
+      "runtimeSlice": {
+        "implementation": "app/electron/operations + JenkinsPanel/ClusterPanel",
+        "status": "macos_verified_windows_pending",
+        "limitations": "See OPERATIONS-RUNTIME-HANDOFF.md; full card acceptance remains open, no full console/Ultimate parity claim."
+      }
     },
     {
       "id": "S6-04",
       "title": "Prepared cluster actions",
-      "status": "planned",
+      "status": "in_progress",
       "dependsOn": [
         "S6-03"
       ],
       "docs": [
         "docs/suite/OPERATIONS.md",
-        "docs/suite/OPENSHIFT-K8S-FULL-SCOPE.md"
+        "docs/suite/OPENSHIFT-K8S-FULL-SCOPE.md",
+        "docs/suite/OPERATIONS-RUNTIME-HANDOFF.md"
       ],
       "outcome": "Dry-run/diff/apply/scale/restart/delete/exec/port-forward имеют target и readback",
       "acceptance": [
@@ -846,7 +865,15 @@
         "OPS-04",
         "KUX-03"
       ],
-      "evidence": []
+      "evidence": [
+        "docs/suite/evidence/operations-macos/verification.json",
+        "docs/suite/OPERATIONS-RUNTIME-AUDIT.md"
+      ],
+      "runtimeSlice": {
+        "implementation": "app/electron/operations + JenkinsPanel/ClusterPanel",
+        "status": "macos_verified_windows_pending",
+        "limitations": "See OPERATIONS-RUNTIME-HANDOFF.md; full card acceptance remains open, no full console/Ultimate parity claim."
+      }
     },
     {
       "id": "S6-05",

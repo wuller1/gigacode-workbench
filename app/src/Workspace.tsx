@@ -9,10 +9,17 @@ import {
 } from "react";
 import { useStored } from "./api";
 import { IdePanel } from "./IdePanel";
+import { ToolBoundary } from "./ToolBoundary";
 const DatabasePanel = lazy(() =>
   import("./DatabasePanel").then((module) => ({
     default: module.DatabasePanel,
   })),
+);
+const JenkinsPanel = lazy(() =>
+  import("./JenkinsPanel").then((module) => ({ default: module.JenkinsPanel })),
+);
+const ClusterPanel = lazy(() =>
+  import("./ClusterPanel").then((module) => ({ default: module.ClusterPanel })),
 );
 import { Icon, IconButton, Menu, useLayer } from "./ui";
 import {
@@ -52,6 +59,8 @@ const panels: Record<DockId, { title: string; icon: string }> = {
   changes: { title: "Изменения", icon: "diff" },
   workers: { title: "Исполнители", icon: "agents" },
   data: { title: "Базы данных", icon: "database" },
+  jenkins: { title: "Jenkins", icon: "pipeline" },
+  cluster: { title: "Kubernetes / OpenShift", icon: "cluster" },
 };
 type Layout = {
   version: 2;
@@ -97,8 +106,8 @@ export function Workspace({
 }: {
   children: ReactNode;
   panelProps: Omit<PanelProps, "visible">;
-  requested?: { id: PanelId; nonce: number };
-  onRequested: (id: PanelId) => void;
+  requested?: { id: DockId; nonce: number };
+  onRequested: (id: DockId) => void;
 }) {
   const viewport = useRef<HTMLDivElement>(null),
     canvas = useRef<HTMLDivElement>(null);
@@ -349,6 +358,24 @@ export function Workspace({
             <DatabasePanel {...p} />
           </Suspense>
         );
+      case "jenkins":
+      case "cluster": {
+        const Component = id === "jenkins" ? JenkinsPanel : ClusterPanel;
+        return (
+          <Suspense
+            fallback={<div className="empty-state">Открываю подключение…</div>}
+          >
+            <Component
+              projectId={p.project?.id}
+              sessionId={p.session?.id}
+              visible={visible}
+              reveal={p.requestedOps}
+              onSettings={p.onSettings}
+              onAssist={p.onAssist}
+            />
+          </Suspense>
+        );
+      }
       case "browser":
         return <BrowserPanel {...p} />;
       case "terminal":
@@ -578,7 +605,9 @@ export function Workspace({
                 aria-label={panels[id].title}
                 style={{ ...style(r), display: visible ? "flex" : "none" }}
               >
-                {id === "chat" ? children : render(id, visible)}
+                <ToolBoundary title={panels[id].title}>
+                  {id === "chat" ? children : render(id, visible)}
+                </ToolBoundary>
               </section>
             );
           })}
