@@ -1,0 +1,92 @@
+{
+  "probe": "qwen-system-binding-local-provider-placement",
+  "platform": "win32",
+  "runtimeVersion": "0.25.1",
+  "runtimeFingerprint": "5f32d5c4f7963602bc9554126a19cfb1e906b6510710ca7724ba2e8836c7c3e8",
+  "hostBundleSha256": "010ff5a09b78c27e9208a6a276d6ded4e05411aee0ab38e4c1805ce09859d70a",
+  "helpVerified": true,
+  "hostPromptDispatches": 2,
+  "modelProvider": "owned loopback OpenAI protocol fixture",
+  "credentialMode": "dummy credential; loopback endpoint; process-scoped isolated QWEN_HOME/runtime",
+  "modelBehaviorChecked": false,
+  "providerSystemRequestCaptured": true,
+  "placement": [
+    {
+      "profileId": "analyst",
+      "checks": {
+        "nativeQwenBasePreserved": true,
+        "exactCompiledInstructionsInSystem": true,
+        "compiledInstructionsAppearOnce": true,
+        "otherRoleAbsent": true,
+        "instructionsAbsentFromUserMessage": true
+      },
+      "messageRoles": [
+        "system",
+        "user"
+      ],
+      "systemBytes": 39563,
+      "systemSha256": "ff56a7c1af79b72e054a1faf6bcc9d91ee0fc0f7f4618330786e1171e04c9233",
+      "compiledContentHash": "d57a42764793565bdd340bf3d38f2c0d96cfeda1d0d7038cd796495048312aae",
+      "toolDefinitionsOffered": 13,
+      "observedToolCalls": 0,
+      "stopReason": "end_turn"
+    },
+    {
+      "profileId": "reviewer",
+      "checks": {
+        "nativeQwenBasePreserved": true,
+        "exactCompiledInstructionsInSystem": true,
+        "compiledInstructionsAppearOnce": true,
+        "otherRoleAbsent": true,
+        "instructionsAbsentFromUserMessage": true
+      },
+      "messageRoles": [
+        "system",
+        "user"
+      ],
+      "systemBytes": 37553,
+      "systemSha256": "1b5e66fef17074a5ec2fb564872bc2b937f59e7c2f8e5e6c244b18bab7a68dc2",
+      "compiledContentHash": "da0ce4d112613d0a5f4c4cb066c896f5d3d5f462903bf316d72d2cc5eac92e32",
+      "toolDefinitionsOffered": 13,
+      "observedToolCalls": 0,
+      "stopReason": "end_turn"
+    }
+  ],
+  "sourceEvidence": "reviewed_qwen_0.25.1_source",
+  "observations": [
+    {
+      "profileId": "analyst",
+      "delivery": "append_system",
+      "contentHash": "d57a42764793565bdd340bf3d38f2c0d96cfeda1d0d7038cd796495048312aae",
+      "instructionFingerprint": "b8987e52b9158769b916877465ee20c16f151f8c5780ea7895b1f1826ba8b92a",
+      "initialized": true,
+      "newSession": true,
+      "agent": {
+        "name": "qwen-code",
+        "title": "Qwen Code",
+        "version": "0.25.1"
+      },
+      "permissionRequests": 0,
+      "updates": 3,
+      "toolCalls": 0
+    },
+    {
+      "profileId": "reviewer",
+      "delivery": "append_system",
+      "contentHash": "da0ce4d112613d0a5f4c4cb066c896f5d3d5f462903bf316d72d2cc5eac92e32",
+      "instructionFingerprint": "a1a19087fc629e292535260ac92f5baf932f32c169938d3d661eef8db0d5300f",
+      "initialized": true,
+      "newSession": true,
+      "agent": {
+        "name": "qwen-code",
+        "title": "Qwen Code",
+        "version": "0.25.1"
+      },
+      "permissionRequests": 0,
+      "updates": 4,
+      "toolCalls": 0
+    }
+  ],
+  "distinctRoleSnapshots": true,
+  "cleanup": "owned connections closed; isolated files removed"
+}

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "createdAt": "2026-10-14T12:10:49.036235+00:00",
   "baselineCommit": "f9594c7db91ab6c30c40d42afb2177b5f9360fca",
-  "candidate": "Final source after POSIX instruction-directory durability and independent dock resize readiness repairs; pending corrected Windows CI",
+  "candidate": "Product source validated as commit4ad3176a8a44cae4849d9cd58ab6d9c4f13fc05f; final publication adds documentation/evidence only",
   "environment": {
     "platform": "darwin",
     "arch": "arm64",
@@ -68,6 +68,16 @@
       "classifierLaunches": 12,
       "model": "qwen/qwen3.7-flash",
       "scope": "small synthetic role selection only; all five trial reports retained"
+    },
+    "windowsHarness": {
+      "runId": 38561912330,
+      "status": "success",
+      "report": "../agent-runtime-windows-4ad3176/provenance.json"
+    },
+    "windowsDesktop": {
+      "runId": 38561912179,
+      "status": "success",
+      "report": "../windows-4ad3176/provenance.json"
     }
   },
   "sourceSha256": {

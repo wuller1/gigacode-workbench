@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "candidateCommit": "4ad3176a8a44cae4849d9cd58ab6d9c4f13fc05f",
+  "workflowRunId": 38561912179,
+  "url": "https://github.com/wuller1/gigacode-workbench/actions/runs/38561912179",
+  "status": "success",
+  "environment": {
+    "os": "windows-2022",
+    "arch": "x64",
+    "node": "22.23.3",
+    "legacyPowerShell": "5.1",
+    "qwen": "0.25.1"
+  },
+  "verification": {
+    "unitPassed": 250,
+    "unitSkipped": 50,
+    "isolatedElectronUi": 43,
+    "actualChat": 3,
+    "databaseAndOperationsReports": {
+      "database-runtime-live-win32.json": 44,
+      "database-runtime-ui-win32.json": 25,
+      "database-runtime-ui-win32-packaged.json": 25,
+      "operations-result-win32.json": 11,
+      "operations-result-ui-win32.json": 12,
+      "operations-result-win32-packaged.json": 11,
+      "operations-result-ui-win32-packaged.json": 12
+    },
+    "ide": [
+      {
+        "mode": "packaged",
+        "passed": 44,
+        "report": "ide-packaged-result.json",
+        "ciStepMatches": [
+          "Launch and verify actual packaged IDE languages and recovery"
+        ]
+      },
+      {
+        "mode": "source",
+        "passed": 44,
+        "report": "ide-source-result.json",
+        "ciStepMatches": [
+          "Real IDE language, edit, refactor, task, debug and recovery checks"
+        ]
+      }
+    ],
+    "pythonPipeRegressions": 18,
+    "nsisAndPortable": "built by CI, not manually installed",
+    "nativePtyAndSharp": "verified",
+    "packagedQwen": "0.25.1, actual packaged executable invocation"
+  },
+  "artifacts": [
+    {
+      "id": 11894756167,
+      "name": "ide-diagnostics-windows-4ad3176a8a44cae4849d9cd58ab6d9c4f13fc05f",
+      "size_in_bytes": 56126,
+      "digest": "sha256:37def29527e8794214df5fa12328d73b378e116149392554547d02de0b5095e6",
+      "expired": false,
+      "created_at": "2026-10-14T12:38:23Z",
+      "expires_at": "2026-10-21T12:38:21Z"
+    },
+    {
+      "id": 11894651506,
+      "name": "database-evidence-windows-4ad3176a8a44cae4849d9cd58ab6d9c4f13fc05f",
+      "size_in_bytes": 175066,
+      "digest": "sha256:c98b009266c91c4fc07f090e1f614fb7176f0beb1d0070b4bdff8f20c32ac0e7",
+      "expired": false,
+      "created_at": "2026-10-14T12:39:18Z",
+      "expires_at": "2026-10-28T12:39:17Z"
+    },
+    {
+      "id": 11894586550,
+      "name": "operations-evidence-windows-4ad3176a8a44cae4849d9cd58ab6d9c4f13fc05f",
+      "size_in_bytes": 282718,
+      "digest": "sha256:1301a541ab417ef5ef94e0f8acea7c16fac515207f7e1d9bc510c2a0bc6997f3",
+      "expired": false,
+      "created_at": "2026-10-14T12:39:20Z",
+      "expires_at": "2026-10-28T12:39:19Z"
+    },
+    {
+      "id": 11894346596,
+      "name": "gigacode-workbench-windows-x64-4ad3176a8a44cae4849d9cd58ab6d9c4f13fc05f",
+      "size_in_bytes": 1717824473,
+      "digest": "sha256:5f1506dc651926f39ca07dfebfe3bfd924006b7325418f93b7fd41ea55b5f854",
+      "expired": false,
+      "created_at": "2026-10-14T12:39:17Z",
+      "expires_at": "2026-10-28T12:38:23Z"
+    },
+    {
+      "id": 11893471008,
+      "name": "database-source-evidence-windows-4ad3176a8a44cae4849d9cd58ab6d9c4f13fc05f",
+      "size_in_bytes": 180530,
+      "digest": "sha256:3b5f760814e860b700a3f54f683225297955c7a8914aa61e7981beb49d6787e0",
+      "expired": false,
+      "created_at": "2026-10-14T12:12:56Z",
+      "expires_at": "2026-10-28T12:12:55Z"
+    }
+  ],
+  "publishedReportSha256": {
+    "database-runtime-ui-win32.json": "b6610bd38e663be4e0928c7caa4d832097d83f1bcd91dbc8e1b188a5cf2f3d10",
+    "ide-source-result.json": "be451c6ee154ad1f0e9ffc496e9f47463fd9d39a5497c91d64872b89d1e1c4eb",
+    "database-runtime-live-win32.json": "d7072d45d69410b8e3046f376b04a1c494553d763dba454560defc3ce679e773",
+    "database-runtime-ui-win32-packaged.json": "caa2ca2060e3016db8b1c2d21ef30332c837d632493568d080c7714d767a2478",
+    "operations-result-ui-win32.json": "c3d6731540d6f181e13b08c311c6f09ab3aaaac836a294624242389ddf7e95c0",
+    "ide-packaged-result.json": "5da80e3f1ab9126f2573f1d3d63e87bda02b71cbbffe3a35456649f28840acde",
+    "operations-result-win32.json": "2c1d0f809226c0e748c39de078c764e43fc50552a3493cb525858ed4114b7681",
+    "operations-result-ui-win32-packaged.json": "33f6dcccaf74c2cdcabcb3d181a56c532133b563e6893d19ac2a115418d93b14",
+    "operations-result-win32-packaged.json": "a8407959933b0a3e6bbe357247306a2b97587667fd1b3833494d41cf30b9f1d4"
+  },
+  "scope": [
+    "Actual source and packaged applications on Windows, isolated test resources, no model credentials or corporate systems",
+    "No workplace GigaCode26.10.6/VDI/certificate/manual-installer validation",
+    "Windows Kubernetes not run; native Kubernetes checked separately on macOS",
+    "Installer artifact1.7GB was not downloaded or republished; GitHub upload digest is metadata, not a locally verified per-exe hash",
+    "Final publication may add documentation/evidence only; runtime/code identity is verified separately"
+  ]
+}

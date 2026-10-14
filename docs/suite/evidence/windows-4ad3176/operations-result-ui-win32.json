@@ -1,0 +1,57 @@
+{
+  "suite": "operations-actual-electron",
+  "status": "passed",
+  "platform": "win32",
+  "mode": "source application and its own provider",
+  "cases": [
+    "Actual App opens Jenkins and discovers its real root catalog",
+    "Folder navigation and favorite filtering include nested real jobs",
+    "Real parameter form runs once and screen updates without a refresh click",
+    "Completed Jenkins build refreshes its catalog row and confirms its receipt without clicks",
+    "Jenkins test and stage tabs read the actual APIs and report absent plugins explicitly",
+    "Actual desktop Jenkins dark and light screenshots preserve usable controls",
+    "Switching projects and independent CI does not retain the old job or log",
+    "Discussing an actual job preserves composer draft and selected session",
+    "Host reveal opens an exact real job instead of just the generic panel",
+    "A delayed same-connection reveal cannot override a newer manual selection",
+    "Actual App stops its running Jenkins build and updates to ABORTED without refresh",
+    "Actual Operations settings warns before discarding secret and CA drafts"
+  ],
+  "passed": 12,
+  "screenshots": [
+    "D:\\a\\gigacode-workbench\\gigacode-workbench\\app\\test-results\\operations\\operations-jenkins-dark-win32.png",
+    "D:\\a\\gigacode-workbench\\gigacode-workbench\\app\\test-results\\operations\\operations-jenkins-light-win32.png"
+  ],
+  "artifactHashes": {
+    "dist\\assets\\ClusterPanel-xmSLTPG7.js": "1d1ecda48a40abe44865193977216ad5bdf8bfb7f970234a7434354e3b568cab",
+    "dist\\assets\\DatabasePanel-CkCKISsD.js": "802f8eea48519c88a403efd8e6a640906d323b12aa2bb3decdfd67772c2e1523",
+    "dist\\assets\\DatabasePanel-DKx5hzdU.css": "564fdc772e0c7e4b9b6d0871915b9edd60478dea8049549d8252cd08b2a187dd",
+    "dist\\assets\\dist-NCTH-79-.js": "3411c59417783d7e1cbb680bffbf90fe12e260f2b4bbf53839df592639ed93df",
+    "dist\\assets\\index-0ctxmUe6.js": "41be0e08c5b9c60ca47f6f473fa564b06966a708b99675337f6c61d30e9e9751",
+    "dist\\assets\\index-jJ59orzg.css": "5e21e6886bf4ac107b72d597de6d151cd8b9965009e983b13be1253f2fd8e1ae",
+    "dist\\assets\\JenkinsPanel-C3iK-hjT.js": "64991664832bfc821e734ab77c03f818ecaae639531bb015d63ba6832de5ea98",
+    "dist\\assets\\OperationsSettings-D8B91qwa.js": "ff14cb972ffc99dfbe6aa7bd0b07a0b6d3a6474c00e4626bf8250c055f458c11",
+    "dist\\assets\\ops-ui-8eM9bX_B.css": "2bca4d5408ead9a859f75dae455578903e980c3db12b981fdc3f25f5966b291f",
+    "dist\\assets\\ops-ui-CXkbYrRF.js": "6db60c11155a9aa8ae5fc7287b59cff6c80fcfcbbac5899f72468003edc7322f",
+    "dist\\index.html": "58908b91ff166071de0335f24731b4185ddf18d1f280c475a5a3d9113aa48bad",
+    "dist-electron\\database-provider.cjs": "0be6d6f778fa715e6a37aa90c22a25b4c46c911a20e855b0ae24959ce306ef20",
+    "dist-electron\\main.cjs": "a97f9df15790f6b038e9e2bd0cde0e673419deba150af4f5581160ec9b2f1926",
+    "dist-electron\\operations-provider.cjs": "1ff87c73fb0acc0f6893f039bea02718a91913a37ddd5ea64c0e2482d1ecbc20",
+    "dist-electron\\preload.cjs": "089cefee118d4335518e4dd90819506adde2a2696d9eafd2ee28ec75f56fb767"
+  },
+  "loadedFixtureHash": "4cc3795b8a06671fbb3e89f1d5f8d84b84abd798bd07dcf42aba8c95d6a96dfe",
+  "faultInjection": "One selected real Jenkins response delayed by a private forwarding proxy; response data remains upstream",
+  "optionalApiReads": [
+    {
+      "method": "GET",
+      "path": "/job/Team/job/Build/2/testReport/api/json",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/job/Team/job/Build/2/wfapi/describe",
+      "status": 404
+    }
+  ],
+  "errors": []
+}
