@@ -31,11 +31,19 @@ jobs:
           cache-dependency-path: app/package-lock.json
       - run: npm ci --include=optional
       - run: node ../tools/check-bundle.mjs
-      - run: npm test
+      - run: npm test -- --reporter=json --outputFile=../docs/suite/evidence/agent-runtime-qwen/unit-final-win32.json
       - run: npm run build
+      - name: Clear committed reports before recording this Windows run
+        run: |
+          $evidenceRoot = Join-Path (Split-Path $PWD.Path -Parent) 'docs/suite/evidence'
+          @('agent-runtime-qwen/system-placement.json', 'agent-runtime-qwen/offline-router.json', 'agent-runtime-ui/report.json', 'agent-runtime-ui/roles-composer-dark-1440.png', 'agent-runtime-ui/roles-settings-light-1000.png') | ForEach-Object {
+            Remove-Item (Join-Path $evidenceRoot $_) -Force -ErrorAction SilentlyContinue
+          }
       - name: Real Qwen system placement (local protocol provider, no external model)
         timeout-minutes: 3
-        run: node tools/test-prompt-binding-live.mjs --capture-local-provider
+        run: |
+          $reportPath = Join-Path (Split-Path $PWD.Path -Parent) 'docs/suite/evidence/agent-runtime-qwen/system-placement.json'
+          node tools/test-prompt-binding-live.mjs --capture-local-provider --report $reportPath
       - name: Real Qwen classifier isolation and negative controls
         timeout-minutes: 3
         run: node tools/test-qwen-router-offline.mjs
@@ -51,6 +59,11 @@ jobs:
         with:
           name: agent-harness-windows-${{ github.sha }}
           path: |
-            docs/suite/evidence/agent-runtime-qwen
-            docs/suite/evidence/agent-runtime-ui
+            docs/suite/evidence/agent-runtime-qwen/unit-final-win32.json
+            docs/suite/evidence/agent-runtime-qwen/system-placement.json
+            docs/suite/evidence/agent-runtime-qwen/offline-router.json
+            docs/suite/evidence/agent-runtime-ui/report.json
+            docs/suite/evidence/agent-runtime-ui/roles-composer-dark-1440.png
+            docs/suite/evidence/agent-runtime-ui/roles-settings-light-1000.png
+            docs/suite/evidence/agent-runtime-ui/roles-failure-win32.png
           retention-days: 14

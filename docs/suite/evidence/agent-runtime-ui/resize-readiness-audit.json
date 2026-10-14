@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "status": "harness_readiness_repaired_windows_recheck_pending",
+  "preservedWindowsFailure": {
+    "candidate": "37d7308",
+    "run": 38560426468,
+    "passed": 7,
+    "total": 8,
+    "failure": "Composer is outside viewport",
+    "failingGeometryAvailable": false,
+    "causeEstablishedForWindows": false
+  },
+  "sourceMechanism": {
+    "path": "app/src/Workspace.tsx",
+    "line": 142,
+    "observation": "ResizeObserver schedules setSize; absolute dock group bounds and chat width update after React commit, later than OS innerWidth or CSS animation check."
+  },
+  "actualMacObservation": {
+    "platform": "darwin",
+    "runStatus": "passed",
+    "passed": 8,
+    "transition": {
+      "requestedWidth": 1440,
+      "settled": true,
+      "frames": 5,
+      "elapsedMs": 78,
+      "samples": [
+        {
+          "elapsedMs": 0,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 296,
+          "composerRight": 995
+        },
+        {
+          "elapsedMs": 11,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 758,
+          "composerLeft": 296,
+          "composerRight": 995
+        },
+        {
+          "elapsedMs": 28,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 45,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 61,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        },
+        {
+          "elapsedMs": 78,
+          "viewport": 1440,
+          "dockViewportWidth": 1174,
+          "dockViewportLeft": 266,
+          "canvasWidth": 1174,
+          "canvasHeight": 795,
+          "chatWidth": 1174,
+          "composerLeft": 457.5,
+          "composerRight": 1249.5
+        }
+      ]
+    },
+    "interpretation": "At innerWidth1440/canvas1174, chat width remains758 through11ms, then commits1174 at28ms. This establishes asynchronous dock transition on this actual App; it does not prove the exact cause of the old Windows failure."
+  },
+  "repair": {
+    "scope": "Owned test harness only; no product source change",
+    "readiness": "Current dock viewport/canvas/chat bounds committed and stable for3consecutive animation frames; finite transitions settled;2500ms bounded deadline",
+    "unchangedOracle": "Document scroll <= client+1; composer scroll <= client+1; composer left >=-1/right <=viewport+1; settings scroll <=client+1",
+    "failureDiagnostics": "Geometry recorded before assertions, up to12initial/recent resize observations, native failure PNG before cleanup",
+    "persistentFailureBehavior": "Persistent dock mismatch times out; committed composer overflow still fails original assertion."
+  },
+  "validationLimits": "Windows recheck pending; macOS8/8 is not Windows acceptance. Registry durability source fix happens separately and requires final rebuild/rerun.",
+  "finalMacCandidateValidation": {
+    "status": "passed",
+    "platform": "darwin",
+    "passed": 8,
+    "sourceHashGuards": 36,
+    "unchangedDuringRun": true,
+    "promptBindingSourceSha256": "6b1468c9dd753c7b4abc492c06ae9d1fd2d0aee6c220a65504dea2f7a84fbd44",
+    "rendererErrors": [],
+    "readinessMs": [
+      67,
+      77,
+      169,
+      56
+    ],
+    "cleanup": {
+      "application": "closed",
+      "ownedData": "removed"
+    },
+    "screenshotsInspected": true,
+    "windowsRecheck": "pending separate CI; not inferred from Mac pass"
+  }
+}

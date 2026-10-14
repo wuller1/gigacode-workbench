@@ -18,6 +18,8 @@ const evidence = path.join(repoRoot, "docs/suite/evidence/agent-runtime-ui");
 const temp = await fs.mkdtemp(path.join(os.tmpdir(), "workbench-roles-app-"));
 const projectPath = path.join(temp, "project");
 const passed = [],
+  resizeTransitions = [],
+  capturedScreenshots = [],
   expectedRejections = [],
   rendererErrors = [],
   widths = [];
@@ -43,6 +45,8 @@ let application,
   page,
   current = "startup",
   failure,
+  failureScreenshot,
+  failureCaptureError,
   cleanup;
 const hash = (data) => createHash("sha256").update(data).digest("hex");
 const snapshots = async () => {
@@ -84,17 +88,106 @@ const resize = async (width) => {
     window.setContentSize(width, 900);
   }, width);
   await page.waitForFunction((width) => innerWidth === width, width);
-  await page.waitForFunction(
-    () =>
-      !document
-        .getAnimations()
-        .some(
-          (animation) =>
-            animation.playState === "running" &&
-            animation.effect?.getTiming().iterations !== Infinity,
-        ),
+  // OS/client bounds and CSS animation state do not prove the ResizeObserver ->
+  // React dock layout has committed. This waits for that independent owner;
+  // the original composer/document overflow oracle still runs afterwards.
+  const readiness = await page.evaluate(
+    (width) =>
+      new Promise((resolve) => {
+        const started = performance.now(),
+          samples = [];
+        let previous,
+          stable = 0,
+          frames = 0,
+          frameId,
+          finished = false;
+        const read = () => {
+          const viewport = document.querySelector(".dock-viewport");
+          const canvas = document.querySelector(".dock-canvas");
+          const chat = document.querySelector(".conversation-area");
+          const composer = document.querySelector(".composer-toolbar");
+          const vr = viewport?.getBoundingClientRect(),
+            cr = canvas?.getBoundingClientRect();
+          const hr = chat?.getBoundingClientRect(),
+            mr = composer?.getBoundingClientRect();
+          return {
+            elapsedMs: Math.round(performance.now() - started),
+            viewport: innerWidth,
+            dockViewportWidth: viewport?.clientWidth,
+            dockViewportLeft: vr?.left,
+            canvasWidth: cr?.width,
+            canvasHeight: cr?.height,
+            chatWidth: hr?.width,
+            composerLeft: mr?.left,
+            composerRight: mr?.right,
+          };
+        };
+        const finish = (settled) => {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timer);
+          cancelAnimationFrame(frameId);
+          resolve({
+            requestedWidth: width,
+            settled,
+            frames,
+            elapsedMs: Math.round(performance.now() - started),
+            samples,
+          });
+        };
+        const remember = (sample) => {
+          if (samples.length === 12) samples.splice(4, 1);
+          samples.push(sample);
+        };
+        const timer = setTimeout(() => {
+          remember(read());
+          finish(false);
+        }, 2500);
+        remember(read());
+        const frame = () => {
+          if (finished) return;
+          frames++;
+          const sample = read();
+          remember(sample);
+          const signature = JSON.stringify([
+            sample.viewport,
+            sample.dockViewportWidth,
+            sample.canvasWidth,
+            sample.canvasHeight,
+            sample.chatWidth,
+          ]);
+          const dockCommitted =
+            sample.viewport === width &&
+            sample.dockViewportWidth > 0 &&
+            Math.abs(sample.canvasWidth - sample.dockViewportWidth) <= 1 &&
+            Math.abs(sample.chatWidth - sample.canvasWidth) <= 1;
+          const animating = document
+            .getAnimations()
+            .some(
+              (animation) =>
+                animation.playState === "running" &&
+                animation.effect?.getTiming().iterations !== Infinity,
+            );
+          stable =
+            dockCommitted && !animating && signature === previous
+              ? stable + 1
+              : 0;
+          previous = signature;
+          if (stable >= 3 && frames >= 4) finish(true);
+          else frameId = requestAnimationFrame(frame);
+        };
+        frameId = requestAnimationFrame(frame);
+      }),
+    width,
+  );
+  resizeTransitions.push(readiness);
+  assert.equal(
+    readiness.settled,
+    true,
+    "Dock resize failed to commit stable current bounds within 2500 ms",
   );
 };
+
 const geometry = async (width) => {
   const result = await page.evaluate(() => {
     const composer = document.querySelector(".composer-toolbar");
@@ -112,6 +205,7 @@ const geometry = async (width) => {
       settingsScroll: settings?.scrollWidth,
     };
   });
+  widths.push({ requestedWidth: width, ...result });
   assert.equal(result.viewport, width);
   assert.ok(
     result.documentScroll <= result.documentClient + 1,
@@ -132,7 +226,6 @@ const geometry = async (width) => {
       result.settingsScroll <= result.settingsClient + 1,
       "Settings content horizontally overflows",
     );
-  widths.push(result);
 };
 const capture = async (name) => {
   // Native capture can otherwise contain the previous compositor frame after
@@ -153,6 +246,7 @@ const capture = async (name) => {
     return image.toPNG().toString("base64");
   });
   await fs.writeFile(path.join(evidence, name), Buffer.from(png, "base64"));
+  capturedScreenshots.push(name);
 };
 const openRoles = async () => {
   await page.keyboard.press("Control+,");
@@ -508,6 +602,20 @@ try {
     },
   );
 } catch (error) {
+  if (page && application) {
+    try {
+      await geometry(await page.evaluate(() => innerWidth));
+    } catch {}
+    try {
+      const name = `roles-failure-${process.platform}.png`;
+      await capture(name);
+      failureScreenshot = name;
+    } catch (captureError) {
+      failureCaptureError = String(captureError.message)
+        .split(temp)
+        .join("<owned-temp>");
+    }
+  }
   failure = {
     test: current,
     message: String(error.message).split(temp).join("<owned-temp>"),
@@ -541,21 +649,21 @@ try {
     status: failure ? "failed" : "passed",
     platform: process.platform,
     scope:
-      "Actual shipped Electron App, actual IPC/AtomicStore/WorkbenchService and local ACP fixture. No model, corporate MCP, Windows or native append acceptance claimed.",
+      "Actual shipped Electron App, actual IPC/AtomicStore/WorkbenchService and local ACP fixture. No real model, corporate MCP or native append acceptance claimed; platform is recorded separately.",
     passed,
     failure,
     expectedRejections,
     rendererErrors,
     widths,
+    resizeTransitions,
+    failureScreenshot,
+    failureCaptureError,
     provenance: {
       sha256: before,
       unchangedDuringRun: changed.length === 0,
       changed,
     },
-    screenshots: [
-      "roles-composer-dark-1440.png",
-      "roles-settings-light-1000.png",
-    ],
+    screenshots: capturedScreenshots,
     cleanup,
   };
   await fs.writeFile(

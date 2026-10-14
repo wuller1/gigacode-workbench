@@ -1,6 +1,6 @@
 # Аудит инструкций и специализации ролей
 
-Дата: 14.10.2026. Область: CORE, legacy SYSTEM_PROMPT entrypoint, 14 встроенных overlays, routing/capability metadata и согласованность связанных контрактов. Это аудит текстов и статических связей. Он не подтверждает качество ответов модели, запуск native append, полноту host logging или совместимость рабочего GigaCode 26.9.75.
+Дата: 14.10.2026. Область: CORE, legacy SYSTEM_PROMPT entrypoint, 14 встроенных overlays, routing/capability metadata и согласованность связанных контрактов. Это аудит текстов и статических связей. Он не подтверждает качество ответов модели, запуск native append, полноту host logging или совместимость рабочего GigaCode 26.10.6; прежний target26.9.75 — исторический baseline.
 
 ## Первая критика → исправления
 
@@ -26,13 +26,13 @@
 
 ## Размеры и статическая проверка
 
-На исходном HEAD сумма UTF-8 размеров CORE + SYSTEM_PROMPT + 14 overlays составляла **172 759 bytes**; после правок — **82 745 bytes** (−52,1%). Это размер всех текстов, не требование загружать каталог и не измерение provider tokens. Максимальный CORE + один overlay: **38 026 → 22 574 bytes** (около −40,6%). Точный token overhead зависит от tokenizer и native CLI layers и здесь не измерялся.
+На baseline `f9594c7` сумма UTF-8 размеров CORE + SYSTEM_PROMPT + 14 overlays составляла **172 759 bytes**; после правок — **82 745 bytes** (−52,1%). Это размер всех текстов, не требование загружать каталог и не измерение provider tokens. Максимальный CORE + один overlay: **38 026 → 22 574 bytes** (около −40,6%). Точный token overhead зависит от tokenizer и native CLI layers и здесь не измерялся.
 
 Выполнено:
 
 - `git diff --check -- workbench`: успешно.
 - JSON parse routing/capabilities: успешно; catalog ровно 14 IDs, workplace9 и additional5 дают тот же набор; прямые scoped `docs/*.md` references в CORE/entrypoint/overlays существуют.
-- `node tools/check-bundle.mjs`: suite checks успешны (71 cards, 226 acceptance IDs, 14 roles, 29 workflows); полный bundle на этой промежуточной ревизии возвращал **18 hash mismatches** изменённых файлов. Это ожидаемо устаревший manifest, который требуется пересобрать после финальной интеграции; ошибку не выдаём за pass.
+- `node tools/check-bundle.mjs`: suite checks успешны (71 cards, 226 acceptance IDs, 14 roles, 29 workflows); полный bundle на этой промежуточной ревизии возвращал **18 hash mismatches** изменённых файлов. Это ожидаемо устаревший manifest, который требуется пересобрать после финальной интеграции; ошибку не выдаём за pass. При финальной интеграции manifest пересчитан: `check-bundle` прошёл240/240 manifest entries,12scripts,14roles,29workflows; полный runtime-аудит и точная provenance находятся в `docs/suite/AGENT-HARNESS-AUDIT.md` корня репозитория.
 
 Изменения не затрагивают CLI source, app runtime, workflows/stage checks, production gates или разрешения рабочего компьютера. QA repo.write добавлен в историческое allowed_potential поле как discovery hint для порученного test code, без расширения effective binding.
 

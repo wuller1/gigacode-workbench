@@ -1,0 +1,10 @@
+{
+  "sourceRun": 38560426468,
+  "candidate": "37d7308",
+  "platform": "win32",
+  "copiedScreenshot": "roles-composer-dark-1440-win32.png",
+  "pngWidth": 1440,
+  "pngHeight": 900,
+  "sha256": "89ffd59db5510fd7c2db5ea9f71c4b385e584c6efb987db3293071d1ecbe77f3",
+  "scope": "Captured after successful third UI scenario before failed final resize. No light screenshot from the failed scenario is claimed."
+}

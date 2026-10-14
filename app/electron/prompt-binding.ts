@@ -123,6 +123,22 @@ export function compileInstructions(input: {
   });
 }
 
+async function syncInstructionDirectories(
+  directory: string,
+  dataDir: string,
+): Promise<void> {
+  // As in AtomicStore, Windows cannot promise a portable directory-fsync barrier.
+  if (process.platform === "win32") return;
+  for (const location of [directory, dataDir]) {
+    const handle = await fs.open(location, "r");
+    try {
+      await handle.sync();
+    } finally {
+      await handle.close();
+    }
+  }
+}
+
 /** Keep the exact host-controlled instruction version, not only an unrecoverable hash. */
 export async function retainInstructions(
   dataDir: string,
@@ -137,18 +153,20 @@ export async function retainInstructions(
   const directory = path.join(dataDir, "instructions");
   await fs.mkdir(directory, { recursive: true, mode: 0o700 });
   const destination = path.join(directory, `${compiled.fingerprint}.json`);
+  let existing: CompiledInstructions | undefined;
   try {
-    const existing = await readRetainedInstructions(
-      dataDir,
-      compiled.fingerprint,
-    );
+    existing = await readRetainedInstructions(dataDir, compiled.fingerprint);
+  } catch (error: any) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  if (existing) {
     if (existing.contentHash !== compiled.contentHash)
       throw new Error(
         "Retained instruction version conflicts with the requested snapshot.",
       );
+    // Another identical writer may have renamed before reaching its own barrier.
+    await syncInstructionDirectories(directory, dataDir);
     return;
-  } catch (error: any) {
-    if (error?.code !== "ENOENT") throw error;
   }
   const temporary = path.join(
     directory,
@@ -164,6 +182,8 @@ export async function retainInstructions(
     }
     // One data-directory owner; concurrent writers for this hash have identical content.
     await fs.rename(temporary, destination);
+    // Persist the file entry, then the instructions/ entry when first created.
+    await syncInstructionDirectories(directory, dataDir);
   } finally {
     await fs.rm(temporary, { force: true });
   }

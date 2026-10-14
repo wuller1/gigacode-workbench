@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "createdAt": "2026-10-14T11:56:37.747384+00:00",
+  "createdAt": "2026-10-14T12:10:49.036235+00:00",
   "baselineCommit": "f9594c7db91ab6c30c40d42afb2177b5f9360fca",
-  "candidate": "Final uncommitted product source; release/Windows provenance will identify committed candidate separately",
+  "candidate": "Final source after POSIX instruction-directory durability and independent dock resize readiness repairs; pending corrected Windows CI",
   "environment": {
     "platform": "darwin",
     "arch": "arm64",
@@ -16,12 +16,13 @@
       "exitCode": 0
     },
     "unitProtocol": {
-      "command": "cd app; npm test",
-      "passed": 250,
+      "command": "cd app; npm test -- --reporter=json --outputFile=../docs/suite/evidence/agent-runtime-qwen/unit-final-darwin.json",
+      "passed": 254,
       "skipped": 46,
       "failed": 0,
       "filesPassed": 27,
-      "filesSkipped": 2
+      "filesSkipped": 2,
+      "report": "unit-final-darwin.json"
     },
     "existingUi": {
       "command": "cd app; npm run test:ui",
@@ -40,7 +41,7 @@
       "failed": 0
     },
     "qwenSystemPlacement": {
-      "command": "cd app; node tools/test-prompt-binding-live.mjs --capture-local-provider",
+      "command": "cd app; node tools/test-prompt-binding-live.mjs --capture-local-provider --report <absolute-report-path>",
       "processes": 2,
       "localProviderRequests": 2,
       "report": "system-placement.json",
@@ -57,7 +58,8 @@
       "apiPassed": 23,
       "uiPassed": 23,
       "report": "../agent-runtime-operations/result-darwin.json",
-      "corporate": false
+      "corporate": false,
+      "reusedFrom": "Candidate37d7308, before instruction registry directory durability-only repair; Operations sources and service/main/MCP/UI paths remained unchanged. Original actual App artifact hashes retained, no claim of another Operations run after that repair."
     },
     "selectedRealModelRouting": {
       "report": "router-real-model-round-4.json",
@@ -72,17 +74,17 @@
     "app/electron/acp.ts": "6a3c3e348db4ecc524b2ef57cdd5f437a8e3f1a5ae5edd61e6a96b266911dae4",
     "app/electron/main.ts": "575495a0ab215c302d267b48a6f6745ebf9bbf8b90e55d0eee17da25733a88f1",
     "app/electron/mcp.ts": "b1c031551913cc87ddd866331639d7a4b04b3eebdf69404013a7b8bccf7ac1bd",
-    "app/electron/prompt-binding.ts": "0d01a2de8aa78e7ec479c44d9e54c79da8a58a4548cafe31b2fe5d48f04cef12",
+    "app/electron/prompt-binding.ts": "6b1468c9dd753c7b4abc492c06ae9d1fd2d0aee6c220a65504dea2f7a84fbd44",
     "app/electron/role-router.ts": "718f8525b99e3fa77bc2c38f86db12b38f78b22575ce9f0d8798c52e82a70e8a",
     "app/electron/service.ts": "2acd147abc523108946b6c89874b6d92e62a15ca625b69dd59c4139e33d8a907",
     "app/shared/types.ts": "d62f5248eada83af0405e78f179a0b837aba154ed1e1f666a42a3e20d253a49a",
     "app/src/App.tsx": "24a0718367c98b052dcdc368e7f1800f9190bead0f55e92eb7814961a18519ef",
     "app/src/SettingsView.tsx": "e274d09530ecc7877db16f89aae2b114f7e43aa8e4763330b9d2c0582156cea2",
     "app/tests/agent-runtime.test.ts": "495e5894f2641f25e61955e826b7226949189a9e448a5029ef8d9bfe4a730d7a",
-    "app/tests/instruction-retention.test.ts": "6a94fb8d4d198705344cdf6b4ed01e1eda549945aa97900797332d867617d28a",
+    "app/tests/instruction-retention.test.ts": "36b729343e6a3f7909f43b364d185590fabbc393d380fcd94b5b8092a300e431",
     "app/tests/prompt-binding.test.ts": "5f638e8a891ed59cf0dda628ca351626a344697d7cf27bb31f9e9ea8bb7719ef",
     "app/tests/role-routing.test.ts": "77117428491b9d1a765067cce64ea82ba8356bad1708de61a3c4eeeda9f05d2e",
-    "app/tools/test-roles-ui.mjs": "d635a1b1d6b1cd8b66cb4eeaf5417a6aacd61fb12f336639cfef14b107e18777",
+    "app/tools/test-roles-ui.mjs": "e1176b345cf1e53dddc66df7fb991d8b3c5ba3bb3bf6759e060f3b3baeda9663",
     "workbench/CORE.md": "94b4e494471775f492389f31563b1f071c7977d0ae781cc01af0fbd1c384da53",
     "workbench/SYSTEM_PROMPT.md": "cf28ece8672833e37016c271e6afd7427ca6f5dac093c572891439846d8435a3",
     "workbench/profiles/analyst.md": "81437e3f1258b7fe5de3ff37d531a5b8b8c3d27c95f741b0c6d30d6cccbf11c2",

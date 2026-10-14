@@ -16,3 +16,5 @@ Harness запускает настоящий собранный Electron App, �
 Визуальное наблюдение: desktop geometry не переполняется, label текущей роли и binding status читаются. Причина context-only передаётся краткой русской строкой, техническое основание доступно по раскрытию. Это исправление также видно на финальном снимке. Хороший внешний вид всех разделов приложения этим ограниченным срезом не объявляется.
 
 Финальное evidence повторено после последнего build: 8/8 actual App scenarios, 36 source/dist hashes без дрейфа и пустой rendererErrors. Native capture теперь ждёт два requestAnimationFrame: предыдущий успешный функциональный run имел устаревший compositor frame после resize; оба финальных PNG повторно просмотрены и соответствуют desktop-размерам. Это исправление harness/evidence, продуктовый код не менялся.
+
+После registry durability rebuild повторено 8/8 на macOS: 36 source/dist hashes без дрейфа, rendererErrors=[], четыре dock readiness перехода завершены за67/77/169/56мс. Оба финальных native PNG просмотрены. Новый Windows CI проверяется отдельно; сохранённый прежний Windows отказ не отменяется этим локальным результатом.
