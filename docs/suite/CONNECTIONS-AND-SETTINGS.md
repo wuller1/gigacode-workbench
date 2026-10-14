@@ -150,6 +150,8 @@ Space выбирается объектом с immutable remote ID, display name
 
 ## Secret vault
 
+Ниже — целевой общий Secret service. Фактический Operations runtime 0.4 использует `ops.connection.save`: main шифрует token через Electron safeStorage, ciphertext Base64 хранится в private `operations/state.json` и его backup. Public DTO содержит только `credentialConfigured`; исходный token после записи не возвращается. Это OS-backed encryption, а не отдельная запись token в Credential Manager. Не экспортировать private store. Сохранение без защищённого safeStorage отклоняется, plaintext fallback отсутствует. Остальные `secret.set`/`secretRef` возможности ниже не считать реализованными из-за этого среза.
+
 - Renderer передаёт secret только в специализированный `secret.set`, который исключён из обычного operation logging.
 - Main шифрует через Electron `safeStorage`/корпоративный credential provider и сохраняет только `secretRef`.
 - Secret не возвращается после записи; UI показывает `configured`, source и last validation.

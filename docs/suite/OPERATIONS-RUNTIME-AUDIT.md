@@ -53,6 +53,8 @@ Test servers не используют существующий JENKINS_HOME, ku
 
 ## Текущие доказательства
 
+Первая Windows-приёмка `6122d84` ([run38542875039](https://github.com/wuller1/gigacode-workbench/actions/runs/38542875039)) прошла Data44/25, PowerShell5.1, unit/build/native checks и37 GUI cases, затем общий трёхминутный UI deadline оборвал запуск последнего набора. Assertion failure не было. Workflow разделён на пять отдельных ограниченных шагов, все43 проверки сохранены; повторная Windows-приёмка обязательна. Этот failed run не выдаётся за pass.
+
 После Operations integration на той же сборке повторно прошли [чат 3, PostgreSQL 44 и Data UI 25](evidence/operations-macos/regressions.json). Данные и внешний вид БД проверялись с настоящим изолированным PostgreSQL; это не snapshot-only проверка.
 
 [Сводная проверка](evidence/operations-macos/verification.json), [native API23](evidence/operations-macos/native.json), [actual App23](evidence/operations-macos/desktop.json), [изолированный UI43](evidence/operations-macos/isolated-ui.json), [StrictMode/Web Locks/late-navigation14](evidence/operations-macos/review-ui.json). Финальный прогон 14.10.2026 09:24:09–09:25:38 UTC завершился с нулём renderer errors;26 исходников и 15 compiled artifacts сверены после выполнения, дрейфа нет. Все test-owned процессы закрыты. Платные модели не вызывались.

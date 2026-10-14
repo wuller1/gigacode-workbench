@@ -68,7 +68,7 @@ UI/UX — главный критерий. Функция не считаетс�
 - Каждый вызов содержит `projectId`, при необходимости `taskId`, target identity, correlation/operation ID и ожидаемую revision. Backend проверяет область заново.
 - Долгие и внешние операции имеют persisted operation record, progress, cancel semantics и recovery по external ID. Не повторяй неизвестный POST/DDL/deploy/build.
 - Read, propose и mutate различаются. Опасная операция сначала показывает diff/SQL/manifest/parameters и точный target; фактический результат подтверждается readback.
-- Секреты сохраняются через ОС/корпоративный credential provider. В state, логи, prompt, task description, exports и Git попадают только `secretRef`.
+- Целевой общий Secret service хранит ссылки `secretRef`, значения защищает ОС/корпоративный credential provider; plaintext не попадает в логи, prompt, task description, exports и Git. Текущий Operations runtime 0.4 использует `ops.connection.save` и Electron safeStorage: ciphertext хранится в private `operations/state.json` и его backup, public DTO содержит только `credentialConfigured`. Это OS-backed encryption, не отдельная запись token в Credential Manager; переносить private state в Git или общий export нельзя.
 - Remote web content, HTML preview, database values, cluster resources и документы считаются недоверенными данными. Они не получают app preload или право командовать агентом.
 - MCP adapter строится по фактическим `tools/list`/schemas. Не угадывай имена методов корпоративных серверов. Capability может быть `unavailable`, и UI должен это честно показывать.
 - Существующие browser, terminal, workspace, artifact, Task и session services расширяются; второй универсальный контроллер запрещён.

@@ -212,9 +212,27 @@ jobs:
       - name: Typecheck and build renderer/main/preload
         run: npm run build
 
-      - name: Offline Electron modal, composer and settings concurrency regression
+      # Windows GUI startup/focus is slower than local macOS. Keep all43 cases,
+      # with a separate bounded deadline and diagnostics for each actual suite.
+      - name: Offline Electron modal and focus regression
+        timeout-minutes: 2
+        run: node tools/test-modal-ui.mjs
+
+      - name: Desktop composer, queue and motion regression
+        timeout-minutes: 2
+        run: node tools/test-composer-ui.mjs
+
+      - name: Settings and memory concurrency regression
         timeout-minutes: 3
-        run: npm run test:ui
+        run: node tools/test-settings-ui.mjs
+
+      - name: Operations StrictMode, drafts and late navigation regression
+        timeout-minutes: 3
+        run: node tools/test-operations-review-ui.mjs
+
+      - name: Individual tool crash containment and recovery regression
+        timeout-minutes: 2
+        run: node tools/test-panel-boundary-ui.mjs
 
       - name: Full application model catalog, queue and cancellation workflow
         timeout-minutes: 2

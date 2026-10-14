@@ -1,5 +1,7 @@
 # Operations workspace
 
+Этот документ описывает целевой roadmap. Фактический runtime 0.4 содержит две самостоятельные dock-панели Jenkins и Kubernetes/OpenShift. Реально реализованные пути, перенос и ограничения: [runtime handoff](OPERATIONS-RUNTIME-HANDOFF.md), [аудит и проверки](OPERATIONS-RUNTIME-AUDIT.md). Единый workspace с knowledge links ниже ещё не объявляется завершённым.
+
 ## Общая организация
 
 Один Operations workspace объединяет Kubernetes/OpenShift, Jenkins и knowledge links, но adapters и permissions остаются раздельными. Navigator начинается с environments текущего Project, затем resources. Context bar всегда показывает connection/cluster/namespace/environment.
